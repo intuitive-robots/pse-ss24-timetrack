@@ -28,3 +28,12 @@ This repository contains the code for a web application designed to simplify and
 
 ## Installation and Setup
 
+## Installation and Setup in a Test Environment
+Run the frontend
+  1. Navigate to the "frontend" folder with the "cd" command in your terminal.
+  2. Install all required dependencies with "npm install". Please make sure that you have Node.js installed.
+  3. Start the Frontend with "npm start".
+
+Run the backend
+1. Navigate to the "backend" folder with the "cd" command in your terminal.
+2. Use "python -m flask run" or "flask run" to run the flask project. Please make sure that you have all required pip packages installed.
