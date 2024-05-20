@@ -1,6 +1,10 @@
 from flask import Flask
+from db import initialize_db
 
 app = Flask(__name__)
+app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"  # Database Connection
+
+initialize_db(app)
 
 
 @app.route('/')
@@ -9,5 +13,4 @@ def home():
 
 
 if __name__ == '__main__':
-    print("Test")
     app.run(debug=True)
