@@ -27,7 +27,12 @@ This repository contains the code for a web application designed to simplify and
 
 
 ## Installation and Setup
-TODO:
+1. MongoDB Database
+The following command creates a MongoDB with authentication inside a Docker Container:
+```
+docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=TimeTracking123! -d mongodb/mongodb-community-server:latest
+```
+
 ___
 
 ## Information around developing this project
