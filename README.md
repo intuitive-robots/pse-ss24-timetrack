@@ -27,8 +27,30 @@ This repository contains the code for a web application designed to simplify and
 
 
 ## Installation and Setup
+TODO:
+___
 
-## Installation and Setup in a Test Environment
+## Information around developing this project
+
+### Git Branch strategy for this repo & dev team
+1. Main branch:
+   most stable version, this branch is used to deploy to production
+2. Develop branch:
+   contains changes that are in progress and may not be ready for production
+   after all tests and the peer review have been successful, it is merged into Production
+3. Features / Fixes branches:
+   Branches to work on specific features and fixes. Once the feature/fix is ready, you merge it into the develop branch.
+
+Example of a workflow with this strategy:
+1. You want to develop a new feature.
+2. Create a branch called "newFeatureXYZ" based on the develop branch.
+3. Work on the feature in this topic branch unitil it's ready.
+4. Merge "newFeatureXYZ" into the develop branch and run tests.
+5. Make sure there are no merge conflicts - Change the code if necessary to resolve the conflicts - merge these changes into the develop branch
+6. Everything works fine - Merge develop into main
+
+
+### Installation and Setup in a Test Environment
 Run the frontend
   1. Navigate to the "frontend" folder with the "cd" command in your terminal.
   2. Install all required dependencies with "npm install". Please make sure that you have Node.js installed.
