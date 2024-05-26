@@ -1,9 +1,6 @@
 import logging
 from urllib.parse import quote
-
 from flask import Flask, jsonify
-from pymongo import MongoClient
-
 from model.personal_information import PersonalInfo
 from model.role import UserRole
 from model.user import User
