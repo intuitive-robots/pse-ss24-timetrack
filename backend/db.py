@@ -15,6 +15,7 @@ def initialize_db():
     db = client.timetracking_db
     return db
 
+
 """
 Checks the database connection
 """

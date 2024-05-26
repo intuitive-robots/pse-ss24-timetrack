@@ -1,15 +1,7 @@
-import logging
-from urllib.parse import quote
-
 from flask import Flask, jsonify
-from pymongo import MongoClient
 from model.personal_information import PersonalInfo
 from model.user import User
 from db import initialize_db, check_db_connection
-
-username = "admin"
-password = "TimeTracking123!"
-encoded_password = quote(password)
 
 app = Flask(__name__)
 db = initialize_db()
