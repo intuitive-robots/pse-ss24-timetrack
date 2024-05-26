@@ -1,10 +1,13 @@
 from datetime import datetime
-from db import mongo
+from db import db, initialize_db
 from model.personal_information import PersonalInfo
 from model.role import UserRole
 
+db = initialize_db()
+
 
 class User:
+
     def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: str):
         self.username = username
         self.password_hash = password_hash
@@ -19,22 +22,24 @@ class User:
             "password_hash": self.password_hash,
             "personal_info": self.personal_info.to_dict(),
             "employment_details": {
-                "role": self.role,
+                "role": str(self.role),
             },
             "account_creation": self.account_creation,
             "last_login": self.last_login
         }
-        return mongo.db.users.insert_one(user_data)
+        return db.users.insert_one(user_data)
 
     @classmethod
     def find_by_username(cls, username):
-        user = mongo.db.users.find_one({"username": username})
+        user = db.users.find_one({"username": username})
+
         if user:
             return cls(
                 username=user['username'],
                 password_hash=user['password_hash'],
                 personal_info=PersonalInfo(user['personal_info']['first_name'], user['personal_info']['last_name'],
-                                           user['personal_info']['email'], user['personal_info']['personal_number']),
+                                           user['personal_info']['email'], user['personal_info']['personal_number'],
+                                           user['personal_info']['institute_name']),
                 role=user['employment_details']['role'],
             )
         return None
@@ -42,3 +47,16 @@ class User:
     def is_admin(self):
         """ checks if user is an admin """
         return self.role == UserRole.ADMIN
+
+    """
+    Converts the user object to a dictionary
+    """
+    def to_dict(self):
+        return {
+            "username": self.username,
+            "password_hash": self.password_hash,
+            "personal_info": self.personal_info.to_dict(),
+            "role": str(self.role),
+            "account_creation": self.account_creation,
+            "last_login": self.last_login
+        }
