@@ -1,10 +1,11 @@
 from flask import Flask, jsonify
 from model.personal_information import PersonalInfo
+from model.role import UserRole
 from model.user import User
 from db import initialize_db, check_db_connection
-from flask_jwt_extended import JWTManager, jwt_required
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from datetime import timedelta
-from auth import init_auth_routes
+from auth import init_auth_routes, check_access
 import secrets
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ app.config["JWT_SECRET_KEY"] = secrets.token_bytes(32)  # Generates a random sec
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 jwt = JWTManager(app)
 
-init_auth_routes(app, jwt)
+init_auth_routes(app)
 
 
 @app.route('/')
@@ -44,25 +45,13 @@ def create_user():
     user.save()
     return "User created"
 
-
-@app.route('/find_user_by_username')
-@jwt_required()
-def find_user_by_username():
-    """
-    Finds a user by username
-    TODO: This is a hardcoded username, replace this with React data
-    :return: A JSON object containing the user
-    """
-    user = User.find_by_username("test_user")
-    return jsonify(user.to_dict())
-
-
 @app.route('/read_users')
 @jwt_required()
+@check_access(roles=[UserRole.ADMIN])
 def read_users():
     """
     Reads all users from the database
-    TODO: This function should only be available to admins
+    Is only accessible to users with the role ADMIN
     :return: A JSON string containing all users
     """
     all_users = list(db.users.find())
