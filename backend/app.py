@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from model.personal_information import PersonalInfo
+from model.role import UserRole
 from model.user import User
 from db import initialize_db, check_db_connection
 
@@ -27,7 +28,7 @@ def create_user():
             email="test@gmail.com",
             personal_number="123456",
             instituteName="Test Institute"),
-        role="ADMIN"
+        role=UserRole.ADMIN
     )
     user.save()
     return "User created"
