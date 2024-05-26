@@ -4,7 +4,6 @@ from model.role import UserRole
 from model.user import User
 from db import initialize_db, check_db_connection
 
-
 app = Flask(__name__)
 db = initialize_db()
 
