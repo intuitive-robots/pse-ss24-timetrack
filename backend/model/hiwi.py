@@ -25,10 +25,10 @@ class Hiwi(User):
 
     def add_timesheet(self, timesheet):
         """
-                Adds a timesheet entry to the list of timesheets.
+        Adds a timesheet entry to the list of timesheets.
 
-                :param timesheet: The timesheet to be added.
-                """
+        :param timesheet: The timesheet to be added.
+        """
         self.timesheets.append(timesheet)
 
     def update_contract_info(self, hourly_wage, working_hours, vacation_hours):
