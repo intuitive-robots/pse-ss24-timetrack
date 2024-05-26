@@ -35,7 +35,7 @@ def create_user():
             email="test@gmail.com",
             personal_number="123456",
             instituteName="Test Institute"),
-        role="ADMIN"
+        role=UserRole.ADMIN
     )
     user.save()
     return "User created"

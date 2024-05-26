@@ -8,11 +8,11 @@ db = initialize_db()
 
 class User:
 
-    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: str):
+    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole):
         self.username = username
         self.password_hash = password_hash
         self.personal_info = personal_info
-        self.role = UserRole[role]
+        self.role = role
         self.account_creation = None
         self.last_login = None
 
