@@ -1,4 +1,3 @@
-
 from flask import Flask, jsonify
 from model.personal_information import PersonalInfo
 from model.role import UserRole
