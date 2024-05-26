@@ -7,10 +7,10 @@ class UserRole(Enum):
     There are 4 different user roles: assistant scientist (HiWi), supervisor, secretary and admin.
     """
 
-    HIWI = "HiWi"
-    SUPERVISOR = "Supervisor"
-    SECRETARY = "Secretary"
-    ADMIN = "Admin"
+    HIWI = "HIWI"
+    SUPERVISOR = "SUPERVISOR"
+    SECRETARY = "SECRETARY"
+    ADMIN = "ADMIN"
 
     def __str__(self):
         return self.value
