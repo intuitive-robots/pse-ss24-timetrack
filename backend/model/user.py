@@ -1,4 +1,3 @@
-from datetime import datetime
 from db import db, initialize_db
 from model.personal_information import PersonalInfo
 from model.role import UserRole
