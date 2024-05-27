@@ -9,18 +9,20 @@ module.exports = {
         light: {  // Light Theme
           background: '#ffffff',
           text: '#333333',
+          navGray: '#717171'
         },
         dark: {  // Dark Theme
           background: '#121212',
           text: '#f5f5f5',
         },
-        'border-gray': 'rgba(215, 215, 215, 0.22)'
+        'border-gray': 'rgba(215, 215, 215, 0.22)',
       },
       boxShadow: {
         'profilebar-shadow': '0 6px 10px rgba(0, 0, 0, 0.03)', // Profile Bar Shadow
         'navbar-shadow': '0 6px 10px rgba(0, 0, 0, 0.02)', // Navbar Shadow
       },
       borderWidth: {
+        '1.7': '1.7px',
         '2.7': '2.7px'
       },
       fontSize: {
