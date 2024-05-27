@@ -63,4 +63,5 @@ Run the frontend
 
 Run the backend
 1. Navigate to the "backend" folder with the "cd" command in your terminal.
-2. Use "python -m flask run" or "flask run" to run the flask project. Please make sure that you have all required pip packages installed.
+2. Run "pip install -r requirements.txt" to install all necessary packages.
+3. Use "python -m flask run" or "flask run" to run the flask project. Please make sure that you have all required pip packages installed.
