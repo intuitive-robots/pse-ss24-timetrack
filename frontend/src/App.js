@@ -1,11 +1,10 @@
 import './App.css';
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
     <div className="App">
-        <div className="h-screen flex justify-center items-center">
-            <h1 className="text-4xl font-black">Frontend Project in React</h1>
-        </div>
+        <HomePage/>
     </div>
   );
 }
