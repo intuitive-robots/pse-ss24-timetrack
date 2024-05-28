@@ -1,5 +1,6 @@
 import React from "react";
 import Logo from "../assets/images/logo.svg"
+import RightArrow from "../assets/images/arrow_right.svg"
 
 interface ProfileBarProps {
     name: string;
@@ -25,7 +26,7 @@ interface ProfileBarProps {
  */
 const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }: ProfileBarProps): React.ReactElement => {
     return (
-        <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold mr-8">
+        <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold mr-14">
             <div className="flex items-center space-x-4">
                 <img src={Logo} alt="Clockwise"  />
                 <div className="w-32"/>
@@ -39,6 +40,9 @@ const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }: Profile
                     <span className="text-md font-semibold">{name}</span>
                     <span className="text-sm text-gray-500">{role}</span>
                 </div>
+                <button className="p-1.5 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200">
+                    <img src={RightArrow} alt="RightArrow"/>
+                </button>
             </div>
         </div>
     );
