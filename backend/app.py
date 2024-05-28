@@ -32,7 +32,7 @@ def create_user():
     :return: A string indicating that the user was created
     """
     user = User(
-        username="test_user",
+        username="test_useraa",
         password_hash="test_password",
         personal_info=PersonalInfo(
             first_name="John",
