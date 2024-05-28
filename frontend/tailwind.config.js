@@ -16,6 +16,7 @@ module.exports = {
           text: '#f5f5f5',
         },
         'border-gray': 'rgba(215, 215, 215, 0.22)',
+        'navbar-selected-bg': '#f1eaff',
       },
       boxShadow: {
         'profilebar-shadow': '0 6px 10px rgba(0, 0, 0, 0.03)', // Profile Bar Shadow

@@ -16,7 +16,7 @@ interface LayoutWrapperProps {
  */
 const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrapperProps): React.ReactElement => {
   return (
-    <div className="flex flex-col min-h-screen select-none">
+    <div className="flex h-screen flex-col min-h-screen select-none">
       {/* Full-width profile bar at the top of the page */}
       <div className="w-full">
         <ProfileBar
@@ -25,11 +25,9 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrap
           imageUrl={ProfilePlaceholder}
         />
       </div>
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-row flex-1 overflow-hidden">
         {/* Sidebar navigation bar */}
-        <div className="">
-          <NavigationBar />
-        </div>
+        <NavigationBar/>
         {/* Main content area that takes remaining space */}
         <div className="flex-1 overflow-auto p-4 items-start justify-start">
           {pageContent}
