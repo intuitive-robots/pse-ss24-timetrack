@@ -7,20 +7,30 @@ interface LayoutWrapperProps {
   pageContent: React.ReactNode;
 }
 
-const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }) => {
+/**
+ * The LayoutWrapper component is responsible for providing the overall page layout.
+ * It includes a profile bar at the top, a navigation bar on the left, and a dynamic content area that renders `pageContent`.
+ *
+ * @param {LayoutWrapperProps} props - The props passed to the component.
+ * @returns {React.ReactElement} The rendered component.
+ */
+const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrapperProps): React.ReactElement => {
   return (
     <div className="flex flex-col min-h-screen select-none">
+      {/* Full-width profile bar at the top of the page */}
       <div className="w-full">
         <ProfileBar
-            name="Nico Maier"
-            role="Hilfswissenschaftler"
-            imageUrl={ProfilePlaceholder}
+          name="Nico Maier"
+          role="Hilfswissenschaftler"
+          imageUrl={ProfilePlaceholder}
         />
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <div className=""> {/* Navigationbar below Profilebar*/}
+        {/* Sidebar navigation bar */}
+        <div className="">
           <NavigationBar />
         </div>
+        {/* Main content area that takes remaining space */}
         <div className="flex-1 overflow-auto p-4 items-start justify-start">
           {pageContent}
         </div>

@@ -7,7 +7,23 @@ interface ProfileBarProps {
     imageUrl: string;
 }
 
-const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }) => {
+/**
+ * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,
+ * navigation buttons, and user profile information. It provides a consistent top bar across different
+ * parts of the application.
+ *
+ * The component is structured to display the following:
+ * - A logo on the left side.
+ * - A search bar for user input.
+ * - Navigation buttons for temporal filters such as 'This month' and 'By Project'.
+ * - User's profile image with their name and role on the right side of the bar.
+ * - An arrow button next to the user's information for additional options or navigation.
+ *
+ * @component
+ * @param {ProfileBarProps} props - The props passed to the ProfileBar component.
+ * @returns {React.ReactElement} A React Element representing the user profile bar.
+ */
+const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }: ProfileBarProps): React.ReactElement => {
     return (
         <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold mr-8">
             <div className="flex items-center space-x-4">
