@@ -26,7 +26,7 @@ interface ProfileBarProps {
  */
 const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }: ProfileBarProps): React.ReactElement => {
     return (
-        <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold mr-4">
+        <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold">
             <div className="flex items-center space-x-4">
                 <img src={Logo} alt="Clockwise"  />
                 <div className="w-32"/>
@@ -34,7 +34,7 @@ const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }: Profile
                 <button className="btn border hover:bg-gray-200 text-sm text-light-navGray py-2 px-6 rounded-lg">This month</button>
                 <button className="btn border hover:bg-gray-200 text-sm text-light-navGray py-2 px-6 rounded-lg">By Project</button>
             </div>
-            <div className="ml-auto flex items-center space-x-4">
+            <div className="ml-auto flex items-center space-x-4 mr-4">
                 <img src={imageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>
                 <div className="flex flex-col items-start">
                     <span className="text-md font-semibold">{name}</span>
