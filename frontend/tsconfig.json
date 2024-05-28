@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "jsx": "react",
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "images/*": ["assets/images/*"]
+    }
+  },
+  "include": [
+    "**/*",
+    "../custom.d.ts"
+  ]
+}
