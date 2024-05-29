@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import TextInput from '../components/input/TextInput';
 import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
@@ -7,9 +7,10 @@ import {login} from "../services/AuthService";
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // Initialize useHistory for navigation
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     try {
       const response = await login(username, password);
       if (!response.accessToken) {
@@ -29,7 +30,7 @@ const LoginForm: React.FC = () => {
           default:
             navigate('/'); // Navigate to default home or error page
             break;
-        }
+      }
     } catch (error) {
       console.error('Login Error:', error);
     }
