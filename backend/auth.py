@@ -57,7 +57,8 @@ def initAuthRoutes(app):
         if user.passwordHash != password:
             return {"msg": "Invalid Password"}, 401
 
-        accessToken = create_access_token(identity=username)
+        additional_claims = {"role": user.role}
+        accessToken = create_access_token(identity=username, additional_claims=additional_claims)
         response = {"accessToken": accessToken}
         return response
 
