@@ -2,24 +2,37 @@ import React, {useState} from 'react';
 import TextInput from '../components/input/TextInput';
 import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import {login} from "../services/AuthService";
+// import {login} from "../services/AuthService";
+import { useAuth } from '../context/AuthContext';
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await login(username, password);
-      if (!response.accessToken) {
+      // const response = await login(username, password);
+      // if (!response.accessToken) {
+      //   console.log('Unauthorized');
+      //   return;
+      // }
+      // console.log('Login Success:', response);
+
+      // const decoded = jwtDecode(response.accessToken);
+
+      await login(username, password);
+
+      // After login, get the token from localStorage to decode and determine role
+      const token = localStorage.getItem('token');
+      if (!token) {
         console.log('Unauthorized');
         return;
       }
-      console.log('Login Success:', response);
 
-      const decoded = jwtDecode(response.accessToken);
+      const decoded: any = jwtDecode(token);
       switch (decoded.role) {
           case 'Admin':
             navigate('/admin-home'); // Navigate to admin home page

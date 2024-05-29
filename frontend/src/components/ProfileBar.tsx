@@ -1,8 +1,9 @@
 import React from "react";
 import Logo from "../assets/images/logo.svg"
 import RightArrow from "../assets/images/arrow_right.svg"
-import { logout } from "../services/AuthService";
+// import { logout } from "../services/AuthService";
 import {useNavigate} from "react-router-dom";
+import { useAuth } from '../context/AuthContext'
 
 interface ProfileBarProps {
     name: string;
@@ -26,8 +27,9 @@ interface ProfileBarProps {
  * @param {ProfileBarProps} props - The props passed to the ProfileBar component.
  * @returns {React.ReactElement} A React Element representing the user profile bar.
  */
-const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }: ProfileBarProps): React.ReactElement => {
+const ProfileBar: React.FC<ProfileBarProps> = ({imageUrl }: ProfileBarProps): React.ReactElement => {
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
 
     const handleLogout = async () => {
         try {
@@ -39,27 +41,34 @@ const ProfileBar: React.FC<ProfileBarProps> = ({ name, role, imageUrl }: Profile
     };
 
     return (
-        <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold">
+        <div
+            className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold">
             <div className="flex items-center space-x-4">
-                <img src={Logo} alt="Clockwise"  />
+                <img src={Logo} alt="Clockwise"/>
                 <div className="w-32"/>
-                <input type="text" placeholder="Search" className="input border border-gray-300 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
-                <button className="btn border hover:bg-gray-200 text-sm text-light-navGray py-2 px-6 rounded-lg">This month</button>
-                <button className="btn border hover:bg-gray-200 text-sm text-light-navGray py-2 px-6 rounded-lg">By Project</button>
-            </div>
-            <div className="ml-auto flex items-center space-x-4 mr-4">
-                <img src={imageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>
-                <div className="flex flex-col items-start">
-                    <span className="text-md font-semibold">{name}</span>
-                    <span className="text-sm text-gray-500">{role}</span>
-                </div>
-                <button
-                    className="p-1.5 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
-                    onClick={handleLogout}
-                >
-                    <img src={RightArrow} alt="RightArrow"/>
+                <input type="text" placeholder="Search"
+                       className="input border border-gray-300 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+                <button className="btn border hover:bg-gray-200 text-sm text-light-navGray py-2 px-6 rounded-lg">This
+                    month
+                </button>
+                <button className="btn border hover:bg-gray-200 text-sm text-light-navGray py-2 px-6 rounded-lg">By
+                    Project
                 </button>
             </div>
+            <div className="ml-auto flex items-center space-x-4 mr-8">
+                <img src={imageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>
+                <div className="flex flex-col items-start">
+                    <span
+                        className="text-md font-semibold">{user?.personalInfo.firstName + " " + user?.personalInfo.lastName}</span>
+                    <span className="text-sm text-gray-500">{user?.role}</span>
+                </div>
+            </div>
+            <button
+                className="p-1.5 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
+                onClick={handleLogout}
+            >
+                <img src={RightArrow} alt="RightArrow"/>
+            </button>
         </div>
     );
 };
