@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import TextInput from '../components/input/TextInput';
+import {login} from "../services/AuthService";
 
-interface LoginFormProps {
-  onLogin: (username: string, password: string) => void;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
+const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onLogin(username, password);
+    try {
+      const response = await login(username, password);  // Use the login function from AuthService
+      console.log('Login Success:', response);
+    } catch (error) {
+      console.error('Login Error:', error);
+    }
   };
 
   return (
