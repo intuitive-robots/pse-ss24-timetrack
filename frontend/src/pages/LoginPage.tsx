@@ -1,16 +1,35 @@
 import React, { useState } from 'react';
 import TextInput from '../components/input/TextInput';
+import {jwtDecode} from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 import {login} from "../services/AuthService";
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // Initialize useHistory for navigation
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
     try {
-      const response = await login(username, password);  // Use the login function from AuthService
+      const response = await login(username, password);
+      if (!response.accessToken) {
+        console.log('Unauthorized');
+        return;
+      }
       console.log('Login Success:', response);
+
+      const decoded = jwtDecode(response.accessToken);
+      switch (decoded.role) {
+          case 'Admin':
+            navigate('/admin-home'); // Navigate to admin home page
+            break;
+          case 'HiWi':
+            navigate('/hiwi-home'); // Navigate to user home page
+            break;
+          default:
+            navigate('/'); // Navigate to default home or error page
+            break;
+        }
     } catch (error) {
       console.error('Login Error:', error);
     }
