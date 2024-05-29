@@ -7,8 +7,10 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from datetime import timedelta
 from auth import initAuthRoutes, check_access
 import secrets
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # enable CORS for all routes and origins
 db = initializeDb()
 
 app.config["JWT_SECRET_KEY"] = secrets.token_bytes(32)  # Generates a random secret key
