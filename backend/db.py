@@ -6,7 +6,7 @@ client = None
 """
 Initializes the database connection
 """
-def initialize_db():
+def initializeDb():
     global db
     global client
     # TODO: Hard coding is usually not a good idea. We could use environment variables instead, when we have time.
@@ -19,7 +19,7 @@ def initialize_db():
 """
 Checks the database connection
 """
-def check_db_connection():
+def checkDbConnection():
     # Check if the database connection is successful
     if client is None:
         return "Database connection not initialized"
