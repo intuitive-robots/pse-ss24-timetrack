@@ -1,7 +1,6 @@
 import React from 'react';
 import NavigationBar from './navbar/NavigationBar';
 import ProfileBar from './ProfileBar';
-import ProfilePlaceholder from "../assets/images/profile_placeholder.png";
 
 interface LayoutWrapperProps {
   pageContent: React.ReactNode;
@@ -19,11 +18,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrap
     <div className="flex h-screen flex-col min-h-screen select-none">
       {/* Full-width profile bar at the top of the page */}
       <div className="w-full">
-        <ProfileBar
-          name="Nico Maier"
-          role="Hilfswissenschaftler"
-          imageUrl={ProfilePlaceholder}
-        />
+        <ProfileBar/>
       </div>
       <div className="flex flex-row flex-1 overflow-hidden">
         {/* Sidebar navigation bar */}

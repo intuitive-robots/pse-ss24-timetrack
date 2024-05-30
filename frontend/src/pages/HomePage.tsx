@@ -3,27 +3,7 @@ import LayoutWrapper from "../components/LayoutWrapper";
 import UserCard from "../components/UserCard";
 import ProfilePlaceholder from "../assets/images/profile_placeholder.png";
 import {getUsers} from "../services/AuthService";
-
-interface PersonalInfo {
-  firstName: string;
-  lastName: string;
-  email: string;
-  personalNumber: string;
-  instituteName: string;
-}
-
-interface EmploymentDetails {
-  role: string;
-}
-
-interface User {
-  _id: string;
-  username: string;
-  role: string;
-  profileImageUrl: string;
-  personalInfo: PersonalInfo;
-  employmentDetails: EmploymentDetails;
-}
+import {User} from "../interfaces/User";
 
 /**
  * HomePage component serves as the main landing page for the application.
