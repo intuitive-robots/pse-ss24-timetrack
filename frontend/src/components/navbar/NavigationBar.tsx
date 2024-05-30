@@ -52,7 +52,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
               onClick={() => {
               }}
               bgColor="bg-purple-600"
-              hoverBgColor="bg-purple-700"
+              hover="hover:bg-purple-700"
           />
           <ActionButton
               icon={AddUserIcon}
@@ -60,7 +60,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
               onClick={() => {
               }}
               bgColor="bg-gray-700"
-              hoverBgColor="bg-gray-800"
+              hover="hover:bg-gray-800"
           />
         </div>
       </div>

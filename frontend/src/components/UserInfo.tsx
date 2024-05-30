@@ -1,4 +1,5 @@
 import React from 'react';
+import {roleColors} from "../utils/RoleMapping";
 
 interface UserInfoProps {
   name: string;
@@ -19,8 +20,8 @@ const UserInfo: React.FC<UserInfoProps> = ({ name, lastName, role, profileImageU
     <div className="flex items-center space-x-4 mr-8">
       <img src={profileImageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>
       <div className="flex flex-col items-start mt-0.5">
-        <span className="text-md font-semibold">{`${name} ${lastName}`}</span>
-        <span className="text-sm text-[#BCBCBC] font-medium">{role}</span>
+        <p className="text-md font-semibold">{`${name} ${lastName}`}</p>
+        <p className={`text-sm text-[#BCBCBC] font-medium ${roleColors[role]}`}>{role}</p>
       </div>
     </div>
   );

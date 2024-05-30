@@ -1,6 +1,10 @@
 import React from 'react';
 import UserInfo from "./UserInfo";
 import ListIconCardButton from "./navbar/ListIconCardButton";
+import EditUserIcon from "../assets/images/edit_user_icon.svg"
+import ViewUserIcon from "../assets/images/view_icon.svg"
+import RemoveIcon from "../assets/images/remove_icon.svg"
+import IconButton from "./navbar/IconButton";
 
 interface UserCardProps {
   name: string;
@@ -23,19 +27,20 @@ const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastNa
           />
           <div className="flex ml-auto gap-4">
               <ListIconCardButton
-              iconSrc=""
+              iconSrc={ViewUserIcon}
               label="View"
               onClick={() => {}}
           />
           <ListIconCardButton
-              iconSrc=""
+              iconSrc={EditUserIcon}
               label="Edit"
               onClick={() => {}}
           />
-          <ListIconCardButton
-              iconSrc=""
-              label="Delete"
+          <IconButton
+              icon={RemoveIcon} // Adjust the size and color as necessary
               onClick={() => {}}
+              bgColor="bg-purple-100"
+              hover="hover:bg-purple-200"
           />
           </div>
 

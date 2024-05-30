@@ -4,7 +4,7 @@ interface ActionButtonProps {
   label: string;
   onClick: () => void;
   bgColor: string;
-  hoverBgColor: string;
+  hover: string;
   icon: string;
 }
 
@@ -15,10 +15,10 @@ interface ActionButtonProps {
  * @param {ActionButtonProps} props - The props passed to the ActionButton component.
  * @returns {React.ReactElement} A React Element that renders a button with specified styles and click handler.
  */
-const ActionButton: React.FC<ActionButtonProps> = ({icon, label, onClick, bgColor, hoverBgColor }: ActionButtonProps): React.ReactElement => {
+const ActionButton: React.FC<ActionButtonProps> = ({icon, label, onClick, bgColor, hover }: ActionButtonProps): React.ReactElement => {
   return (
     <button
-      className={`flex items-center gap-3 w-full py-3 px-5 ${bgColor} text-white rounded-md shadow mt-4 hover:${hoverBgColor} transition-colors`}
+      className={`flex items-center gap-3 w-full py-3 px-5 ${bgColor} text-white rounded-md shadow mt-4 ${hover} transition-colors`}
       onClick={onClick}
     >
       <img src={icon} alt="" className=""/>

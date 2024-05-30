@@ -20,7 +20,7 @@ const ListIconCardButton: React.FC<ListIconCardButtonProps> = ({ iconSrc, label,
       onClick={onClick}
     >
       <img src={iconSrc} alt={label} className="h-5 w-5 mr-2" />
-      {label}
+      <p className="font-semibold text-[#717171]">{label}</p>
     </button>
   );
 };
