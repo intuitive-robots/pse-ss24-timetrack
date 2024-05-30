@@ -4,6 +4,7 @@ import RightArrow from "../assets/images/arrow_right.svg"
 // import { logout } from "../services/AuthService";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../context/AuthContext'
+import UserInfo from "./UserInfo";
 
 interface ProfileBarProps {
     name: string;
@@ -43,7 +44,7 @@ const ProfileBar: React.FC<ProfileBarProps> = ({imageUrl }: ProfileBarProps): Re
     return (
         <div
             className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 mr-auto">
                 <img src={Logo} alt="Clockwise"/>
                 <div className="w-32"/>
                 <input type="text" placeholder="Search"
@@ -55,14 +56,13 @@ const ProfileBar: React.FC<ProfileBarProps> = ({imageUrl }: ProfileBarProps): Re
                     Project
                 </button>
             </div>
-            <div className="ml-auto flex items-center space-x-4 mr-8">
-                <img src={imageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>
-                <div className="flex flex-col items-start">
-                    <span
-                        className="text-md font-semibold">{user?.personalInfo.firstName + " " + user?.personalInfo.lastName}</span>
-                    <span className="text-sm text-gray-500">{user?.role}</span>
-                </div>
-            </div>
+
+            <UserInfo
+                name={user?.personalInfo.firstName}
+                lastName={user?.personalInfo.lastName}
+                role={user?.role}
+                profileImageUrl={imageUrl}
+            />
             <button
                 className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
                 onClick={handleLogout}
