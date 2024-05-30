@@ -1,5 +1,6 @@
 import React from 'react';
 import UserInfo from "./UserInfo";
+import ListIconCardButton from "./navbar/ListIconCardButton";
 
 interface UserCardProps {
   name: string;
@@ -20,26 +21,24 @@ const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastNa
               role={role}
               profileImageUrl={profileImageUrl}
           />
-          <button
-              className="ml-auto p-2 mx-1 rounded border text-sm flex items-center"
-              onClick={onView}
-          >
-              <i className="fas fa-eye mr-2"></i>
-              View
-          </button>
-          <button
-              className="p-2 mx-1 rounded border text-sm flex items-center"
-              onClick={onEdit}
-          >
-              <i className="fas fa-edit mr-2"></i>
-              Edit
-          </button>
-          <button
-              className="p-2 mx-1 rounded border text-sm flex items-center text-red-500"
-              onClick={onDelete}
-          >
-              <i className="fas fa-times mr-2"></i>
-          </button>
+          <div className="flex ml-auto gap-4">
+              <ListIconCardButton
+              iconSrc=""
+              label="View"
+              onClick={() => {}}
+          />
+          <ListIconCardButton
+              iconSrc=""
+              label="Edit"
+              onClick={() => {}}
+          />
+          <ListIconCardButton
+              iconSrc=""
+              label="Delete"
+              onClick={() => {}}
+          />
+          </div>
+
       </div>
   );
 };
