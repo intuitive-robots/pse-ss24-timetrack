@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ActionButton from "../input/ActionButton";
 
 interface MenuItems {
   [key: string]: string[];
@@ -44,18 +45,20 @@ const NavigationBar: React.FC = () => {
           </div>
         ))}
         <div className="mt-auto">
-          <button
-            className="w-full py-2.5 px-4 bg-purple-600 text-white rounded-md shadow hover:bg-purple-700 transition-colors"
-            onClick={() => {}}
-          >
-            Track Time
-          </button>
-          <button
-            className="w-full py-2.5 px-4 bg-gray-700 text-white rounded-md shadow mt-4 hover:bg-gray-800 transition-colors"
-            onClick={() => {}}
-          >
-            Add Vacation
-          </button>
+          <ActionButton
+              label="Add User"
+              onClick={() => {
+              }}
+              bgColor="bg-purple-600"
+              hoverBgColor="bg-purple-700"
+          />
+          <ActionButton
+              label="Set Deadline"
+              onClick={() => {
+              }}
+              bgColor="bg-gray-700"
+              hoverBgColor="bg-gray-800"
+          />
         </div>
       </div>
     </div>
