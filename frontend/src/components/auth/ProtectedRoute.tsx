@@ -16,6 +16,8 @@ const useAuth = () => {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const isAuthenticated = useAuth();
 
+  //TODO Add Role check
+
   if (!isAuthenticated) {
     console.log("Not authenticated, redirecting to login");
     return <Navigate to="/login" replace />; // Redirect them to the /login page

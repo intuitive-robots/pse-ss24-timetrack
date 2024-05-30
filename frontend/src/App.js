@@ -1,6 +1,6 @@
 import React from 'react';
 import {Routes, Route, Navigate} from 'react-router-dom';
-import HomePage from "./pages/HomePage";
+import AdminHomePage from "./pages/AdminHomePage";
 import LoginForm from "./pages/LoginPage";
 import ProtectedRoute from './components/auth/ProtectedRoute';  // Ensure this is correctly imported
 
@@ -10,7 +10,7 @@ function App() {
       <Route path="/login" element={<LoginForm />} />
       <Route path="/" element={
         <ProtectedRoute>
-          <HomePage />
+          <AdminHomePage />
         </ProtectedRoute>
       } />
       <Route path="*" element={<Navigate replace to="/" />} />

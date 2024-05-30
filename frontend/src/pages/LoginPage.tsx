@@ -9,7 +9,7 @@ const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login} = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,6 +24,7 @@ const LoginForm: React.FC = () => {
       }
 
       const decoded: any = jwtDecode(token);
+
       switch (decoded.role) {
           case 'Admin':
             navigate('/admin-home'); // Navigate to admin home page

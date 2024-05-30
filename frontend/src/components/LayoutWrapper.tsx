@@ -1,6 +1,6 @@
 import React from 'react';
 import NavigationBar from './navbar/NavigationBar';
-import ProfileBar from './ProfileBar';
+import ProfileBar from './profile/ProfileBar';
 
 interface LayoutWrapperProps {
   pageContent: React.ReactNode;
