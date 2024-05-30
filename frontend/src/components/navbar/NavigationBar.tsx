@@ -4,6 +4,12 @@ interface MenuItems {
   [key: string]: string[];
 }
 
+/**
+ * NavigationBar component that renders a vertical navigation bar with multiple sections and items.
+ *
+ * @component
+ * @returns {React.ReactElement} A React Element that renders the navigation bar.
+ */
 const NavigationBar: React.FC = () => {
   const [activeItem, setActiveItem] = useState<string>("Home");
 

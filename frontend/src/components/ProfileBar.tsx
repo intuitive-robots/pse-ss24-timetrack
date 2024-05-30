@@ -1,7 +1,6 @@
 import React from "react";
 import Logo from "../assets/images/logo.svg"
 import RightArrow from "../assets/images/arrow_right.svg"
-// import { logout } from "../services/AuthService";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../context/AuthContext'
 import UserInfo from "./UserInfo";

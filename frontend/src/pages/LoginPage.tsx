@@ -14,15 +14,6 @@ const LoginForm: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      // const response = await login(username, password);
-      // if (!response.accessToken) {
-      //   console.log('Unauthorized');
-      //   return;
-      // }
-      // console.log('Login Success:', response);
-
-      // const decoded = jwtDecode(response.accessToken);
-
       await login(username, password);
 
       // After login, get the token from localStorage to decode and determine role
@@ -38,7 +29,7 @@ const LoginForm: React.FC = () => {
             navigate('/admin-home'); // Navigate to admin home page
             break;
           case 'HiWi':
-            navigate('/hiwi-home'); // Navigate to user home page
+            navigate('/hiwi-home'); // Navigate to hiwi home page
             break;
           default:
             navigate('/'); // Navigate to default home or error page
