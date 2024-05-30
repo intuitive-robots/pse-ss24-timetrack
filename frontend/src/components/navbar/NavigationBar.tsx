@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ActionButton from "../input/ActionButton";
+import AddUserIcon from "../../assets/images/add_user_icon.svg"
 
 interface MenuItems {
   [key: string]: string[];
@@ -11,7 +12,7 @@ interface MenuItems {
  * @component
  * @returns {React.ReactElement} A React Element that renders the navigation bar.
  */
-const NavigationBar: React.FC = () => {
+const NavigationBar: React.FC = (): React.ReactElement => {
   const [activeItem, setActiveItem] = useState<string>("Home");
 
   const menuItems: MenuItems = {
@@ -46,6 +47,7 @@ const NavigationBar: React.FC = () => {
         ))}
         <div className="mt-auto">
           <ActionButton
+              icon={AddUserIcon}
               label="Add User"
               onClick={() => {
               }}
@@ -53,6 +55,7 @@ const NavigationBar: React.FC = () => {
               hoverBgColor="bg-purple-700"
           />
           <ActionButton
+              icon={AddUserIcon}
               label="Set Deadline"
               onClick={() => {
               }}
