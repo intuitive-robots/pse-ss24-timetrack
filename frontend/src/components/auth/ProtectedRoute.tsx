@@ -9,7 +9,6 @@ interface ProtectedRouteProps {
  * Hook to check if user is authenticated
  */
 const useAuth = () => {
-  console.log(localStorage.getItem('user'));
   const user = localStorage.getItem('user');
   return !!user;
 };

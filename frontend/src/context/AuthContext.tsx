@@ -70,11 +70,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
    *
    * @param {string} username - The username of the user.
    * @param {string} password - The password of the user.
-   * @throws Will throw an error if login fails.
+   * @throws Error if login fails.
    */
   const handleLogin = async (username: string, password: string) => {
     try {
       const response = await loginService(username, password);
+      localStorage.setItem('token', response.accessToken);
       const decoded: any = jwtDecode(response.accessToken);
       const profile = await getProfile();
       setAuthState({
@@ -93,11 +94,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
   /**
    * Handles user logout by calling the logout service and resetting the authentication state.
    *
-   * @throws Will log an error if logout fails.
+   * @throws Error if logout fails.
    */
   const handleLogout = async () => {
     try {
       await logoutService();
+      localStorage.removeItem('token');
       setAuthState(initialState);
     } catch (error) {
       console.error('Logout failed');
