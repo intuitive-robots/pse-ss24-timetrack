@@ -64,7 +64,7 @@ const ProfileBar: React.FC<ProfileBarProps> = ({imageUrl }: ProfileBarProps): Re
                 </div>
             </div>
             <button
-                className="p-1.5 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
+                className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
                 onClick={handleLogout}
             >
                 <img src={RightArrow} alt="RightArrow"/>

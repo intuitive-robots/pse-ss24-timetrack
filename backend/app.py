@@ -24,6 +24,10 @@ initAuthRoutes(app)
 def home():
     return "Flask Backend"
 
+def user_to_dict(user):
+    user['_id'] = str(user['_id'])  # Convert ObjectId to string
+    return user
+
 
 @app.route('/createTestUser')
 @jwt_required()
@@ -57,7 +61,8 @@ def readUsers():
     :return: A JSON string containing all users
     """
     all_users = list(db.users.find())
-    return str(all_users)
+    all_users = [user_to_dict(user) for user in all_users]
+    return jsonify(all_users)
 
 
 @app.route('/checkMongoDBConnection')

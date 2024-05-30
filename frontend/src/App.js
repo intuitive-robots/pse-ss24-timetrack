@@ -13,11 +13,6 @@ function App() {
           <HomePage />
         </ProtectedRoute>
       } />
-      <Route path="/home" element={
-        <ProtectedRoute>
-          <HomePage />
-        </ProtectedRoute>
-      } />
       <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>
   );

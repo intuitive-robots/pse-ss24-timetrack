@@ -50,4 +50,21 @@ const logout = async () => {
   }
 };
 
-export { login, getProfile, logout };
+/**
+ * Fetches all users from the backend.
+ * Requires an authentication token to be set in the headers.
+ *
+ * @returns The list of users if retrieval is successful.
+ * @throws An error if the users cannot be retrieved due to network issues or missing authorization.
+ */
+const getUsers = async () => {
+  try {
+    const response = await axiosInstance.get('/readUsers');
+    return response.data;
+  } catch (error) {
+    console.error('Users could not be retrieved');
+    throw error;
+  }
+};
+
+export { login, getProfile, logout, getUsers};
