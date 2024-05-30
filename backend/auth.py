@@ -99,7 +99,8 @@ def check_access(roles: [UserRole] = []):
             # fetching current user from db
             current_user = User.findByUsername(get_jwt_identity())
             # checking user role
-            if UserRole[current_user.role] not in roles:
+            currentUserRole = UserRole.get_role_by_value(current_user.role)
+            if currentUserRole not in roles:
                 raise NoAuthorizationError("Role is not allowed.")
             return f(*args, **kwargs)
         return decorator_function
