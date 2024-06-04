@@ -1,10 +1,18 @@
 import React, { useState } from "react";
+import ActionButton from "../input/ActionButton";
+import AddUserIcon from "../../assets/images/add_user_icon.svg"
 
 interface MenuItems {
   [key: string]: string[];
 }
 
-const NavigationBar: React.FC = () => {
+/**
+ * NavigationBar component that renders a vertical navigation bar with multiple sections and items.
+ *
+ * @component
+ * @returns {React.ReactElement} A React Element that renders the navigation bar.
+ */
+const NavigationBar: React.FC = (): React.ReactElement => {
   const [activeItem, setActiveItem] = useState<string>("Home");
 
   const menuItems: MenuItems = {
@@ -38,18 +46,22 @@ const NavigationBar: React.FC = () => {
           </div>
         ))}
         <div className="mt-auto">
-          <button
-            className="w-full py-2.5 px-4 bg-purple-600 text-white rounded-md shadow hover:bg-purple-700 transition-colors"
-            onClick={() => {}}
-          >
-            Track Time
-          </button>
-          <button
-            className="w-full py-2.5 px-4 bg-gray-700 text-white rounded-md shadow mt-4 hover:bg-gray-800 transition-colors"
-            onClick={() => {}}
-          >
-            Add Vacation
-          </button>
+          <ActionButton
+              icon={AddUserIcon}
+              label="Add User"
+              onClick={() => {
+              }}
+              bgColor="bg-purple-600"
+              hover="hover:bg-purple-700"
+          />
+          <ActionButton
+              icon={AddUserIcon}
+              label="Set Deadline"
+              onClick={() => {
+              }}
+              bgColor="bg-gray-700"
+              hover="hover:bg-gray-800"
+          />
         </div>
       </div>
     </div>

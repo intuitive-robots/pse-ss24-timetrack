@@ -7,8 +7,10 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from datetime import timedelta
 from auth import initAuthRoutes, check_access
 import secrets
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # enable CORS for all routes and origins
 db = initializeDb()
 
 app.config["JWT_SECRET_KEY"] = secrets.token_bytes(32)  # Generates a random secret key
@@ -21,6 +23,10 @@ initAuthRoutes(app)
 @app.route('/')
 def home():
     return "Flask Backend"
+
+def user_to_dict(user):
+    user['_id'] = str(user['_id'])  # Convert ObjectId to string
+    return user
 
 
 @app.route('/createTestUser')
@@ -55,7 +61,8 @@ def readUsers():
     :return: A JSON string containing all users
     """
     all_users = list(db.users.find())
-    return str(all_users)
+    all_users = [user_to_dict(user) for user in all_users]
+    return jsonify(all_users)
 
 
 @app.route('/checkMongoDBConnection')
