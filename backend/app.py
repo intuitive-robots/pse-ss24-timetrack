@@ -1,3 +1,5 @@
+from flask import Flask, jsonify, Blueprint
+from model.personalInformation import PersonalInfo
 from flask import Flask, jsonify, request
 from model.personal_information import PersonalInfo
 from model.repository.time_entry_repository import TimeEntryRepository
@@ -14,6 +16,7 @@ from auth import init_auth_routes, check_access
 import secrets
 from flask_cors import CORS
 from auth import hash_password
+from controller.UserController import UserController
 from model.work_entry import WorkEntry
 
 app = Flask(__name__)
@@ -25,6 +28,22 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 jwt = JWTManager(app)
 
 init_auth_routes(app)
+
+
+# Registering the user routes
+user_blueprint = Blueprint('user', __name__)
+user_view = UserController.as_view('user_api')
+user_blueprint.add_url_rule('/createUser', view_func=user_view, methods=['POST'])
+user_blueprint.add_url_rule('/login', view_func=user_view, methods=['POST'])
+user_blueprint.add_url_rule('/logout', view_func=user_view, methods=['POST'])
+user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'])
+user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'])
+user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['PUT'])
+user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['DELETE'])
+user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'])
+user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'])
+
+app.register_blueprint(user_blueprint, url_prefix='/user')
 
 
 @app.route('/')
