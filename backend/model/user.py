@@ -1,27 +1,27 @@
-from db import db, initializeDb
-from model.personalInformation import PersonalInfo
+from db import db, initialize_db
+from model.personal_information import PersonalInfo
 from model.role import UserRole
 
-db = initializeDb()
+db = initialize_db()
 
 
 class User:
 
-    def __init__(self, username: str, passwordHash: str, personalInfo: PersonalInfo, role: UserRole):
+    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole):
         """
         Initializes a new User object with basic details.
 
         :param username: Unique identifier for the user.
-        :param passwordHash: Hashed password for secure authentication.
-        :param personalInfo: An instance of PersonalInfo containing the user's personal details.
+        :param password_hash: Hashed password for secure authentication.
+        :param personal_info: An instance of PersonalInfo containing the user's personal details.
         :param role: UserRole enum indicating the user's role within the system.
         """
         self.username = username
-        self.passwordHash = passwordHash
-        self.personalInfo = personalInfo
+        self.password_hash = password_hash
+        self.personal_info = personal_info
         self.role = role
-        self.accountCreation = None
-        self.lastLogin = None
+        self.account_creation = None
+        self.last_login = None
 
     def save(self):
         """
@@ -29,20 +29,20 @@ class User:
 
         :return: Result of the database insertion operation.
         """
-        userData = {
+        user_data = {
             "username": self.username,
-            "passwordHash": self.passwordHash,
-            "personalInfo": self.personalInfo.toDict(),
+            "passwordHash": self.password_hash,
+            "personalInfo": self.personal_info.to_dict(),
             "employmentDetails": {
                 "role": str(self.role),
             },
-            "accountCreation": self.accountCreation,
-            "lastLogin": self.lastLogin
+            "accountCreation": self.account_creation,
+            "lastLogin": self.last_login
         }
-        return db.users.insert_one(userData)
+        return db.users.insert_one(user_data)
 
     @classmethod
-    def findByUsername(cls, username):
+    def find_by_username(cls, username):
         """
         Class method to find a user by their username.
 
@@ -54,15 +54,15 @@ class User:
         if user:
             return cls(
                 username=user['username'],
-                passwordHash=user['passwordHash'],
-                personalInfo=PersonalInfo(user['personalInfo']['firstName'], user['personalInfo']['lastName'],
-                                          user['personalInfo']['email'], user['personalInfo']['personalNumber'],
-                                          user['personalInfo']['instituteName']),
+                password_hash=user['passwordHash'],
+                personal_info=PersonalInfo(user['personalInfo']['firstName'], user['personalInfo']['lastName'],
+                                           user['personalInfo']['email'], user['personalInfo']['personalNumber'],
+                                           user['personalInfo']['instituteName']),
                 role=user['employmentDetails']['role'],
             )
         return None
 
-    def isAdmin(self):
+    def is_admin(self):
         """
         Checks if the user's role is 'ADMIN'.
 
@@ -70,7 +70,7 @@ class User:
         """
         return self.role == UserRole.ADMIN
 
-    def toDict(self):
+    def to_dict(self):
         """
         Converts the user object to a dictionary format.
 
@@ -78,9 +78,9 @@ class User:
         """
         return {
             "username": self.username,
-            "passwordHash": self.passwordHash,
-            "personalInfo": self.personalInfo.toDict(),
+            "passwordHash": self.password_hash,
+            "personalInfo": self.personal_info.to_dict(),
             "role": str(self.role),
-            "accountCreation": self.accountCreation,
-            "lastLogin": self.lastLogin
+            "accountCreation": self.account_creation,
+            "lastLogin": self.last_login
         }
