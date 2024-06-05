@@ -6,24 +6,41 @@ from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, \
 from flask import request, jsonify
 from datetime import datetime, timezone, timedelta
 import json
+import bcrypt
 
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
-from db import initializeDb
+from db import initialize_db
 from model.user import User
 from model.role import UserRole
 
-db = initializeDb()
+db = initialize_db()
 
+def hash_password(password: str) -> str:
+    """
+    This function hashes a password using bcrypt.
+    :param password: The password to hash
+    :return: The hashed password
+    """
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
-def initAuthRoutes(app):
+def check_password(password: str, hashed_password: str) -> bool:
+    """
+    This function checks if a password matches a hashed password.
+    :param password: The password to check
+    :param hashed_password: The hashed password to compare against
+    :return: True if the password matches the hashed password, False otherwise
+    """
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+
+def init_auth_routes(app):
     """
     This function initializes the authentication routes for the application.
     :param app: The flask application
     """
 
     @app.after_request
-    def refreshExpiringJWTs(response):
+    def refresh_expiring_jwts(response):
         """
         This function refreshes the JWT token if it is about to expire.
         For more information check out how the after_request decorator works in Flask.
@@ -31,14 +48,14 @@ def initAuthRoutes(app):
         :return: The response object of the request
         """
         try:
-            expTimestamp = get_jwt()["exp"]
+            exp_timestamp = get_jwt()["exp"]
             now = datetime.now(timezone.utc)
-            targetTimestamp = datetime.timestamp(now + timedelta(minutes=30))
-            if targetTimestamp > expTimestamp:
-                accessToken = create_access_token(identity=get_jwt_identity())
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+            if target_timestamp > exp_timestamp:
+                access_token = create_access_token(identity=get_jwt_identity())
                 data = response.get_json()
                 if type(data) is dict:
-                    data["access_token"] = accessToken
+                    data["access_token"] = access_token
                     response.data = json.dumps(data)
             return response
         except (RuntimeError, KeyError):
@@ -46,35 +63,36 @@ def initAuthRoutes(app):
             return response
 
     @app.route('/token', methods=["POST"])
-    def createToken():
+    def create_token():
         """
         This function creates a JWT token for the user.
         :return: A JSON object containing the JWT token
         """
         username = request.json.get("username", None)
-        password = request.json.get("password", None)
-        user = User.findByUsername(username)
+        hashed_password = hash_password(request.json.get("password", None))
+
+        user = User.find_by_username(username)
         if user is None:
             return {"msg": "Invalid Username"}, 401
-        if user.passwordHash != password:
+        if not check_password(request.json.get("password", None), user.password_hash):
             return {"msg": "Invalid Password"}, 401
 
         additional_claims = {"role": user.role}
-        accessToken = create_access_token(identity=username, additional_claims=additional_claims)
-        response = {"accessToken": accessToken}
+        access_token = create_access_token(identity=username, additional_claims=additional_claims)
+        response = {"accessToken": access_token}
         return response
 
     @app.route('/profile')
     @jwt_required()  # This API Endpoint requires authentication
-    def myProfile():
+    def my_profile():
         """
         This method should return the profile data of the user.
         :return: A JSON object containing the profile of the user
         """
         # Get MongoDB user and return it
         username = get_jwt_identity()
-        user = User.findByUsername(username)
-        return jsonify(user.toDict())
+        user = User.find_by_username(username)
+        return jsonify(user.to_dict())
 
     @app.route("/logout", methods=["POST"])
     def logout():
@@ -101,10 +119,10 @@ def check_access(roles: [UserRole] = []):
             # calling @jwt_required()
             verify_jwt_in_request()
             # fetching current user from db
-            current_user = User.findByUsername(get_jwt_identity())
+            current_user = User.find_by_username(get_jwt_identity())
             # checking user role
-            currentUserRole = UserRole.get_role_by_value(current_user.role)
-            if currentUserRole not in roles:
+            current_user_role = UserRole.get_role_by_value(current_user.role)
+            if current_user_role not in roles:
                 raise NoAuthorizationError("Role is not allowed.")
             return f(*args, **kwargs)
 

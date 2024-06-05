@@ -1,23 +1,24 @@
 from flask import Flask, jsonify
-from model.personalInformation import PersonalInfo
+from model.personal_information import PersonalInfo
 from model.role import UserRole
 from model.user import User
-from db import initializeDb, checkDbConnection
+from db import initialize_db, check_db_connection
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from datetime import timedelta
-from auth import initAuthRoutes, check_access
+from auth import init_auth_routes, check_access
 import secrets
 from flask_cors import CORS
+from auth import hash_password
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
-db = initializeDb()
+db = initialize_db()
 
 app.config["JWT_SECRET_KEY"] = secrets.token_bytes(32)  # Generates a random secret key
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 jwt = JWTManager(app)
 
-initAuthRoutes(app)
+init_auth_routes(app)
 
 
 @app.route('/')
@@ -31,21 +32,24 @@ def user_to_dict(user):
 
 @app.route('/createTestUser')
 @jwt_required()
-def createUser():
+def create_user():
     """
     Creates a test user in the database
     TODO: This is a hardcoded user, replace this with a React form
     :return: A string indicating that the user was created
     """
+    password = "test_password"
+    hashed_password = hash_password(password)
+
     user = User(
-        username="testads1s",
-        passwordHash="test_password",
-        personalInfo=PersonalInfo(
-            firstName="John",
-            lastName="Doe",
+        username="test123",
+        password_hash=hashed_password,
+        personal_info=PersonalInfo(
+            first_name="John",
+            last_name="Doe",
             email="test@gmail.com",
-            personalNumber="123456",
-            instituteName="Test Institute"),
+            personal_number="123456",
+            institute_name="Test Institute"),
         role=UserRole.ADMIN
     )
     user.save()
@@ -54,7 +58,7 @@ def createUser():
 @app.route('/readUsers')
 @jwt_required()
 @check_access(roles=[UserRole.ADMIN])
-def readUsers():
+def read_users():
     """
     Reads all users from the database
     Is only accessible to users with the role ADMIN
@@ -66,12 +70,12 @@ def readUsers():
 
 
 @app.route('/checkMongoDBConnection')
-def checkMongodbConnection():
+def check_mongodb_connection():
     """
     Check the connection to the MongoDB database
     :return: A string indicating the connection status
     """
-    return checkDbConnection()
+    return check_db_connection()
 
 
 if __name__ == '__main__':
