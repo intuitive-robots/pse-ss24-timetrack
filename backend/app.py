@@ -1,11 +1,15 @@
 from flask import Flask, jsonify, request
 from model.personal_information import PersonalInfo
+from model.repository.time_entry_repository import TimeEntryRepository
+from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
 from model.role import UserRole
+from model.timesheet import Timesheet
+from model.timesheet_status import TimesheetStatus
 from model.user import User
 from db import initialize_db, check_db_connection
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
-from datetime import timedelta, time
+from datetime import timedelta, time, datetime
 from auth import init_auth_routes, check_access
 import secrets
 from flask_cors import CORS
@@ -31,6 +35,12 @@ def user_to_dict(user):
     user['_id'] = str(user['_id'])  # Convert ObjectId to string
     return user
 
+def timesheet_to_dict(timesheet):
+    timesheet['_id'] = str(timesheet['_id'])  # Convert ObjectId to string
+    return timesheet
+def work_entry_to_dict(work_entry):
+    work_entry['_id'] = str(work_entry['_id'])  # Convert ObjectId to string
+    return work_entry
 @app.route('/deleteUser', methods=['DELETE'])
 @jwt_required()
 @check_access(roles=[UserRole.ADMIN])
@@ -96,18 +106,62 @@ def create_time_entry():
     Creates a test time entry in the database
     """
     work_entry = WorkEntry(
-        time_entry_id="test123",
+        time_entry_id="test1233",
         timesheet_id="timesheet123",
         date="2022-01-01",
         start_time=time(hour=9, minute=0),
         end_time=time(hour=17, minute=0),
-        break_time=1.0,
+        break_time=15.0,
         activity="Test Activity",
         project_name="Test Project"
     )
-    db.timeentries.insert_one(work_entry.to_dict())
-    return "Time entry created"
+    entry_repo = TimeEntryRepository.get_instance()
+    result = entry_repo.create_time_entry(work_entry)
+    return result.to_dict(), result.status_code
 
+#TODO: This works only for work entries, not vacation entries!
+@app.route('/readTimeEntries')
+@jwt_required()
+def read_time_entries():
+    """
+    Reads all time entries from the database
+    :return: A JSON string containing all time entries
+    """
+    entry_repo = TimeEntryRepository.get_instance()
+    time_entries = entry_repo.get_time_entries()
+    return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
+
+@app.route('/readTimesheets')
+@jwt_required()
+def read_timesheets():
+    """
+    Reads all timesheets from the database
+    :return: A JSON string containing all timesheets
+    """
+    timesheet_repo = TimesheetRepository.get_instance()
+    timesheets = timesheet_repo.get_timesheets()
+    return jsonify([timesheet_to_dict(timesheet) for timesheet in timesheets])
+
+#TODO: This is a hardcoded timesheet!
+@app.route('/createTimesheet')
+@jwt_required()
+def create_timesheet():
+    """
+    Creates a test timesheet in the database
+    """
+    timesheet = Timesheet(
+        timesheet_id="timesheet123",
+        username="test123",
+        month=3,
+        year=2022,
+        status=TimesheetStatus.NOTSUBMITTED,
+        total_time=40.0,
+        overtime=5.0,
+        signature_changed=datetime.now()
+    )
+    timesheet_repo = TimesheetRepository.get_instance()
+    result = timesheet_repo.create_timesheet(timesheet)
+    return result.to_dict(), result.status_code
 @app.route('/checkMongoDBConnection')
 def check_mongodb_connection():
     """
