@@ -5,11 +5,12 @@ from model.role import UserRole
 from model.user import User
 from db import initialize_db, check_db_connection
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
-from datetime import timedelta
+from datetime import timedelta, time
 from auth import init_auth_routes, check_access
 import secrets
 from flask_cors import CORS
 from auth import hash_password
+from model.work_entry import WorkEntry
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -87,6 +88,25 @@ def read_users():
     return jsonify([user_to_dict(user) for user in users])
 
 
+#TODO: This is a hardcoded time entry!
+@app.route('/createTestTimeEntry')
+@jwt_required()
+def create_time_entry():
+    """
+    Creates a test time entry in the database
+    """
+    work_entry = WorkEntry(
+        time_entry_id="test123",
+        timesheet_id="timesheet123",
+        date="2022-01-01",
+        start_time=time(hour=9, minute=0),
+        end_time=time(hour=17, minute=0),
+        break_time=1.0,
+        activity="Test Activity",
+        project_name="Test Project"
+    )
+    db.timeentries.insert_one(work_entry.to_dict())
+    return "Time entry created"
 
 @app.route('/checkMongoDBConnection')
 def check_mongodb_connection():
