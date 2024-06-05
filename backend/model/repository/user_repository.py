@@ -56,7 +56,7 @@ class UserRepository:
                 personal_info=PersonalInfo(user_data['personalInfo']['firstName'], user_data['personalInfo']['lastName'],
                                            user_data['personalInfo']['email'], user_data['personalInfo']['personalNumber'],
                                            user_data['personalInfo']['instituteName']),
-                role=user_data['role'],
+                role=UserRole.get_role_by_value(user_data['role']),
             )
         return None
 

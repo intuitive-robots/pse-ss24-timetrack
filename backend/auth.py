@@ -79,7 +79,7 @@ def init_auth_routes(app):
         if not check_password(request.json.get("password", None), user.password_hash):
             return {"msg": "Invalid Password"}, 401
 
-        additional_claims = {"role": user.role}
+        additional_claims = {"role": str(user.role)}
         access_token = create_access_token(identity=username, additional_claims=additional_claims)
         response = {"accessToken": access_token}
         return response
