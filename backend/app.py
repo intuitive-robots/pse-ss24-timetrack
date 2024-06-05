@@ -69,7 +69,9 @@ def create_user():
         role=UserRole.ADMIN
     )
     user_repo = UserRepository.get_instance()
-    return user_repo.create_user(user)
+    result = user_repo.create_user(user)
+
+    return result.to_dict(), result.status_code
 
 @app.route('/readUsers')
 @jwt_required()
