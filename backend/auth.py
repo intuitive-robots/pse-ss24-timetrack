@@ -94,6 +94,8 @@ def init_auth_routes(app):
         # Get MongoDB user and return it
         username = get_jwt_identity()
         user = user_repo.find_by_username(username)
+        if user is None:
+            return {"msg": "User not found"}, 404
         return jsonify(user.to_dict())
 
     @app.route("/logout", methods=["POST"])
@@ -123,6 +125,8 @@ def check_access(roles: [UserRole] = []):
             # fetching current user from db
             current_user = user_repo.find_by_username(get_jwt_identity())
             # checking user role
+            if current_user is None:
+                raise NoAuthorizationError("User not found.")
             current_user_role = UserRole.get_role_by_value(current_user.role)
             if current_user_role not in roles:
                 raise NoAuthorizationError("Role is not allowed.")

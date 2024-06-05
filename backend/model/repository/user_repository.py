@@ -1,5 +1,6 @@
 from db import initialize_db
 from model.personal_information import PersonalInfo
+from model.role import UserRole
 from model.user import User
 
 
@@ -9,6 +10,7 @@ class UserRepository:
     """
     _instance = None  # Singleton instance of the UserRepository class.
 
+    #TODO: Implement ResultType RequestResult
     @staticmethod
     def get_instance():
         """
@@ -29,17 +31,9 @@ class UserRepository:
         :param user: The user object to be created.
         :return: The ID of the newly created user.
         """
-        user_data = {
-            "username": user.username,
-            "passwordHash": user.password_hash,
-            "personalInfo": user.personal_info.to_dict(),
-            "employmentDetails": {
-                "role": str(user.role),
-            },
-            "accountCreation": user.account_creation,
-            "lastLogin": user.last_login
-        }
-        result = self.db.users.insert_one(user_data)
+        if user is None:
+            return {"result": "User creation failed"}
+        result = self.db.users.insert_one(user.to_dict())
         if result.acknowledged:
             return {"result": "User created successfully", "id": str(result.inserted_id)}
         return {"result": "User creation failed"}
@@ -51,16 +45,18 @@ class UserRepository:
         :param username: The username of the user to find.
         :return: The user object if found, otherwise None.
         """
-        user = self.db.users.find_one({"username": username})
+        if username is None:
+            return None
+        user_data = self.db.users.find_one({"username": username})
 
-        if user:
+        if user_data:
             return User(
-                username=user['username'],
-                password_hash=user['passwordHash'],
-                personal_info=PersonalInfo(user['personalInfo']['firstName'], user['personalInfo']['lastName'],
-                                           user['personalInfo']['email'], user['personalInfo']['personalNumber'],
-                                           user['personalInfo']['instituteName']),
-                role=user['employmentDetails']['role'],
+                username=user_data['username'],
+                password_hash=user_data['passwordHash'],
+                personal_info=PersonalInfo(user_data['personalInfo']['firstName'], user_data['personalInfo']['lastName'],
+                                           user_data['personalInfo']['email'], user_data['personalInfo']['personalNumber'],
+                                           user_data['personalInfo']['instituteName']),
+                role=user_data['role'],
             )
         return None
 
@@ -71,18 +67,12 @@ class UserRepository:
         :param user: The user object to be updated.
         :return: The ID of the updated user.
         """
-        user_data = {
-            "username": user.username,
-            "passwordHash": user.password_hash,
-            "personalInfo": user.personal_info.to_dict(),
-            "employmentDetails": {
-                "role": str(user.role),
-            },
-            "accountCreation": user.account_creation,
-            "lastLogin": user.last_login
-        }
 
-        result = self.db.users.update_one({"username": user.username}, {"$set": user_data})
+        result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
+        if result.matched_count == 0:
+            return {"result": "User not found"}
+        if result.modified_count == 0:
+            return {"result": "User update failed"}
         if result.acknowledged:
             return {"result": "User updated successfully"}
         return {"result": "User update failed"}
@@ -94,7 +84,13 @@ class UserRepository:
         :param username: The username of the user to be deleted.
         :return: The ID of the deleted user.
         """
+        if username is None:
+            return {"result": "Please provide a username to delete the user."}
+        if self.find_by_username(username) is None:
+            return {"result": "User not found"}
         result = self.db.users.delete_one({"username": username})
+        if result.deleted_count == 0:
+            return {"result": "User deletion failed"}
         if result.acknowledged:
             return {"result": "User deleted successfully"}
         return {"result": "User deletion failed"}
@@ -106,7 +102,7 @@ class UserRepository:
         :return: A list of all users in the database.
         """
         users = self.db.users.find()
-        return [user for user in users]
+        return list(users)
 
     def get_users_by_role(self, role):
         """
@@ -116,4 +112,4 @@ class UserRepository:
         :return: A list of users with the specified role.
         """
         users = self.db.users.find({"employmentDetails.role": role})
-        return [user for user in users]
+        return list(users)
