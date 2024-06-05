@@ -11,10 +11,12 @@ import bcrypt
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
 from db import initialize_db
+from model.repository.user_repository import UserRepository
 from model.user import User
 from model.role import UserRole
 
 db = initialize_db()
+user_repo = UserRepository.get_instance()
 
 def hash_password(password: str) -> str:
     """
@@ -71,7 +73,7 @@ def init_auth_routes(app):
         username = request.json.get("username", None)
         hashed_password = hash_password(request.json.get("password", None))
 
-        user = User.find_by_username(username)
+        user = user_repo.find_by_username(username)
         if user is None:
             return {"msg": "Invalid Username"}, 401
         if not check_password(request.json.get("password", None), user.password_hash):
@@ -91,7 +93,7 @@ def init_auth_routes(app):
         """
         # Get MongoDB user and return it
         username = get_jwt_identity()
-        user = User.find_by_username(username)
+        user = user_repo.find_by_username(username)
         return jsonify(user.to_dict())
 
     @app.route("/logout", methods=["POST"])
@@ -119,7 +121,7 @@ def check_access(roles: [UserRole] = []):
             # calling @jwt_required()
             verify_jwt_in_request()
             # fetching current user from db
-            current_user = User.find_by_username(get_jwt_identity())
+            current_user = user_repo.find_by_username(get_jwt_identity())
             # checking user role
             current_user_role = UserRole.get_role_by_value(current_user.role)
             if current_user_role not in roles:

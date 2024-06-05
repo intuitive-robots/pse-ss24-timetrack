@@ -23,45 +23,6 @@ class User:
         self.account_creation = None
         self.last_login = None
 
-    def save(self):
-        """
-        Saves the user object to the database.
-
-        :return: Result of the database insertion operation.
-        """
-        user_data = {
-            "username": self.username,
-            "passwordHash": self.password_hash,
-            "personalInfo": self.personal_info.to_dict(),
-            "employmentDetails": {
-                "role": str(self.role),
-            },
-            "accountCreation": self.account_creation,
-            "lastLogin": self.last_login
-        }
-        return db.users.insert_one(user_data)
-
-    @classmethod
-    def find_by_username(cls, username):
-        """
-        Class method to find a user by their username.
-
-        :param username: The username of the user to find.
-        :return: A User object if found, otherwise None.
-        """
-        user = db.users.find_one({"username": username})
-
-        if user:
-            return cls(
-                username=user['username'],
-                password_hash=user['passwordHash'],
-                personal_info=PersonalInfo(user['personalInfo']['firstName'], user['personalInfo']['lastName'],
-                                           user['personalInfo']['email'], user['personalInfo']['personalNumber'],
-                                           user['personalInfo']['instituteName']),
-                role=user['employmentDetails']['role'],
-            )
-        return None
-
     def is_admin(self):
         """
         Checks if the user's role is 'ADMIN'.
