@@ -1,5 +1,6 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from model.personal_information import PersonalInfo
+from model.repository.user_repository import UserRepository
 from model.role import UserRole
 from model.user import User
 from db import initialize_db, check_db_connection
@@ -29,6 +30,21 @@ def user_to_dict(user):
     user['_id'] = str(user['_id'])  # Convert ObjectId to string
     return user
 
+@app.route('/deleteUser', methods=['DELETE'])
+@jwt_required()
+@check_access(roles=[UserRole.ADMIN])
+def delete_user():
+    username = request.json.get('username', None)
+    if username is None:
+        return {"msg": "Username is required"}, 400
+    user_repo = UserRepository.get_instance()
+    user = user_repo.find_by_username(username)
+    if user is None:
+        return {"msg": "User not found"}, 404
+    result = user_repo.delete_user(username)
+    if result["result"] == "User deleted successfully":
+        return {"msg": "User deleted successfully"}, 200
+    return {"msg": "User deletion failed"}, 500
 
 @app.route('/createTestUser')
 @jwt_required()
@@ -52,8 +68,8 @@ def create_user():
             institute_name="Test Institute"),
         role=UserRole.ADMIN
     )
-    user.save()
-    return "User created"
+    user_repo = UserRepository.get_instance()
+    return user_repo.create_user(user)
 
 @app.route('/readUsers')
 @jwt_required()
@@ -64,9 +80,10 @@ def read_users():
     Is only accessible to users with the role ADMIN
     :return: A JSON string containing all users
     """
-    all_users = list(db.users.find())
-    all_users = [user_to_dict(user) for user in all_users]
-    return jsonify(all_users)
+    user_repo = UserRepository.get_instance()
+    users = user_repo.get_users()
+    return jsonify([user_to_dict(user) for user in users])
+
 
 
 @app.route('/checkMongoDBConnection')
