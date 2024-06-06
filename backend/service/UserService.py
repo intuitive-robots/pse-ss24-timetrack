@@ -47,6 +47,15 @@ class UserService:
         user = user_factory.create_user(user_data)
         return self.user_repository.update_user(user)
 
+    def delete_user(self, username: str):
+        """
+        Deletes a user from the system identified by their username.
+
+        :param str username: The username of the user to be deleted.
+        :return: A RequestResult object containing the result of the delete operation.
+        """
+        return self.user_repository.delete_user(username)
+
     def get_users(self) -> list[User]:
         """
         Retrieves a list of all users in the system.

@@ -12,7 +12,8 @@ class UserRole(Enum):
     SECRETARY = "Secretary"
     ADMIN = "Admin"
 
-    def get_role_by_value(value):
+    @staticmethod
+    def get_role_by_value(value: str):
         for role in UserRole:
             if role.value == value:
                 return role
