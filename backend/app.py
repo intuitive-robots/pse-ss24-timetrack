@@ -157,7 +157,7 @@ def create_timesheet():
         status=TimesheetStatus.NOTSUBMITTED,
         total_time=40.0,
         overtime=5.0,
-        signature_changed=datetime.now()
+        last_signature_change=datetime.now()
     )
     timesheet_repo = TimesheetRepository.get_instance()
     result = timesheet_repo.create_timesheet(timesheet)

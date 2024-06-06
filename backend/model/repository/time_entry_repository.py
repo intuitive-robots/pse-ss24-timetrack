@@ -5,6 +5,7 @@ from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
 
 
+
 class TimeEntryRepository:
     """
     Repository class for managing TimeEntry objects in the database
@@ -58,23 +59,25 @@ class TimeEntryRepository:
                 )
         return None
 
-    def get_time_entries_by_date(self, date):
+    def get_time_entries_by_date(self, date, username):
         """
         Retrieves all TimeEntry objects from the database for a given date
+        :param username: The username for which to retrieve TimeEntry objects
         :param date: The date for which to retrieve TimeEntry objects
         :return: A list of TimeEntry objects for the given date
         """
-        if date is None:
+        if date is None or username is None:
             return None
-        time_entries = self.db.timeEntries.find({"date": date})
+        time_entries = self.db.timeEntries.find({"date": date, "username": username})
         return [self.get_time_entry_by_id(time_entry['timeEntryId']) for time_entry in time_entries]
 
-    def get_time_entries(self):
+    def get_time_entries(self, username):
         """
         Retrieves all TimeEntry objects from the database
+        :param username: The username for which to retrieve TimeEntry objects
         :return: A list of all TimeEntry objects
         """
-        time_entries = self.db.timeEntries.find()
+        time_entries = self.db.timeEntries.find({"username": username})
         return list(time_entries)
 
     def update_time_entry(self, time_entry):

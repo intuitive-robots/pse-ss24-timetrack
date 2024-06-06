@@ -5,7 +5,7 @@ from model.timesheet_status import TimesheetStatus
 
 class Timesheet:
     def __init__(self, timesheet_id: str, username: str, month: int, year: int, status: TimesheetStatus,
-                 total_time: float, overtime: float, signature_changed: datetime):
+                 total_time: float, overtime: float, last_signature_change: datetime):
         """
         Initializes a new Timesheet object with the given parameters.
 
@@ -16,7 +16,7 @@ class Timesheet:
         :param status: The status of the timesheet.
         :param total_time: The total time worked by the Hiwi in the timesheet.
         :param overtime: The overtime worked by the Hiwi in the timesheet.
-        :param signature_changed: A boolean indicating if the signature has been changed.
+        :param last_signature_change: The date and time of the last signature change.
         """
         self.timesheet_id = timesheet_id
         self.username = username
@@ -25,7 +25,7 @@ class Timesheet:
         self.status = status
         self.total_time = total_time
         self.overtime = overtime
-        self.signature_changed = signature_changed
+        self.last_signature_change = last_signature_change
 
     def to_dict(self):
         """
@@ -41,5 +41,5 @@ class Timesheet:
             "status": str(self.status),
             "totalTime": self.total_time,
             "overtime": self.overtime,
-            "signatureChanged": self.signature_changed
+            "lastSignatureChange": self.last_signature_change
         }

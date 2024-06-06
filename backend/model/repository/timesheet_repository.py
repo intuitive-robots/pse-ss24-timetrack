@@ -38,17 +38,25 @@ class TimesheetRepository:
             return None
         timesheet_data = self.db.timesheets.find_one({"timesheetId": timesheet_id})
         if timesheet_data:
-            return Timesheet(
-                timesheet_id=timesheet_data['timesheetId'],
-                username=timesheet_data['username'],
-                month=timesheet_data['month'],
-                year=timesheet_data['year'],
-                status=timesheet_data['status'],
-                total_time=timesheet_data['totalTime'],
-                overtime=timesheet_data['overtime'],
-                signature_changed=timesheet_data['signatureChanged']
-            )
+            return self._construct_timesheet(timesheet_data)
         return None
+
+    def _construct_timesheet(self, timesheet_data):
+        """
+        Constructs a Timesheet object from the given data
+        :param timesheet_data: The data to construct the Timesheet object from
+        :return: The constructed Timesheet object
+        """
+        return Timesheet(
+            timesheet_id=timesheet_data['timesheetId'],
+            username=timesheet_data['username'],
+            month=timesheet_data['month'],
+            year=timesheet_data['year'],
+            status=timesheet_data['status'],
+            total_time=timesheet_data['totalTime'],
+            overtime=timesheet_data['overtime'],
+            last_signature_change=timesheet_data['signatureChanged']
+        )
 
     def get_timesheet(self, username: str, month: int, year: int):
         """
@@ -62,16 +70,7 @@ class TimesheetRepository:
             return None
         timesheet_data = self.db.timesheets.find_one({"username": username, "month": month, "year": year})
         if timesheet_data:
-            return Timesheet(
-                timesheet_id=timesheet_data['timesheetId'],
-                username=timesheet_data['username'],
-                month=timesheet_data['month'],
-                year=timesheet_data['year'],
-                status=timesheet_data['status'],
-                total_time=timesheet_data['totalTime'],
-                overtime=timesheet_data['overtime'],
-                signature_changed=timesheet_data['signatureChanged']
-            )
+            return self._construct_timesheet(timesheet_data)
         return None
 
     def get_current_timesheet(self, username: str):
@@ -84,16 +83,7 @@ class TimesheetRepository:
             return None
         timesheet_data = self.db.timesheets.find_one({"username": username, "status": "NOTSUBMITTED"})
         if timesheet_data:
-            return Timesheet(
-                timesheet_id=timesheet_data['timesheetId'],
-                username=timesheet_data['username'],
-                month=timesheet_data['month'],
-                year=timesheet_data['year'],
-                status=timesheet_data['status'],
-                total_time=timesheet_data['totalTime'],
-                overtime=timesheet_data['overtime'],
-                signature_changed=timesheet_data['signatureChanged']
-            )
+            return self._construct_timesheet(timesheet_data)
         return None
 
     def get_timesheet_by_time_period(self, username:str, start_date: date, end_date: date):
@@ -125,7 +115,7 @@ class TimesheetRepository:
         """
         if status is None:
             return None
-        timesheets = self.db.timesheets.find({"status": status})
+        timesheets = self.db.timesheets.find({"status": str(status)})
         return list(timesheets)
 
     def get_timesheet_id(self, username: str, month: int, year: int):
@@ -187,8 +177,6 @@ class TimesheetRepository:
         """
         if timesheet_id is None:
             return RequestResult(False, "Please provide a timesheet ID to delete the timesheet.", 400)
-        if self.get_timesheet_by_id(timesheet_id) is None:
-            return RequestResult(False, "Timesheet not found", 404)
         result = self.db.timesheets.delete_one({"timesheetId": timesheet_id})
         if result.deleted_count == 0:
             return RequestResult(False, "Timesheet deletion failed", 500)

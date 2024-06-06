@@ -17,7 +17,7 @@ class WorkEntry(TimeEntry):
         :param date: Date of the work entry.
         :param start_time: Start time of the work entry.
         :param end_time: End time of the work entry.
-        :param break_time: Break time of the work entry.
+        :param break_time: Break time in minutes of the work entry.
         :param activity: Activity of the work entry.
         :param project_name: Project name of the work entry.
         """
