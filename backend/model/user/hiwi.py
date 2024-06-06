@@ -1,7 +1,7 @@
-from model.contract_information import ContractInfo
-from model.personal_information import PersonalInfo
-from model.role import UserRole
-from model.user import User
+from model.user.contract_information import ContractInfo
+from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
+from model.user.user import User
 
 
 class Hiwi(User):

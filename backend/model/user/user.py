@@ -1,6 +1,6 @@
-from db import db, initialize_db
-from model.personal_information import PersonalInfo
-from model.role import UserRole
+from db import initialize_db
+from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
 
 db = initialize_db()
 
@@ -30,6 +30,23 @@ class User:
         :return: True if the user is an admin, False otherwise.
         """
         return self.role == UserRole.ADMIN
+
+    @staticmethod
+    def from_dict(user_data: dict):
+        """
+        Creates a User instance from a dictionary.
+
+        :param dict user_data: Dictionary containing user details.
+        :return: A new User instance.
+        """
+        username = user_data["username"]
+        password_hash = user_data["passwordHash"]
+        personal_info_data = user_data["personalInfo"]
+        role = UserRole.get_role_by_value(user_data["role"])
+
+        personal_info = PersonalInfo.from_dict(personal_info_data)
+
+        return User(username, password_hash, personal_info, role)
 
     def to_dict(self):
         """

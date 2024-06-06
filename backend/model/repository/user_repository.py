@@ -1,4 +1,7 @@
 from db import initialize_db
+from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
+from model.user.user import User
 from model.personal_information import PersonalInfo
 from model.request_result import RequestResult
 from model.role import UserRole

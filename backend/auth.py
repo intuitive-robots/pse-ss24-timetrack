@@ -1,4 +1,3 @@
-from enum import Enum
 from functools import wraps
 
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, \
@@ -12,8 +11,7 @@ from flask_jwt_extended.exceptions import NoAuthorizationError
 
 from db import initialize_db
 from model.repository.user_repository import UserRepository
-from model.user import User
-from model.role import UserRole
+from model.user.role import UserRole
 
 db = initialize_db()
 user_repo = UserRepository.get_instance()

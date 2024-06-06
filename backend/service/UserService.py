@@ -1,5 +1,7 @@
-from model.role import UserRole
-from model.user import User
+from controller.factory.UserFactory import UserFactory
+from model.repository.user_repository import UserRepository
+from model.user.role import UserRole
+from model.user.user import User
 
 
 class UserService:
@@ -13,8 +15,7 @@ class UserService:
         a user factory for creating user instances, as well as a validator for
         user data validation
         """
-        self.user_repository = None
-        self.user_factory = None
+        self.user_repository = UserRepository.get_instance()
         self.user_validator = None
 
     def create_user(self, user_data: dict):
@@ -25,7 +26,12 @@ class UserService:
         :return: An instance of the User model representing the newly created user.
         :rtype: RequestResult object containing the result of the create operation.
         """
-        return self.user_repository.create_user(user_data)
+        user_factory = UserFactory.get_factory(user_data['role'])
+        if not user_factory:
+            return RequestResult(False, "Invalid user role specified")
+
+        user = user_factory.create_user(user_data)
+        return self.user_repository.create_user(user)
 
     def update_user(self, user_data: dict):
         """
@@ -34,7 +40,12 @@ class UserService:
         :param dict user_data: A dictionary with user attributes that should be updated.
         :return: RequestResult object containing the result of the update operation.
         """
-        return self.user_repository.update_user(user_data)
+        user_factory = UserFactory.get_factory(user_data['role'])
+        if not user_factory:
+            return RequestResult(False, "Invalid user role specified")
+
+        user = user_factory.create_user(user_data)
+        return self.user_repository.update_user(user)
 
     def get_users(self) -> list[User]:
         """
@@ -43,7 +54,10 @@ class UserService:
         :return: A list of User model instances representing all users in the system.
         :rtype: list[User]
         """
-        return self.user_repository.get_users()
+        users_data = self.user_repository.get_users()
+        users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
+
+        return users
 
     def get_users_by_role(self, role: UserRole) -> list[User]:
         """
@@ -53,7 +67,10 @@ class UserService:
         :return: A list of User model instances that match the specified role.
         :rtype: list[User]
         """
-        return self.user_repository.get_users_by_role(role)
+        users_data = self.user_repository.get_users_by_role(role)
+        users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
+
+        return users
 
     def get_profile(self, username: str) -> User:
         """
@@ -61,6 +78,8 @@ class UserService:
 
         :param str username: The username of the user whose profile is being requested.
         :return: A User model instance representing the user's profile.
-        :rtype: User
+        :rtype: User Profile
         """
-        return self.user_repository.get_profile(username)
+        user_data = self.user_repository.find_by_username(username)
+
+        return UserFactory.create_user_if_factory_exists(user_data)

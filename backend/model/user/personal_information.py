@@ -10,6 +10,22 @@ class PersonalInfo:
         self.institute_name = institute_name
         self.profile_picture = None
 
+    @staticmethod
+    def from_dict(data: dict):
+        """
+        Creates a PersonalInfo instance from a dictionary.
+
+        :param dict data: A dictionary containing keys for first_name, last_name, email, personal_number, and institute_name.
+        :return: A new instance of PersonalInfo.
+        """
+        first_name = data.get("firstName", "")
+        last_name = data.get("lastName", "")
+        email = data.get("email", "")
+        personal_number = data.get("personalNumber", "")
+        institute_name = data.get("instituteName", "")
+
+        return PersonalInfo(first_name, last_name, email, personal_number, institute_name)
+
     def to_dict(self):
         return {
             "firstName": self.first_name,
