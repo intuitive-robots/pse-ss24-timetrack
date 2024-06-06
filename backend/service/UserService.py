@@ -30,6 +30,7 @@ class UserService:
         if not user_factory:
             return RequestResult(False, "Invalid user role specified")
 
+        # TODO: Implement user validation
         user = user_factory.create_user(user_data)
         return self.user_repository.create_user(user)
 

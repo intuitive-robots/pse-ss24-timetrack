@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from model.user.role import UserRole
+from service.AuthService import AuthenticationService
 from service.UserService import UserService
 
 user_blueprint = Blueprint('user', __name__)
@@ -13,7 +14,7 @@ class UserController(MethodView):
         Initialize the UserController with instances of UserService and AuthService.
         """
         self.user_service = UserService()
-        self.auth_service = None
+        self.auth_service = AuthenticationService()
 
     def post(self):
         """
@@ -94,10 +95,9 @@ class UserController(MethodView):
         Authenticates a user and returns a JWT token if successful.
         """
         credentials = request.get_json()
-        result = self.user_service.login(credentials)
-        if result.success:
-            access_token = create_access_token(identity=credentials['username'])
-            return jsonify({"access_token": access_token}), 200
+        result = self.auth_service.login(credentials['username'], credentials['password'])
+        if result:
+            return jsonify({"access_token": result}), 200
         return jsonify({"error": "Invalid credentials"}), 401
 
     @jwt_required()

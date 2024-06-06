@@ -9,6 +9,7 @@ from model.role import UserRole
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
 from model.user import User
+from model.user.user import User
 from db import initialize_db, check_db_connection
 from flask_jwt_extended import JWTManager, jwt_required
 from datetime import timedelta

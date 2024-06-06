@@ -1,7 +1,6 @@
 from controller.factory.UserFactory import UserFactory
 from model.user.personal_information import PersonalInfo
 from model.user.supervisor import Supervisor
-from model.user.user import User
 
 
 class SupervisorFactory(UserFactory):

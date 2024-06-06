@@ -1,20 +1,48 @@
 from abc import ABC, abstractmethod
 
-from controller.factory import HiwiFactory
-from controller.factory.HiwiFactory import HiWiFactory
-from controller.factory.SecretaryFactory import SecretaryFactory
-from controller.factory.SupervisorFactory import SupervisorFactory
 from model.user.role import UserRole
 from model.user.user import User
 
 
 class UserFactory(ABC):
 
-    ROLE_FACTORY_MAPPING = {
-        UserRole.HIWI.value: HiwiFactory,
-        UserRole.SUPERVISOR.value: SupervisorFactory,
-        UserRole.SECRETARY.value: SecretaryFactory
-    }
+    # ROLE_FACTORY_MAPPING = {
+    #     UserRole.HIWI.value: HiwiFactory,
+    #     UserRole.SUPERVISOR.value: SupervisorFactory,
+    #     UserRole.SECRETARY.value: SecretaryFactory
+    # }
+
+    @staticmethod
+    def _role_factory_mapping():
+        from controller.factory.SupervisorFactory import SupervisorFactory
+        from controller.factory.HiwiFactory import HiwiFactory
+        from controller.factory.SecretaryFactory import SecretaryFactory
+        return {
+            UserRole.HIWI.value: HiwiFactory,
+            UserRole.SUPERVISOR.value: SupervisorFactory,
+            UserRole.SECRETARY.value: SecretaryFactory
+        }
+
+    # @staticmethod
+    # def get_factory(user_role: str):
+    #     from controller.factory.HiwiFactory import HiwiFactory
+    #
+    #     ROLE_FACTORY_MAPPING = {
+    #         UserRole.HIWI.value: HiwiFactory,
+    #         UserRole.SUPERVISOR.value: SupervisorFactory,
+    #         UserRole.SECRETARY.value: SecretaryFactory
+    #     }
+    #
+    #     if user_role == UserRole.HIWI.value:
+    #         from HiwiFactory import HiwiFactory
+    #         return HiwiFactory()
+    #     elif user_role == UserRole.SUPERVISOR.value:
+    #         from SupervisorFactory import SupervisorFactory
+    #         return SupervisorFactory()
+    #     elif user_role == UserRole.SECRETARY.value:
+    #         from SecretaryFactory import SecretaryFactory
+    #         return SecretaryFactory()
+    #     return None
 
     @staticmethod
     def get_factory(user_role: str):
@@ -24,7 +52,8 @@ class UserFactory(ABC):
         :param user_role: The role of the user for which the factory is requested.
         :return: An instance of the appropriate factory if found, otherwise None.
         """
-        factory_class = UserFactory.ROLE_FACTORY_MAPPING.get(user_role)
+        # factory_class = UserFactory.ROLE_FACTORY_MAPPING.get(user_role)
+        factory_class = UserFactory._role_factory_mapping().get(user_role)
         if factory_class:
             return factory_class()
         return None
