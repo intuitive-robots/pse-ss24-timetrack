@@ -17,6 +17,7 @@ import secrets
 from flask_cors import CORS
 from auth import hash_password
 from controller.UserController import UserController
+from controller.UserController import user_blueprint
 from model.work_entry import WorkEntry
 
 app = Flask(__name__)
@@ -31,19 +32,19 @@ init_auth_routes(app)
 
 
 # Registering the user routes
-user_blueprint = Blueprint('user', __name__)
-user_view = UserController.as_view('user_api')
-user_blueprint.add_url_rule('/createUser', view_func=user_view, methods=['POST'])
-user_blueprint.add_url_rule('/login', view_func=user_view, methods=['POST'])
-user_blueprint.add_url_rule('/logout', view_func=user_view, methods=['POST'])
-user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'])
-user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'])
-user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['PUT'])
-user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['DELETE'])
-user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'])
-user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'])
+user_view = UserController.as_view('user')
+user_blueprint.add_url_rule('/createUser', view_func=user_view, endpoint='create_user')
+user_blueprint.add_url_rule('/login', view_func=user_view, methods=['POST'], endpoint='login')
+user_blueprint.add_url_rule('/logout', view_func=user_view, methods=['POST'], endpoint='logout')
+user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'], endpoint='verify_token')
+user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'], endpoint='reset_password')
+user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['PUT'], endpoint='update_user')
+user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['DELETE'], endpoint='delete_user')
+user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
+user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
+
 
 
 @app.route('/')
