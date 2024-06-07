@@ -25,6 +25,7 @@ class UserController(MethodView):
         """
         endpoint_mapping = {
             '/createUser': self.create_user,
+            '/updateUser': self.update_user,
             '/login': self.login,
             '/logout': self.logout,
             '/resetPassword': self.reset_password,
@@ -37,7 +38,7 @@ class UserController(MethodView):
         Handles PUT requests for updating user information.
         """
         endpoint_mapping = {
-            '/updateUser': self.update_user,
+
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -100,9 +101,9 @@ class UserController(MethodView):
         """
         credentials = request.get_json()
         result = self.auth_service.login(credentials['username'], credentials['password'])
-        if result:
-            return jsonify({"access_token": result}), 200
-        return jsonify({"error": "Invalid credentials"}), 401
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
+        return jsonify(result.data), result.status_code
 
     @jwt_required()
     def logout(self):
@@ -127,7 +128,7 @@ class UserController(MethodView):
         """
         data = request.get_json()
         result = self.auth_service.reset_password(data)
-        return jsonify(result), 200
+        return jsonify(result.message), result.status_code
 
     @jwt_required()
     def get_profile(self):

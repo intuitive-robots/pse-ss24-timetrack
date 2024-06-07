@@ -1,14 +1,11 @@
 from flask import Flask, jsonify, request
 from model.user.personal_information import PersonalInfo
-from model.personal_information import PersonalInfo
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
 from model.user.role import UserRole
-from model.role import UserRole
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
-from model.user import User
 from model.user.user import User
 from db import initialize_db, check_db_connection
 from flask_jwt_extended import JWTManager, jwt_required
@@ -41,7 +38,7 @@ user_blueprint.add_url_rule('/login', view_func=user_view, methods=['POST'], end
 user_blueprint.add_url_rule('/logout', view_func=user_view, methods=['POST'], endpoint='logout')
 user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'], endpoint='verify_token')
 user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'], endpoint='reset_password')
-user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['PUT'], endpoint='update_user')
+user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['POST'], endpoint='update_user')
 user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['DELETE'], endpoint='delete_user')
 user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
 user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')

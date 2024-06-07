@@ -5,6 +5,7 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jw
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
 from model.repository.user_repository import UserRepository
+from model.request_result import RequestResult
 from model.user.role import UserRole
 
 
@@ -81,7 +82,7 @@ class AuthenticationService:
         user = self.user_repository.find_by_username(username)
         if user and self._check_password(password, user.password_hash):
             access_token = self.create_token(username, user.role)
-            return access_token
+            return RequestResult(True, "Authentication successful", data={'access_token': access_token}, status_code=200)
         return RequestResult(False, "Invalid username or password", status_code=401)
 
     def reset_password(self, username, new_password):

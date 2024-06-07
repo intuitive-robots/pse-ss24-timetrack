@@ -4,6 +4,7 @@ from controller.factory.UserFactory import UserFactory
 from controller.input_validator.UserDataValidator import UserDataValidator
 from controller.input_validator.ValidationStatus import ValidationStatus
 from model.repository.user_repository import UserRepository
+from model.request_result import RequestResult
 from model.user.role import UserRole
 from model.user.user import User
 
@@ -38,17 +39,17 @@ class UserService:
         :return: An instance of the User model representing the newly created user.
         :rtype: RequestResult object containing the result of the create operation.
         """
-        if not self.user_data['password']: # plain password is required on creation
+        if not user_data['password']:  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
 
-        del user_data['password']  # Remove the plain text password from the data
         user_data['passwordHash'] = self._hash_password(user_data['password'])
+        del user_data['password']  # Remove the plain text password from the data
 
         for key in User.dict_keys():
             if key not in user_data.keys():
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
 
-        self.user_validator.is_valid(user_data) # check if field format is valid
+        self.user_validator.is_valid(user_data)  # check if field format is valid
 
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
@@ -60,7 +61,6 @@ class UserService:
 
         return self.user_repository.create_user(user)
 
-
     def update_user(self, user_data: dict):
         """
         Updates an existing user in the system with the provided user data.
@@ -71,7 +71,7 @@ class UserService:
         if 'username' not in user_data:
             return RequestResult(False, "Username must be provided for user update", status_code=400)
 
-        existing_user_data = self.user_repository.find_by_username(user_data['username'])
+        existing_user_data = self.user_repository.find_by_username(user_data['username']).to_dict()
         if not existing_user_data:
             return RequestResult(False, "User not found", status_code=404)
 
