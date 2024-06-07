@@ -43,17 +43,6 @@ class AuthenticationService:
         additional_claims = {"role": str(role)}
         return create_access_token(identity=username, additional_claims=additional_claims)
 
-    def verify_token(self, token):
-        """
-        Verifies if a token is valid and active.
-        :param token: The token string to verify.
-        :return: RequestResult indicating the success or failure of verification.
-        """
-        if self.user_repository.is_token_valid(token):
-            return RequestResult(True, "Token is valid", status_code=200)
-        else:
-            return RequestResult(False, "Invalid token", status_code=401)
-
     def get_user_from_token(self):
         """
         Retrieves a user based on the JWT identity from the current request context.

@@ -114,14 +114,6 @@ class UserController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
-    def verify_token(self):
-        """
-        Verifies the current user's token and returns the status.
-        """
-        result = self.auth_service.verify_token()
-        return jsonify(result.message), result.status_code
-
-    @jwt_required()
     def reset_password(self):
         """
         Resets the password for a user based on the provided JSON data.
