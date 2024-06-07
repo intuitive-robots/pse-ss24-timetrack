@@ -39,6 +39,7 @@ user_blueprint.add_url_rule('/logout', view_func=user_view, methods=['POST'], en
 user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'], endpoint='verify_token')
 user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'], endpoint='reset_password')
 user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['POST'], endpoint='update_user')
+user_blueprint.add_url_rule('/getProfile', view_func=user_view, methods=['GET'], endpoint='get_profile')
 user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['POST'], endpoint='delete_user')
 user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
 user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')

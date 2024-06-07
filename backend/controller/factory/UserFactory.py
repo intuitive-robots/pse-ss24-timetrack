@@ -51,6 +51,6 @@ class UserFactory(ABC):
         :return: An instance of a subclass of UserFactory or None.
         """
         factory = UserFactory.get_factory(user_data['role'])
-        if factory:
-            return factory.create_user(user_data)
-        return None
+        if not factory:
+            return None
+        return factory.create_user(user_data)

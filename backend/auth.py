@@ -125,7 +125,7 @@ def check_access(roles: [UserRole] = []):
             # checking user role
             if current_user is None:
                 raise NoAuthorizationError("User not found.")
-            current_user_role = current_user.role
+            current_user_role = current_user['role']
             if current_user_role not in roles:
                 raise NoAuthorizationError("Role is not allowed.")
             return f(*args, **kwargs)

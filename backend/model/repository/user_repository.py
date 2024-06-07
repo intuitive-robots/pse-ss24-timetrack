@@ -1,4 +1,5 @@
 from db import initialize_db
+from model.user.role import UserRole
 from model.user.user import User
 from model.request_result import RequestResult
 
@@ -92,15 +93,15 @@ class UserRepository:
 
         :return: A list of user dicts containing the user_data.
         """
-        users = self.db.users.find()
-        return list(users)
+        users_data = self.db.users.find()
+        return list(users_data)
 
-    def get_users_by_role(self, role) -> list[dict]:
+    def get_users_by_role(self, role: UserRole) -> list[dict]:
         """
         Gets all users from the database with a specific role.
 
         :param role: The role of the users to retrieve.
         :return: A list of users with the specified role.
         """
-        users = self.db.users.find({"employmentDetails.role": role})
-        return list(users)
+        users_data = self.db.users.find({"role": role.value})
+        return list(users_data)

@@ -2,6 +2,7 @@ import re
 from controller.input_validator.InputValidator import InputValidator
 from controller.input_validator.ValidationResult import ValidationResult
 from controller.input_validator.ValidationStatus import ValidationStatus
+from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 
 
@@ -35,7 +36,7 @@ class UserDataValidator(InputValidator):
 
         # Validate personal information
         if 'personalInfo' in user_data:
-            for field_key in ['firstName', 'lastName', 'email', 'personalNumber', 'instituteName']:
+            for field_key in PersonalInfo.dict_keys():
                 pattern = self.field_patterns[field_key]
                 if field_key in user_data['personalInfo'] and not re.match(pattern,
                                                                            user_data['personalInfo'][field_key]):

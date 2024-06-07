@@ -61,7 +61,7 @@ class UserService:
         :return: An instance of the User model representing the newly created user.
         :rtype: RequestResult object containing the result of the create operation.
         """
-        if not user_data['password']:  # plain password is required on creation
+        if 'password' not in user_data:  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
 
         user_data['passwordHash'] = self._hash_password(user_data['password'])
@@ -132,15 +132,19 @@ class UserService:
 
         return users
 
-    def get_users_by_role(self, role: UserRole) -> list[User]:
+    def get_users_by_role(self, role: str) -> list[User]:
         """
         Retrieves a list of users in the system filtered by a specific role.
 
-        :param UserRole role: The role to filter users by.
+        :param str role: The role to filter users by.
         :return: A list of User model instances that match the specified role.
         :rtype: list[User]
         """
-        users_data = self.user_repository.get_users_by_role(role)
+        parsedRole = UserRole.get_role_by_value(role)
+        if not parsedRole:
+            return []
+
+        users_data = self.user_repository.get_users_by_role(parsedRole)
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
 
         return users

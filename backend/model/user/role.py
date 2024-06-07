@@ -17,7 +17,7 @@ class UserRole(Enum):
         for role in UserRole:
             if role.value == value:
                 return role
-        raise ValueError("Role not found")
+        return None
 
     def __str__(self):
         return self.value

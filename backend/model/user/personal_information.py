@@ -34,3 +34,9 @@ class PersonalInfo:
             "personalNumber": self.personal_number,
             "instituteName": self.institute_name
         }
+
+    @classmethod
+    def dict_keys(cls):
+        """ Returns a list of keys used for the dictionary representation of a PersonalInfo object. """
+        dummy_personal = cls("", "", "", "", "")
+        return list(dummy_personal.to_dict().keys())

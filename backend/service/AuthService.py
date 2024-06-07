@@ -74,6 +74,8 @@ class AuthenticationService:
         :return: RequestResult including a token if authentication is successful, else error message.
         """
         user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "Invalid username", status_code=401)
         user = UserFactory.create_user_if_factory_exists(user_data)
         if user and self._check_password(password, user.password_hash):
             access_token = self.create_token(username, user.role)
@@ -105,11 +107,11 @@ def check_access(roles: [UserRole] = []):
             # calling @jwt_required()
             verify_jwt_in_request()
             # fetching current user from db
-            current_user = UserRepository.get_instance().find_by_username(get_jwt_identity())
+            current_user_data = UserRepository.get_instance().find_by_username(get_jwt_identity())
             # checking user role
-            if current_user is None:
+            if current_user_data is None:
                 raise NoAuthorizationError("User not found.")
-            current_user_role = UserRole.get_role_by_value(current_user.role)
+            current_user_role = UserRole.get_role_by_value(current_user_data['role'])
             if current_user_role not in roles:
                 raise NoAuthorizationError("Role is not allowed.")
             return f(*args, **kwargs)

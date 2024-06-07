@@ -12,15 +12,18 @@ class HiwiFactory(UserFactory):
         """
         personal_info = None
         contract_info = None
+        supervisor = None
 
-        if user_data['personalInfo']:
+        if 'personalInfo' in user_data:
             personal_info = PersonalInfo.from_dict(user_data['personalInfo'])
-        if user_data['contractInfo']:
+        if 'contractInfo' in user_data:
             contract_info = ContractInfo.from_dict(user_data['contractInfo'])
+        if 'supervisor' in user_data:
+            supervisor = user_data['supervisor']
         return Hiwi(
             username=user_data['username'],
             password_hash=user_data['passwordHash'],
             personal_info=personal_info,
-            supervisor=user_data['supervisor'],
+            supervisor=supervisor,
             contract_info=contract_info,
         )

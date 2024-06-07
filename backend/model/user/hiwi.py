@@ -21,7 +21,6 @@ class Hiwi(User):
         self.supervisor = supervisor
         self.timesheets = []
         self.contract_info = contract_info
-        self.signature_image = None
 
     def add_timesheet(self, timesheet):
         """
@@ -51,6 +50,6 @@ class Hiwi(User):
         user_dict.update({
             "supervisor": self.supervisor,
             "timesheets": [ts.to_dict() for ts in self.timesheets],
-            "contract_info": self.contract_info.to_dict(),
+            "contract_info": self.contract_info.to_dict() if self.contract_info is not None else {},
         })
         return user_dict

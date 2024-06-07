@@ -2,9 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 
-from auth import check_access
 from model.user.role import UserRole
-from service.AuthService import AuthenticationService
+from service.AuthService import AuthenticationService, check_access
 from service.UserService import UserService
 
 user_blueprint = Blueprint('user', __name__)
@@ -30,15 +29,6 @@ class UserController(MethodView):
             '/logout': self.logout,
             '/resetPassword': self.reset_password,
             '/deleteUser': self.delete_user
-        }
-        return self._dispatch_request(endpoint_mapping)
-
-    def put(self):
-        """
-        Handles PUT requests for updating user information.
-        """
-        endpoint_mapping = {
-
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -77,6 +67,7 @@ class UserController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
     def update_user(self):
         """
         Updates an existing user's data with the provided JSON data.
@@ -114,12 +105,13 @@ class UserController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
     def reset_password(self):
         """
         Resets the password for a user based on the provided JSON data.
         """
-        data = request.get_json()
-        result = self.auth_service.reset_password(data)
+        credentials = request.get_json()
+        result = self.auth_service.reset_password(credentials['username'], credentials['password'])
         return jsonify(result.message), result.status_code
 
     @jwt_required()
@@ -128,9 +120,10 @@ class UserController(MethodView):
         Retrieves the profile information for the currently authenticated user.
         """
         user_profile = self.user_service.get_profile(get_jwt_identity())
-        return jsonify(user_profile), 200
+        return jsonify(user_profile.to_dict()), 200
 
     @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
     def get_users(self):
         """
         Retrieves a list of all users in the system.
@@ -140,8 +133,12 @@ class UserController(MethodView):
         return jsonify(user_dict_list), 200
 
     @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
     def get_users_by_role(self):
         """
         Retrieves a list of users filtered by a specific role provided via query parameters.
         """
-        role = UserRole.get_role_by_value(request.args.get('role'))
+        data = request.get_json()
+        users_data = self.user_service.get_users_by_role(data['role'])
+        result = [user.to_dict() for user in users_data]
+        return jsonify(result), 200
