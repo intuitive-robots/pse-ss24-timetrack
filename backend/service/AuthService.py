@@ -1,6 +1,7 @@
 from functools import wraps
 
 import bcrypt
+from flask import make_response, jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jwt_cookies, create_access_token
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
@@ -62,9 +63,9 @@ class AuthenticationService:
         """
         Logs out the user by unsetting the JWT cookies.
         """
-        response = {"msg": "logout successful"}
+        response = jsonify({"msg": "logout successful"})
         unset_jwt_cookies(response)
-        return response, 200
+        return RequestResult(True, "Logout successful", status_code=200)
 
     def login(self, username, password):
         """
