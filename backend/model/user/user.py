@@ -62,3 +62,9 @@ class User:
             "accountCreation": self.account_creation,
             "lastLogin": self.last_login
         }
+
+    @classmethod
+    def dict_keys(cls):
+        """ Returns a list of keys used for the dictionary representation of a User object. """
+        dummy_user = cls("username", "password_hash", PersonalInfo("", "", "", "", ""), UserRole.ADMIN)
+        return list(dummy_user.to_dict().keys())

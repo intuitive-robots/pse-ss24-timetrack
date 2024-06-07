@@ -1,6 +1,8 @@
 import bcrypt
 
 from controller.factory.UserFactory import UserFactory
+from controller.input_validator.UserDataValidator import UserDataValidator
+from controller.input_validator.ValidationStatus import ValidationStatus
 from model.repository.user_repository import UserRepository
 from model.user.role import UserRole
 from model.user.user import User
@@ -18,7 +20,7 @@ class UserService:
         user data validation
         """
         self.user_repository = UserRepository.get_instance()
-        self.user_validator = None
+        self.user_validator = UserDataValidator()
 
     def _hash_password(self, password: str) -> str:
         """
@@ -36,9 +38,17 @@ class UserService:
         :return: An instance of the User model representing the newly created user.
         :rtype: RequestResult object containing the result of the create operation.
         """
-        if 'password' in user_data:
-            user_data['passwordHash'] = self._hash_password(user_data['password'])
-            del user_data['password']  # Remove the plain text password from the data
+        if not self.user_data['password']: # plain password is required on creation
+            return RequestResult(False, "Password is required", status_code=400)
+
+        del user_data['password']  # Remove the plain text password from the data
+        user_data['passwordHash'] = self._hash_password(user_data['password'])
+
+        for key in User.dict_keys():
+            if key not in user_data.keys():
+                return RequestResult(False, f"Missing required field: {key}", status_code=400)
+
+        self.user_validator.is_valid(user_data) # check if field format is valid
 
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
@@ -58,12 +68,29 @@ class UserService:
         :param dict user_data: A dictionary with user attributes that should be updated.
         :return: RequestResult object containing the result of the update operation.
         """
-        user_factory = UserFactory.get_factory(user_data['role'])
-        if not user_factory:
-            return RequestResult(False, "Invalid user role specified")
+        if 'username' not in user_data:
+            return RequestResult(False, "Username must be provided for user update", status_code=400)
 
-        user = user_factory.create_user(user_data)
-        return self.user_repository.update_user(user)
+        existing_user_data = self.user_repository.find_by_username(user_data['username'])
+        if not existing_user_data:
+            return RequestResult(False, "User not found", status_code=404)
+
+            # Update existing user data with provided updates
+        for key, value in user_data.items():
+            if key in existing_user_data and key != 'username':  # Skip updating username
+                existing_user_data[key] = value
+
+        # Validate the updated user data
+        validation_result = self.user_validator.is_valid(existing_user_data)
+        if validation_result.status == ValidationStatus.FAILURE:
+            return RequestResult(False, validation_result.message, status_code=400)
+
+        # Create a user object using the factory
+        updated_user = UserFactory.get_factory(existing_user_data['role']).create_user(existing_user_data)
+        if not updated_user:
+            return RequestResult(False, "Failed to create user object with updated data", status_code=400)
+
+        return self.user_repository.update_user(updated_user)
 
     def delete_user(self, username: str):
         """
