@@ -93,7 +93,7 @@ class UserService:
         if 'username' not in user_data:
             return RequestResult(False, "Username must be provided for user update", status_code=400)
 
-        existing_user_data = self.user_repository.find_by_username(user_data['username']).to_dict()
+        existing_user_data = self.user_repository.find_by_username(user_data['username'])
         if not existing_user_data:
             return RequestResult(False, "User not found", status_code=404)
 

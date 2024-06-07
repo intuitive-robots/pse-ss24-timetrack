@@ -4,6 +4,7 @@ import bcrypt
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jwt_cookies, create_access_token
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
+from controller.factory.UserFactory import UserFactory
 from model.repository.user_repository import UserRepository
 from model.request_result import RequestResult
 from model.user.role import UserRole
@@ -49,9 +50,13 @@ class AuthenticationService:
         :return: User object if the token is valid, otherwise None.
         """
         username = get_jwt_identity()
-        if username:
-            return self.user_repository.find_by_username(username)
-        return None
+        if not username:
+            return None
+
+        user_data = self.user_repository.find_by_username(username)
+
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return user
 
     def logout(self):
         """
@@ -68,7 +73,8 @@ class AuthenticationService:
         :param password: The password of the user.
         :return: RequestResult including a token if authentication is successful, else error message.
         """
-        user = self.user_repository.find_by_username(username)
+        user_data = self.user_repository.find_by_username(username)
+        user = UserFactory.create_user_if_factory_exists(user_data)
         if user and self._check_password(password, user.password_hash):
             access_token = self.create_token(username, user.role)
             return RequestResult(True, "Authentication successful", data={'access_token': access_token}, status_code=200)
