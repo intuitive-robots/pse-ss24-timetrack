@@ -1,0 +1,638 @@
+{
+    "modelName": "New Model",
+    "collections": [
+        {
+            "collectionName": "timeEntries",
+            "type": "object",
+            "properties": [
+                {
+                    "name": "_id",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "objectId",
+                    "GUID": "430500cf-f8c1-4399-8a76-94cd2f13e3a3",
+                    "error": {}
+                },
+                {
+                    "name": "timeEntryId",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "f81f11f8-b54a-4b21-b8cc-c4b577952762",
+                    "primaryKey": true,
+                    "required": true,
+                    "error": {}
+                },
+                {
+                    "name": "timesheetId",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "3dff7614-2342-44d4-b471-19d4e8f47a3b",
+                    "primaryKey": false,
+                    "foreignCollection": "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+                    "foreignField": [
+                        "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+                        "bedec5dd-08a5-4162-909c-1a6bb4b57421"
+                    ],
+                    "relationshipType": "Foreign Key",
+                    "parentRelationship": "d960a698-f1e2-44ce-9d48-e472e68c036b",
+                    "error": {}
+                },
+                {
+                    "name": "date",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "date",
+                    "primaryKey": false,
+                    "GUID": "52cdd5f8-82c4-46e3-97dd-16295e9fbcb0",
+                    "error": {
+                        "name": false
+                    }
+                },
+                {
+                    "name": "startTime",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "date",
+                    "primaryKey": false,
+                    "GUID": "2818cb66-dfc0-4718-89f4-08052f8d487d",
+                    "error": {}
+                },
+                {
+                    "name": "endTime",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "date",
+                    "primaryKey": false,
+                    "GUID": "65f1cfe9-287b-4f85-804e-ecd7a404602b",
+                    "error": {}
+                },
+                {
+                    "name": "breakTime",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "numeric",
+                    "GUID": "09a7ce1a-60bd-4230-8e9c-e58c661d7d58",
+                    "error": {}
+                },
+                {
+                    "name": "activity",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "c9119a01-06f9-452c-b825-1df06db5c589",
+                    "error": {}
+                },
+                {
+                    "name": "projectName",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "0ac6202a-59a1-4a9b-b153-8931476692e1",
+                    "error": {}
+                },
+                {
+                    "name": "duration",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "numeric",
+                    "GUID": "854deda8-2f7d-4509-9808-093e6f50de82",
+                    "error": {}
+                }
+            ],
+            "definitions": {
+                "type": "definitions",
+                "properties": [],
+                "GUID": "be7869ff-247a-4154-b2b7-05aa09d7f2f6"
+            },
+            "isActivated": true,
+            "additionalProperties": false,
+            "validationLevel": "Off",
+            "validationAction": "Warn",
+            "storageEngineName": "WiredTiger",
+            "collectionUsers": [],
+            "indexes": [],
+            "collation": {},
+            "sharding": {
+                "unique": true,
+                "collation": "null"
+            },
+            "GUID": "e80acc8f-63ea-4009-90e4-9cbfbe159826",
+            "bucketId": "df8547ec-efdd-44c1-9887-849ef1abe3d2"
+        },
+        {
+            "collectionName": "timesheets",
+            "type": "object",
+            "properties": [
+                {
+                    "name": "_id",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "objectId",
+                    "GUID": "29e78a92-e80e-4ec4-b9b7-f45cb2bfa416",
+                    "error": {}
+                },
+                {
+                    "name": "timesheetId",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "bedec5dd-08a5-4162-909c-1a6bb4b57421",
+                    "primaryKey": true,
+                    "required": true,
+                    "error": {},
+                    "childRelationships": [
+                        "d960a698-f1e2-44ce-9d48-e472e68c036b"
+                    ]
+                },
+                {
+                    "name": "username",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "35a59dd9-d8cb-4384-b828-e4c279784109",
+                    "encrypt": false,
+                    "foreignCollection": "d53e3911-5da7-4d6d-8047-25ac98811659",
+                    "foreignField": [
+                        "d53e3911-5da7-4d6d-8047-25ac98811659",
+                        "d87058ae-bd63-4f5f-96e3-38afb100618c"
+                    ],
+                    "relationshipType": "Foreign Key",
+                    "parentRelationship": "cc417d86-f60f-4731-b270-af62168be520",
+                    "error": {}
+                },
+                {
+                    "name": "status",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "e7abe510-f7ca-4735-a6c4-f3df7b0eba48",
+                    "error": {}
+                },
+                {
+                    "name": "month",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "numeric",
+                    "GUID": "f8162448-673b-45aa-b997-8f3404617e67",
+                    "error": {}
+                },
+                {
+                    "name": "year",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "numeric",
+                    "GUID": "670c3be2-003e-4bf0-98af-e65dede0707a",
+                    "error": {}
+                },
+                {
+                    "name": "totalTime",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "numeric",
+                    "GUID": "35f1fb88-d681-480d-a557-3500f4331096",
+                    "error": {}
+                },
+                {
+                    "name": "overtime",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "numeric",
+                    "GUID": "6c6eb278-d346-40bc-a24d-8799c195c11f",
+                    "error": {}
+                },
+                {
+                    "name": "lastSignatureChange",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "date",
+                    "primaryKey": false,
+                    "GUID": "c0e7e738-c0a8-4add-a49f-1d625d2d34e4",
+                    "error": {}
+                }
+            ],
+            "definitions": {
+                "type": "definitions",
+                "properties": [],
+                "GUID": "11d69ae0-d91c-47da-9f7a-1eda54c8e05b"
+            },
+            "isActivated": true,
+            "additionalProperties": false,
+            "validationLevel": "Off",
+            "validationAction": "Warn",
+            "storageEngineName": "WiredTiger",
+            "collectionUsers": [],
+            "indexes": [],
+            "collation": {},
+            "sharding": {
+                "unique": true,
+                "collation": "null"
+            },
+            "GUID": "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+            "bucketId": "df8547ec-efdd-44c1-9887-849ef1abe3d2"
+        },
+        {
+            "collectionName": "users",
+            "type": "object",
+            "properties": [
+                {
+                    "name": "_id",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "objectId",
+                    "GUID": "922f9497-6462-402b-84c5-4826d7d91ce8",
+                    "error": {
+                        "name": false
+                    }
+                },
+                {
+                    "name": "username",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "d87058ae-bd63-4f5f-96e3-38afb100618c",
+                    "error": {},
+                    "childRelationships": [
+                        "cc417d86-f60f-4731-b270-af62168be520"
+                    ]
+                },
+                {
+                    "name": "passwordHash",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "8359c3fe-d9e6-4fbe-855f-05d1aa17baa0",
+                    "error": {}
+                },
+                {
+                    "name": "role",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "string",
+                    "GUID": "74a7b88f-9b99-44e5-a898-01f00e6584c6",
+                    "error": {}
+                },
+                {
+                    "name": "accountCreation",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "date",
+                    "primaryKey": false,
+                    "GUID": "b760fcfa-7294-4cf3-821d-4921b29b356a",
+                    "error": {}
+                },
+                {
+                    "name": "lastLogin",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "date",
+                    "primaryKey": false,
+                    "GUID": "3cf7b965-4cab-4e32-917d-808951d0c0b5",
+                    "error": {}
+                },
+                {
+                    "name": "personalInfo",
+                    "hackoladeMeta": {},
+                    "isActivated": true,
+                    "type": "document",
+                    "properties": [
+                        {
+                            "name": "firstName",
+                            "hackoladeMeta": {},
+                            "isActivated": true,
+                            "type": "string",
+                            "GUID": "6abc2198-5418-4f01-90a6-ecd05891962e",
+                            "error": {}
+                        },
+                        {
+                            "name": "lastName",
+                            "hackoladeMeta": {},
+                            "isActivated": true,
+                            "type": "string",
+                            "GUID": "8685f43c-78ae-4741-bd67-b8cad2630a01",
+                            "error": {}
+                        },
+                        {
+                            "name": "email",
+                            "hackoladeMeta": {},
+                            "isActivated": true,
+                            "type": "string",
+                            "GUID": "d7a5a31f-26be-4965-8622-36319370e3c8",
+                            "error": {}
+                        },
+                        {
+                            "name": "personalNumber",
+                            "hackoladeMeta": {},
+                            "isActivated": true,
+                            "type": "string",
+                            "GUID": "1ad1cdd8-2215-4255-b6fb-8cbdeabc2b8a",
+                            "error": {}
+                        },
+                        {
+                            "name": "instituteName",
+                            "hackoladeMeta": {},
+                            "isActivated": true,
+                            "type": "string",
+                            "GUID": "a266db04-bf68-40b5-b520-26becfd92eef",
+                            "error": {}
+                        }
+                    ],
+                    "additionalProperties": false,
+                    "GUID": "0532c2ca-d5c4-449a-9f2e-66da2994651b",
+                    "error": {}
+                }
+            ],
+            "definitions": {
+                "type": "definitions",
+                "properties": [],
+                "GUID": "25c71091-dc5e-451b-90ce-b4c8c99549e0"
+            },
+            "isActivated": true,
+            "additionalProperties": false,
+            "validationLevel": "Off",
+            "validationAction": "Warn",
+            "storageEngineName": "WiredTiger",
+            "collectionUsers": [],
+            "indexes": [],
+            "collation": {},
+            "sharding": {
+                "unique": true,
+                "collation": "null"
+            },
+            "GUID": "d53e3911-5da7-4d6d-8047-25ac98811659",
+            "bucketId": "df8547ec-efdd-44c1-9887-849ef1abe3d2"
+        }
+    ],
+    "buckets": [
+        {
+            "name": "timetracking_db",
+            "type": "bucket",
+            "collectionIds": [
+                "e80acc8f-63ea-4009-90e4-9cbfbe159826",
+                "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+                "d53e3911-5da7-4d6d-8047-25ac98811659"
+            ],
+            "backgroundColor": {
+                "r": 216,
+                "g": 0,
+                "b": 115,
+                "a": 1
+            },
+            "show": true,
+            "isActivated": true,
+            "GUID": "df8547ec-efdd-44c1-9887-849ef1abe3d2"
+        }
+    ],
+    "views": [],
+    "relationships": [
+        {
+            "name": "fk timesheets.username to users.username",
+            "relationshipType": "Foreign Key",
+            "parentField": [
+                [
+                    "d53e3911-5da7-4d6d-8047-25ac98811659",
+                    "d87058ae-bd63-4f5f-96e3-38afb100618c"
+                ]
+            ],
+            "parentCardinality": "1",
+            "childField": [
+                [
+                    "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+                    "35a59dd9-d8cb-4384-b828-e4c279784109"
+                ]
+            ],
+            "isActivated": true,
+            "childCardinality": "n",
+            "GUID": "cc417d86-f60f-4731-b270-af62168be520",
+            "parentCollection": "d53e3911-5da7-4d6d-8047-25ac98811659",
+            "childCollection": "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+            "hackoladeStyles": {
+                "GUID": "18c28d8c-7b39-432c-87ce-3c8ef9bc310f",
+                "autoPositioning": true,
+                "type": "Orthogonal",
+                "thickness": 2,
+                "color": "#79c4ff",
+                "dataType": "",
+                "shape": [
+                    {
+                        "x": 1217,
+                        "y": 1050.5
+                    },
+                    {
+                        "x": 1295.5,
+                        "y": 1050.5
+                    },
+                    {
+                        "x": 1295.5,
+                        "y": 1050.5
+                    },
+                    {
+                        "x": 1374,
+                        "y": 1050.5
+                    }
+                ],
+                "sides": [
+                    "right",
+                    "left"
+                ]
+            }
+        },
+        {
+            "name": "fk timeEntries.timesheetId to timesheets.timesheetId",
+            "relationshipType": "Foreign Key",
+            "parentField": [
+                [
+                    "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+                    "bedec5dd-08a5-4162-909c-1a6bb4b57421"
+                ]
+            ],
+            "parentCardinality": "1",
+            "childField": [
+                [
+                    "e80acc8f-63ea-4009-90e4-9cbfbe159826",
+                    "3dff7614-2342-44d4-b471-19d4e8f47a3b"
+                ]
+            ],
+            "isActivated": true,
+            "childCardinality": "n",
+            "GUID": "d960a698-f1e2-44ce-9d48-e472e68c036b",
+            "parentCollection": "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+            "childCollection": "e80acc8f-63ea-4009-90e4-9cbfbe159826",
+            "hackoladeStyles": {
+                "GUID": "3c2fdc01-7f1d-4ed7-8676-a35a109f4c9d",
+                "autoPositioning": true,
+                "type": "Orthogonal",
+                "thickness": 2,
+                "color": "#79c4ff",
+                "dataType": "",
+                "shape": [
+                    {
+                        "x": 842,
+                        "y": 1050.5
+                    },
+                    {
+                        "x": 895.5,
+                        "y": 1050.5
+                    },
+                    {
+                        "x": 895.5,
+                        "y": 1050.5
+                    },
+                    {
+                        "x": 949,
+                        "y": 1050.5
+                    }
+                ],
+                "sides": [
+                    "right",
+                    "left"
+                ]
+            }
+        }
+    ],
+    "users": [],
+    "diagramViews": [],
+    "idToNameHashTable": {
+        "df8547ec-efdd-44c1-9887-849ef1abe3d2": "timetracking_db",
+        "e80acc8f-63ea-4009-90e4-9cbfbe159826": "timeEntries",
+        "0bc052f1-7003-4ce1-8388-56b049e5c98b": "timesheets",
+        "d53e3911-5da7-4d6d-8047-25ac98811659": "users",
+        "922f9497-6462-402b-84c5-4826d7d91ce8": "_id",
+        "d87058ae-bd63-4f5f-96e3-38afb100618c": "username",
+        "8359c3fe-d9e6-4fbe-855f-05d1aa17baa0": "passwordHash",
+        "74a7b88f-9b99-44e5-a898-01f00e6584c6": "role",
+        "b760fcfa-7294-4cf3-821d-4921b29b356a": "accountCreation",
+        "3cf7b965-4cab-4e32-917d-808951d0c0b5": "lastLogin",
+        "0532c2ca-d5c4-449a-9f2e-66da2994651b": "personalInfo",
+        "6abc2198-5418-4f01-90a6-ecd05891962e": "firstName",
+        "8685f43c-78ae-4741-bd67-b8cad2630a01": "lastName",
+        "d7a5a31f-26be-4965-8622-36319370e3c8": "email",
+        "1ad1cdd8-2215-4255-b6fb-8cbdeabc2b8a": "personalNumber",
+        "a266db04-bf68-40b5-b520-26becfd92eef": "instituteName",
+        "29e78a92-e80e-4ec4-b9b7-f45cb2bfa416": "_id",
+        "bedec5dd-08a5-4162-909c-1a6bb4b57421": "timesheetId",
+        "35a59dd9-d8cb-4384-b828-e4c279784109": "username",
+        "e7abe510-f7ca-4735-a6c4-f3df7b0eba48": "status",
+        "f8162448-673b-45aa-b997-8f3404617e67": "month",
+        "670c3be2-003e-4bf0-98af-e65dede0707a": "year",
+        "35f1fb88-d681-480d-a557-3500f4331096": "totalTime",
+        "6c6eb278-d346-40bc-a24d-8799c195c11f": "overtime",
+        "c0e7e738-c0a8-4add-a49f-1d625d2d34e4": "lastSignatureChange",
+        "cc417d86-f60f-4731-b270-af62168be520": "fk timesheets.username to users.username",
+        "430500cf-f8c1-4399-8a76-94cd2f13e3a3": "_id",
+        "f81f11f8-b54a-4b21-b8cc-c4b577952762": "timeEntryId",
+        "3dff7614-2342-44d4-b471-19d4e8f47a3b": "timesheetId",
+        "52cdd5f8-82c4-46e3-97dd-16295e9fbcb0": "date",
+        "2818cb66-dfc0-4718-89f4-08052f8d487d": "startTime",
+        "65f1cfe9-287b-4f85-804e-ecd7a404602b": "endTime",
+        "09a7ce1a-60bd-4230-8e9c-e58c661d7d58": "breakTime",
+        "c9119a01-06f9-452c-b825-1df06db5c589": "activity",
+        "0ac6202a-59a1-4a9b-b153-8931476692e1": "projectName",
+        "854deda8-2f7d-4509-9808-093e6f50de82": "duration",
+        "d960a698-f1e2-44ce-9d48-e472e68c036b": "fk timeEntries.timesheetId to timesheets.timesheetId"
+    },
+    "definitions": {
+        "type": "definitions",
+        "properties": [],
+        "GUID": "cff4a0cd-eaa2-4a06-a795-36ef460f6e29"
+    },
+    "polyglotDefinitions": {
+        "type": "polyglotDefinitions",
+        "properties": [],
+        "GUID": "79b040e5-8cb3-4771-85c1-840fa28eee72"
+    },
+    "externalDefinitions": {
+        "type": "externalDefinitions",
+        "properties": [],
+        "GUID": "2885ab44-e5ac-4cf3-8588-1097f83e31b0"
+    },
+    "sources": [],
+    "decorativeSymbols": [],
+    "dbVersion": "v7.x",
+    "dbVendor": "MongoDB",
+    "appTarget": "MONGODB",
+    "creationTS": "2024-06-07T11:19:40.109Z",
+    "GUID": "03d6376e-a4a9-4a08-907e-ee103df3df1e",
+    "isLineageEnabled": false,
+    "lastModifTS": "2024-06-07T11:42:39.518Z",
+    "persistenceSchemaVersion": "7",
+    "isCreatedByPlugin": true,
+    "pluginInformation": {
+        "pluginEngineVersion": "1.0.0"
+    },
+    "applicationInformation": {
+        "version": "7.4.3"
+    },
+    "settings": {
+        "centralPane": {
+            "dbLevel": {
+                "erd": [
+                    {
+                        "GUID": "e80acc8f-63ea-4009-90e4-9cbfbe159826",
+                        "x": 618,
+                        "y": 944,
+                        "width": 224,
+                        "height": 213,
+                        "color": {}
+                    },
+                    {
+                        "GUID": "0bc052f1-7003-4ce1-8388-56b049e5c98b",
+                        "x": 949,
+                        "y": 953,
+                        "width": 268,
+                        "height": 195,
+                        "color": {}
+                    },
+                    {
+                        "GUID": "d53e3911-5da7-4d6d-8047-25ac98811659",
+                        "x": 1374,
+                        "y": 926,
+                        "width": 243,
+                        "height": 249,
+                        "color": {}
+                    }
+                ],
+                "erdDefinitions": {
+                    "erd": [],
+                    "rootPath": [],
+                    "entities": [],
+                    "decorativeSymbols": []
+                },
+                "buckets": [
+                    {
+                        "x": 578,
+                        "y": 886,
+                        "GUID": "df8547ec-efdd-44c1-9887-849ef1abe3d2"
+                    }
+                ],
+                "collapsedNodes": [],
+                "activeRelationship": "",
+                "activeRelationshipFields": {
+                    "childField": [],
+                    "parentField": []
+                },
+                "selectedCollections": [],
+                "displayColorPicker": false,
+                "graphView": {
+                    "erd": [],
+                    "buckets": [],
+                    "decorativeSymbols": [],
+                    "forceLayout": true,
+                    "defaultLinkLength": 300
+                },
+                "diagramViews": [],
+                "decorativeSymbols": [],
+                "nestedCollectionsLayout": "horizontal",
+                "options": [],
+                "relationshipUpdateDisabled": false
+            },
+            "collectionLevel": {},
+            "changed": false
+        },
+        "dtDiagram": {
+            "collapsedNodes": [],
+            "shouldDistributeCollections": false
+        }
+    }
+}
