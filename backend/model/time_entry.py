@@ -25,7 +25,13 @@ class TimeEntry(ABC):
         Converts the TimeEntry object to a dictionary format.
         :return: A dictionary representing the time entry.
         """
-        pass
+        return {
+            'timeEntryId': self.time_entry_id,
+            'timesheetId': self.timesheet_id,
+            'date': self.date,
+            'startTime': self.start_time,
+            'endTime': self.end_time
+        }
 
     @abstractmethod
     def get_duration(self):

@@ -32,17 +32,13 @@ class WorkEntry(TimeEntry):
         Converts the WorkEntry object to a dictionary format.
         :return: A dictionary representing the work entry.
         """
-        return {
-            "timeEntryId": self.time_entry_id,
-            "timesheetId": self.timesheet_id,
-            "date": self.date,
-            "startTime": self.start_time.strftime("%H:%M"),
-            "endTime": self.end_time.strftime("%H:%M"),
+        data = super().to_dict()
+        data.update({
             "breakTime": self.break_time,
             "activity": self.activity,
-            "projectName": self.project_name,
-            "duration": f"{self.get_duration():.2f}"
-        }
+            "projectName": self.project_name
+        })
+        return data
 
     def get_duration(self):
         """

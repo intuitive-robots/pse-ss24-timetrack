@@ -19,19 +19,6 @@ class VacationEntry(TimeEntry):
         """
         super().__init__(time_entry_id, timesheet_id, date, start_time, end_time)
 
-    def to_dict(self):
-        """
-        Converts the VacationEntry object to a dictionary format.
-        :return: A dictionary representing the vacation entry.
-        """
-        return {
-            "timeEntryId": self.time_entry_id,
-            "timesheetId": self.timesheet_id,
-            "date": self.date,
-            "startTime": self.start_time.strftime("%H:%M"),
-            "endTime": self.end_time.strftime("%H:%M")
-        }
-
     def get_duration(self):
         """
         Calculates the duration of the vacation entry.
