@@ -91,9 +91,9 @@ class AuthenticationService:
         :param new_password: The new password.
         :return: RequestResult indicating the success or failure of the reset process.
         """
-        if self.user_repository.update_password(username, new_password):
-            return RequestResult(True, "Password reset successfully", status_code=200)
-        return RequestResult(False, "Password reset failed", status_code=400)
+        # Hash the new password before updating
+        hashed_new_password = self._hash_password(new_password)
+        return self.user_repository.update_user(username, {'passwordHash': hashed_new_password})
 
 
 def check_access(roles: [UserRole] = []):

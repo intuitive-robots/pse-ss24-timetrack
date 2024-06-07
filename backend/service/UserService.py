@@ -1,3 +1,5 @@
+import bcrypt
+
 from controller.factory.UserFactory import UserFactory
 from model.repository.user_repository import UserRepository
 from model.user.role import UserRole
@@ -18,7 +20,15 @@ class UserService:
         self.user_repository = UserRepository.get_instance()
         self.user_validator = None
 
-    def create_user(self, user_data: dict):
+    def _hash_password(self, password: str) -> str:
+        """
+        This function hashes a password using bcrypt.
+        :param password: The password to hash
+        :return: The hashed password
+        """
+        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    def create_user(self, user_data):
         """
         Creates a new user in the system based on the provided user data.
 
@@ -26,13 +36,20 @@ class UserService:
         :return: An instance of the User model representing the newly created user.
         :rtype: RequestResult object containing the result of the create operation.
         """
+        if 'password' in user_data:
+            user_data['passwordHash'] = self._hash_password(user_data['password'])
+            del user_data['password']  # Remove the plain text password from the data
+
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
-            return RequestResult(False, "Invalid user role specified")
+            return RequestResult(False, "Invalid user role specified", status_code=400)
 
-        # TODO: Implement user validation
         user = user_factory.create_user(user_data)
+        if not user:
+            return RequestResult(False, "User creation failed", status_code=500)
+
         return self.user_repository.create_user(user)
+
 
     def update_user(self, user_data: dict):
         """

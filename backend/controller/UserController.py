@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+
+from auth import check_access
 from model.user.role import UserRole
 from service.AuthService import AuthenticationService
 from service.UserService import UserService
@@ -64,6 +66,7 @@ class UserController(MethodView):
         return jsonify({'error': 'Endpoint not found'}), 404
 
     @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
     def create_user(self):
         """
         Creates a new user with the provided JSON data.
@@ -82,6 +85,7 @@ class UserController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
     def delete_user(self):
         """
         Deletes a user identified by their username provided in JSON data.
