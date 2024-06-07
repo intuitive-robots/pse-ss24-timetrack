@@ -82,8 +82,8 @@ class UserController(MethodView):
         """
         Deletes a user identified by their username provided in JSON data.
         """
-        username = request.get_json()
-        result = self.user_service.delete_user(username['username'])
+        username_data = request.get_json()
+        result = self.user_service.delete_user(username_data['username'])
         return jsonify(result.message), result.status_code
 
     def login(self):

@@ -44,7 +44,7 @@ class UserFactory(ABC):
         pass
 
     @staticmethod
-    def create_user_if_factory_exists(user_data):
+    def create_user_if_factory_exists(user_data) -> User or None:
         """
         create a user if the corresponding factory exists.
         :param user_data: A dictionary containing data needed to create a user instance.

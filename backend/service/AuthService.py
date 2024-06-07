@@ -89,9 +89,24 @@ class AuthenticationService:
         :param new_password: The new password.
         :return: RequestResult indicating the success or failure of the reset process.
         """
-        # Hash the new password before updating
-        hashed_new_password = self._hash_password(new_password)
-        return self.user_repository.update_user(username, {'passwordHash': hashed_new_password})
+        if not username or not new_password:
+            return RequestResult(False, "Username and new password must be provided", status_code=400)
+
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        if not user:
+            return RequestResult(False, "Failed to create user object", status_code=500)
+
+        user.password_hash = self._hash_password(new_password)
+
+        result = self.user_repository.update_user(user)
+        if result.is_successful:
+            return RequestResult(True, "Password reset successful", status_code=200)
+
+        return result
 
 
 def check_access(roles: [UserRole] = []):
