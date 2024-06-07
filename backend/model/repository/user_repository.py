@@ -1,5 +1,6 @@
 from db import initialize_db
 from model.personal_information import PersonalInfo
+from model.request_result import RequestResult
 from model.role import UserRole
 from model.user import User
 
@@ -10,7 +11,6 @@ class UserRepository:
     """
     _instance = None  # Singleton instance of the UserRepository class.
 
-    #TODO: Implement ResultType RequestResult
     @staticmethod
     def get_instance():
         """
@@ -32,11 +32,13 @@ class UserRepository:
         :return: The ID of the newly created user.
         """
         if user is None:
-            return {"result": "User creation failed"}
+            return RequestResult(False, "User object is None", 400)
+        if self.find_by_username(user.username):
+            return RequestResult(False, "User already exists", 409)
         result = self.db.users.insert_one(user.to_dict())
         if result.acknowledged:
-            return {"result": "User created successfully", "id": str(result.inserted_id)}
-        return {"result": "User creation failed"}
+            return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
+        return RequestResult(False, "User creation failed", 500)
 
     def find_by_username(self, username):
         """
@@ -70,12 +72,12 @@ class UserRepository:
 
         result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
         if result.matched_count == 0:
-            return {"result": "User not found"}
+            return RequestResult(False, "User not found", 404)
         if result.modified_count == 0:
-            return {"result": "User update failed"}
+            return RequestResult(False, "User update failed", 500)
         if result.acknowledged:
-            return {"result": "User updated successfully"}
-        return {"result": "User update failed"}
+            return RequestResult(True, "User updated successfully", 200)
+        return RequestResult(False, "User update failed", 500)
 
     def delete_user(self, username):
         """
@@ -85,15 +87,15 @@ class UserRepository:
         :return: The ID of the deleted user.
         """
         if username is None:
-            return {"result": "Please provide a username to delete the user."}
+            return RequestResult(False, "Please provide a username to delete the user.", 400)
         if self.find_by_username(username) is None:
-            return {"result": "User not found"}
+            return RequestResult(False, "User not found", 404)
         result = self.db.users.delete_one({"username": username})
         if result.deleted_count == 0:
-            return {"result": "User deletion failed"}
+            return RequestResult(False, "User deletion failed", 500)
         if result.acknowledged:
-            return {"result": "User deleted successfully"}
-        return {"result": "User deletion failed"}
+            return RequestResult(True, "User deleted successfully", 200)
+        return RequestResult(False, "User deletion failed", 500)
 
     def get_users(self):
         """
