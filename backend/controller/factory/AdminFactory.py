@@ -4,8 +4,11 @@ from model.user.role import UserRole
 from model.user.user import User
 
 
-class SecretaryFactory(UserFactory):
+class AdminFactory(UserFactory):
     def create_user(self, user_data: dict) -> User:
+        """
+        Creates and returns a Supervisor object based on the provided data.
+        """
         personal_info = PersonalInfo.from_dict(user_data['personalInfo'])
         return User(
             username=user_data['username'],

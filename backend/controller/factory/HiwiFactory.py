@@ -2,6 +2,7 @@ from controller.factory.UserFactory import UserFactory
 from model.user.contract_information import ContractInfo
 from model.user.hiwi import Hiwi
 from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
 
 
 class HiwiFactory(UserFactory):
@@ -9,13 +10,17 @@ class HiwiFactory(UserFactory):
         """
         Creates and returns a Hiwi object based on the provided data.
         """
+        personal_info = None
+        contract_info = None
 
-        personal_info = PersonalInfo.from_dict(user_data['personalInfo'])
-        contract_info = ContractInfo.from_dict(user_data['contractInfo'])
+        if user_data['personalInfo']:
+            personal_info = PersonalInfo.from_dict(user_data['personalInfo'])
+        if user_data['contractInfo']:
+            contract_info = ContractInfo.from_dict(user_data['contractInfo'])
         return Hiwi(
             username=user_data['username'],
             password_hash=user_data['passwordHash'],
             personal_info=personal_info,
             supervisor=user_data['supervisor'],
-            contract_info=contract_info
+            contract_info=contract_info,
         )

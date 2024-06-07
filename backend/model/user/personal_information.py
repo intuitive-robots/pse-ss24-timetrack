@@ -32,5 +32,5 @@ class PersonalInfo:
             "lastName": self.last_name,
             "email": self.email,
             "personalNumber": self.personal_number,
-            "instituteName": self.personal_number
+            "instituteName": self.institute_name
         }

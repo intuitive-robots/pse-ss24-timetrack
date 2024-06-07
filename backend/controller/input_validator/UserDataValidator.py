@@ -8,7 +8,7 @@ from model.user.role import UserRole
 class UserDataValidator(InputValidator):
     def __init__(self):
         self.field_patterns = {
-            'username': r'^[a-zA-Z]+$',  # Only letters
+            'username': r'^[a-zA-Z0-9]+$',  # Only letters
             'password': r'.{8,}',  # At least 8 characters
             'firstName': r'^[a-zA-Z]{2,15}$',  # Only letters, 2-15 characters long
             'lastName': r'^[a-zA-Z]{2,20}$',  # Only letters, 2-20 characters long
@@ -33,14 +33,14 @@ class UserDataValidator(InputValidator):
             if field in user_data and not re.match(pattern, user_data[field]):
                 return ValidationResult(ValidationStatus.FAILURE, f"Invalid or missing {field}.")
 
-
         # Validate personal information
         if 'personalInfo' in user_data:
-            for field, pattern in self.field_patterns.items():
-                if field in ['firstName', 'lastName', 'email', 'personalNumber', 'instituteName']:
-                    if field not in user_data['personalInfo'] or not re.match(pattern,
-                                                                              user_data['personalInfo'][field]):
-                        return ValidationResult(ValidationStatus.FAILURE, f"Invalid or missing personal info: {field}.")
+            for field_key in ['firstName', 'lastName', 'email', 'personalNumber', 'instituteName']:
+                pattern = self.field_patterns[field_key]
+                if field_key in user_data['personalInfo'] and not re.match(pattern,
+                                                                           user_data['personalInfo'][field_key]):
+                    return ValidationResult(ValidationStatus.FAILURE,
+                                            f"Invalid or missing personal info field: {field_key}.")
 
         return ValidationResult(ValidationStatus.SUCCESS, "User data is valid.")
 

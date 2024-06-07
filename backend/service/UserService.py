@@ -31,6 +31,28 @@ class UserService:
         """
         return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
+    def _recursive_update(self, original, updates, exclude_keys=None):
+        """
+        Recursively update a dictionary with another dictionary, excluding specified keys.
+
+        :param original: The original dictionary to update.
+        :param updates: The dictionary containing updates to apply.
+        :param exclude_keys: A set or list of keys to exclude from the updates.
+        :return: The updated dictionary.
+        """
+        if exclude_keys is None:
+            exclude_keys = set()
+
+        for key, value in updates.items():
+            if key in exclude_keys:
+                continue  # Skip updating this key if it's in the exclude list
+
+            if isinstance(value, dict) and key in original:
+                original[key] = self._recursive_update(original.get(key, {}), value, exclude_keys)
+            elif key not in exclude_keys:
+                original[key] = value
+        return original
+
     def create_user(self, user_data):
         """
         Creates a new user in the system based on the provided user data.
@@ -75,18 +97,15 @@ class UserService:
         if not existing_user_data:
             return RequestResult(False, "User not found", status_code=404)
 
-            # Update existing user data with provided updates
-        for key, value in user_data.items():
-            if key in existing_user_data and key != 'username':  # Skip updating username
-                existing_user_data[key] = value
+        updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash"])
 
         # Validate the updated user data
-        validation_result = self.user_validator.is_valid(existing_user_data)
+        validation_result = self.user_validator.is_valid(updated_user_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
 
         # Create a user object using the factory
-        updated_user = UserFactory.get_factory(existing_user_data['role']).create_user(existing_user_data)
+        updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)
 
