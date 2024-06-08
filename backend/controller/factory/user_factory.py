@@ -18,10 +18,10 @@ class UserFactory(ABC):
         :return: A dictionary where the keys are user role values and the values are the corresponding factory classes.
         :rtype: dict
         """
-        from controller.factory.SupervisorFactory import SupervisorFactory
-        from controller.factory.HiwiFactory import HiwiFactory
-        from controller.factory.SecretaryFactory import SecretaryFactory
-        from controller.factory.AdminFactory import AdminFactory
+        from controller.factory.supervisor_factory import SupervisorFactory
+        from controller.factory.hiwi_factory import HiwiFactory
+        from controller.factory.secretary_factory import SecretaryFactory
+        from controller.factory.admin_factory import AdminFactory
         return {
             UserRole.HIWI.value: HiwiFactory,
             UserRole.SUPERVISOR.value: SupervisorFactory,

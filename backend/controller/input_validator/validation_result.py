@@ -1,4 +1,4 @@
-from controller.input_validator.ValidationStatus import ValidationStatus
+from controller.input_validator.validation_status import ValidationStatus
 
 
 class ValidationResult:

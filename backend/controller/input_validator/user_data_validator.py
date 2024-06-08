@@ -1,8 +1,8 @@
 import re
 
-from controller.input_validator.InputValidator import InputValidator
-from controller.input_validator.ValidationResult import ValidationResult
-from controller.input_validator.ValidationStatus import ValidationStatus
+from controller.input_validator.input_validator import InputValidator
+from controller.input_validator.validation_result import ValidationResult
+from controller.input_validator.validation_status import ValidationStatus
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 

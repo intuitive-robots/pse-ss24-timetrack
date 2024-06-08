@@ -6,8 +6,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 
 from auth import init_auth_routes
-from controller.UserController import UserController
-from controller.UserController import user_blueprint
+from controller.user_controller import UserController
+from controller.user_controller import user_blueprint
 from db import initialize_db, check_db_connection
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository

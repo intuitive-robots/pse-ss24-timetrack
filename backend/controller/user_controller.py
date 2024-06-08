@@ -3,8 +3,8 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from model.user.role import UserRole
-from service.AuthService import AuthenticationService, check_access
-from service.UserService import UserService
+from service.auth_service import AuthenticationService, check_access
+from service.user_service import UserService
 
 user_blueprint = Blueprint('user', __name__)
 

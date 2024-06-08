@@ -1,4 +1,4 @@
-from controller.factory.UserFactory import UserFactory
+from controller.factory.user_factory import UserFactory
 from model.user.contract_information import ContractInfo
 from model.user.hiwi import Hiwi
 from model.user.personal_information import PersonalInfo

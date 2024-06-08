@@ -1,4 +1,4 @@
-from controller.factory.UserFactory import UserFactory
+from controller.factory.user_factory import UserFactory
 from model.user.personal_information import PersonalInfo
 from model.user.supervisor import Supervisor
 

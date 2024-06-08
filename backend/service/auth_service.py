@@ -4,7 +4,7 @@ from flask import jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jwt_cookies, create_access_token
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
-from controller.factory.UserFactory import UserFactory
+from controller.factory.user_factory import UserFactory
 from model.repository.user_repository import UserRepository
 from model.request_result import RequestResult
 from model.user.role import UserRole

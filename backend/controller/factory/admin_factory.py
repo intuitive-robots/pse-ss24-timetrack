@@ -1,16 +1,17 @@
-from controller.factory.UserFactory import UserFactory
+from controller.factory.user_factory import UserFactory
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 from model.user.user import User
 
 
-class SecretaryFactory(UserFactory):
+class AdminFactory(UserFactory):
     def create_user(self, user_data: dict) -> User:
         """
-        Creates and returns a User object for a Secretary based on the provided data.
+        Creates and returns an Admin object based on the provided data.
 
-        :param user_data: A dictionary containing user details including username, password hash, personal information, and role.
-        :return: A User object initialized with the provided data.
+        :param user_data: A dictionary containing user details including username, password hash, personal
+        information and role.
+        :return: A User object initialized as an Admin with the provided data.
         """
         personal_info = None
         if 'personalInfo' in user_data:
