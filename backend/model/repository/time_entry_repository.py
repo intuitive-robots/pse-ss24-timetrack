@@ -5,7 +5,6 @@ from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
 
 
-
 class TimeEntryRepository:
     """
     Repository class for managing TimeEntry objects in the database
@@ -128,4 +127,3 @@ class TimeEntryRepository:
         if result.acknowledged:
             return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201)
         return RequestResult(False, "Time entry creation failed", 500)
-

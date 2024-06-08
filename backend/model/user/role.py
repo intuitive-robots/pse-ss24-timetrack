@@ -12,11 +12,12 @@ class UserRole(Enum):
     SECRETARY = "Secretary"
     ADMIN = "Admin"
 
-    def get_role_by_value(value):
+    @staticmethod
+    def get_role_by_value(value: str):
         for role in UserRole:
             if role.value == value:
                 return role
-        raise ValueError("Role not found")
+        return None
 
     def __str__(self):
         return self.value

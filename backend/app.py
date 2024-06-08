@@ -1,20 +1,24 @@
-from flask import Flask, jsonify, request
-from model.personal_information import PersonalInfo
+import secrets
+from datetime import timedelta, time, datetime
+
+from flask import Flask, jsonify
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager, jwt_required
+
+from auth import init_auth_routes
+from controller.user_controller import UserController
+from controller.user_controller import user_blueprint
+from db import initialize_db, check_db_connection
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
-from model.role import UserRole
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
-from model.user import User
-from db import initialize_db, check_db_connection
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
-from datetime import timedelta, time, datetime
-from auth import init_auth_routes, check_access
-import secrets
-from flask_cors import CORS
-from auth import hash_password
+from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
+from model.user.user import User
 from model.work_entry import WorkEntry
+from utils.security_utils import SecurityUtils
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -27,13 +31,26 @@ jwt = JWTManager(app)
 init_auth_routes(app)
 
 
+# Registering the user routes
+user_view = UserController.as_view('user')
+user_blueprint.add_url_rule('/createUser', view_func=user_view, endpoint='create_user')
+user_blueprint.add_url_rule('/login', view_func=user_view, methods=['POST'], endpoint='login')
+user_blueprint.add_url_rule('/logout', view_func=user_view, methods=['POST'], endpoint='logout')
+user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'], endpoint='verify_token')
+user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'], endpoint='reset_password')
+user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['POST'], endpoint='update_user')
+user_blueprint.add_url_rule('/getProfile', view_func=user_view, methods=['GET'], endpoint='get_profile')
+user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['POST'], endpoint='delete_user')
+user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
+user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
+
+app.register_blueprint(user_blueprint, url_prefix='/user')
+
+
+
 @app.route('/')
 def home():
     return "Flask Backend"
-
-def user_to_dict(user):
-    user['_id'] = str(user['_id'])  # Convert ObjectId to string
-    return user
 
 def timesheet_to_dict(timesheet):
     timesheet['_id'] = str(timesheet['_id'])  # Convert ObjectId to string
@@ -41,21 +58,6 @@ def timesheet_to_dict(timesheet):
 def work_entry_to_dict(work_entry):
     work_entry['_id'] = str(work_entry['_id'])  # Convert ObjectId to string
     return work_entry
-@app.route('/deleteUser', methods=['DELETE'])
-@jwt_required()
-@check_access(roles=[UserRole.ADMIN])
-def delete_user():
-    username = request.json.get('username', None)
-    if username is None:
-        return {"msg": "Username is required"}, 400
-    user_repo = UserRepository.get_instance()
-    user = user_repo.find_by_username(username)
-    if user is None:
-        return {"msg": "User not found"}, 404
-    result = user_repo.delete_user(username)
-    if result["result"] == "User deleted successfully":
-        return {"msg": "User deleted successfully"}, 200
-    return {"msg": "User deletion failed"}, 500
 
 @app.route('/createTestUser')
 @jwt_required()
@@ -66,7 +68,7 @@ def create_user():
     :return: A string indicating that the user was created
     """
     password = "test_password"
-    hashed_password = hash_password(password)
+    hashed_password = SecurityUtils.hash_password(password)
 
     user = User(
         username="test123",
@@ -83,19 +85,6 @@ def create_user():
     result = user_repo.create_user(user)
 
     return result.to_dict(), result.status_code
-
-@app.route('/readUsers')
-@jwt_required()
-@check_access(roles=[UserRole.ADMIN])
-def read_users():
-    """
-    Reads all users from the database
-    Is only accessible to users with the role ADMIN
-    :return: A JSON string containing all users
-    """
-    user_repo = UserRepository.get_instance()
-    users = user_repo.get_users()
-    return jsonify([user_to_dict(user) for user in users])
 
 
 #TODO: This is a hardcoded time entry!
@@ -162,6 +151,7 @@ def create_timesheet():
     timesheet_repo = TimesheetRepository.get_instance()
     result = timesheet_repo.create_timesheet(timesheet)
     return result.to_dict(), result.status_code
+
 @app.route('/checkMongoDBConnection')
 def check_mongodb_connection():
     """

@@ -11,6 +11,19 @@ class ContractInfo:
         self.working_hours = working_hours
         self.vacation_hours = vacation_hours
 
+    @staticmethod
+    def from_dict(data: dict):
+        """
+        Creates a ContractInfo instance from a dictionary.
+
+        :param dict data: A dictionary containing the keys hourly_wage, working_hours, and vacation_hours.
+        :return: A new instance of ContractInfo.
+        """
+        hourly_wage = data.get('hourlyWage', 0)
+        working_hours = data.get('workingHours', 0)
+        vacation_hours = data.get('vacationHours', 0)
+        return ContractInfo(hourly_wage, working_hours, vacation_hours)
+
     def update_hourly_wage(self, new_wage: float):
         """
         Updates the hourly wage.
