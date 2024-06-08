@@ -1,23 +1,22 @@
+import secrets
+from datetime import timedelta, time, datetime
+
 from flask import Flask, jsonify, request
-from model.user.personal_information import PersonalInfo
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager, jwt_required
+
+from auth import hash_password, init_auth_routes, check_access
+from controller.UserController import UserController
+from controller.UserController import user_blueprint
+from db import initialize_db, check_db_connection
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
-from model.user.role import UserRole
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
+from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
 from model.user.user import User
-from db import initialize_db, check_db_connection
-from flask_jwt_extended import JWTManager, jwt_required
-from datetime import timedelta
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
-from datetime import timedelta, time, datetime
-from auth import init_auth_routes, check_access
-import secrets
-from flask_cors import CORS
-from auth import hash_password
-from controller.UserController import UserController
-from controller.UserController import user_blueprint
 from model.work_entry import WorkEntry
 
 app = Flask(__name__)

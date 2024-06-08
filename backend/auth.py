@@ -1,12 +1,11 @@
+import json
+from datetime import datetime, timezone, timedelta
 from functools import wraps
 
+import bcrypt
+from flask import request, jsonify
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, \
     unset_jwt_cookies, jwt_required, verify_jwt_in_request
-from flask import request, jsonify
-from datetime import datetime, timezone, timedelta
-import json
-import bcrypt
-
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
 from db import initialize_db

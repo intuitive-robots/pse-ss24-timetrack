@@ -1,7 +1,7 @@
 from functools import wraps
 
 import bcrypt
-from flask import make_response, jsonify
+from flask import jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jwt_cookies, create_access_token
 from flask_jwt_extended.exceptions import NoAuthorizationError
 

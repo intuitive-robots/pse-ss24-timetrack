@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from model.user.role import UserRole
 from service.AuthService import AuthenticationService, check_access

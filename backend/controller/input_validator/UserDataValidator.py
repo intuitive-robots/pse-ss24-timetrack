@@ -1,4 +1,5 @@
 import re
+
 from controller.input_validator.InputValidator import InputValidator
 from controller.input_validator.ValidationResult import ValidationResult
 from controller.input_validator.ValidationStatus import ValidationStatus

@@ -1,7 +1,7 @@
 from db import initialize_db
+from model.request_result import RequestResult
 from model.user.role import UserRole
 from model.user.user import User
-from model.request_result import RequestResult
 
 
 class UserRepository:
