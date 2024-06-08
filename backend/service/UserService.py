@@ -1,5 +1,3 @@
-import bcrypt
-
 from controller.factory.UserFactory import UserFactory
 from controller.input_validator.UserDataValidator import UserDataValidator
 from controller.input_validator.ValidationStatus import ValidationStatus
@@ -7,6 +5,7 @@ from model.repository.user_repository import UserRepository
 from model.request_result import RequestResult
 from model.user.role import UserRole
 from model.user.user import User
+from utils.security_utils import SecurityUtils
 
 
 class UserService:
@@ -22,15 +21,6 @@ class UserService:
         """
         self.user_repository = UserRepository.get_instance()
         self.user_validator = UserDataValidator()
-
-    def _hash_password(self, password: str) -> str:
-        """
-        This function hashes a password using bcrypt.
-
-        :param password: The password to hash
-        :return: The hashed password
-        """
-        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
     def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict:
         """
@@ -64,7 +54,7 @@ class UserService:
         if 'password' not in user_data:  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
 
-        user_data['passwordHash'] = self._hash_password(user_data['password'])
+        user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
 
         for key in User.dict_keys():

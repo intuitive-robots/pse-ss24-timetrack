@@ -1,11 +1,11 @@
 import secrets
 from datetime import timedelta, time, datetime
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 
-from auth import hash_password, init_auth_routes, check_access
+from auth import init_auth_routes
 from controller.UserController import UserController
 from controller.UserController import user_blueprint
 from db import initialize_db, check_db_connection
@@ -18,6 +18,7 @@ from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 from model.user.user import User
 from model.work_entry import WorkEntry
+from utils.security_utils import SecurityUtils
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -51,31 +52,12 @@ app.register_blueprint(user_blueprint, url_prefix='/user')
 def home():
     return "Flask Backend"
 
-def user_to_dict(user):
-    user['_id'] = str(user['_id'])  # Convert ObjectId to string
-    return user
-
 def timesheet_to_dict(timesheet):
     timesheet['_id'] = str(timesheet['_id'])  # Convert ObjectId to string
     return timesheet
 def work_entry_to_dict(work_entry):
     work_entry['_id'] = str(work_entry['_id'])  # Convert ObjectId to string
     return work_entry
-@app.route('/deleteUser', methods=['DELETE'])
-@jwt_required()
-@check_access(roles=[UserRole.ADMIN])
-def delete_user():
-    username = request.json.get('username', None)
-    if username is None:
-        return {"msg": "Username is required"}, 400
-    user_repo = UserRepository.get_instance()
-    user = user_repo.find_by_username(username)
-    if user is None:
-        return {"msg": "User not found"}, 404
-    result = user_repo.delete_user(username)
-    if result["result"] == "User deleted successfully":
-        return {"msg": "User deleted successfully"}, 200
-    return {"msg": "User deletion failed"}, 500
 
 @app.route('/createTestUser')
 @jwt_required()
@@ -86,7 +68,7 @@ def create_user():
     :return: A string indicating that the user was created
     """
     password = "test_password"
-    hashed_password = hash_password(password)
+    hashed_password = SecurityUtils.hash_password(password)
 
     user = User(
         username="test123",
@@ -103,19 +85,6 @@ def create_user():
     result = user_repo.create_user(user)
 
     return result.to_dict(), result.status_code
-
-@app.route('/readUsers')
-@jwt_required()
-@check_access(roles=[UserRole.ADMIN])
-def read_users():
-    """
-    Reads all users from the database
-    Is only accessible to users with the role ADMIN
-    :return: A JSON string containing all users
-    """
-    user_repo = UserRepository.get_instance()
-    users = user_repo.get_users()
-    return jsonify([user_to_dict(user) for user in users])
 
 
 #TODO: This is a hardcoded time entry!
@@ -182,6 +151,7 @@ def create_timesheet():
     timesheet_repo = TimesheetRepository.get_instance()
     result = timesheet_repo.create_timesheet(timesheet)
     return result.to_dict(), result.status_code
+
 @app.route('/checkMongoDBConnection')
 def check_mongodb_connection():
     """

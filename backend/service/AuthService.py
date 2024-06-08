@@ -1,6 +1,5 @@
 from functools import wraps
 
-import bcrypt
 from flask import jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jwt_cookies, create_access_token
 from flask_jwt_extended.exceptions import NoAuthorizationError
@@ -9,6 +8,7 @@ from controller.factory.UserFactory import UserFactory
 from model.repository.user_repository import UserRepository
 from model.request_result import RequestResult
 from model.user.role import UserRole
+from utils.security_utils import SecurityUtils
 
 
 class AuthenticationService:
@@ -18,24 +18,7 @@ class AuthenticationService:
         """
         self.user_repository = UserRepository.get_instance()
 
-    def _hash_password(self, password: str) -> str:
-        """
-        This function hashes a password using bcrypt.
-        :param password: The password to hash
-        :return: The hashed password
-        """
-        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
-    def _check_password(self, password: str, hashed_password: str) -> bool:
-        """
-        This function checks if a password matches a hashed password.
-        :param password: The password to check
-        :param hashed_password: The hashed password to compare against
-        :return: True if the password matches the hashed password, False otherwise
-        """
-        return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
-
-    def create_token(self, username, role):
+    def create_token(self, username: str, role: UserRole) -> str:
         """
         Generates a JWT token for a given user with additional claims.
 
@@ -83,7 +66,7 @@ class AuthenticationService:
         if not user_data:
             return RequestResult(False, "Invalid username", status_code=401)
         user = UserFactory.create_user_if_factory_exists(user_data)
-        if user and self._check_password(password, user.password_hash):
+        if user and SecurityUtils.check_password(password, user.password_hash):
             access_token = self.create_token(username, user.role)
             return RequestResult(True, "Authentication successful", data={'access_token': access_token}, status_code=200)
         return RequestResult(False, "Invalid username or password", status_code=401)
@@ -107,7 +90,7 @@ class AuthenticationService:
         if not user:
             return RequestResult(False, "Failed to create user object", status_code=500)
 
-        user.password_hash = self._hash_password(new_password)
+        user.password_hash = SecurityUtils.hash_password(new_password)
 
         result = self.user_repository.update_user(user)
         if result.is_successful:
