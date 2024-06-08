@@ -65,6 +65,10 @@ class User:
 
     @classmethod
     def dict_keys(cls):
-        """ Returns a list of keys used for the dictionary representation of a User object. """
+        """
+        Returns a list of keys used for the dictionary representation of a User object.
+
+        :return: A list of keys representing the user's data fields.
+        """
         dummy_user = cls("username", "password_hash", PersonalInfo("", "", "", "", ""), UserRole.ADMIN)
         return list(dummy_user.to_dict().keys())

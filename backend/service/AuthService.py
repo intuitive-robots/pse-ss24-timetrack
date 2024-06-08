@@ -38,9 +38,10 @@ class AuthenticationService:
     def create_token(self, username, role):
         """
         Generates a JWT token for a given user with additional claims.
-        :param username: Username of the user.
+
+        :param username: The username of the user.
         :param role: The role of the user.
-        :return: JWT access token.
+        :return: A JWT access token as a string.
         """
         additional_claims = {"role": str(role)}
         return create_access_token(identity=username, additional_claims=additional_claims)
@@ -48,7 +49,8 @@ class AuthenticationService:
     def get_user_from_token(self):
         """
         Retrieves a user based on the JWT identity from the current request context.
-        :return: User object if the token is valid, otherwise None.
+
+        :return: A User object if the token is valid, otherwise None.
         """
         username = get_jwt_identity()
         if not username:
@@ -62,6 +64,8 @@ class AuthenticationService:
     def logout(self):
         """
         Logs out the user by unsetting the JWT cookies.
+
+        :return: A RequestResult indicating the success of the logout operation.
         """
         response = jsonify({"msg": "logout successful"})
         unset_jwt_cookies(response)
@@ -70,9 +74,10 @@ class AuthenticationService:
     def login(self, username, password):
         """
         Authenticates a user and returns a JWT token if the credentials are valid.
+
         :param username: The username of the user.
         :param password: The password of the user.
-        :return: RequestResult including a token if authentication is successful, else error message.
+        :return: A RequestResult including a token if authentication is successful, otherwise an error message.
         """
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
@@ -86,9 +91,10 @@ class AuthenticationService:
     def reset_password(self, username, new_password):
         """
         Resets the password for a given username.
+
         :param username: The username for which to reset the password.
         :param new_password: The new password.
-        :return: RequestResult indicating the success or failure of the reset process.
+        :return: A RequestResult indicating the success or failure of the reset process.
         """
         if not username or not new_password:
             return RequestResult(False, "Username and new password must be provided", status_code=400)
@@ -112,9 +118,10 @@ class AuthenticationService:
 
 def check_access(roles: [UserRole] = []):
     """
-    This function checks if the user has the required role to access the endpoint.
-    :param roles: The roles that are allowed to access the endpoint
-    :return: The decorator function
+    Decorator function to check if the user has the required role to access the endpoint.
+
+    :param roles: A list of UserRole objects that are allowed to access the endpoint.
+    :return: The decorator function.
     """
 
     def decorator(f):

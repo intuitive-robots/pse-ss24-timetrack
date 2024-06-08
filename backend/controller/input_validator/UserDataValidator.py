@@ -8,6 +8,9 @@ from model.user.role import UserRole
 
 class UserDataValidator(InputValidator):
     def __init__(self):
+        """
+        Initializes the UserDataValidator with predefined regex patterns for validating user data fields.
+        """
         self.field_patterns = {
             'username': r'^[a-zA-Z0-9]+$',  # Only letters
             'password': r'.{8,}',  # At least 8 characters
@@ -47,12 +50,12 @@ class UserDataValidator(InputValidator):
 
     def validate_role(self, role: str):
         """
-        Validates that the role value represents a valid UserRole.
+        Validates that the provided role value represents a valid UserRole.
+
         :param role: The role value to validate.
-        :return: Boolean indicating if the role value is valid.
+        :return: Boolean indicating whether the role value is valid.
         """
-        try:
-            UserRole.get_role_by_value(role)
-            return True
-        except ValueError:
+        role = UserRole.get_role_by_value(role)
+        if role is None:
             return False
+        return True

@@ -26,12 +26,13 @@ class UserService:
     def _hash_password(self, password: str) -> str:
         """
         This function hashes a password using bcrypt.
+
         :param password: The password to hash
         :return: The hashed password
         """
         return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
-    def _recursive_update(self, original, updates, exclude_keys=None):
+    def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict:
         """
         Recursively update a dictionary with another dictionary, excluding specified keys.
 
@@ -53,13 +54,12 @@ class UserService:
                 original[key] = value
         return original
 
-    def create_user(self, user_data):
+    def create_user(self, user_data) -> RequestResult:
         """
         Creates a new user in the system based on the provided user data.
 
-        :param dict user_data: A dictionary containing user attributes necessary for creating a new user.
-        :return: An instance of the User model representing the newly created user.
-        :rtype: RequestResult object containing the result of the create operation.
+        :param user_data: A dictionary containing user attributes necessary for creating a new user.
+        :return: A RequestResult object containing the result of the create operation.
         """
         if 'password' not in user_data:  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
@@ -87,7 +87,7 @@ class UserService:
         """
         Updates an existing user in the system with the provided user data.
 
-        :param dict user_data: A dictionary with user attributes that should be updated.
+        :param user_data: A dictionary with user attributes that should be updated.
         :return: RequestResult object containing the result of the update operation.
         """
         if 'username' not in user_data:
@@ -115,7 +115,7 @@ class UserService:
         """
         Deletes a user from the system identified by their username.
 
-        :param str username: The username of the user to be deleted.
+        :param username: The username of the user to be deleted.
         :return: A RequestResult object containing the result of the delete operation.
         """
         return self.user_repository.delete_user(username)
@@ -155,7 +155,6 @@ class UserService:
 
         :param str username: The username of the user whose profile is being requested.
         :return: A User model instance representing the user's profile.
-        :rtype: User Profile
         """
         user_data = self.user_repository.find_by_username(username)
 

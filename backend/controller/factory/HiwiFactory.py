@@ -2,13 +2,15 @@ from controller.factory.UserFactory import UserFactory
 from model.user.contract_information import ContractInfo
 from model.user.hiwi import Hiwi
 from model.user.personal_information import PersonalInfo
-from model.user.role import UserRole
 
 
 class HiwiFactory(UserFactory):
     def create_user(self, user_data: dict) -> Hiwi:
         """
         Creates and returns a Hiwi object based on the provided data.
+
+        :param user_data: A dictionary containing user details including username, password hash, personal information, supervisor, and contract information.
+        :return: A Hiwi object initialized with the provided data.
         """
         personal_info = None
         contract_info = None

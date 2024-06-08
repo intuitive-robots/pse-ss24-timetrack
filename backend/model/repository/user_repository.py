@@ -13,22 +13,26 @@ class UserRepository:
     @staticmethod
     def get_instance():
         """
-        Singleton instance of the UserRepository class.
-        :return:
+        Retrieves the singleton instance of the UserRepository class.
+
+        :return: Singleton instance of UserRepository.
         """
         if UserRepository._instance is None:
             UserRepository._instance = UserRepository()
         return UserRepository._instance
 
     def __init__(self):
+        """
+        Initializes the UserRepository class and connects to the database.
+        """
         self.db = initialize_db()
 
     def create_user(self, user: User):
         """
         Creates a new user in the database.
 
-        :param user: The user object to be created.
-        :return: The ID of the newly created user.
+        :param user: The User object to be created.
+        :return: RequestResult indicating the success or failure of the create operation.
         """
         if user is None:
             return RequestResult(False, "User object is None", 400)
@@ -41,7 +45,7 @@ class UserRepository:
 
     def find_by_username(self, username):
         """
-        Finds data of an user in the database by their username.
+        Finds data of a user in the database by their username.
 
         :param username: The username of the user to find.
         :return: A dictionary with the user's information if found, otherwise None.
@@ -56,10 +60,9 @@ class UserRepository:
         """
         Updates a user in the database.
 
-        :param user: The user object to be updated.
-        :return: The result of the update operation.
+        :param user: The User object to be updated.
+        :return: RequestResult indicating the success or failure of the update operation.
         """
-
         result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
         if result.matched_count == 0:
             return RequestResult(False, "User not found", 404)
@@ -74,7 +77,7 @@ class UserRepository:
         Deletes a user from the database.
 
         :param username: The username of the user to be deleted.
-        :return: The result of the delete operation.
+        :return: RequestResult indicating the success or failure of the delete operation.
         """
         if username is None:
             return RequestResult(False, "Please provide a username to delete the user.", 400)
@@ -89,19 +92,19 @@ class UserRepository:
 
     def get_users(self) -> list[dict]:
         """
-        Gets all users from the database.
+        Retrieves all users from the database.
 
-        :return: A list of user dicts containing the user_data.
+        :return: A list of dictionaries containing the user data.
         """
         users_data = self.db.users.find()
         return list(users_data)
 
     def get_users_by_role(self, role: UserRole) -> list[dict]:
         """
-        Gets all users from the database with a specific role.
+        Retrieves all users from the database with a specific role.
 
         :param role: The role of the users to retrieve.
-        :return: A list of users with the specified role.
+        :return: A list of dictionaries containing the user data with the specified role.
         """
         users_data = self.db.users.find({"role": role.value})
         return list(users_data)

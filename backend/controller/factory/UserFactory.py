@@ -8,6 +8,16 @@ class UserFactory(ABC):
 
     @staticmethod
     def _role_factory_mapping():
+        """
+        Returns a mapping of user roles to their corresponding factory classes.
+
+        This method imports the necessary factory classes and creates a dictionary
+        that maps user role values to their respective factory classes. This mapping
+        allows for dynamic creation of user instances based on their roles.
+
+        :return: A dictionary where the keys are user role values and the values are the corresponding factory classes.
+        :rtype: dict
+        """
         from controller.factory.SupervisorFactory import SupervisorFactory
         from controller.factory.HiwiFactory import HiwiFactory
         from controller.factory.SecretaryFactory import SecretaryFactory
@@ -46,7 +56,8 @@ class UserFactory(ABC):
     @staticmethod
     def create_user_if_factory_exists(user_data) -> User or None:
         """
-        create a user if the corresponding factory exists.
+        Create a user if the corresponding factory exists.
+
         :param user_data: A dictionary containing data needed to create a user instance.
         :return: An instance of a subclass of UserFactory or None.
         """

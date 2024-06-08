@@ -3,9 +3,14 @@ from controller.input_validator.ValidationStatus import ValidationStatus
 
 
 class InputValidator:
-    """ Base class for input validators. """
+    """
+    Base class for input validators.
+    """
+
     def is_valid(self, data) -> ValidationResult:
-        """ Validate the input data. Should be overridden by subclasses.
+        """
+        Validate the input data. Should be overridden by subclasses.
+
         :param data: The data to validate
         :return: if data is valid, return True, otherwise False
         """
