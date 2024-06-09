@@ -1,9 +1,9 @@
 from datetime import time, datetime, timedelta
 
 from model.time_entry import TimeEntry
-from model.timeentry.break_length_strategy import BreakLengthStrategy
-from model.timeentry.holiday_strategy import HolidayStrategy
-from model.timeentry.working_time_strategy import WorkingTimeStrategy
+from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
+from model.time_entry_validator.holiday_strategy import HolidayStrategy
+from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 
 
 class WorkEntry(TimeEntry):
