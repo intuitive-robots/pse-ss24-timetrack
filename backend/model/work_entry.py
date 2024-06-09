@@ -1,6 +1,9 @@
 from datetime import time, datetime, timedelta
 
 from model.time_entry import TimeEntry
+from model.timeentry.break_length_strategy import BreakLengthStrategy
+from model.timeentry.holiday_strategy import HolidayStrategy
+from model.timeentry.working_time_strategy import WorkingTimeStrategy
 
 
 class WorkEntry(TimeEntry):
@@ -26,6 +29,9 @@ class WorkEntry(TimeEntry):
         self.break_time = break_time
         self.activity = activity
         self.project_name = project_name
+        self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        self.time_entry_validator.add_validation_rule(HolidayStrategy())
+        self.time_entry_validator.add_validation_rule(BreakLengthStrategy())
 
     def to_dict(self):
         """

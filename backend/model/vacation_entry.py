@@ -1,12 +1,15 @@
 from datetime import time, datetime
 
 from model.time_entry import TimeEntry
+from model.timeentry.holiday_strategy import HolidayStrategy
+from model.timeentry.working_time_strategy import WorkingTimeStrategy
 
 
 class VacationEntry(TimeEntry):
     """
     Represents a vacation entry in the timesheet.
     """
+
     def __init__(self, time_entry_id: str, timesheet_id: str, date: str,
                  start_time: time, end_time: time):
         """
@@ -18,6 +21,11 @@ class VacationEntry(TimeEntry):
         :param end_time: End time of the vacation entry.
         """
         super().__init__(time_entry_id, timesheet_id, date, start_time, end_time)
+        self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        self.time_entry_validator.add_validation_rule(HolidayStrategy())
+
+    def to_dict(self):
+        super().to_dict()
 
     def get_duration(self):
         """
