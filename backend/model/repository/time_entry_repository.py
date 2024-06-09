@@ -37,25 +37,7 @@ class TimeEntryRepository:
             return None
         time_entry_data = self.db.timeEntries.find_one({"timeEntryId": time_entry_id})
         if time_entry_data:
-            if time_entry_data['breakTime']:
-                return WorkEntry(
-                    time_entry_id=time_entry_data['timeEntryId'],
-                    timesheet_id=time_entry_data['timesheetId'],
-                    date=time_entry_data['date'],
-                    start_time=time_entry_data['startTime'],
-                    end_time=time_entry_data['endTime'],
-                    break_time=time_entry_data['breakTime'],
-                    activity=time_entry_data['activity'],
-                    project_name=time_entry_data['projectName']
-                )
-            else:
-                return VacationEntry(
-                    time_entry_id=time_entry_data['timeEntryId'],
-                    timesheet_id=time_entry_data['timesheetId'],
-                    date=time_entry_data['date'],
-                    start_time=time_entry_data['startTime'],
-                    end_time=time_entry_data['endTime']
-                )
+            return time_entry_data
         return None
 
     def get_time_entries_by_date(self, date, username):
@@ -68,7 +50,7 @@ class TimeEntryRepository:
         if date is None or username is None:
             return None
         time_entries = self.db.timeEntries.find({"date": date, "username": username})
-        return [self.get_time_entry_by_id(time_entry['timeEntryId']) for time_entry in time_entries]
+        return list(time_entries)
 
     def get_time_entries(self, username):
         """
