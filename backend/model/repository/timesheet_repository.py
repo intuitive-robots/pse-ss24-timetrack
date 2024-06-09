@@ -36,7 +36,7 @@ class TimesheetRepository:
         """
         if timesheet_id is None:
             return None
-        timesheet_data = self.db.timesheets.find_one({"timesheetId": timesheet_id})
+        timesheet_data = self.db.timesheets.find_one({"_id": timesheet_id})
         if timesheet_data:
             return timesheet_data
         return None
@@ -113,7 +113,7 @@ class TimesheetRepository:
             return None
         timesheet_data = self.db.timesheets.find_one({"username": username, "month": month, "year": year})
         if timesheet_data:
-            return timesheet_data['timesheetId']
+            return timesheet_data['_id']
         return None
 
     def update_timesheet(self, timesheet):
@@ -177,7 +177,10 @@ class TimesheetRepository:
             return RequestResult(False, "Please provide a timesheet to create.", 400)
         if self.get_timesheet(timesheet.username, timesheet.month, timesheet.year) is not None:
             return RequestResult(False, "Timesheet already exists", 409)
-        result = self.db.timesheets.insert_one(timesheet.to_dict())
+        timesheet_data = timesheet.to_dict()
+
+        timesheet_data.pop('timesheetId')
+        result = self.db.timesheets.insert_one(timesheet_data)
         if result.acknowledged:
             return RequestResult(True, "Timesheet created successfully", 201)
         return RequestResult(False, "Timesheet creation failed", 500)

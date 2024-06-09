@@ -139,7 +139,6 @@ def create_timesheet():
     Creates a test timesheet in the database
     """
     timesheet = Timesheet(
-        timesheet_id="timesheet123",
         username="test123",
         month=3,
         year=2022,
