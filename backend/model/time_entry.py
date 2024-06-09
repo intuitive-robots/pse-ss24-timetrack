@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from datetime import time
 
+from model.timeentry.time_entry_validator import TimeEntryValidator
+
 
 class TimeEntry(ABC):
     def __init__(self, time_entry_id: str, timesheet_id: str, date: str,
@@ -18,6 +20,8 @@ class TimeEntry(ABC):
         self.date = date
         self.start_time = start_time
         self.end_time = end_time
+
+        self.time_entry_validator = TimeEntryValidator()
 
     @abstractmethod
     def to_dict(self):
