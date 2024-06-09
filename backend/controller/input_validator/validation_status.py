@@ -10,4 +10,5 @@ class ValidationStatus(Enum):
         FAILURE: Indicates that the validation failed.
     """
     SUCCESS = auto()
+    WARNING = auto()
     FAILURE = auto()
