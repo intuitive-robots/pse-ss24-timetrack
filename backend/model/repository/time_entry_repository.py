@@ -105,7 +105,9 @@ class TimeEntryRepository:
 
         if self.get_time_entry_by_id(time_entry.time_entry_id):
             return RequestResult(False, "Time entry already exists", 409)
-        result = self.db.timeEntries.insert_one(time_entry.to_dict())
+        time_entry_dict = time_entry.to_dict()
+        time_entry_dict.pop('timeEntryId')
+        result = self.db.timeEntries.insert_one(time_entry_dict)
         if result.acknowledged:
             return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201)
         return RequestResult(False, "Time entry creation failed", 500)

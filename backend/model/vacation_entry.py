@@ -7,17 +7,16 @@ class VacationEntry(TimeEntry):
     """
     Represents a vacation entry in the timesheet.
     """
-    def __init__(self, time_entry_id: str, timesheet_id: str, date: str,
+    def __init__(self, timesheet_id: str, date: str,
                  start_time: time, end_time: time):
         """
         Initializes a new VacationEntry object with the given parameters.
-        :param time_entry_id: Id of the vacation entry.
         :param timesheet_id: Id of the timesheet.
         :param date: Date of the vacation entry.
         :param start_time: Start time of the vacation entry.
         :param end_time: End time of the vacation entry.
         """
-        super().__init__(time_entry_id, timesheet_id, date, start_time, end_time)
+        super().__init__(timesheet_id, date, start_time, end_time)
 
     def get_duration(self):
         """

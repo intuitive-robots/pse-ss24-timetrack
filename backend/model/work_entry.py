@@ -7,12 +7,11 @@ class WorkEntry(TimeEntry):
     """
     Represents a work entry in the timesheet.
     """
-    def __init__(self, time_entry_id: str, timesheet_id: str, date: str,
+    def __init__(self, timesheet_id: str, date: str,
                  start_time: time, end_time: time, break_time: float,
                  activity: str, project_name: str):
         """
         Initializes a new WorkEntry object with the given parameters.
-        :param time_entry_id: Id of the work entry.
         :param timesheet_id: Id of the timesheet.
         :param date: Date of the work entry.
         :param start_time: Start time of the work entry.
@@ -21,7 +20,7 @@ class WorkEntry(TimeEntry):
         :param activity: Activity of the work entry.
         :param project_name: Project name of the work entry.
         """
-        super().__init__(time_entry_id, timesheet_id, date, start_time, end_time)
+        super().__init__(timesheet_id, date, start_time, end_time)
 
         self.break_time = break_time
         self.activity = activity

@@ -95,7 +95,6 @@ def create_time_entry():
     Creates a test time entry in the database
     """
     work_entry = WorkEntry(
-        time_entry_id="test1233",
         timesheet_id="timesheet123",
         date="2022-01-01",
         start_time=time(hour=9, minute=0),
