@@ -1,5 +1,7 @@
 from datetime import date
 
+from bson import ObjectId
+
 from db import initialize_db
 from model.request_result import RequestResult
 from model.timesheet import Timesheet
@@ -36,7 +38,7 @@ class TimesheetRepository:
         """
         if timesheet_id is None:
             return None
-        timesheet_data = self.db.timesheets.find_one({"_id": timesheet_id})
+        timesheet_data = self.db.timesheets.find_one({"_id": ObjectId(timesheet_id)})
         if timesheet_data:
             return timesheet_data
         return None
@@ -124,7 +126,7 @@ class TimesheetRepository:
         """
         if timesheet is None:
             return RequestResult(False, "Please provide a timesheet to update.", 400)
-        result = self.db.timesheets.update_one({"timesheetId": timesheet.timesheet_id},
+        result = self.db.timesheets.update_one({"_id": ObjectId(timesheet.timesheet_id)},
                                                {"$set": timesheet.to_dict()})
         if result.matched_count == 0:
             return RequestResult(False, "Timesheet not found", 404)
@@ -143,7 +145,7 @@ class TimesheetRepository:
         """
         if timesheet_id is None or status is None:
             return RequestResult(False, "Please provide a timesheet ID and status to update the timesheet status.", 400)
-        result = self.db.timesheets.update_one({"timesheetId": timesheet_id}, {"$set": {"status": status}})
+        result = self.db.timesheets.update_one({"_id": ObjectId(timesheet_id)}, {"$set": {"status": status}})
         if result.matched_count == 0:
             return RequestResult(False, "Timesheet not found", 404)
         if result.modified_count == 0:
@@ -160,7 +162,7 @@ class TimesheetRepository:
         """
         if timesheet_id is None:
             return RequestResult(False, "Please provide a timesheet ID to delete the timesheet.", 400)
-        result = self.db.timesheets.delete_one({"timesheetId": timesheet_id})
+        result = self.db.timesheets.delete_one({"_id": ObjectId(timesheet_id)})
         if result.deleted_count == 0:
             return RequestResult(False, "Timesheet deletion failed", 500)
         if result.acknowledged:
@@ -184,3 +186,15 @@ class TimesheetRepository:
         if result.acknowledged:
             return RequestResult(True, "Timesheet created successfully", 201)
         return RequestResult(False, "Timesheet creation failed", 500)
+
+    def get_timesheets_by_username_status(self, username: str, status: str):
+        """
+        Retrieves all timesheets for a given username with a specified status
+        :param username: Username of the Hiwi
+        :param status: Status of the timesheet
+        :return: A list of timesheets for the given username with the specified status
+        """
+        if username is None or status is None:
+            return None
+        timesheets = self.db.timesheets.find({"username": username, "status": status})
+        return list(timesheets)

@@ -86,6 +86,11 @@ def create_user():
 
     return result.to_dict(), result.status_code
 
+@app.route('/test1')
+def test1():
+    time_entry_repository = TimeEntryRepository.get_instance()
+    time_entry = time_entry_repository.get_time_entry_by_id("666611873270f3785020e764")
+    return work_entry_to_dict(time_entry), 200
 
 #TODO: This is a hardcoded time entry!
 @app.route('/createTestTimeEntry')
@@ -141,10 +146,6 @@ def create_timesheet():
         username="test123",
         month=3,
         year=2022,
-        status=TimesheetStatus.NOTSUBMITTED,
-        total_time=40.0,
-        overtime=5.0,
-        last_signature_change=datetime.now()
     )
     timesheet_repo = TimesheetRepository.get_instance()
     result = timesheet_repo.create_timesheet(timesheet)

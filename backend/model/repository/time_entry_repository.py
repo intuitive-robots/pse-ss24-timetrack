@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 from db import initialize_db
 from model.request_result import RequestResult
 from model.time_entry import TimeEntry
@@ -35,7 +37,7 @@ class TimeEntryRepository:
         """
         if time_entry_id is None:
             return None
-        time_entry_data = self.db.timeEntries.find_one({"timeEntryId": time_entry_id})
+        time_entry_data = self.db.timeEntries.find_one({"_id": ObjectId(time_entry_id)})
         if time_entry_data:
             return time_entry_data
         return None
@@ -69,7 +71,7 @@ class TimeEntryRepository:
         """
         if time_entry is None:
             return None
-        result = self.db.timeEntries.update_one({"timeEntryId": time_entry.time_entry_id},
+        result = self.db.timeEntries.update_one({"_id": ObjectId(time_entry.time_entry_id)},
                                                 {"$set": time_entry.to_dict()})
         if result.matched_count == 0:
             return RequestResult(False, "Entry not found", 404)
@@ -87,7 +89,7 @@ class TimeEntryRepository:
         """
         if entry_id is None:
             return None
-        result = self.db.timeEntries.delete_one({"timeEntryId": entry_id})
+        result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
         if result.deleted_count == 0:
             return RequestResult(False, "Entry not found", 404)
         if result.acknowledged:

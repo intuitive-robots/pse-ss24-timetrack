@@ -4,27 +4,39 @@ from model.timesheet_status import TimesheetStatus
 
 
 class Timesheet:
-    def __init__(self, username: str, month: int, year: int, status: TimesheetStatus,
-                 total_time: float, overtime: float, last_signature_change: datetime):
+    def __init__(self, username: str, month: int, year: int):
         """
         Initializes a new Timesheet object with the given parameters.
 
         :param username: The username of the Hiwi associated with the timesheet.
         :param month: The month of the timesheet.
         :param year: The year of the timesheet.
-        :param status: The status of the timesheet.
-        :param total_time: The total time worked by the Hiwi in the timesheet.
-        :param overtime: The overtime worked by the Hiwi in the timesheet.
-        :param last_signature_change: The date and time of the last signature change.
         """
         self.timesheet_id = None
         self.username = username
         self.month = month
         self.year = year
-        self.status = status
-        self.total_time = total_time
-        self.overtime = overtime
-        self.last_signature_change = last_signature_change
+        self.status = TimesheetStatus.NOTSUBMITTED
+        self.total_time = 0.0
+        self.overtime = 0.0
+        self.last_signature_change = datetime.now()
+
+
+    @staticmethod
+    def from_dict(timesheet_dict: dict):
+        """
+        Creates a Timesheet object from a dictionary.
+
+        :param timesheet_dict: The dictionary representing the timesheet.
+        :return: A Timesheet object.
+        """
+        timesheet = Timesheet(timesheet_dict["username"], timesheet_dict["month"], timesheet_dict["year"])
+        timesheet.set_id(timesheet_dict["_id"])
+        timesheet.status = TimesheetStatus(timesheet_dict["status"])
+        timesheet.total_time = timesheet_dict["totalTime"]
+        timesheet.overtime = timesheet_dict["overtime"]
+        timesheet.last_signature_change = timesheet_dict["lastSignatureChange"]
+        return timesheet
 
     def set_id(self, timesheet_id):
         """
