@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from controller.input_validator.validation_result import ValidationResult
+from model.time_entry import TimeEntry
 from model.timesheet import Timesheet
 
 
@@ -24,7 +25,7 @@ class TimesheetStrategy(ABC):
         pass
 
     @abstractmethod
-    def validate(self, timesheet: Timesheet) -> ValidationResult:
+    def validate(self, timesheet: Timesheet, time_entries: list[TimeEntry]) -> ValidationResult:
         """
         Abstract method to validate a Timesheet object.
 
@@ -36,6 +37,7 @@ class TimesheetStrategy(ABC):
 
         Args:
             timesheet (Timesheet): The Timesheet object to validate.
+            time_entries (TimeEntry): A list of all time entries within the timesheet month.
 
         Returns:
             ValidationResult: The result of the validation process, typically indicating

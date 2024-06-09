@@ -16,6 +16,8 @@ class TimesheetValidator:
         Initializes the TimesheetValidator with an empty list of validation rules.
         """
         self.validationRules = []
+        self.time_entry_service = None  # TODO: Add a TimeEntryService attribute
+        self.contract_info = None  # TODO: Add a ContractInfo object for working hours validation
 
     def addValidationRule(self, rule: TimesheetStrategy):
         """
@@ -59,8 +61,10 @@ class TimesheetValidator:
             list: A list of `ValidationResult` objects from each validation rule applied,
             indicating the success or failure of each validation.
         """
+        time_entries = self.time_entry_service.get_Entries_of_Timesheet(timesheet)  # TODO Make sure that method exists
+
         results = []
         for rule in self.validationRules:
-            result = rule.validate(timesheet)
+            result = rule.validate(timesheet, time_entries)
             results.append(result)
         return results
