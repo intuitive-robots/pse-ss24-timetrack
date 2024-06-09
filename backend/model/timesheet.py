@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from model.time_sheet_validator.timesheet_validator import TimesheetValidator
 from model.timesheet_status import TimesheetStatus
 
 
@@ -26,6 +27,8 @@ class Timesheet:
         self.total_time = total_time
         self.overtime = overtime
         self.last_signature_change = last_signature_change
+
+        self.timesheet_validator = TimesheetValidator()
 
     def to_dict(self):
         """
