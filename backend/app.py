@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 
 from auth import init_auth_routes
+from controller.time_entry_controller import time_entry_blueprint
 from controller.timesheet_controller import TimesheetController
 from controller.user_controller import UserController
 from controller.user_controller import user_blueprint
@@ -47,6 +48,16 @@ user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], e
 user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
+
+time_entry_view = TimeEntryController.as_view('time_entry_api')
+time_entry_blueprint.add_url_rule('/createTimeEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/createVacationTime', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/updateTimeEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/deleteTimeEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/getEntriesByTimesheetId', view_func=time_entry_view, methods=['GET'])
+
+app.register_blueprint(time_entry_blueprint, url_prefix='/timeentry')
+
 
 # Registering the timesheet routes
 timesheet_view = TimesheetController.as_view('timesheet')
