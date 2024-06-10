@@ -2,7 +2,10 @@ from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required
 
+from service.time_entry_service import TimeEntryService
+
 time_entry_blueprint = Blueprint('time_entry', __name__)
+
 
 class TimeEntryController(MethodView):
     def __init__(self):
@@ -10,7 +13,7 @@ class TimeEntryController(MethodView):
         Initialize the TimeEntryController with an instance of TimeEntryService.
         """
         self.time_entry_service = TimeEntryService()
-        self.timesheet_service = None  # TODO Insert
+        self.timesheet_service = None  # TODO Insert Timesheet Service
 
     def post(self):
         """
@@ -89,5 +92,5 @@ class TimeEntryController(MethodView):
         Retrieves all time entries associated with a specific timesheet ID.
         """
         timesheet_id = request.args.get('timesheetId')
-        result = self.time_entry_service.get_entries_by_timesheet_id(timesheet_id)
+        result = self.time_entry_service.get_entries_of_timesheet(timesheet_id)
         return jsonify(result), 200

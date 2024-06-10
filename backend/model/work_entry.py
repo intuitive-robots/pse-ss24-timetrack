@@ -1,6 +1,7 @@
-from datetime import time, datetime, timedelta
+from datetime import time, datetime, timedelta, date
 
 from model.time_entry import TimeEntry
+from model.time_entry_type import TimeEntryType
 from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
 from model.time_entry_validator.holiday_strategy import HolidayStrategy
 from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
@@ -22,7 +23,7 @@ class WorkEntry(TimeEntry):
         :param activity: Activity of the work entry.
         :param project_name: Project name of the work entry.
         """
-        super().__init__(timesheet_id, start_time, end_time)
+        super().__init__(timesheet_id, start_time, end_time, TimeEntryType.WORK_ENTRY)
 
         self.break_time = break_time
         self.activity = activity
@@ -43,6 +44,29 @@ class WorkEntry(TimeEntry):
             "projectName": self.project_name
         })
         return data
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """
+        Creates a WorkEntry instance from a dictionary containing MongoDB data,
+        utilizing the superclass method to handle common fields.
+        """
+        start_datetime = datetime.fromtimestamp(data['startTime'] / 1000)
+        end_datetime = datetime.fromtimestamp(data['endTime'] / 1000)
+        entry_date = start_datetime.date()
+        start_time = start_datetime.time()
+        end_time = end_datetime.time()
+
+        return cls(
+            time_entry_id=str(data['_id']),
+            timesheet_id=data['timesheetId'],
+            date=entry_date,
+            start_time=start_time,
+            end_time=end_time,
+            break_time=data.get('breakTime', 0),
+            activity=data.get('activity', ''),
+            project_name=data.get('projectName', '')
+        )
 
     def get_duration(self):
         """

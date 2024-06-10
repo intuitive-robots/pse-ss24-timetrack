@@ -1,5 +1,10 @@
 from abc import ABC, abstractmethod
+<<<<<<< HEAD
 from datetime import time, datetime
+=======
+from datetime import time, date, datetime
+
+>>>>>>> 3f2c9a2 (Add time entry service, from_dict methods to time entry classes)
 from model.time_entry_type import TimeEntryType
 from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 
@@ -39,6 +44,31 @@ class TimeEntry(ABC):
             'endTime': self.end_time,
             'entryType': self.entry_type.value
         }
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """
+        Creates a TimeEntry instance from a dictionary.
+        :param data: A dictionary containing attributes of a TimeEntry.
+        :return: An instance of TimeEntry or its subclass.
+        """
+        start_datetime = datetime.fromtimestamp(data['startTime'] / 1000)
+        end_datetime = datetime.fromtimestamp(data['endTime'] / 1000)
+
+        start_time = start_datetime.time()
+        end_time = end_datetime.time()
+
+        entry_type = TimeEntryType.get_type_by_value(data['entryType'])
+
+        time_entry_id = str(data['_id'])
+
+        return cls(
+            time_entry_id=time_entry_id,
+            timesheet_id=data['timesheetId'],
+            start_time=start_time,
+            end_time=end_time,
+            entry_type=entry_type
+        )
 
     @abstractmethod
     def get_duration(self):
