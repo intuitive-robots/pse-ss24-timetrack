@@ -1,6 +1,6 @@
 import holidays
 from model.time_entry import TimeEntry
-from model.timeentry.time_entry_strategy import TimeEntryStrategy
+from model.time_entry_validator.time_entry_strategy import TimeEntryStrategy
 from controller.input_validator.validation_result import ValidationResult
 from controller.input_validator.validation_status import ValidationStatus
 

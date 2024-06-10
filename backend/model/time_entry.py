@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from datetime import time
+from datetime import time, date
 
-from model.timeentry.time_entry_validator import TimeEntryValidator
+from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 
 
 class TimeEntry(ABC):
-    def __init__(self, time_entry_id: str, timesheet_id: str, date: str,
+    def __init__(self, time_entry_id: str, timesheet_id: str, date: date,
                  start_time: time, end_time: time):
         """
         Initializes a new TimeEntry object with the given parameters.
