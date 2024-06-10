@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 
 from auth import init_auth_routes
+from controller.timesheet_controller import TimesheetController
 from controller.user_controller import UserController
 from controller.user_controller import user_blueprint
 from db import initialize_db, check_db_connection
@@ -19,6 +20,7 @@ from model.user.role import UserRole
 from model.user.user import User
 from model.work_entry import WorkEntry
 from utils.security_utils import SecurityUtils
+from controller.timesheet_controller import timesheet_blueprint
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -46,7 +48,16 @@ user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GE
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 
-
+# Registering the timesheet routes
+timesheet_view = TimesheetController.as_view('timesheet')
+timesheet_blueprint.add_url_rule('/sign', view_func=timesheet_view, methods=['PATCH'], endpoint='sign_timesheet')
+timesheet_blueprint.add_url_rule('/approve', view_func=timesheet_view, methods=['PATCH'], endpoint='approve_timesheet')
+timesheet_blueprint.add_url_rule('/requestChange', view_func=timesheet_view, methods=['PATCH'],
+                                 endpoint='request_change')
+timesheet_blueprint.add_url_rule('/get', view_func=timesheet_view, methods=['GET'], endpoint='get_timesheets')
+timesheet_blueprint.add_url_rule('/getByUsernameStatus', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_timesheets_by_username_status')
+app.register_blueprint(timesheet_blueprint, url_prefix='/timesheet')
 
 @app.route('/')
 def home():

@@ -20,6 +20,7 @@ class Timesheet:
         self.total_time = 0.0
         self.overtime = 0.0
         self.last_signature_change = datetime.now()
+        self.time_entry_ids = []
 
 
     @staticmethod
@@ -46,6 +47,23 @@ class Timesheet:
         """
         self.timesheet_id = timesheet_id
 
+    def add_time_entry(self, time_entry_id):
+        """
+        Adds a time entry to the timesheet.
+
+        :param time_entry_id: The ID of the time entry to add.
+        """
+        self.time_entry_ids.append(time_entry_id)
+
+    def remove_time_entry(self, time_entry_id):
+        """
+        Removes a time entry from the timesheet.
+
+        :param time_entry_id: The ID of the time entry to remove.
+        """
+        self.time_entry_ids.remove(time_entry_id)
+
+
     def to_dict(self):
         """
         Converts the Timesheet object to a dictionary format.
@@ -60,5 +78,6 @@ class Timesheet:
             "status": str(self.status),
             "totalTime": self.total_time,
             "overtime": self.overtime,
-            "lastSignatureChange": self.last_signature_change
+            "lastSignatureChange": self.last_signature_change,
+            "timeEntryIds": self.time_entry_ids
         }

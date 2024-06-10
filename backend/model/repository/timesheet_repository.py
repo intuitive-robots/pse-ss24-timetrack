@@ -145,7 +145,7 @@ class TimesheetRepository:
         """
         if timesheet_id is None or status is None:
             return RequestResult(False, "Please provide a timesheet ID and status to update the timesheet status.", 400)
-        result = self.db.timesheets.update_one({"_id": ObjectId(timesheet_id)}, {"$set": {"status": status}})
+        result = self.db.timesheets.update_one({"_id": ObjectId(timesheet_id)}, {"$set": {"status": str(status)}})
         if result.matched_count == 0:
             return RequestResult(False, "Timesheet not found", 404)
         if result.modified_count == 0:
