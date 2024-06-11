@@ -54,13 +54,14 @@ class TimeEntryRepository:
         time_entries = self.db.timeEntries.find({"date": date, "username": username})
         return list(time_entries)
 
-    def get_time_entries(self, username):
+
+    #TODO: This method is only used for testing and shouldn't be required
+    def get_time_entries(self):
         """
         Retrieves all TimeEntry objects from the database
-        :param username: The username for which to retrieve TimeEntry objects
         :return: A list of all TimeEntry objects
         """
-        time_entries = self.db.timeEntries.find({"username": username})
+        time_entries = self.db.timeEntries.find()
         return list(time_entries)
 
     def get_time_entries_by_timesheet(self, timesheet_id: str):

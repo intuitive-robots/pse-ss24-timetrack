@@ -112,9 +112,8 @@ def create_time_entry():
     """
     work_entry = WorkEntry(
         timesheet_id="timesheet123",
-        date="2022-01-01",
-        start_time=time(hour=9, minute=0),
-        end_time=time(hour=17, minute=0),
+        start_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
+        end_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
         break_time=15.0,
         activity="Test Activity",
         project_name="Test Project"
@@ -132,7 +131,7 @@ def read_time_entries():
     :return: A JSON string containing all time entries
     """
     entry_repo = TimeEntryRepository.get_instance()
-    time_entries = entry_repo.get_time_entries()
+    time_entries = entry_repo.get_time_entries("")
     return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
 @app.route('/readTimesheets')

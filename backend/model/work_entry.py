@@ -7,20 +7,19 @@ class WorkEntry(TimeEntry):
     """
     Represents a work entry in the timesheet.
     """
-    def __init__(self, timesheet_id: str, date: str,
-                 start_time: time, end_time: time, break_time: float,
+    def __init__(self, timesheet_id: str,
+                 start_time: datetime, end_time: datetime, break_time: float,
                  activity: str, project_name: str):
         """
         Initializes a new WorkEntry object with the given parameters.
         :param timesheet_id: Id of the timesheet.
-        :param date: Date of the work entry.
         :param start_time: Start time of the work entry.
         :param end_time: End time of the work entry.
         :param break_time: Break time in minutes of the work entry.
         :param activity: Activity of the work entry.
         :param project_name: Project name of the work entry.
         """
-        super().__init__(timesheet_id, date, start_time, end_time)
+        super().__init__(timesheet_id, start_time, end_time)
 
         self.break_time = break_time
         self.activity = activity
@@ -44,8 +43,8 @@ class WorkEntry(TimeEntry):
         Calculates the duration of the work entry.
         :return: The duration of the work entry.
         """
-        start_datetime = datetime.combine(datetime.min.date(), self.start_time)
-        end_datetime = datetime.combine(datetime.min.date(), self.end_time)
+        start_datetime = self.start_time
+        end_datetime = self.end_time
         # Calculate the duration
         duration = end_datetime - start_datetime
         # Subtract the break time
