@@ -1,3 +1,5 @@
+from flask_jwt_extended import get_jwt_identity
+
 from controller.input_validator.validation_status import ValidationStatus
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.time_entry import TimeEntry
@@ -18,8 +20,52 @@ class TimeEntryService:
         validator for time entry data validation.
         """
         self.time_entry_repository = TimeEntryRepository.get_instance()
-        self.timesheet_service = None
-        self.entry_validator = None
+        self.timesheet_service = None  # TODO Insert Timesheet Service
+        self.entry_validator = None  # TODO Insert Time Entry Validator
+
+        self.entry_type_mapping = {
+            TimeEntryType.WORK_ENTRY: WorkEntry,
+            TimeEntryType.VACATION_ENTRY: VacationEntry
+        }
+
+    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType):
+        """
+        General method to handle addition of work or vacation time entries.
+
+        :param dict entry_data: Time entry data.
+        :param TimeEntryType entry_type: The type of the entry (e.g., WorkEntry or VacationEntry).
+        :return: A RequestResult object containing the outcome.
+        """
+        username = get_jwt_identity()
+
+        validation_result = self.entry_validator.is_valid(entry_data)
+        if validation_result.status == ValidationStatus.FAILURE:
+            return RequestResult(False, validation_result.message, status_code=400)
+
+        # Select the appropriate class based on entry_type and create a time entry instance
+        entry_class = self.entry_type_mapping.get(entry_type)
+        if not entry_class:
+            return RequestResult(False, "Invalid entry type specified", status_code=400)
+
+        time_entry = entry_class.from_dict(entry_data)
+
+        entry_creation_result = self.time_entry_repository.create_time_entry(time_entry)
+        if not entry_creation_result.is_successful:
+            return entry_creation_result
+
+        # Ensure the timesheet exists before adding a new entry
+        timesheet_exists_result = self.timesheet_service.ensure_timesheet_exists(
+            username, time_entry.date.month, time_entry.date.year)
+        if not timesheet_exists_result.is_successful:
+            return timesheet_exists_result
+
+        # Add the new time entry to the timesheet
+        add_entry_result = self.timesheet_service.add_time_entry_to_timesheet(
+            time_entry.timesheet_id, time_entry.time_entry_id)
+        if not add_entry_result.is_successful:
+            return add_entry_result
+
+        return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200)
 
     def create_work_entry(self, entry_data: dict) -> RequestResult:
         """
@@ -28,12 +74,7 @@ class TimeEntryService:
         :param dict entry_data: A dictionary containing time entry attributes necessary for creating a new time entry.
         :return: A RequestResult object containing the result of the create operation.
         """
-        validation_result = self.entry_validator.is_valid(entry_data)
-        if validation_result.status == ValidationStatus.FAILURE:
-            return RequestResult(False, validation_result.message, status_code=400)
-
-        new_time_entry = WorkEntry.from_dict(entry_data)
-        return self.time_entry_repository.create_time_entry(new_time_entry)
+        return self._add_time_entry(entry_data, TimeEntryType.WORK_ENTRY)
 
     def add_vacation_entry(self, entry_data: dict) -> RequestResult:
         """
@@ -42,12 +83,8 @@ class TimeEntryService:
         :param dict entry_data: A dictionary containing vacation time entry attributes.
         :return: A RequestResult object containing the result of the add operation.
         """
-        validation_result = self.entry_validator.is_valid(entry_data)
-        if validation_result.status == ValidationStatus.FAILURE:
-            return RequestResult(False, validation_result.message, status_code=400)
-
-        vacation_time_entry = VacationEntry.from_dict(entry_data)
-        return self.time_entry_repository.create_time_entry(vacation_time_entry)
+        # TODO Implement vacation logic
+        return self._add_time_entry(entry_data, TimeEntryType.VACATION_ENTRY)
 
     def update_time_entry(self, entry_id: str, update_data: dict) -> RequestResult:
         """
