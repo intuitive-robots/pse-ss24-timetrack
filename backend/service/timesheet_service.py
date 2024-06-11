@@ -20,12 +20,13 @@ class TimesheetService:
         :param year: Year of the timesheet
         :return: The timesheet object
         """
-        timesheet = self.timesheet_repository.get_timesheet(username, month, year)
-        if timesheet is None:
-            if self.timesheet_repository.create_timesheet(Timesheet(username, month, year)).status_code == 201:
-                return RequestResult(True, "Timesheet created", 201)
-            return RequestResult(False, "Failed to create timesheet", 500)
-        return RequestResult(True, "Timesheet exists", 200)
+        timesheet = self.timesheet_repository.find_timesheet_by_date(username, month, year)
+        if timesheet is not None:
+            return RequestResult(True, "Timesheet already exists", 200)
+        creation_result = self.timesheet_repository.create_timesheet(Timesheet(username, month, year))
+        if creation_result.status_code == 201:
+            return RequestResult(True, "Timesheet created", 201)
+        return RequestResult(False, "Failed to create timesheet", 500)
 
     def sign_timesheet(self, timesheet_id: str):
         """
@@ -33,10 +34,10 @@ class TimesheetService:
         :param timesheet_id: The ID of the timesheet to sign
         :return: The result of the sign operation
         """
-        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-        if timesheet is None:
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
-        if timesheet['status'] == 'Waiting for Approval' or timesheet['status'] == 'Complete':
+        if timesheet_data['status'] == TimesheetStatus.WAITINGFORAPPROVAL.value() or timesheet_data['status'] == TimesheetStatus.COMPLETE.value():
             return RequestResult(False, "Timesheet already signed", 409)
         return self.set_timesheet_status(timesheet_id, TimesheetStatus.WAITINGFORAPPROVAL)
 

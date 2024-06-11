@@ -71,7 +71,6 @@ class Timesheet:
         :return: A dictionary representing the timesheet.
         """
         return {
-            "timesheetId": self.timesheet_id,
             "username": self.username,
             "month": self.month,
             "year": self.year,

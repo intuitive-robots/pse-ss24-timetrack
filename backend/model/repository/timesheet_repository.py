@@ -180,8 +180,6 @@ class TimesheetRepository:
         if self.get_timesheet(timesheet.username, timesheet.month, timesheet.year) is not None:
             return RequestResult(False, "Timesheet already exists", 409)
         timesheet_data = timesheet.to_dict()
-
-        timesheet_data.pop('timesheetId')
         result = self.db.timesheets.insert_one(timesheet_data)
         if result.acknowledged:
             return RequestResult(True, "Timesheet created successfully", 201)
