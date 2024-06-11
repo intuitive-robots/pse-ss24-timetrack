@@ -38,7 +38,7 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         if timesheet['status'] == 'Waiting for Approval' or timesheet['status'] == 'Complete':
             return RequestResult(False, "Timesheet already signed", 409)
-        return self.set_timesheet_status(timesheet_id, TimesheetStatus.WAITINGFORAPPROVAL)
+        return self.set_timesheet_status(timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
 
     def approve_timesheet(self, timesheet_id: str):
         """

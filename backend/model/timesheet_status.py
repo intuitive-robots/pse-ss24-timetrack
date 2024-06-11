@@ -5,12 +5,13 @@ class TimesheetStatus(Enum):
     """
     describes the status of a timesheet within the system.
     """
-    NOTSUBMITTED = "Not Submitted"
-    WAITINGFORAPPROVAL = "Waiting for Approval"
+    NOT_SUBMITTED = "Not Submitted"
+    WAITING_FOR_APPROVAL = "Waiting for Approval"
     REVISION = "Revision"
     COMPLETE = "Complete"
 
-    def get_status_by_value(value):
+    @staticmethod
+    def get_status_by_value(value: str):
         """
         Get the status by its value.
         :return: The status with the given value.
@@ -18,7 +19,7 @@ class TimesheetStatus(Enum):
         for status in TimesheetStatus:
             if status.value == value:
                 return status
-        raise ValueError("Status not found")
+        return None
 
     def __str__(self):
         """
