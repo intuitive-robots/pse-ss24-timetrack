@@ -16,7 +16,7 @@ class Timesheet:
         self.username = username
         self.month = month
         self.year = year
-        self.status = TimesheetStatus.NOTSUBMITTED
+        self.status = TimesheetStatus.NOT_SUBMITTED
         self.total_time = 0.0
         self.overtime = 0.0
         self.last_signature_change = datetime.now()

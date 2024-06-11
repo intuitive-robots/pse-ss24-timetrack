@@ -63,6 +63,18 @@ class TimeEntryRepository:
         time_entries = self.db.timeEntries.find({"username": username})
         return list(time_entries)
 
+    def get_time_entries_by_timesheet(self, timesheet_id: str):
+        """
+        Retrieves all TimeEntry objects from the database that are associated with a specific timesheet ID.
+
+        :param timesheet_id: The ID of the timesheet for which to retrieve TimeEntry objects.
+        :return: A list of all TimeEntry documents associated with the given timesheet ID.
+        """
+        if not timesheet_id:
+            return []
+        time_entries = self.db.timeEntries.find({"timesheetId": ObjectId(timesheet_id)})
+        return list(time_entries)
+
     def update_time_entry(self, time_entry):
         """
         Updates a TimeEntry object in the database
