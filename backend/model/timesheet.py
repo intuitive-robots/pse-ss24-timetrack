@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from model.time_sheet_validator.timesheet_validator import TimesheetValidator
 from model.timesheet_status import TimesheetStatus
 
 
@@ -63,6 +64,8 @@ class Timesheet:
         """
         self.time_entry_ids.remove(time_entry_id)
 
+
+        self.timesheet_validator = TimesheetValidator()
 
     def to_dict(self):
         """

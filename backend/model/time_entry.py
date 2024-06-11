@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from datetime import time, datetime
-
+from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 
 class TimeEntry(ABC):
     def __init__(self, timesheet_id: str,
                  start_time: datetime, end_time: datetime):
+
         """
         Initializes a new TimeEntry object with the given parameters.
         :param timesheet_id: The unique identifier for the timesheet.
@@ -16,12 +17,16 @@ class TimeEntry(ABC):
         self.start_time = start_time
         self.end_time = end_time
 
+
     def set_id(self, time_entry_id):
         """
         Sets the ID of the time entry.
         :param time_entry_id: The ID of the time entry.
         """
         self.time_entry_id = time_entry_id
+        self.time_entry_validator = TimeEntryValidator()
+
+
 
     @abstractmethod
     def to_dict(self):
