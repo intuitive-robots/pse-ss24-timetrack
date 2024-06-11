@@ -44,12 +44,7 @@ class TimesheetController(MethodView):
         """
         request_data = request.get_json()
         timesheet_id = request_data['timesheet_id']
-        check_existence = self.timesheet_service.ensure_timesheet_exists(get_jwt_identity(),
-                                                                         datetime.now().month,
-                                                                         datetime.now().year)
-        if check_existence.status_code != 200 and check_existence.status_code != 201:
-            return jsonify({'error': 'Failed to create timesheet'}), 500
-
+        
         result = self.timesheet_service.sign_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -80,9 +75,35 @@ class TimesheetController(MethodView):
         """
         Retrieves timesheets for the current user
         """
-        username = get_jwt_identity()
+        request_data = request.get_json()
+        username = request_data['username']
         result = self.timesheet_service.get_timesheets_by_username(username)
         return jsonify(result.message), result.status_code
+
+    @jwt_required()
+    def get_timesheets_by_month_year(self):
+        """
+        Retrieves timesheets for the current user by month and year
+        """
+        request_data = request.get_json()
+        username = request_data['username']
+        month = request_data['month']
+        year = request_data['year']
+        result = self.timesheet_service.get_timesheet(username, month, year)
+        if result.status_code != 200:
+            return jsonify(result.message), result.status_code
+        return jsonify(result.data.to_dict()), result.status_code
+
+    @jwt_required()
+    def get_current_timesheet(self):
+        """
+        Retrieves the current timesheet for a user
+        """
+        username = request.get_json()['username']
+        result = self.timesheet_service.get_current_timesheet(username)
+        if result.status_code != 200:
+            return jsonify(result.message), result.status_code
+        return jsonify(result.data.to_dict()), result.status_code
 
     @jwt_required()
     @check_access(roles=[UserRole.SUPERVISOR, UserRole.SECRETARY])

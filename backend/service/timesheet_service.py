@@ -157,3 +157,31 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         timesheet.remove_time_entry(time_entry_id)
         return self.timesheet_repository.update_timesheet(timesheet)
+
+    def get_current_timesheet(self, username: str):
+        """
+        Retrieves the current timesheet for a given username.
+        :param username: The username of the Hiwi
+        :return: The timesheet object
+        """
+        if username is None:
+            return RequestResult(False, "Please provide a username to retrieve the timesheet", 400)
+        current_timesheet_data = self.timesheet_repository.get_current_timesheet(username)
+        if current_timesheet_data is None:
+            return RequestResult(False, "Timesheet not found", 404)
+        return RequestResult(True, "", 200, Timesheet.from_dict(current_timesheet_data))
+
+    def get_timesheet(self, username: str, month: int, year: int):
+        """
+        Retrieves a timesheet by username, month, and year.
+        :param username: The username of the Hiwi
+        :param month: The month of the timesheet
+        :param year: The year of the timesheet
+        :return: The timesheet object
+        """
+        if username is None or month is None or year is None:
+            return RequestResult(False, "Please provide a username, month, and year to retrieve the timesheet", 400)
+        return RequestResult(True, "", 200,
+                             Timesheet.from_dict(self.timesheet_repository.find_timesheet_by_date(username,
+                                                                                                  month, year)))
+
