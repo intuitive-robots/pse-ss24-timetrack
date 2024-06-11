@@ -51,7 +51,7 @@ app.register_blueprint(user_blueprint, url_prefix='/user')
 
 time_entry_view = TimeEntryController.as_view('time_entry_api')
 time_entry_blueprint.add_url_rule('/createTimeEntry', view_func=time_entry_view, methods=['POST'])
-time_entry_blueprint.add_url_rule('/createVacationTime', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/createVacationEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/updateTimeEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/deleteTimeEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/getEntriesByTimesheetId', view_func=time_entry_view, methods=['GET'])

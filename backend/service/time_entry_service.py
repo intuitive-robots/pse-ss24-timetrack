@@ -35,7 +35,7 @@ class TimeEntryService:
         new_time_entry = WorkEntry.from_dict(entry_data)
         return self.time_entry_repository.create_time_entry(new_time_entry)
 
-    def add_vacation_time(self, entry_data: dict) -> RequestResult:
+    def add_vacation_entry(self, entry_data: dict) -> RequestResult:
         """
         Adds a new vacation time entry based on the provided entry data.
 

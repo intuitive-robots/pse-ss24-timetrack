@@ -21,8 +21,8 @@ class TimeEntryController(MethodView):
         vacation time, updating entries, and deleting entries based on the specific endpoint.
         """
         endpoint_mapping = {
-            '/createTimeEntry': self.create_time_entry,
-            '/createVacationTime': self.create_vacation_time,
+            '/createWorkEntry': self.create_work_entry,
+            '/createVacationEntry': self.create_vacation_entry,
             '/updateTimeEntry': self.update_time_entry,
             '/deleteTimeEntry': self.delete_time_entry
         }
@@ -51,21 +51,21 @@ class TimeEntryController(MethodView):
         return jsonify({'error': 'Endpoint not found'}), 404
 
     @jwt_required()
-    def create_time_entry(self):
+    def create_work_entry(self):
         """
         Creates a new time entry with the provided JSON data.
         """
         time_entry_data = request.get_json()
-        result = self.time_entry_service.create_time_entry(time_entry_data)
+        result = self.time_entry_service.create_work_entry(time_entry_data)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
-    def create_vacation_time(self):
+    def create_vacation_entry(self):
         """
         Creates a new vacation time entry with the provided JSON data.
         """
         vacation_data = request.get_json()
-        result = self.time_entry_service.create_vacation_time(vacation_data)
+        result = self.time_entry_service.add_vacation_entry(vacation_data)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
