@@ -44,10 +44,10 @@ class TimesheetController(MethodView):
         """
         request_data = request.get_json()
         timesheet_id = request_data['timesheet_id']
-        check_existance = self.timesheet_service.ensure_timesheet_exists(get_jwt_identity(),
+        check_existence = self.timesheet_service.ensure_timesheet_exists(get_jwt_identity(),
                                                                          datetime.now().month,
                                                                          datetime.now().year)
-        if check_existance.status_code != 200 and check_existance.status_code != 201:
+        if check_existence.status_code != 200 and check_existence.status_code != 201:
             return jsonify({'error': 'Failed to create timesheet'}), 500
 
         result = self.timesheet_service.sign_timesheet(timesheet_id)

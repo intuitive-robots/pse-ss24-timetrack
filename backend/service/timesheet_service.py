@@ -37,7 +37,8 @@ class TimesheetService:
         timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
-        if timesheet_data['status'] == TimesheetStatus.WAITINGFORAPPROVAL.value() or timesheet_data['status'] == TimesheetStatus.COMPLETE.value():
+        if (timesheet_data['status'] == TimesheetStatus.WAITING_FOR_APPROVAL.value()
+                or timesheet_data['status'] == TimesheetStatus.COMPLETE.value()):
             return RequestResult(False, "Timesheet already signed", 409)
         return self.set_timesheet_status(timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
 
@@ -144,7 +145,7 @@ class TimesheetService:
         timesheet.add_time_entry(time_entry_id)
         return self.timesheet_repository.update_timesheet(timesheet)
 
-    def remove_time_entry(self, timesheet_id: str, time_entry_id: str):
+    def delete_time_entry(self, timesheet_id: str, time_entry_id: str):
         """
         Removes a time entry from a timesheet.
         :param timesheet_id: The ID of the timesheet
