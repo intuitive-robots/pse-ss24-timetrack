@@ -48,7 +48,7 @@ user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GE
 app.register_blueprint(user_blueprint, url_prefix='/user')
 
 time_entry_view = TimeEntryController.as_view('time_entry')
-time_entry_blueprint.add_url_rule('/createTimeEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/createWorkEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/createVacationEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/updateTimeEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/deleteTimeEntry', view_func=time_entry_view, methods=['POST'])

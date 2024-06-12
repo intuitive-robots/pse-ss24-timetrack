@@ -39,7 +39,7 @@ class TimeEntryService:
         :return: A RequestResult object containing the outcome.
         """
         username = get_jwt_identity()
-
+        entry_data['entryType'] = entry_type.value
         validation_result = self.entry_validator.is_valid(entry_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
@@ -57,7 +57,7 @@ class TimeEntryService:
 
         # Ensure the timesheet exists before adding a new entry
         timesheet_exists_result = self.timesheet_service.ensure_timesheet_exists(
-            username, time_entry.date.month, time_entry.date.year)
+            username, time_entry.start_time.month, time_entry.start_time.year)
         if not timesheet_exists_result.is_successful:
             return timesheet_exists_result
 
@@ -65,6 +65,10 @@ class TimeEntryService:
             time_entry.timesheet_id, time_entry.time_entry_id)
         if not add_entry_result.is_successful:
             return add_entry_result
+
+        if validation_result.status == ValidationStatus.WARNING:
+            return RequestResult(True, f"{entry_type.name} entry added with warnings ´{validation_result.message}´",
+                                 status_code=200)
 
         return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200)
 
@@ -99,8 +103,6 @@ class TimeEntryService:
         if not existing_entry_data:
             return RequestResult(False, "Time entry not found", status_code=404)
 
-        print("Existing entry data:", existing_entry_data)
-
         updated_entry_data = existing_entry_data.copy()
         updated_entry_data.update(update_data)
 
@@ -113,7 +115,14 @@ class TimeEntryService:
         if not updated_time_entry:
             return RequestResult(False, "Failed to construct updated time entry", status_code=500)
 
-        return self.time_entry_repository.update_time_entry(updated_time_entry)
+        repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
+        if not repo_result.is_successful:
+            return repo_result
+
+        if validation_result.status == ValidationStatus.WARNING:
+            return RequestResult(True, f"entry updated with warnings ´{validation_result.message}´",
+                                 status_code=200)
+        return repo_result
 
     def delete_time_entry(self, entry_id: str) -> RequestResult:
         """

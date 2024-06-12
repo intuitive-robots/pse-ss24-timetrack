@@ -33,8 +33,6 @@ class TimeEntryDataValidator(InputValidator):
         """
         time_entry_data = ObjectUtils.convert_objectids_to_strings(time_entry_data)
 
-        print(time_entry_data)
-
         if 'entryType' not in time_entry_data or not TimeEntryType.get_type_by_value(time_entry_data['entryType']):
             return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified entry type.")
 
@@ -69,6 +67,10 @@ class TimeEntryDataValidator(InputValidator):
                                         "DateTime objects required for startTime and endTime.")
             if time_entry_data['startTime'] >= time_entry_data['endTime']:
                 return ValidationResult(ValidationStatus.FAILURE, "Start time must be earlier than end time.")
+
+        not_required_fields = [field for field in time_entry_data if field not in required_keys and field != '_id']
+        if not_required_fields:
+            return ValidationResult(ValidationStatus.WARNING, f"Skipped fields: {', '.join(not_required_fields)}")
 
         return ValidationResult(ValidationStatus.SUCCESS, "Time entry data is valid.")
 

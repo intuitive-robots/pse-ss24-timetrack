@@ -27,7 +27,7 @@ class VacationEntry(TimeEntry):
         self.time_entry_validator.add_validation_rule(HolidayStrategy())
 
     def to_dict(self):
-        super().to_dict()
+        return super().to_dict()
 
     @classmethod
     def dict_keys(cls):
