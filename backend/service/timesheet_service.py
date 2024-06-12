@@ -20,7 +20,7 @@ class TimesheetService:
         :param year: Year of the timesheet
         :return: The timesheet object
         """
-        timesheet = self.timesheet_repository.find_timesheet_by_date(username, month, year)
+        timesheet = self.timesheet_repository.get_timesheets(username, month, year)
         if timesheet is not None:
             return RequestResult(True, "Timesheet already exists", 200)
         creation_result = self.timesheet_repository.create_timesheet(Timesheet(username, month, year))

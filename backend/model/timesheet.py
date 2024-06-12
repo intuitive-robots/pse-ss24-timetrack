@@ -5,7 +5,9 @@ from model.timesheet_status import TimesheetStatus
 
 
 class Timesheet:
-    def __init__(self, username: str, month: int, year: int):
+    def __init__(self, username: str, month: int, year: int,
+                 timesheet_id=None, status=TimesheetStatus.NOT_SUBMITTED, total_time=0.0,
+                 overtime=0.0, last_signature_change=datetime.now(), time_entry_ids=[]):
         """
         Initializes a new Timesheet object with the given parameters.
 
@@ -13,16 +15,14 @@ class Timesheet:
         :param month: The month of the timesheet.
         :param year: The year of the timesheet.
         """
-        self.timesheet_id = None
         self.username = username
         self.month = month
         self.year = year
-        self.status = TimesheetStatus.NOT_SUBMITTED
-        self.total_time = 0.0
-        self.overtime = 0.0
-        self.last_signature_change = datetime.now()
-        self.time_entry_ids = []
-
+        self.status = status
+        self.total_time = total_time
+        self.overtime = overtime
+        self.last_signature_change = last_signature_change
+        self.time_entry_ids = time_entry_ids
 
     @staticmethod
     def from_dict(timesheet_dict: dict):
@@ -33,11 +33,11 @@ class Timesheet:
         :return: A Timesheet object.
         """
         timesheet = Timesheet(timesheet_dict["username"], timesheet_dict["month"], timesheet_dict["year"])
-        timesheet.set_id(timesheet_dict["_id"])
-        timesheet.status = TimesheetStatus(timesheet_dict["status"])
-        timesheet.total_time = timesheet_dict["totalTime"]
-        timesheet.overtime = timesheet_dict["overtime"]
-        timesheet.last_signature_change = timesheet_dict["lastSignatureChange"]
+        timesheet.set_id(timesheet_dict.get("_id", None))
+        timesheet.status = TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED))
+        timesheet.total_time = timesheet_dict.get("totalTime", 0.0)
+        timesheet.overtime = timesheet_dict.get("overtime", 0.0)
+        timesheet.last_signature_change = timesheet_dict.get("lastSignatureChange", datetime.now())
         return timesheet
 
     def set_id(self, timesheet_id):
