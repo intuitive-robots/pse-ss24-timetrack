@@ -26,6 +26,6 @@ class Secretary(User):
         """
         user_dict = super().to_dict()
         user_dict.update({
-            "timesheets": [ts.to_dict() for ts in self.currentTimesheetIds],
+            user_dict.update({"timesheets": self.currentTimesheetIds})
         })
         return user_dict
