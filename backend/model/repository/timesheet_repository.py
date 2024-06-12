@@ -66,7 +66,7 @@ class TimesheetRepository:
         """
         if username is None:
             return None
-        timesheet_data = self.db.timesheets.find_one({"username": username, "status": "NOTSUBMITTED"})
+        timesheet_data = self.db.timesheets.find_one({"username": username, "status": TimesheetStatus.NOT_SUBMITTED.value()})
         if timesheet_data:
             return timesheet_data
         return None
@@ -185,7 +185,7 @@ class TimesheetRepository:
             return RequestResult(True, "Timesheet created successfully", 201)
         return RequestResult(False, "Timesheet creation failed", 500)
 
-    def get_timesheets_by_username_status(self, username: str, status: str):
+    def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
         Retrieves all timesheets for a given username with a specified status
         :param username: Username of the Hiwi

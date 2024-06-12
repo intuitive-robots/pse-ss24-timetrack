@@ -114,8 +114,10 @@ class TimesheetController(MethodView):
         request_data = request.get_json()
         username = request_data['username']
         status = request_data['status']
-        result = self.timesheet_service.get_timesheets_by_username_status(username, status)
-        return jsonify(result.message), result.status_code
+        timesheets = self.timesheet_service.get_timesheets_by_username_status(username, status)
+        if timesheets is None or len(timesheets) == 0:
+            return jsonify({'error': 'No timesheets found'}), 404
+        return jsonify([timesheet.to_dict() for timesheet in timesheets]), 200
 
     def _dispatch_request(self, endpoint_mapping):
         """
