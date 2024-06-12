@@ -1,4 +1,4 @@
-from datetime import time, datetime, date
+from datetime import datetime
 
 from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType

@@ -1,5 +1,5 @@
 import secrets
-from datetime import timedelta, time, datetime
+from datetime import timedelta, datetime
 
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required
 from auth import init_auth_routes
 from controller.time_entry_controller import time_entry_blueprint
 from controller.timesheet_controller import TimesheetController
+from controller.timesheet_controller import timesheet_blueprint
 from controller.user_controller import UserController
 from controller.user_controller import user_blueprint
 from db import initialize_db, check_db_connection
@@ -15,13 +16,11 @@ from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
 from model.timesheet import Timesheet
-from model.timesheet_status import TimesheetStatus
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 from model.user.user import User
 from model.work_entry import WorkEntry
 from utils.security_utils import SecurityUtils
-from controller.timesheet_controller import timesheet_blueprint
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins

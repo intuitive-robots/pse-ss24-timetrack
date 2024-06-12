@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required
 
 from service.time_entry_service import TimeEntryService
+from service.timesheet_service import TimesheetService
 
 time_entry_blueprint = Blueprint('time_entry', __name__)
 
@@ -13,7 +14,7 @@ class TimeEntryController(MethodView):
         Initialize the TimeEntryController with an instance of TimeEntryService.
         """
         self.time_entry_service = TimeEntryService()
-        self.timesheet_service = None  # TODO Insert Timesheet Service
+        self.timesheet_service = TimesheetService()
 
     def post(self):
         """

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from datetime import time, datetime
+from datetime import datetime
+
 from model.time_entry_type import TimeEntryType
 
 

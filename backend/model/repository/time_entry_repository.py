@@ -3,8 +3,6 @@ from bson import ObjectId
 from db import initialize_db
 from model.request_result import RequestResult
 from model.time_entry import TimeEntry
-from model.vacation_entry import VacationEntry
-from model.work_entry import WorkEntry
 
 
 class TimeEntryRepository:
