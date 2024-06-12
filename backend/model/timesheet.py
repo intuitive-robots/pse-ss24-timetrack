@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from model.time_sheet_validator.timesheet_validator import TimesheetValidator
 from model.timesheet_status import TimesheetStatus
+from bson import ObjectId
 
 
 class Timesheet:
@@ -14,7 +14,9 @@ class Timesheet:
         :param username: The username of the Hiwi associated with the timesheet.
         :param month: The month of the timesheet.
         :param year: The year of the timesheet.
+        TODO Add more parameter DOC
         """
+        self.timesheet_id = timesheet_id
         self.username = username
         self.month = month
         self.year = year
@@ -23,6 +25,7 @@ class Timesheet:
         self.overtime = overtime
         self.last_signature_change = last_signature_change
         self.time_entry_ids = time_entry_ids
+
 
     @staticmethod
     def from_dict(timesheet_dict: dict):
@@ -54,7 +57,7 @@ class Timesheet:
 
         :param time_entry_id: The ID of the time entry to add.
         """
-        self.time_entry_ids.append(time_entry_id)
+        self.time_entry_ids.append(ObjectId(time_entry_id))
 
     def remove_time_entry(self, time_entry_id):
         """
@@ -62,8 +65,7 @@ class Timesheet:
 
         :param time_entry_id: The ID of the time entry to remove.
         """
-        self.time_entry_ids.remove(time_entry_id)
-        self.timesheet_validator = TimesheetValidator()
+        self.time_entry_ids.remove(ObjectId(time_entry_id))
 
     def to_dict(self):
         """

@@ -128,7 +128,9 @@ class TimeEntryService:
         :param str timesheet_id: The ID of the timesheet for which to retrieve entries.
         :return: A list of TimeEntry model instances representing all time entries for the specified timesheet.
         """
-        entries_data = self.time_entry_repository.get_entries_by_timesheet_id(timesheet_id)
+        # TODO: Use TimeEntryValidator to check if timesheet_id is valid object id
+
+        entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
         if not entries_data:
             return []
 

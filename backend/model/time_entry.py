@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+from bson import ObjectId
+
 from model.time_entry_type import TimeEntryType
 
 
@@ -33,8 +35,8 @@ class TimeEntry(ABC):
         :return: A dictionary representing the time entry.
         """
         return {
-            'timeEntryId': self.time_entry_id,
-            'timesheetId': self.timesheet_id,
+            'timeEntryId': str(self.time_entry_id),
+            'timesheetId': str(self.timesheet_id),
             'startTime': self.start_time,
             'endTime': self.end_time,
             'entryType': self.entry_type.value
@@ -50,17 +52,14 @@ class TimeEntry(ABC):
         start_datetime = datetime.fromtimestamp(data['startTime'] / 1000)
         end_datetime = datetime.fromtimestamp(data['endTime'] / 1000)
 
-        start_time = start_datetime.time()
-        end_time = end_datetime.time()
-
         entry_type = TimeEntryType.get_type_by_value(data['entryType'])
 
         time_entry_id = str(data['_id'])
 
         return cls(
             timesheet_id=data['timesheetId'],
-            start_time=start_time,
-            end_time=end_time,
+            start_time=start_datetime,
+            end_time=end_datetime,
             entry_type=entry_type
         )
 

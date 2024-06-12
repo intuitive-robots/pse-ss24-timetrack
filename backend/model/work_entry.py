@@ -4,6 +4,7 @@ from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType
 from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
 from model.time_entry_validator.holiday_strategy import HolidayStrategy
+from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 
 
@@ -28,9 +29,10 @@ class WorkEntry(TimeEntry):
         self.break_time = break_time
         self.activity = activity
         self.project_name = project_name
-        self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
-        self.time_entry_validator.add_validation_rule(HolidayStrategy())
-        self.time_entry_validator.add_validation_rule(BreakLengthStrategy())
+        time_entry_validator = TimeEntryValidator()
+        time_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        time_entry_validator.add_validation_rule(HolidayStrategy())
+        time_entry_validator.add_validation_rule(BreakLengthStrategy())
 
     def to_dict(self):
         """
@@ -51,18 +53,13 @@ class WorkEntry(TimeEntry):
         Creates a WorkEntry instance from a dictionary containing MongoDB data,
         utilizing the superclass method to handle common fields.
         """
-        start_datetime = datetime.fromtimestamp(data['startTime'] / 1000)
-        end_datetime = datetime.fromtimestamp(data['endTime'] / 1000)
-        entry_date = start_datetime.date()
-        start_time = start_datetime.time()
-        end_time = end_datetime.time()
+        start_datetime = data['startTime']
+        end_datetime = data['endTime']
 
         return cls(
-            time_entry_id=str(data['_id']),
             timesheet_id=data['timesheetId'],
-            date=entry_date,
-            start_time=start_time,
-            end_time=end_time,
+            start_time=start_datetime,
+            end_time=end_datetime,
             break_time=data.get('breakTime', 0),
             activity=data.get('activity', ''),
             project_name=data.get('projectName', '')

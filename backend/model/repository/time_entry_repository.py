@@ -62,7 +62,7 @@ class TimeEntryRepository:
         time_entries = self.db.timeEntries.find()
         return list(time_entries)
 
-    def get_time_entries_by_timesheet(self, timesheet_id: str):
+    def get_time_entries_by_timesheet_id(self, timesheet_id: str):
         """
         Retrieves all TimeEntry objects from the database that are associated with a specific timesheet ID.
 

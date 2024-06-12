@@ -6,11 +6,9 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 
 from auth import init_auth_routes
-from controller.time_entry_controller import time_entry_blueprint
-from controller.timesheet_controller import TimesheetController
-from controller.timesheet_controller import timesheet_blueprint
-from controller.user_controller import UserController
-from controller.user_controller import user_blueprint
+from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
+from controller.timesheet_controller import TimesheetController, timesheet_blueprint
+from controller.user_controller import UserController, user_blueprint
 from db import initialize_db, check_db_connection
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
@@ -21,6 +19,7 @@ from model.user.role import UserRole
 from model.user.user import User
 from model.work_entry import WorkEntry
 from utils.security_utils import SecurityUtils
+from service.timesheet_service import TimesheetService
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -48,17 +47,16 @@ user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GE
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 
-time_entry_view = TimeEntryController.as_view('time_entry_api')
+time_entry_view = TimeEntryController.as_view('time_entry')
 time_entry_blueprint.add_url_rule('/createTimeEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/createVacationEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/updateTimeEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/deleteTimeEntry', view_func=time_entry_view, methods=['POST'])
 time_entry_blueprint.add_url_rule('/getEntriesByTimesheetId', view_func=time_entry_view, methods=['GET'])
 
-app.register_blueprint(time_entry_blueprint, url_prefix='/timeentry')
+app.register_blueprint(time_entry_blueprint, url_prefix='/timeEntry')
 
 
-# Registering the timesheet routes
 timesheet_view = TimesheetController.as_view('timesheet')
 timesheet_blueprint.add_url_rule('/sign', view_func=timesheet_view, methods=['PATCH'], endpoint='sign_timesheet')
 timesheet_blueprint.add_url_rule('/approve', view_func=timesheet_view, methods=['PATCH'], endpoint='approve_timesheet')
@@ -121,7 +119,7 @@ def create_time_entry():
     Creates a test time entry in the database
     """
     work_entry = WorkEntry(
-        timesheet_id="timesheet123",
+        timesheet_id="6669af45e93d71a91f35c79b",
         start_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
         end_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
         break_time=15.0,
@@ -141,7 +139,7 @@ def read_time_entries():
     :return: A JSON string containing all time entries
     """
     entry_repo = TimeEntryRepository.get_instance()
-    time_entries = entry_repo.get_time_entries("")
+    time_entries = entry_repo.get_time_entries()
     return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
 @app.route('/readTimesheets')
@@ -164,11 +162,15 @@ def create_timesheet():
     """
     timesheet = Timesheet(
         username="test123",
-        month=3,
+        month=6,
         year=2022,
     )
     timesheet_repo = TimesheetRepository.get_instance()
     result = timesheet_repo.create_timesheet(timesheet)
+
+    timesheet_service = TimesheetService()
+    timesheet_id = timesheet_service.get_timesheet(timesheet.username, timesheet.month, timesheet.year).data.timesheet_id
+    timesheet_service.add_time_entry(timesheet_id, "6668bdd0c1c2ec60ed516ceb")
     return result.to_dict(), result.status_code
 
 @app.route('/checkMongoDBConnection')

@@ -32,7 +32,7 @@ class TimesheetService:
         :param timesheet_id: The ID of the timesheet to sign
         :return: The result of the sign operation
         """
-        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id).data
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
 
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
@@ -98,10 +98,10 @@ class TimesheetService:
         :param timesheet_id: The ID of the timesheet
         :return: The timesheet object
         """
-        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-        if timesheet is None:
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
-        return RequestResult(True, "", 200, Timesheet.from_dict(timesheet))
+        return RequestResult(True, "", 200, Timesheet.from_dict(timesheet_data))
 
     def get_timesheets_by_username(self, username: str):
         """
@@ -109,8 +109,8 @@ class TimesheetService:
         :param username: The username of the Hiwi
         :return: A list of timesheet objects
         """
-        timesheets = self.timesheet_repository.get_timesheets_by_username(username)
-        return list(map(Timesheet.from_dict, timesheets))
+        timesheets_data = self.timesheet_repository.get_timesheets_by_username(username)
+        return list(map(Timesheet.from_dict, timesheets_data))
 
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
@@ -119,8 +119,8 @@ class TimesheetService:
         :param status: The status of the timesheets
         :return: A list of timesheet objects
         """
-        timesheets = self.timesheet_repository.get_timesheets_by_status(username, status)
-        return list(map(Timesheet.from_dict, timesheets))
+        timesheets_data = self.timesheet_repository.get_timesheets_by_status(username, status)
+        return list(map(Timesheet.from_dict, timesheets_data))
 
     def get_timesheet_id(self, username: str, month: int, year: int):
         """
@@ -139,12 +139,13 @@ class TimesheetService:
         :param time_entry_id: The ID of the time entry
         :return: The result of the add operation
         """
-        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id).data
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
 
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
-        timesheet_data.add_time_entry(time_entry_id)
-        return self.timesheet_repository.update_timesheet(timesheet_data)
+        timesheet = Timesheet.from_dict(timesheet_data)
+        timesheet.add_time_entry(time_entry_id)
+        return self.timesheet_repository.update_timesheet(timesheet)
 
     def delete_time_entry(self, timesheet_id: str, time_entry_id: str):
         """
