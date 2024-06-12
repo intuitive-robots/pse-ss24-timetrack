@@ -7,6 +7,7 @@ from model.request_result import RequestResult
 from model.time_entry_type import TimeEntryType
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
+from service.timesheet_service import TimesheetService
 
 
 class TimeEntryService:
@@ -20,7 +21,7 @@ class TimeEntryService:
         validator for time entry data validation.
         """
         self.time_entry_repository = TimeEntryRepository.get_instance()
-        self.timesheet_service = None  # TODO Insert Timesheet Service
+        self.timesheet_service = TimesheetService()
         self.entry_validator = None  # TODO Insert Time Entry Validator
 
         self.entry_type_mapping = {
@@ -59,8 +60,7 @@ class TimeEntryService:
         if not timesheet_exists_result.is_successful:
             return timesheet_exists_result
 
-        # Add the new time entry to the timesheet
-        add_entry_result = self.timesheet_service.add_time_entry_to_timesheet(
+        add_entry_result = self.timesheet_service.add_time_entry(
             time_entry.timesheet_id, time_entry.time_entry_id)
         if not add_entry_result.is_successful:
             return add_entry_result
@@ -133,11 +133,11 @@ class TimeEntryService:
             return []
 
         time_entries = []
-        for entry in entries_data:
-            entry_type = TimeEntryType.get_type_by_value(entry['entryType'])
+        for entry_data in entries_data:
+            entry_type = TimeEntryType.get_type_by_value(entry_data['entryType'])
             if entry_type == TimeEntryType.WORK_ENTRY:
-                time_entries.append(WorkEntry.from_dict(entry))
+                time_entries.append(WorkEntry.from_dict(entry_data))
             elif entry_type == TimeEntryType.VACATION_ENTRY:
-                time_entries.append(VacationEntry.from_dict(entry))
+                time_entries.append(VacationEntry.from_dict(entry_data))
 
         return time_entries

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
 from model.timesheet import Timesheet
