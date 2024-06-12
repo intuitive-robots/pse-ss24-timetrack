@@ -65,6 +65,11 @@ timesheet_blueprint.add_url_rule('/requestChange', view_func=timesheet_view, met
 timesheet_blueprint.add_url_rule('/get', view_func=timesheet_view, methods=['GET'], endpoint='get_timesheets')
 timesheet_blueprint.add_url_rule('/getByUsernameStatus', view_func=timesheet_view, methods=['GET'],
                                  endpoint='get_timesheets_by_username_status')
+timesheet_blueprint.add_url_rule('/getCurrentTimesheet', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_current_timesheet')
+timesheet_blueprint.add_url_rule('/getByMonthYear', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_timesheets_by_month_year')
+
 app.register_blueprint(timesheet_blueprint, url_prefix='/timesheet')
 
 @app.route('/')

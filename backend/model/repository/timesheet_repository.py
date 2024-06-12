@@ -66,7 +66,8 @@ class TimesheetRepository:
         """
         if username is None:
             return None
-        timesheet_data = self.db.timesheets.find_one({"username": username, "status": TimesheetStatus.NOT_SUBMITTED.value()})
+        timesheet_data = self.db.timesheets.find_one({"username": username, "status": TimesheetStatus.NOT_SUBMITTED.value})
+
         if timesheet_data:
             return timesheet_data
         return None
@@ -195,4 +196,15 @@ class TimesheetRepository:
         if username is None or status is None:
             return None
         timesheets = self.db.timesheets.find({"username": username, "status": status})
+        return list(timesheets)
+
+    def get_timesheets_by_username(self, username: str):
+        """
+        Retrieves all timesheets for a given username
+        :param username: Username of the Hiwi
+        :return: A list of timesheets for the given username
+        """
+        if username is None:
+            return None
+        timesheets = self.db.timesheets.find({"username": username})
         return list(timesheets)
