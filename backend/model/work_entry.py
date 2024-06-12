@@ -62,7 +62,7 @@ class WorkEntry(TimeEntry):
             end_time=end_datetime,
             break_time=data.get('breakTime', 0),
             activity=data.get('activity', ''),
-            project_name=data.get('projectName', '')
+            project_name=data.get('projectName', ''),
         )
 
     def get_duration(self):

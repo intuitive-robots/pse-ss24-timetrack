@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from bson import ObjectId
 
@@ -45,23 +45,31 @@ class TimeEntry(ABC):
     @classmethod
     def from_dict(cls, data: dict):
         """
-        Creates a TimeEntry instance from a dictionary.
-        :param data: A dictionary containing attributes of a TimeEntry.
-        :return: An instance of TimeEntry or its subclass.
+        Creates a WorkEntry instance from a dictionary containing MongoDB data,
+        utilizing the superclass method to handle common fields.
         """
-        start_datetime = datetime.fromtimestamp(data['startTime'] / 1000)
-        end_datetime = datetime.fromtimestamp(data['endTime'] / 1000)
-
-        entry_type = TimeEntryType.get_type_by_value(data['entryType'])
-
-        time_entry_id = str(data['_id'])
+        start_datetime = data['startTime']
+        end_datetime = data['endTime']
 
         return cls(
             timesheet_id=data['timesheetId'],
             start_time=start_datetime,
             end_time=end_datetime,
-            entry_type=entry_type
+            entry_type=TimeEntryType.get_type_by_value(data['entryType'])
         )
+
+    @classmethod
+    def dict_keys(cls):
+        """
+        Returns a list of keys used for the dictionary representation of a TimeEntry object by creating a dummy instance.
+
+        :return: A list of keys representing the time entry data fields.
+        """
+        # Creating a dummy TimeEntry with mock data
+        dummy_start_time = datetime.now()
+        dummy_end_time = dummy_start_time + timedelta(hours=1)
+        dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, TimeEntryType.WORK_ENTRY)
+        return list(dummy_entry.to_dict().keys())
 
     @abstractmethod
     def get_duration(self):

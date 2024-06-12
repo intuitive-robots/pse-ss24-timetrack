@@ -1,5 +1,6 @@
 from flask_jwt_extended import get_jwt_identity
 
+from controller.input_validator.time_entry_data_validator import TimeEntryDataValidator
 from controller.input_validator.validation_status import ValidationStatus
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.time_entry import TimeEntry
@@ -22,7 +23,7 @@ class TimeEntryService:
         """
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.timesheet_service = TimesheetService()
-        self.entry_validator = None  # TODO Insert Time Entry Validator
+        self.entry_validator = TimeEntryDataValidator()
 
         self.entry_type_mapping = {
             TimeEntryType.WORK_ENTRY: WorkEntry,

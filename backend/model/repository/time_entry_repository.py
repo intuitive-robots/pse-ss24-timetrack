@@ -99,7 +99,7 @@ class TimeEntryRepository:
         :return: A RequestResult object indicating the success of the operation
         """
         if entry_id is None:
-            return None
+            return RequestResult(False, "Entry ID is None", 400)
         result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
         if result.deleted_count == 0:
             return RequestResult(False, "Entry not found", 404)

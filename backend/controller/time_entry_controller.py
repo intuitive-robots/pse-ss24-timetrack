@@ -75,7 +75,8 @@ class TimeEntryController(MethodView):
         Updates an existing time entry with the provided JSON data.
         """
         time_entry_data = request.get_json()
-        result = self.time_entry_service.update_time_entry(time_entry_data)
+        timesheet_id = time_entry_data.get('timeEntryId')
+        result = self.time_entry_service.update_time_entry(timesheet_id, time_entry_data)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
@@ -83,7 +84,7 @@ class TimeEntryController(MethodView):
         """
         Deletes a time entry identified by its ID provided in JSON data.
         """
-        time_entry_id = request.get_json().get('id')
+        time_entry_id = request.get_json().get('timeEntryId')
         result = self.time_entry_service.delete_time_entry(time_entry_id)
         return jsonify(result.message), result.status_code
 
