@@ -36,9 +36,9 @@ class TimeEntryRepository:
         if time_entry_id is None:
             return None
         time_entry_data = self.db.timeEntries.find_one({"_id": ObjectId(time_entry_id)})
-        if time_entry_data:
-            return time_entry_data
-        return None
+        if not time_entry_data:
+            return None
+        return time_entry_data
 
     def get_time_entries_by_date(self, date, username):
         """
@@ -74,7 +74,7 @@ class TimeEntryRepository:
         time_entries = self.db.timeEntries.find({"timesheetId": ObjectId(timesheet_id)})
         return list(time_entries)
 
-    def update_time_entry(self, time_entry):
+    def update_time_entry(self, time_entry: TimeEntry):
         """
         Updates a TimeEntry object in the database
         :param time_entry: The TimeEntry object to update
@@ -84,6 +84,7 @@ class TimeEntryRepository:
             return None
         result = self.db.timeEntries.update_one({"_id": ObjectId(time_entry.time_entry_id)},
                                                 {"$set": time_entry.to_dict()})
+
         if result.matched_count == 0:
             return RequestResult(False, "Entry not found", 404)
         if result.modified_count == 0:

@@ -12,6 +12,7 @@ class WorkEntry(TimeEntry):
     """
     Represents a work entry in the timesheet.
     """
+
     def __init__(self, timesheet_id: str,
                  start_time: datetime, end_time: datetime, break_time: float,
                  activity: str, project_name: str):
@@ -56,13 +57,24 @@ class WorkEntry(TimeEntry):
         start_datetime = data['startTime']
         end_datetime = data['endTime']
 
+        if isinstance(start_datetime, str):
+            start_datetime = datetime.fromisoformat(data['startTime'])
+
+        if isinstance(end_datetime, str):
+            end_datetime = datetime.fromisoformat(data['endTime'])
+
+        timesheet_id = data['timesheetId']
+        break_time = data.get('breakTime', 0)
+        activity = data.get('activity', '')
+        project_name = data.get('projectName', '')
+
         return cls(
-            timesheet_id=data['timesheetId'],
+            timesheet_id=timesheet_id,
             start_time=start_datetime,
             end_time=end_datetime,
-            break_time=data.get('breakTime', 0),
-            activity=data.get('activity', ''),
-            project_name=data.get('projectName', ''),
+            break_time=break_time,
+            activity=activity,
+            project_name=project_name
         )
 
     @classmethod
@@ -72,7 +84,6 @@ class WorkEntry(TimeEntry):
 
         :return: A list of keys representing the time entry data fields.
         """
-        # Creating a dummy TimeEntry with mock data
         dummy_start_time = datetime.now()
         dummy_end_time = dummy_start_time + timedelta(hours=1)
         dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, 0, "", "")

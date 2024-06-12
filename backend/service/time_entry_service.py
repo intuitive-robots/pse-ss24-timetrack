@@ -99,6 +99,8 @@ class TimeEntryService:
         if not existing_entry_data:
             return RequestResult(False, "Time entry not found", status_code=404)
 
+        print("Existing entry data:", existing_entry_data)
+
         updated_entry_data = existing_entry_data.copy()
         updated_entry_data.update(update_data)
 
@@ -107,6 +109,7 @@ class TimeEntryService:
             return RequestResult(False, validation_result.message, status_code=400)
 
         updated_time_entry = TimeEntry.from_dict(updated_entry_data)
+        updated_time_entry.set_id(entry_id)
         if not updated_time_entry:
             return RequestResult(False, "Failed to construct updated time entry", status_code=500)
 

@@ -121,7 +121,7 @@ def create_time_entry():
     work_entry = WorkEntry(
         timesheet_id="6669af45e93d71a91f35c79b",
         start_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
-        end_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
+        end_time=datetime(year=2022, month=3, day=1, hour=10, minute=0),
         break_time=15.0,
         activity="Test Activity",
         project_name="Test Project"

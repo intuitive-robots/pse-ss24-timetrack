@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-
-from bson import ObjectId
+from datetime import datetime
 
 from model.time_entry_type import TimeEntryType
 
@@ -48,15 +46,19 @@ class TimeEntry(ABC):
         Creates a WorkEntry instance from a dictionary containing MongoDB data,
         utilizing the superclass method to handle common fields.
         """
-        start_datetime = data['startTime']
-        end_datetime = data['endTime']
+        entry_type = TimeEntryType.get_type_by_value(data['entryType'])
 
-        return cls(
-            timesheet_id=data['timesheetId'],
-            start_time=start_datetime,
-            end_time=end_datetime,
-            entry_type=TimeEntryType.get_type_by_value(data['entryType'])
-        )
+        from model.work_entry import WorkEntry
+        from model.vacation_entry import VacationEntry
+        type_class_map = {
+            TimeEntryType.WORK_ENTRY: WorkEntry,
+            TimeEntryType.VACATION_ENTRY: VacationEntry,
+        }
+
+        if entry_type in type_class_map:
+            return type_class_map[entry_type].from_dict(data)
+        else:
+            raise ValueError(f"Unsupported entry type: {data['entryType']}")
 
     @abstractmethod
     def get_duration(self):

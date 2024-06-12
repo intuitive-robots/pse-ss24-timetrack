@@ -7,6 +7,7 @@ from controller.input_validator.validation_status import ValidationStatus
 from model.time_entry_type import TimeEntryType
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
+from utils.object_utils import ObjectUtils
 
 
 class TimeEntryDataValidator(InputValidator):
@@ -15,10 +16,12 @@ class TimeEntryDataValidator(InputValidator):
         Initializes the TimeEntryDataValidator with predefined regex patterns for validating time entry fields.
         """
         self.field_patterns = {
-            'timesheetId': r'^[a-zA-Z0-9]{10}$',  # Alphanumeric exactly 10 characters long
+            'timesheetId': r'^[0-9a-fA-F]{24}$',  # Alphanumeric exactly 10 characters long
             'activity': r'^[\w\s\-,.:;!?\']+$',  # Alphanumeric, whitespace, and selected punctuation
             'projectName': r'^[\w\s\-]+$',  # Alphanumeric, whitespace, hyphens, and underscores
-            'breakTime': r'^\d+$'  # Non-negative integers (zero or more)
+            # 'breakTime': r'^\d+$'  # Non-negative integers (zero or more)
+            # 'startTime': r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$',
+            # 'endTime': r'^^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$'
         }
 
     def is_valid(self, time_entry_data):
@@ -28,6 +31,10 @@ class TimeEntryDataValidator(InputValidator):
         :param time_entry_data: A dictionary containing time entry details to validate.
         :return: ValidationResult indicating if the time entry data is valid.
         """
+        time_entry_data = ObjectUtils.convert_objectids_to_strings(time_entry_data)
+
+        print(time_entry_data)
+
         if 'entryType' not in time_entry_data or not TimeEntryType.get_type_by_value(time_entry_data['entryType']):
             return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified entry type.")
 
@@ -42,15 +49,24 @@ class TimeEntryDataValidator(InputValidator):
 
         # Check each field with a regex pattern if specified
         for field, pattern in self.field_patterns.items():
-            if field in time_entry_data:
-                if pattern and not re.match(pattern, str(time_entry_data[field])):
-                    return ValidationResult(ValidationStatus.FAILURE, f"Invalid {field}.")
+            if not isinstance(pattern, str):
+                continue
+            if field in time_entry_data and not re.match(pattern, str(time_entry_data[field])):
+                return ValidationResult(ValidationStatus.FAILURE, f"Invalid {field}.")
 
-        # Validate dateTime fields if they are correctly typed and logically correct
+        date_fields = ['startTime', 'endTime']
+        for field in date_fields:
+            try:
+                if isinstance(time_entry_data.get(field), str):
+                    time_entry_data[field] = datetime.fromisoformat(time_entry_data[field].rstrip('Z'))
+            except ValueError:
+                return ValidationResult(ValidationStatus.FAILURE, f"Invalid datetime format in {field}.")
+
         if 'startTime' in time_entry_data and 'endTime' in time_entry_data:
             if not (isinstance(time_entry_data['startTime'], datetime) and isinstance(time_entry_data['endTime'],
                                                                                       datetime)):
-                return ValidationResult(ValidationStatus.FAILURE, "Start and end times must be datetime objects.")
+                return ValidationResult(ValidationStatus.FAILURE,
+                                        "DateTime objects required for startTime and endTime.")
             if time_entry_data['startTime'] >= time_entry_data['endTime']:
                 return ValidationResult(ValidationStatus.FAILURE, "Start time must be earlier than end time.")
 

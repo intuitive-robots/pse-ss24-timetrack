@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType
@@ -32,11 +32,14 @@ class VacationEntry(TimeEntry):
     @classmethod
     def dict_keys(cls):
         """
-        Returns a list of keys used for the dictionary representation of a TimeEntry object by creating a dummy instance.
+        Returns a list of keys used for the dictionary representation of a VacationEntry object by creating a dummy instance.
 
-        :return: A list of keys representing the time entry data fields.
+        :return: A list of keys representing the vacation time entry data fields.
         """
-        return super().dict_keys()
+        dummy_start_time = datetime.now()
+        dummy_end_time = dummy_start_time + timedelta(hours=1)
+        dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time)
+        return list(dummy_entry.to_dict().keys())
 
     def get_duration(self):
         """
