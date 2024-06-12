@@ -43,7 +43,7 @@ class TimesheetController(MethodView):
         HiWi signs his timesheet
         """
         request_data = request.get_json()
-        timesheet_id = request_data['timesheet_id']
+        timesheet_id = request_data['timesheetId']
         
         result = self.timesheet_service.sign_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
@@ -55,7 +55,7 @@ class TimesheetController(MethodView):
         Supervisor approves a timesheet
         """
         request_data = request.get_json()
-        timesheet_id = request_data['timesheet_id']
+        timesheet_id = request_data['timesheetId']
         result = self.timesheet_service.approve_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -66,7 +66,7 @@ class TimesheetController(MethodView):
         Supervisor requests changes to a timesheet
         """
         request_data = request.get_json()
-        timesheet_id = request_data['timesheet_id']
+        timesheet_id = request_data['timesheetId']
         result = self.timesheet_service.request_change(timesheet_id)
         return jsonify(result.message), result.status_code
 

@@ -185,8 +185,8 @@ class TimesheetService:
         """
         if username is None or month is None or year is None:
             return RequestResult(False, "Please provide a username, month, and year to retrieve the timesheet", 400)
-        timesheet_data = self.timesheet_repository.find_timesheet_by_date(username,
-                                                                          month, year)
+        timesheet_data = self.timesheet_repository.get_timesheet(username,
+                                                                 month, year)
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
         return RequestResult(True, "", 200,
