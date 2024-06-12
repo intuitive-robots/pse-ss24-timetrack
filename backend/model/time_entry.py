@@ -58,19 +58,6 @@ class TimeEntry(ABC):
             entry_type=TimeEntryType.get_type_by_value(data['entryType'])
         )
 
-    @classmethod
-    def dict_keys(cls):
-        """
-        Returns a list of keys used for the dictionary representation of a TimeEntry object by creating a dummy instance.
-
-        :return: A list of keys representing the time entry data fields.
-        """
-        # Creating a dummy TimeEntry with mock data
-        dummy_start_time = datetime.now()
-        dummy_end_time = dummy_start_time + timedelta(hours=1)
-        dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, TimeEntryType.WORK_ENTRY)
-        return list(dummy_entry.to_dict().keys())
-
     @abstractmethod
     def get_duration(self):
         """

@@ -5,7 +5,8 @@ from controller.input_validator.input_validator import InputValidator
 from controller.input_validator.validation_result import ValidationResult
 from controller.input_validator.validation_status import ValidationStatus
 from model.time_entry_type import TimeEntryType
-from model.time_entry import TimeEntry
+from model.vacation_entry import VacationEntry
+from model.work_entry import WorkEntry
 
 
 class TimeEntryDataValidator(InputValidator):
@@ -22,12 +23,19 @@ class TimeEntryDataValidator(InputValidator):
 
     def is_valid(self, time_entry_data):
         """
-        Validates the completeness and correctness of time entry data using keys from TimeEntry.dict_keys method.
+        Validates the completeness and correctness of time entry data based on the entry type.
 
         :param time_entry_data: A dictionary containing time entry details to validate.
         :return: ValidationResult indicating if the time entry data is valid.
         """
-        required_keys = TimeEntry.dict_keys()
+        if 'entryType' not in time_entry_data or not TimeEntryType.get_type_by_value(time_entry_data['entryType']):
+            return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified entry type.")
+
+        entry_class = self._get_entry_class(time_entry_data['entryType'])
+        if not entry_class:
+            return ValidationResult(ValidationStatus.FAILURE, "Invalid entry type specified.")
+
+        required_keys = entry_class.dict_keys()
         missing_keys = [key for key in required_keys if key not in time_entry_data]
         if missing_keys:
             return ValidationResult(ValidationStatus.FAILURE, f"Missing required fields: {', '.join(missing_keys)}")
@@ -35,23 +43,31 @@ class TimeEntryDataValidator(InputValidator):
         # Check each field with a regex pattern if specified
         for field, pattern in self.field_patterns.items():
             if field in time_entry_data:
-                if pattern and not re.match(pattern, time_entry_data[field]):
+                if pattern and not re.match(pattern, str(time_entry_data[field])):
                     return ValidationResult(ValidationStatus.FAILURE, f"Invalid {field}.")
 
         # Validate dateTime fields if they are correctly typed and logically correct
         if 'startTime' in time_entry_data and 'endTime' in time_entry_data:
-            if not (isinstance(time_entry_data['startTime'], datetime)
-                    and isinstance(time_entry_data['endTime'], datetime)):
+            if not (isinstance(time_entry_data['startTime'], datetime) and isinstance(time_entry_data['endTime'],
+                                                                                      datetime)):
                 return ValidationResult(ValidationStatus.FAILURE, "Start and end times must be datetime objects.")
             if time_entry_data['startTime'] >= time_entry_data['endTime']:
                 return ValidationResult(ValidationStatus.FAILURE, "Start time must be earlier than end time.")
 
-        # Validate entryType
-        if 'entryType' in time_entry_data:
-            if not TimeEntryType.get_type_by_value(time_entry_data['entryType']):
-                return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified entry type.")
-
         return ValidationResult(ValidationStatus.SUCCESS, "Time entry data is valid.")
+
+    def _get_entry_class(self, entry_type_value):
+        """
+        Maps entry type values to specific TimeEntry subclass.
+
+        :param entry_type_value: The entry type value to use.
+        :return: Corresponding TimeEntry subclass or None if invalid.
+        """
+        if entry_type_value == TimeEntryType.WORK_ENTRY.value:
+            return WorkEntry
+        elif entry_type_value == TimeEntryType.VACATION_ENTRY.value:
+            return VacationEntry
+        return None
 
     def _validate_entry_type(self, entry_type_value):
         """
