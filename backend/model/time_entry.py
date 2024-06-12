@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import time, datetime
-from model.time_entry_validator.time_entry_validator import TimeEntryValidator
+
 
 
 class TimeEntry(ABC):
@@ -23,7 +23,6 @@ class TimeEntry(ABC):
         :param time_entry_id: The ID of the time entry.
         """
         self.time_entry_id = time_entry_id
-        self.time_entry_validator = TimeEntryValidator()
 
     @abstractmethod
     def to_dict(self):

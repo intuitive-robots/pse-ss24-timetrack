@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from model.time_sheet_validator.timesheet_validator import TimesheetValidator
 from model.timesheet_status import TimesheetStatus
 
 
@@ -63,7 +62,6 @@ class Timesheet:
         :param time_entry_id: The ID of the time entry to remove.
         """
         self.time_entry_ids.remove(time_entry_id)
-        self.timesheet_validator = TimesheetValidator()
 
     def to_dict(self):
         """
