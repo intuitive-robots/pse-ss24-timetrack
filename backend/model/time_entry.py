@@ -1,12 +1,6 @@
 from abc import ABC, abstractmethod
-<<<<<<< HEAD
 from datetime import time, datetime
-=======
-from datetime import time, date, datetime
-
->>>>>>> 3f2c9a2 (Add time entry service, from_dict methods to time entry classes)
 from model.time_entry_type import TimeEntryType
-from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 
 
 class TimeEntry(ABC):
@@ -63,7 +57,6 @@ class TimeEntry(ABC):
         time_entry_id = str(data['_id'])
 
         return cls(
-            time_entry_id=time_entry_id,
             timesheet_id=data['timesheetId'],
             start_time=start_time,
             end_time=end_time,
