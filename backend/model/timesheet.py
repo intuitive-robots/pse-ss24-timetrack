@@ -5,21 +5,16 @@ from model.timesheet_status import TimesheetStatus
 
 
 class Timesheet:
-    def __init__(self, timesheet_id: str, username: str, month: int, year: int, status: TimesheetStatus,
-                 total_time: float, overtime: float, last_signature_change: datetime):
+    def __init__(self, username: str, month: int, year: int,
+                 timesheet_id=None, status=TimesheetStatus.NOT_SUBMITTED, total_time=0.0,
+                 overtime=0.0, last_signature_change=datetime.now(), time_entry_ids=[]):
         """
         Initializes a new Timesheet object with the given parameters.
 
-        :param timesheet_id: The unique identifier for the timesheet.
         :param username: The username of the Hiwi associated with the timesheet.
         :param month: The month of the timesheet.
         :param year: The year of the timesheet.
-        :param status: The status of the timesheet.
-        :param total_time: The total time worked by the Hiwi in the timesheet.
-        :param overtime: The overtime worked by the Hiwi in the timesheet.
-        :param last_signature_change: The date and time of the last signature change.
         """
-        self.timesheet_id = timesheet_id
         self.username = username
         self.month = month
         self.year = year
@@ -27,7 +22,47 @@ class Timesheet:
         self.total_time = total_time
         self.overtime = overtime
         self.last_signature_change = last_signature_change
+        self.time_entry_ids = time_entry_ids
 
+    @staticmethod
+    def from_dict(timesheet_dict: dict):
+        """
+        Creates a Timesheet object from a dictionary.
+
+        :param timesheet_dict: The dictionary representing the timesheet.
+        :return: A Timesheet object.
+        """
+        timesheet = Timesheet(timesheet_dict["username"], timesheet_dict["month"], timesheet_dict["year"])
+        timesheet.set_id(timesheet_dict.get("_id", None))
+        timesheet.status = TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED))
+        timesheet.total_time = timesheet_dict.get("totalTime", 0.0)
+        timesheet.overtime = timesheet_dict.get("overtime", 0.0)
+        timesheet.last_signature_change = timesheet_dict.get("lastSignatureChange", datetime.now())
+        return timesheet
+
+    def set_id(self, timesheet_id):
+        """
+        Sets the ID of the timesheet.
+
+        :param timesheet_id: The ID of the timesheet.
+        """
+        self.timesheet_id = timesheet_id
+
+    def add_time_entry(self, time_entry_id):
+        """
+        Adds a time entry to the timesheet.
+
+        :param time_entry_id: The ID of the time entry to add.
+        """
+        self.time_entry_ids.append(time_entry_id)
+
+    def remove_time_entry(self, time_entry_id):
+        """
+        Removes a time entry from the timesheet.
+
+        :param time_entry_id: The ID of the time entry to remove.
+        """
+        self.time_entry_ids.remove(time_entry_id)
         self.timesheet_validator = TimesheetValidator()
 
     def to_dict(self):
@@ -37,12 +72,12 @@ class Timesheet:
         :return: A dictionary representing the timesheet.
         """
         return {
-            "timesheetId": self.timesheet_id,
             "username": self.username,
             "month": self.month,
             "year": self.year,
             "status": str(self.status),
             "totalTime": self.total_time,
             "overtime": self.overtime,
-            "lastSignatureChange": self.last_signature_change
+            "lastSignatureChange": self.last_signature_change,
+            "timeEntryIds": self.time_entry_ids
         }

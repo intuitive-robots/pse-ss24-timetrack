@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 
 from auth import init_auth_routes
+from controller.timesheet_controller import TimesheetController
 from controller.user_controller import UserController
 from controller.user_controller import user_blueprint
 from db import initialize_db, check_db_connection
@@ -19,6 +20,7 @@ from model.user.role import UserRole
 from model.user.user import User
 from model.work_entry import WorkEntry
 from utils.security_utils import SecurityUtils
+from controller.timesheet_controller import timesheet_blueprint
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -46,7 +48,16 @@ user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GE
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 
-
+# Registering the timesheet routes
+timesheet_view = TimesheetController.as_view('timesheet')
+timesheet_blueprint.add_url_rule('/sign', view_func=timesheet_view, methods=['PATCH'], endpoint='sign_timesheet')
+timesheet_blueprint.add_url_rule('/approve', view_func=timesheet_view, methods=['PATCH'], endpoint='approve_timesheet')
+timesheet_blueprint.add_url_rule('/requestChange', view_func=timesheet_view, methods=['PATCH'],
+                                 endpoint='request_change')
+timesheet_blueprint.add_url_rule('/get', view_func=timesheet_view, methods=['GET'], endpoint='get_timesheets')
+timesheet_blueprint.add_url_rule('/getByUsernameStatus', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_timesheets_by_username_status')
+app.register_blueprint(timesheet_blueprint, url_prefix='/timesheet')
 
 @app.route('/')
 def home():
@@ -86,6 +97,11 @@ def create_user():
 
     return result.to_dict(), result.status_code
 
+@app.route('/test1')
+def test1():
+    time_entry_repository = TimeEntryRepository.get_instance()
+    time_entry = time_entry_repository.get_time_entry_by_id("666611873270f3785020e764")
+    return work_entry_to_dict(time_entry), 200
 
 #TODO: This is a hardcoded time entry!
 @app.route('/createTestTimeEntry')
@@ -95,11 +111,9 @@ def create_time_entry():
     Creates a test time entry in the database
     """
     work_entry = WorkEntry(
-        time_entry_id="test1233",
         timesheet_id="timesheet123",
-        date="2022-01-01",
-        start_time=time(hour=9, minute=0),
-        end_time=time(hour=17, minute=0),
+        start_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
+        end_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
         break_time=15.0,
         activity="Test Activity",
         project_name="Test Project"
@@ -117,7 +131,7 @@ def read_time_entries():
     :return: A JSON string containing all time entries
     """
     entry_repo = TimeEntryRepository.get_instance()
-    time_entries = entry_repo.get_time_entries()
+    time_entries = entry_repo.get_time_entries("")
     return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
 @app.route('/readTimesheets')
@@ -139,14 +153,9 @@ def create_timesheet():
     Creates a test timesheet in the database
     """
     timesheet = Timesheet(
-        timesheet_id="timesheet123",
         username="test123",
         month=3,
         year=2022,
-        status=TimesheetStatus.NOTSUBMITTED,
-        total_time=40.0,
-        overtime=5.0,
-        last_signature_change=datetime.now()
     )
     timesheet_repo = TimesheetRepository.get_instance()
     result = timesheet_repo.create_timesheet(timesheet)

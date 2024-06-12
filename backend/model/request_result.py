@@ -7,8 +7,6 @@ class RequestResult:
         :param message: The message to be returned with the request result.
         :param status_code: The status code of the request.
         """
-        if data is None:
-            data = {}
         self.data = data
         self.is_successful = is_successful
         self.message = message
@@ -23,3 +21,5 @@ class RequestResult:
             "isSuccessful": self.is_successful,
             "message": self.message
         }
+
+

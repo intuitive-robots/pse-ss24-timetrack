@@ -112,7 +112,7 @@ class UserController(MethodView):
         """
         credentials = request.get_json()
         result = self.auth_service.reset_password(credentials['username'], credentials['password'])
-        return jsonify(result.message), result.status_code
+        return jsonify(result), result.status_code
 
     @jwt_required()
     def get_profile(self):

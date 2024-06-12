@@ -1,5 +1,7 @@
 from datetime import date
 
+from bson import ObjectId
+
 from db import initialize_db
 from model.request_result import RequestResult
 from model.timesheet import Timesheet
@@ -36,27 +38,10 @@ class TimesheetRepository:
         """
         if timesheet_id is None:
             return None
-        timesheet_data = self.db.timesheets.find_one({"timesheetId": timesheet_id})
+        timesheet_data = self.db.timesheets.find_one({"_id": ObjectId(timesheet_id)})
         if timesheet_data:
-            return self._construct_timesheet(timesheet_data)
+            return timesheet_data
         return None
-
-    def _construct_timesheet(self, timesheet_data):
-        """
-        Constructs a Timesheet object from the given data
-        :param timesheet_data: The data to construct the Timesheet object from
-        :return: The constructed Timesheet object
-        """
-        return Timesheet(
-            timesheet_id=timesheet_data['timesheetId'],
-            username=timesheet_data['username'],
-            month=timesheet_data['month'],
-            year=timesheet_data['year'],
-            status=timesheet_data['status'],
-            total_time=timesheet_data['totalTime'],
-            overtime=timesheet_data['overtime'],
-            last_signature_change=timesheet_data['signatureChanged']
-        )
 
     def get_timesheet(self, username: str, month: int, year: int):
         """
@@ -70,7 +55,7 @@ class TimesheetRepository:
             return None
         timesheet_data = self.db.timesheets.find_one({"username": username, "month": month, "year": year})
         if timesheet_data:
-            return self._construct_timesheet(timesheet_data)
+            return timesheet_data
         return None
 
     def get_current_timesheet(self, username: str):
@@ -81,9 +66,9 @@ class TimesheetRepository:
         """
         if username is None:
             return None
-        timesheet_data = self.db.timesheets.find_one({"username": username, "status": "NOTSUBMITTED"})
+        timesheet_data = self.db.timesheets.find_one({"username": username, "status": TimesheetStatus.NOT_SUBMITTED.value()})
         if timesheet_data:
-            return self._construct_timesheet(timesheet_data)
+            return timesheet_data
         return None
 
     def get_timesheet_by_time_period(self, username:str, start_date: date, end_date: date):
@@ -130,7 +115,7 @@ class TimesheetRepository:
             return None
         timesheet_data = self.db.timesheets.find_one({"username": username, "month": month, "year": year})
         if timesheet_data:
-            return timesheet_data['timesheetId']
+            return timesheet_data['_id']
         return None
 
     def update_timesheet(self, timesheet):
@@ -141,7 +126,7 @@ class TimesheetRepository:
         """
         if timesheet is None:
             return RequestResult(False, "Please provide a timesheet to update.", 400)
-        result = self.db.timesheets.update_one({"timesheetId": timesheet.timesheet_id},
+        result = self.db.timesheets.update_one({"_id": ObjectId(timesheet.timesheet_id)},
                                                {"$set": timesheet.to_dict()})
         if result.matched_count == 0:
             return RequestResult(False, "Timesheet not found", 404)
@@ -160,7 +145,7 @@ class TimesheetRepository:
         """
         if timesheet_id is None or status is None:
             return RequestResult(False, "Please provide a timesheet ID and status to update the timesheet status.", 400)
-        result = self.db.timesheets.update_one({"timesheetId": timesheet_id}, {"$set": {"status": status}})
+        result = self.db.timesheets.update_one({"_id": ObjectId(timesheet_id)}, {"$set": {"status": str(status)}})
         if result.matched_count == 0:
             return RequestResult(False, "Timesheet not found", 404)
         if result.modified_count == 0:
@@ -177,7 +162,7 @@ class TimesheetRepository:
         """
         if timesheet_id is None:
             return RequestResult(False, "Please provide a timesheet ID to delete the timesheet.", 400)
-        result = self.db.timesheets.delete_one({"timesheetId": timesheet_id})
+        result = self.db.timesheets.delete_one({"_id": ObjectId(timesheet_id)})
         if result.deleted_count == 0:
             return RequestResult(False, "Timesheet deletion failed", 500)
         if result.acknowledged:
@@ -194,7 +179,20 @@ class TimesheetRepository:
             return RequestResult(False, "Please provide a timesheet to create.", 400)
         if self.get_timesheet(timesheet.username, timesheet.month, timesheet.year) is not None:
             return RequestResult(False, "Timesheet already exists", 409)
-        result = self.db.timesheets.insert_one(timesheet.to_dict())
+        timesheet_data = timesheet.to_dict()
+        result = self.db.timesheets.insert_one(timesheet_data)
         if result.acknowledged:
             return RequestResult(True, "Timesheet created successfully", 201)
         return RequestResult(False, "Timesheet creation failed", 500)
+
+    def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
+        """
+        Retrieves all timesheets for a given username with a specified status
+        :param username: Username of the Hiwi
+        :param status: Status of the timesheet
+        :return: A list of timesheets for the given username with the specified status
+        """
+        if username is None or status is None:
+            return None
+        timesheets = self.db.timesheets.find({"username": username, "status": status})
+        return list(timesheets)
