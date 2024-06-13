@@ -10,6 +10,7 @@ from controller.time_entry_controller import TimeEntryController, time_entry_blu
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
 from db import initialize_db, check_db_connection
+from gridfs import GridFS
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
@@ -44,6 +45,9 @@ user_blueprint.add_url_rule('/getProfile', view_func=user_view, methods=['GET'],
 user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['POST'], endpoint='delete_user')
 user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
 user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
+user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['POST'], endpoint='upload_user_file')
+user_blueprint.add_url_rule('/getFile', view_func=user_view, methods=['GET'], endpoint='get_user_file')
+user_blueprint.add_url_rule('/deleteFile', view_func=user_view, methods=['DELETE'], endpoint='delete_user_file')
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 

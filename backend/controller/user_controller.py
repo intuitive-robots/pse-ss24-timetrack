@@ -1,9 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from model.file.FileType import FileType
 from model.user.role import UserRole
 from service.auth_service import AuthenticationService, check_access
+from service.file_service import FileService
 from service.user_service import UserService
 
 user_blueprint = Blueprint('user', __name__)
@@ -16,6 +18,7 @@ class UserController(MethodView):
         """
         self.user_service = UserService()
         self.auth_service = AuthenticationService()
+        self.file_service = FileService()
 
     def post(self):
         """
@@ -28,7 +31,8 @@ class UserController(MethodView):
             '/login': self.login,
             '/logout': self.logout,
             '/resetPassword': self.reset_password,
-            '/deleteUser': self.delete_user
+            '/deleteUser': self.delete_user,
+            '/uploadFile': self.upload_user_file,
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -40,6 +44,16 @@ class UserController(MethodView):
             '/getProfile': self.get_profile,
             '/getUsers': self.get_users,
             '/getUsersByRole': self.get_users_by_role,
+            '/getFile': self.get_user_file,
+        }
+        return self._dispatch_request(endpoint_mapping)
+
+    def delete(self):
+        """
+        Handles DELETE requests to delete user files.
+        """
+        endpoint_mapping = {
+            '/deleteFile': self.delete_user_file
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -142,3 +156,76 @@ class UserController(MethodView):
         users_data = self.user_service.get_users_by_role(data['role'])
         result = [user.to_dict() for user in users_data]
         return jsonify(result), 200
+
+    @jwt_required()
+    def upload_user_file(self):
+        """
+        Handles the uploading of a file for the currently authenticated user. The file type is determined
+        from form data or a query parameter, and the file is then processed and stored accordingly.
+
+        Returns:
+            JSON response with the status message and HTTP status code.
+        """
+        username = get_jwt_identity()
+        file = request.files.get('file')
+
+        file_type_str = request.form.get('fileType') or request.args.get('fileType')
+
+        if not file or not file_type_str:
+            return jsonify("Missing file or file type"), 400
+
+        file_type = FileType.get_type_by_value(file_type_str)
+        if not file_type:
+            return jsonify("Invalid file type"), 400
+
+        result = self.file_service.upload_image(file, username, file_type)
+
+        return jsonify(result.message), result.status_code
+
+    @jwt_required()
+    def get_user_file(self):
+        """
+        Retrieves a file for the specified username and file type
+
+        Returns:
+            The file as a download if found, or a JSON response indicating an error with an appropriate
+            HTTP status code if not found or if parameters are missing.
+        """
+        username = request.args.get('username')
+        file_type = FileType.get_type_by_value(request.args.get('fileType'))
+
+        if not username:
+            return jsonify({'error': 'Username is required'}), 400
+
+        if not file_type:
+            return jsonify({'error': 'Valid File type is required'}), 400
+
+        file_stream = self.file_service.get_image(username, file_type)
+        if not file_stream:
+            return jsonify({'error': 'File not found'}), 404
+
+        return send_file(
+            file_stream,
+            as_attachment=True,
+            download_name=f"{username}_{file_type}.jpg"
+        )
+
+
+    @jwt_required()
+    def delete_user_file(self):
+        """
+        Deletes a file associated with the given username and specified file type.
+
+        Returns:
+            A JSON response with the result of the deletion attempt and an appropriate HTTP status code.
+        """
+        username = request.args.get('username')
+        file_type = FileType.get_type_by_value(request.args.get('fileType'))
+        if not username:
+            return jsonify({'error': 'Username is required'}), 400
+
+        if not file_type:
+            return jsonify({'error': 'Valid File type is required'}), 400
+
+        result = self.file_service.delete_image(username, file_type)
+        return jsonify(result.message), result.status_code
