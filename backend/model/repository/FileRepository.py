@@ -52,6 +52,24 @@ class FileRepository:
         except Exception as e:
             return RequestResult(False, f"Failed to upload image: {str(e)}", 500)
 
+    def update_image(self, file_content, gridfs_id: str, username: str, file_type: FileType):
+        """
+        Updates an existing image in GridFS and metadata.
+        """
+        try:
+            self.grid_fs_bucket.delete(gridfs_id)  # Remove the old file
+            new_gridfs_id = self.grid_fs.put(file_content, filename=f"{username}_{file_type.value}")
+
+            # Update the metadata with the new GridFS ID
+            self.db.file_metadata.update_one(
+                {"gridfs_id": gridfs_id},
+                {"$set": {"gridfs_id": new_gridfs_id}}
+            )
+
+            return RequestResult(True, f"Image updated successfully with new GridFS ID: {new_gridfs_id}", 201)
+        except Exception as e:
+            return RequestResult(False, f"Failed to update image: {str(e)}", 500)
+
     def get_image(self, username, file_type: FileType):
         """
         Retrieves an image from the database by username and file type
