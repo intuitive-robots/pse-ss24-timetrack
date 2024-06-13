@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from model.time_sheet_validator.timesheet_validator import TimesheetValidator
 from model.timesheet_status import TimesheetStatus
 from bson import ObjectId
 

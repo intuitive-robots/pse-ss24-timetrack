@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import time, datetime
-from model.time_entry_validator.time_entry_validator import TimeEntryValidator
+from datetime import datetime
 from model.time_entry_type import TimeEntryType
 
 
