@@ -1,9 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from model.file.FileType import FileType
 from model.user.role import UserRole
 from service.auth_service import AuthenticationService, check_access
+from service.file_service import FileService
 from service.user_service import UserService
 
 user_blueprint = Blueprint('user', __name__)
@@ -16,6 +18,7 @@ class UserController(MethodView):
         """
         self.user_service = UserService()
         self.auth_service = AuthenticationService()
+        self.file_service = FileService()
 
     def post(self):
         """
@@ -28,7 +31,10 @@ class UserController(MethodView):
             '/login': self.login,
             '/logout': self.logout,
             '/resetPassword': self.reset_password,
-            '/deleteUser': self.delete_user
+            '/deleteUser': self.delete_user,
+            '/uploadFile': self.upload_user_file,
+            '/getFile': self.get_user_file,
+            '/removeFile': self.remove_user_file
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -142,3 +148,60 @@ class UserController(MethodView):
         users_data = self.user_service.get_users_by_role(data['role'])
         result = [user.to_dict() for user in users_data]
         return jsonify(result), 200
+
+    @jwt_required()
+    def upload_user_file(self):
+        """
+        Uploads a user file to the server for the currently authenticated user.
+        The file type is expected to be part of the form data or a query parameter.
+        """
+        username = get_jwt_identity()
+        file = request.files.get('file')
+
+        file_type_str = request.form.get('file_type') or request.args.get('file_type')
+
+        if not file or not file_type_str:
+            return jsonify("Missing file or file type"), 400
+
+        file_type = FileType.get_type_by_value(file_type_str)
+        if not file_type:
+            return jsonify("Invalid file type"), 400
+
+        result = self.file_service.upload_image(file, username, file_type)
+
+        return jsonify(result.message), result.status_code
+
+    @jwt_required()
+    def get_user_file(self):
+        username = request.args.get('username')
+        file_type = FileType.get_type_by_value(request.args.get('file_type'))
+
+        if not username:
+            return jsonify({'error': 'Username is required'}), 400
+
+        if not file_type:
+            return jsonify({'error': 'File type is required'}), 400
+
+        file_stream = self.file_service.get_image(username, file_type)
+        if file_stream:
+            return send_file(
+                file_stream,
+                #mimetype='image/jpeg',
+                as_attachment=True,
+                download_name=f"{username}_{file_type}.jpg"
+            )
+        else:
+            return jsonify({'error': 'File not found'}), 404
+
+    @jwt_required()
+    def remove_user_file(self):
+        username = request.args.get('username')
+        file_type = FileType.get_type_by_value(request.args.get('file_type'))
+        if not username:
+            return jsonify({'error': 'Username is required'}), 400
+
+        if not file_type:
+            return jsonify({'error': 'File type is required'}), 400
+
+        result = self.file_service.delete_image(username, file_type)
+        return jsonify(result), result.status_code
