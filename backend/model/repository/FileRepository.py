@@ -43,8 +43,8 @@ class FileRepository:
 
             metadata = {
                 "username": username,
-                "gridfs_id": file_id.value,
-                "file_type": file_type
+                "gridfsId": file_id,
+                "fileType": file_type.value
             }
             self.db.file_metadata.insert_one(metadata)
 
@@ -62,8 +62,8 @@ class FileRepository:
 
             # Update the metadata with the new GridFS ID
             self.db.file_metadata.update_one(
-                {"gridfs_id": gridfs_id},
-                {"$set": {"gridfs_id": new_gridfs_id}}
+                {"gridfsId": gridfs_id},
+                {"$set": {"gridfsId": new_gridfs_id}}
             )
 
             return RequestResult(True, f"Image updated successfully with new GridFS ID: {new_gridfs_id}", 201)
@@ -77,9 +77,9 @@ class FileRepository:
         :param file_type: Type of the file
         :return: Image data if found, otherwise None
         """
-        metadata = self.db.file_metadata.find_one({"username": username, "file_type": file_type.value})
+        metadata = self.db.file_metadata.find_one({"username": username, "fileType": file_type.value})
         if metadata:
-            return self.grid_fs_bucket.open_download_stream(metadata["gridfs_id"]).read()
+            return self.grid_fs_bucket.open_download_stream(metadata["gridfsId"]).read()
         return None
 
     def delete_image(self, gridfs_id: str):
@@ -90,7 +90,7 @@ class FileRepository:
         """
         try:
             self.grid_fs_bucket.delete(gridfs_id)
-            self.db.file_metadata.delete_one({"gridfs_id": gridfs_id})
+            self.db.file_metadata.delete_one({"gridfsId": gridfs_id})
             return RequestResult(True, "Image deleted successfully", 200)
         except Exception as e:
             return RequestResult(False, f"Failed to delete image: {str(e)}", 500)
@@ -102,4 +102,13 @@ class FileRepository:
         :param file_type: Type of file to check
         :return: bool indicating whether the file exists
         """
-        return self.db.file_metadata.count_documents({"username": username, "file_type": file_type.value}) > 0
+        return self.db.file_metadata.count_documents({"username": username, "fileType": file_type.value}) > 0
+
+    def get_image_metadata(self, username: str, file_type: FileType):
+        """
+        Retrieves metadata for an image from the database by username and file type.
+        :param username: Username associated with the image.
+        :param file_type: FileType of the image.
+        :return: Metadata dictionary if found, otherwise None.
+        """
+        return self.db.file_metadata.find_one({"username": username, "fileType": file_type.value})

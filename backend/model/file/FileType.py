@@ -6,7 +6,7 @@ class FileType(Enum):
     Enum to represent different types of file classifications within the system.
     """
 
-    PROFILE_PICTURE = "ProfilePicture"
+    PROFILE_PICTURE = "Profile Picture"
     SIGNATURE = "Signature"
 
     @staticmethod

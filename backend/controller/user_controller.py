@@ -158,7 +158,7 @@ class UserController(MethodView):
         username = get_jwt_identity()
         file = request.files.get('file')
 
-        file_type_str = request.form.get('file_type') or request.args.get('file_type')
+        file_type_str = request.form.get('fileType') or request.args.get('fileType')
 
         if not file or not file_type_str:
             return jsonify("Missing file or file type"), 400

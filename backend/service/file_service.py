@@ -28,24 +28,21 @@ class FileService:
         """
         Uploads or updates an image file in the system after performing checks on file size and type.
         """
-        if file and self._allowed_file(file.filename):
-            file.seek(0, os.SEEK_END)
-            file_length = file.tell()
-            file.seek(0)
-
-            if file_length > self.MAX_FILE_SIZE:
-                return RequestResult(False, "File size exceeds the allowed limit of 20 MB.", 400)
-
-            try:
-                file_content = file.read()
-                existing_metadata = self.file_repository.get_image_metadata(username, file_type)
-                if existing_metadata:  # update the existing image
-                    return self.file_repository.update_image(file_content, existing_metadata['gridfs_id'], username, file_type)
-                return self.file_repository.upload_image(file_content, username, file_type)
-            except Exception as e:
-                return RequestResult(False, f"Failed to upload image: {str(e)}", 500)
-        else:
+        if not file or not self._allowed_file(file.filename):
             return RequestResult(False, "Invalid file type or file does not exist.", 400)
+
+        file.seek(0, os.SEEK_END)
+        file_length = file.tell()
+        file.seek(0)
+
+        if file_length > self.MAX_FILE_SIZE:
+            return RequestResult(False, "File size exceeds the allowed limit of 20 MB.", 400)
+
+        existing_metadata = self.file_repository.get_image_metadata(username, file_type)
+        if existing_metadata:
+            return self.file_repository.update_image(file, existing_metadata['gridfs_id'], username, file_type)
+
+        return self.file_repository.upload_image(file, username, file_type)
 
     def delete_image(self, username: str, file_type: FileType) -> RequestResult:
         """

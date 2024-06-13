@@ -3,10 +3,11 @@ from pymongo import MongoClient
 db = None
 client = None
 
-"""
-Initializes the database connection
-"""
+
 def initialize_db():
+    """
+    Initializes the database connection
+    """
     global db
     global client
     # TODO: Hard coding is usually not a good idea. We could use environment variables instead, when we have time.
@@ -19,6 +20,8 @@ def initialize_db():
 """
 Checks the database connection
 """
+
+
 def check_db_connection():
     # Check if the database connection is successful
     if client is None:

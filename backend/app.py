@@ -44,9 +44,9 @@ user_blueprint.add_url_rule('/getProfile', view_func=user_view, methods=['GET'],
 user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['POST'], endpoint='delete_user')
 user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
 user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
-user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['GET'], endpoint='upload_user_file')
+user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['POST'], endpoint='upload_user_file')
 user_blueprint.add_url_rule('/getFile', view_func=user_view, methods=['GET'], endpoint='get_user_file')
-user_blueprint.add_url_rule('/removeFile', view_func=user_view, methods=['GET'], endpoint='remove_user_file')
+user_blueprint.add_url_rule('/removeFile', view_func=user_view, methods=['POST'], endpoint='remove_user_file')
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 
