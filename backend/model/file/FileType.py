@@ -13,6 +13,7 @@ class FileType(Enum):
     def get_type_by_value(value: str):
         """
         Returns the FileType enum member matching the given value.
+
         :param value: The string value to match.
         :return: The matching FileType enum member, or None if no match is found.
         """

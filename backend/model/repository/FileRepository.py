@@ -7,15 +7,19 @@ from model.request_result import RequestResult
 
 class FileRepository:
     """
-    Repository class for managing files in the database using GridFS
+    Manages files stored in MongoDB using GridFS. This class handles the uploading, updating,
+    retrieving, and deleting of files along with their metadata.
     """
+
     _instance = None
 
     @staticmethod
     def get_instance():
         """
-        Singleton instance of the FileRepository class
-        :return: FileRepository instance
+        Provides a singleton instance of FileRepository.
+
+        Returns:
+            FileRepository: The singleton instance of the FileRepository.
         """
         if FileRepository._instance is None:
             FileRepository._instance = FileRepository()
@@ -23,7 +27,7 @@ class FileRepository:
 
     def __init__(self):
         """
-        Initializes the FileRepository instance, setting up GridFS
+        Initializes the FileRepository, setting up GridFS to interact with the MongoDB database.
         """
         self.db = initialize_db()
         self.grid_fs = GridFS(self.db)
@@ -31,11 +35,15 @@ class FileRepository:
 
     def upload_image(self, file, username: str, file_type: FileType):
         """
-        Uploads an image file to the database using GridFS and stores metadata
-        :param file: image file object to upload
-        :param username: Username associated with the image
-        :param file_type: Type of the file (e.g., 'profile_pic', 'signature')
-        :return: RequestResult indicating the success of the operation
+        Uploads an image to MongoDB using GridFS, storing associated metadata.
+
+        Args:
+            file (FileStorage): The file object to be uploaded.
+            username (str): The username associated with the file upload.
+            file_type (FileType): The enum representing the type of the file.
+
+        Returns:
+            RequestResult: Indicates success or failure of the file upload.
         """
         try:
             file_content = file.read()
@@ -54,7 +62,16 @@ class FileRepository:
 
     def update_image(self, file_content, gridfs_id: str, username: str, file_type: FileType):
         """
-        Updates an existing image in GridFS and metadata.
+        Updates an existing image in GridFS and its metadata in the MongoDB database.
+
+        Args:
+            file_content (bytes): The content of the file to replace the existing file.
+            gridfs_id (str): The GridFS ID of the existing file to update.
+            username (str): The username associated with the file.
+            file_type (FileType): The enum representing the type of the file.
+
+        Returns:
+            RequestResult: Indicates success or failure of the file update.
         """
         try:
             self.grid_fs_bucket.delete(gridfs_id)  # Remove the old file
@@ -70,12 +87,16 @@ class FileRepository:
         except Exception as e:
             return RequestResult(False, f"Failed to update image: {str(e)}", 500)
 
-    def get_image(self, username, file_type: FileType):
+    def get_image(self, username: str, file_type: FileType):
         """
-        Retrieves an image from the database by username and file type.
-        :param username: Username associated with the image.
-        :param file_type: Type of the file.
-        :return: Image data if found, otherwise None.
+        Retrieves an image file from GridFS based on username and file type.
+
+        Args:
+            username (str): The username associated with the file.
+            file_type (FileType): The type of file to retrieve.
+
+        Returns:
+            A file-like object containing the image data if found; otherwise, None.
         """
         metadata = self.db.file_metadata.find_one({"username": username, "fileType": file_type.value})
         if not metadata:
@@ -87,9 +108,13 @@ class FileRepository:
 
     def delete_image(self, gridfs_id: str):
         """
-        Deletes an image from the database using its GridFS ID
-        :param gridfs_id: The GridFS ID of the image to delete
-        :return: RequestResult indicating the success of the operation
+        Deletes an image and its metadata from GridFS and MongoDB.
+
+        Args:
+            gridfs_id (str): The GridFS ID of the image to delete.
+
+        Returns:
+            RequestResult: Indicates success or failure of the deletion.
         """
         self.grid_fs_bucket.delete(gridfs_id)
 
@@ -101,18 +126,26 @@ class FileRepository:
 
     def does_file_exist(self, username, file_type: FileType):
         """
-        Checks if a file exists in the database for a given username and file type
-        :param username: Username to check for the file
-        :param file_type: Type of file to check
-        :return: bool indicating whether the file exists
+        Checks whether a file exists in the database based on the username and file type.
+
+        Args:
+            username (str): The username to check for the file.
+            file_type (FileType): The type of file to check.
+
+        Returns:
+            bool: True if the file exists, False otherwise.
         """
         return self.db.file_metadata.count_documents({"username": username, "fileType": file_type.value}) > 0
 
     def get_image_metadata(self, username: str, file_type: FileType):
         """
-        Retrieves metadata for an image from the database by username and file type.
-        :param username: Username associated with the image.
-        :param file_type: FileType of the image.
-        :return: Metadata dictionary if found, otherwise None.
+        Retrieves the metadata of an image based on the username and file type.
+
+        Args:
+            username (str): The username associated with the image.
+            file_type (FileType): The type of the image.
+
+        Returns:
+            dict: Metadata of the image if found, otherwise None.
         """
         return self.db.file_metadata.find_one({"username": username, "fileType": file_type.value})

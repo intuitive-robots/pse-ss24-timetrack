@@ -25,7 +25,6 @@ from service.timesheet_service import TimesheetService
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
 db = initialize_db()
-grid_fs = GridFS(db)
 
 app.config["JWT_SECRET_KEY"] = secrets.token_bytes(32)  # Generates a random secret key
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)

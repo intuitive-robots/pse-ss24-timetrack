@@ -160,8 +160,11 @@ class UserController(MethodView):
     @jwt_required()
     def upload_user_file(self):
         """
-        Uploads a user file to the server for the currently authenticated user.
-        The file type is expected to be part of the form data or a query parameter.
+        Handles the uploading of a file for the currently authenticated user. The file type is determined
+        from form data or a query parameter, and the file is then processed and stored accordingly.
+
+        Returns:
+            JSON response with the status message and HTTP status code.
         """
         username = get_jwt_identity()
         file = request.files.get('file')
@@ -181,6 +184,13 @@ class UserController(MethodView):
 
     @jwt_required()
     def get_user_file(self):
+        """
+        Retrieves a file for the specified username and file type
+
+        Returns:
+            The file as a download if found, or a JSON response indicating an error with an appropriate
+            HTTP status code if not found or if parameters are missing.
+        """
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
 
@@ -203,6 +213,12 @@ class UserController(MethodView):
 
     @jwt_required()
     def delete_user_file(self):
+        """
+        Deletes a file associated with the given username and specified file type.
+
+        Returns:
+            A JSON response with the result of the deletion attempt and an appropriate HTTP status code.
+        """
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
         if not username:

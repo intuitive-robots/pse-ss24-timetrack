@@ -6,27 +6,44 @@ from model.file.FileType import FileType
 
 
 class FileService:
+    """
+    Provides service-layer functionality to handle file-related operations, such as uploading,
+    updating, retrieving, and deleting files. This service works with the FileRepository to
+    interact with the model-data layer, ensuring files are managed according to defined business rules.
+    """
 
     MAX_FILE_SIZE = 20 * 1024 * 1024  # max file size is 20 MB
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
     def __init__(self):
         """
-        Initializes a new instance of the FileService class, which is responsible for
-        managing file operations, interfacing with the FileRepository for data storage
-        and retrieval.
+        Initializes a new instance of FileService by setting up a connection to the FileRepository.
         """
         self.file_repository = FileRepository.get_instance()
 
     def _allowed_file(self, filename: str) -> bool:
         """
-        Check if the file's extension is in the allowed list.
+        Private method to check if the file's extension is among the allowed types.
+
+        Args:
+            filename (str): The name of the file to check.
+
+        Returns:
+            bool: True if the file's extension is allowed, False otherwise.
         """
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in self.ALLOWED_EXTENSIONS
 
     def upload_image(self, file, username: str, file_type: FileType) -> RequestResult:
         """
-        Uploads or updates an image file in the system after performing checks on file size and type.
+        Handles the uploading or updating of an image file after validating its size and type.
+
+        Args:
+            file: The file object to be uploaded, typically a Flask `request.files` object.
+            username (str): The username associated with the file.
+            file_type (FileType): The type of file, determined by an enumeration.
+
+        Returns:
+            RequestResult: Indicates the success or failure of the upload operation.
         """
         if not file or not self._allowed_file(file.filename):
             return RequestResult(False, "Invalid file type or file does not exist.", 400)
@@ -46,11 +63,14 @@ class FileService:
 
     def delete_image(self, username: str, file_type: FileType) -> RequestResult:
         """
-        Deletes an image from the system based on the username and file type.
+        Deletes an image associated with a specific username and file type.
 
-        :param username: Username associated with the image.
-        :param file_type: FileType of the image to delete.
-        :return: A RequestResult object containing the result of the operation.
+        Args:
+            username (str): The username linked to the image.
+            file_type (FileType): The type of the file to delete.
+
+        Returns:
+            RequestResult: Indicates the success or failure of the delete operation.
         """
         image_metadata = self.file_repository.get_image_metadata(username, file_type)
         if not image_metadata:
@@ -64,20 +84,26 @@ class FileService:
 
     def get_image(self, username: str, file_type: FileType):
         """
-        Retrieves an image based on the username and file type.
+        Retrieves an image based on the specified username and file type.
 
-        :param username: Username associated with the image.
-        :param file_type: Type of the file.
-        :return: Image object if found, otherwise None.
+        Args:
+            username (str): The username associated with the image.
+            file_type (FileType): The type of file being requested.
+
+        Returns:
+            Image object if found, otherwise None.
         """
         return self.file_repository.get_image(username, file_type)
 
     def does_file_exist(self, username: str, file_type: FileType) -> bool:
         """
-        Checks if a file exists in the system for a given username and file type.
+        Verifies if a particular file exists for a given username and specified file type.
 
-        :param username: Username to check for the file.
-        :param file_type: Type of file to check.
-        :return: True if the file exists, False otherwise.
+        Args:
+            username (str): The username to check.
+            file_type (FileType): The type of file to verify.
+
+        Returns:
+            bool: True if the file exists, otherwise False.
         """
         return self.file_repository.does_file_exist(username, file_type)
