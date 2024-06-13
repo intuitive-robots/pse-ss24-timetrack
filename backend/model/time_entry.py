@@ -32,7 +32,6 @@ class TimeEntry(ABC):
         :return: A dictionary representing the time entry.
         """
         return {
-            'timeEntryId': str(self.time_entry_id),
             'timesheetId': str(self.timesheet_id),
             'startTime': self.start_time,
             'endTime': self.end_time,

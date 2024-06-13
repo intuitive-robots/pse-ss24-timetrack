@@ -75,8 +75,9 @@ class TimeEntryController(MethodView):
         Updates an existing time entry with the provided JSON data.
         """
         time_entry_data = request.get_json()
-        timesheet_id = time_entry_data.get('timeEntryId')
-        result = self.time_entry_service.update_time_entry(timesheet_id, time_entry_data)
+        time_entry_id = time_entry_data.get('timeEntryId')
+        time_entry_data.pop('timeEntryId')
+        result = self.time_entry_service.update_time_entry(time_entry_id, time_entry_data)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
