@@ -40,7 +40,7 @@ class FileService:
 
         existing_metadata = self.file_repository.get_image_metadata(username, file_type)
         if existing_metadata:
-            return self.file_repository.update_image(file, existing_metadata['gridfs_id'], username, file_type)
+            return self.file_repository.update_image(file, existing_metadata['gridfsId'], username, file_type)
 
         return self.file_repository.upload_image(file, username, file_type)
 
@@ -56,7 +56,7 @@ class FileService:
         if not image_metadata:
             return RequestResult(False, "Image not found", 404)
 
-        image_id = image_metadata.get('gridfs_id')
+        image_id = image_metadata.get('gridfsId')
         if not image_id:
             return RequestResult(False, "Image ID not found", 404)
 

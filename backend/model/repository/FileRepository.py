@@ -72,15 +72,18 @@ class FileRepository:
 
     def get_image(self, username, file_type: FileType):
         """
-        Retrieves an image from the database by username and file type
-        :param username: Username associated with the image
-        :param file_type: Type of the file
-        :return: Image data if found, otherwise None
+        Retrieves an image from the database by username and file type.
+        :param username: Username associated with the image.
+        :param file_type: Type of the file.
+        :return: Image data if found, otherwise None.
         """
         metadata = self.db.file_metadata.find_one({"username": username, "fileType": file_type.value})
-        if metadata:
-            return self.grid_fs_bucket.open_download_stream(metadata["gridfsId"]).read()
-        return None
+        if not metadata:
+            return None
+
+        gridfs_id = metadata['gridfsId']
+        file_stream = self.grid_fs_bucket.open_download_stream(gridfs_id)
+        return file_stream
 
     def delete_image(self, gridfs_id: str):
         """
@@ -88,12 +91,13 @@ class FileRepository:
         :param gridfs_id: The GridFS ID of the image to delete
         :return: RequestResult indicating the success of the operation
         """
-        try:
-            self.grid_fs_bucket.delete(gridfs_id)
-            self.db.file_metadata.delete_one({"gridfsId": gridfs_id})
-            return RequestResult(True, "Image deleted successfully", 200)
-        except Exception as e:
-            return RequestResult(False, f"Failed to delete image: {str(e)}", 500)
+        self.grid_fs_bucket.delete(gridfs_id)
+
+        metadata_delete_result = self.db.file_metadata.delete_one({"gridfsId": gridfs_id})
+        if metadata_delete_result.deleted_count == 0:
+            return RequestResult(False, "No metadata found for the image, or failed to delete metadata", 404)
+
+        return RequestResult(True, "Image and metadata deleted successfully", 200)
 
     def does_file_exist(self, username, file_type: FileType):
         """

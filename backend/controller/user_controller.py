@@ -33,8 +33,6 @@ class UserController(MethodView):
             '/resetPassword': self.reset_password,
             '/deleteUser': self.delete_user,
             '/uploadFile': self.upload_user_file,
-            '/getFile': self.get_user_file,
-            '/removeFile': self.remove_user_file
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -46,6 +44,16 @@ class UserController(MethodView):
             '/getProfile': self.get_profile,
             '/getUsers': self.get_users,
             '/getUsersByRole': self.get_users_by_role,
+            '/getFile': self.get_user_file,
+        }
+        return self._dispatch_request(endpoint_mapping)
+
+    def delete(self):
+        """
+        Handles DELETE requests to delete user files.
+        """
+        endpoint_mapping = {
+            '/deleteFile': self.delete_user_file
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -174,34 +182,34 @@ class UserController(MethodView):
     @jwt_required()
     def get_user_file(self):
         username = request.args.get('username')
-        file_type = FileType.get_type_by_value(request.args.get('file_type'))
+        file_type = FileType.get_type_by_value(request.args.get('fileType'))
 
         if not username:
             return jsonify({'error': 'Username is required'}), 400
 
         if not file_type:
-            return jsonify({'error': 'File type is required'}), 400
+            return jsonify({'error': 'Valid File type is required'}), 400
 
         file_stream = self.file_service.get_image(username, file_type)
-        if file_stream:
-            return send_file(
-                file_stream,
-                #mimetype='image/jpeg',
-                as_attachment=True,
-                download_name=f"{username}_{file_type}.jpg"
-            )
-        else:
+        if not file_stream:
             return jsonify({'error': 'File not found'}), 404
 
+        return send_file(
+            file_stream,
+            as_attachment=True,
+            download_name=f"{username}_{file_type}.jpg"
+        )
+
+
     @jwt_required()
-    def remove_user_file(self):
+    def delete_user_file(self):
         username = request.args.get('username')
-        file_type = FileType.get_type_by_value(request.args.get('file_type'))
+        file_type = FileType.get_type_by_value(request.args.get('fileType'))
         if not username:
             return jsonify({'error': 'Username is required'}), 400
 
         if not file_type:
-            return jsonify({'error': 'File type is required'}), 400
+            return jsonify({'error': 'Valid File type is required'}), 400
 
         result = self.file_service.delete_image(username, file_type)
-        return jsonify(result), result.status_code
+        return jsonify(result.message), result.status_code

@@ -10,6 +10,7 @@ from controller.time_entry_controller import TimeEntryController, time_entry_blu
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
 from db import initialize_db, check_db_connection
+from gridfs import GridFS
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
@@ -24,6 +25,7 @@ from service.timesheet_service import TimesheetService
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
 db = initialize_db()
+grid_fs = GridFS(db)
 
 app.config["JWT_SECRET_KEY"] = secrets.token_bytes(32)  # Generates a random secret key
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
@@ -46,7 +48,7 @@ user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], e
 user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
 user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['POST'], endpoint='upload_user_file')
 user_blueprint.add_url_rule('/getFile', view_func=user_view, methods=['GET'], endpoint='get_user_file')
-user_blueprint.add_url_rule('/removeFile', view_func=user_view, methods=['POST'], endpoint='remove_user_file')
+user_blueprint.add_url_rule('/deleteFile', view_func=user_view, methods=['DELETE'], endpoint='delete_user_file')
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 
