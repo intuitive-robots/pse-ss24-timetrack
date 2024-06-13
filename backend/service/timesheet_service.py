@@ -3,11 +3,10 @@ from model.request_result import RequestResult
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
 
-
+#TODO: Calculate proper overtime - take a look at the documentData class
 class TimesheetService:
     def __init__(self):
         self.timesheet_repository = TimesheetRepository.get_instance()
-        #TODO: Add timesheetValidator
 
     def ensure_timesheet_exists(self, username: str, month: int, year: int):
         """
@@ -56,7 +55,6 @@ class TimesheetService:
             return RequestResult(False, "Timesheet cannot be approved", 400)
         return self.set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
 
-    #TODO: Duplicate code...
     def request_change(self, timesheet_id: str):
         """
         Method used by the supervisor to request changes to a timesheet.

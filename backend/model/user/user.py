@@ -60,7 +60,7 @@ class User:
             "personalInfo": self.personal_info.to_dict(),
             "role": str(self.role),
             "accountCreation": self.account_creation,
-            "lastLogin": self.last_login
+            "lastLogin": self.last_login,
         }
 
     @classmethod

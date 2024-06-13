@@ -61,6 +61,7 @@ class UserFactory(ABC):
         :param user_data: A dictionary containing data needed to create a user instance.
         :return: An instance of a subclass of UserFactory or None.
         """
+
         factory = UserFactory.get_factory(user_data['role'])
         if not factory:
             return None

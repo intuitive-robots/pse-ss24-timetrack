@@ -70,7 +70,8 @@ class TimeEntryRepository:
         """
         if not timesheet_id:
             return []
-        time_entries = self.db.timeEntries.find({"timesheetId": ObjectId(timesheet_id)})
+        cursor = self.db.timeEntries.find({"timesheetId": str(timesheet_id)})
+        time_entries = [entry for entry in cursor]
         return list(time_entries)
 
     def update_time_entry(self, time_entry: TimeEntry):

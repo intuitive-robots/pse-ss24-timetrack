@@ -50,6 +50,6 @@ class Hiwi(User):
         user_dict.update({
             "supervisor": self.supervisor,
             "timesheets": [ts.to_dict() for ts in self.timesheets],
-            "contract_info": self.contract_info.to_dict() if self.contract_info is not None else {},
+            "contractInfo": self.contract_info.to_dict() if self.contract_info is not None else {},
         })
         return user_dict
