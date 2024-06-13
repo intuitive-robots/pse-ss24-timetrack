@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 
 from auth import init_auth_routes
+from controller.document_controller import DocumentController, document_blueprint
 from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
@@ -70,6 +71,11 @@ timesheet_blueprint.add_url_rule('/get', view_func=timesheet_view, methods=['GET
 timesheet_blueprint.add_url_rule('/getByUsernameStatus', view_func=timesheet_view, methods=['GET'],
                                  endpoint='get_timesheets_by_username_status')
 app.register_blueprint(timesheet_blueprint, url_prefix='/timesheet')
+
+document_view = DocumentController.as_view('document')
+document_blueprint.add_url_rule('/generateDocument', view_func=document_view, methods=['GET'])
+document_blueprint.add_url_rule('/generateMultipleDocuments', view_func=document_view, methods=['GET'])
+app.register_blueprint(document_blueprint, url_prefix='/document')
 
 @app.route('/')
 def home():
