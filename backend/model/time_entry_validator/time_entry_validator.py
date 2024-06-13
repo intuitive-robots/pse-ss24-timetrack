@@ -16,7 +16,7 @@ class TimeEntryValidator:
         """
         self.validationRules = []
 
-    def addValidationRule(self, rule):
+    def add_validation_rule(self, rule):
         """
         Adds a new validation rule to the validator.
 
@@ -29,7 +29,7 @@ class TimeEntryValidator:
         """
         self.validationRules.append(rule)
 
-    def removeValidationRule(self, rule):
+    def remove_validation_rule(self, rule):
         """
         Removes a validation rule from the validator.
 
@@ -42,7 +42,7 @@ class TimeEntryValidator:
         """
         self.validationRules.remove(rule)
 
-    def validateEntry(self, timeEntry: TimeEntry):
+    def validate_entry(self, timeEntry: TimeEntry):
         """
         Validates a `TimeEntry` object using all the accumulated validation rules.
 

@@ -1,8 +1,10 @@
-from datetime import time, datetime, timedelta
+from datetime import datetime, timedelta
 
 from model.time_entry import TimeEntry
+from model.time_entry_type import TimeEntryType
 from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
 from model.time_entry_validator.holiday_strategy import HolidayStrategy
+from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 
 
@@ -10,6 +12,7 @@ class WorkEntry(TimeEntry):
     """
     Represents a work entry in the timesheet.
     """
+
     def __init__(self, timesheet_id: str,
                  start_time: datetime, end_time: datetime, break_time: float,
                  activity: str, project_name: str):
@@ -22,14 +25,15 @@ class WorkEntry(TimeEntry):
         :param activity: Activity of the work entry.
         :param project_name: Project name of the work entry.
         """
-        super().__init__(timesheet_id, start_time, end_time)
+        super().__init__(timesheet_id, start_time, end_time, TimeEntryType.WORK_ENTRY)
 
         self.break_time = break_time
         self.activity = activity
         self.project_name = project_name
-        self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
-        self.time_entry_validator.add_validation_rule(HolidayStrategy())
-        self.time_entry_validator.add_validation_rule(BreakLengthStrategy())
+        time_entry_validator = TimeEntryValidator()
+        time_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        time_entry_validator.add_validation_rule(HolidayStrategy())
+        time_entry_validator.add_validation_rule(BreakLengthStrategy())
 
     def to_dict(self):
         """
@@ -43,6 +47,47 @@ class WorkEntry(TimeEntry):
             "projectName": self.project_name
         })
         return data
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """
+        Creates a WorkEntry instance from a dictionary containing MongoDB data,
+        utilizing the superclass method to handle common fields.
+        """
+        start_datetime = data['startTime']
+        end_datetime = data['endTime']
+
+        if isinstance(start_datetime, str):
+            start_datetime = datetime.fromisoformat(data['startTime'])
+
+        if isinstance(end_datetime, str):
+            end_datetime = datetime.fromisoformat(data['endTime'])
+
+        timesheet_id = data['timesheetId']
+        break_time = data.get('breakTime', 0)
+        activity = data.get('activity', '')
+        project_name = data.get('projectName', '')
+
+        return cls(
+            timesheet_id=timesheet_id,
+            start_time=start_datetime,
+            end_time=end_datetime,
+            break_time=break_time,
+            activity=activity,
+            project_name=project_name
+        )
+
+    @classmethod
+    def dict_keys(cls):
+        """
+        Returns a list of keys used for the dictionary representation of a TimeEntry object by creating a dummy instance.
+
+        :return: A list of keys representing the time entry data fields.
+        """
+        dummy_start_time = datetime.now()
+        dummy_end_time = dummy_start_time + timedelta(hours=1)
+        dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, 0, "", "")
+        return list(dummy_entry.to_dict().keys())
 
     def get_duration(self):
         """
