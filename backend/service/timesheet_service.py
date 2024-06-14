@@ -140,11 +140,14 @@ class TimesheetService:
         :return: The result of the add operation
         """
         timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        print("Timesheet data: ", timesheet_data)
 
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
         timesheet = Timesheet.from_dict(timesheet_data)
+        print("entry_id_to_add: ", time_entry_id)
         timesheet.add_time_entry(time_entry_id)
+        print("added to timesheet: ", timesheet.to_dict())
         return self.timesheet_repository.update_timesheet(timesheet)
 
     def delete_time_entry(self, timesheet_id: str, time_entry_id: str):

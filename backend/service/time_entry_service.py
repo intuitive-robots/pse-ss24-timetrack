@@ -62,7 +62,7 @@ class TimeEntryService:
             return timesheet_exists_result
 
         add_entry_result = self.timesheet_service.add_time_entry(
-            time_entry.timesheet_id, time_entry.time_entry_id)
+            time_entry.timesheet_id, entry_creation_result.data["_id"])
         if not add_entry_result.is_successful:
             return add_entry_result
 

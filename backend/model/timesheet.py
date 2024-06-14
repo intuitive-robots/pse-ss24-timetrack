@@ -26,7 +26,6 @@ class Timesheet:
         self.last_signature_change = last_signature_change
         self.time_entry_ids = time_entry_ids
 
-
     @staticmethod
     def from_dict(timesheet_dict: dict):
         """
@@ -35,12 +34,17 @@ class Timesheet:
         :param timesheet_dict: The dictionary representing the timesheet.
         :return: A Timesheet object.
         """
-        timesheet = Timesheet(timesheet_dict["username"], timesheet_dict["month"], timesheet_dict["year"])
-        timesheet.set_id(timesheet_dict.get("_id", None))
-        timesheet.status = TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED))
-        timesheet.total_time = timesheet_dict.get("totalTime", 0.0)
-        timesheet.overtime = timesheet_dict.get("overtime", 0.0)
-        timesheet.last_signature_change = timesheet_dict.get("lastSignatureChange", datetime.now())
+        timesheet = Timesheet(
+            username=timesheet_dict["username"],
+            month=timesheet_dict["month"],
+            year=timesheet_dict["year"],
+            timesheet_id=timesheet_dict.get("_id", None),
+            status=TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED)),
+            total_time=timesheet_dict.get("totalTime", 0.0),
+            overtime=timesheet_dict.get("overtime", 0.0),
+            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.now()),
+            time_entry_ids=[ObjectId(id) for id in timesheet_dict.get("timeEntryIds", [])]
+        )
         return timesheet
 
     def set_id(self, timesheet_id):

@@ -4,7 +4,7 @@ from model.time_entry_type import TimeEntryType
 
 
 class TimeEntry(ABC):
-    def __init__(self, timesheet_id: str, start_time: datetime, end_time: datetime, entry_type: TimeEntryType):
+    def __init__(self, timesheet_id: str, start_time: datetime, end_time: datetime, entry_type: TimeEntryType, time_entry_id = None):
         """
         Initializes a new TimeEntry object with the given parameters.
         :param timesheet_id: The unique identifier for the timesheet.
@@ -12,7 +12,7 @@ class TimeEntry(ABC):
         :param end_time: The end time of the time entry.
         :param entry_type: The type of the time entry (WorkEntry or VacationEntry).
         """
-        self.time_entry_id = None
+        self.time_entry_id = time_entry_id
         self.timesheet_id = timesheet_id
         self.start_time = start_time
         self.end_time = end_time
