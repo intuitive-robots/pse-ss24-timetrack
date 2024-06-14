@@ -19,11 +19,18 @@ release = '0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc", "sphinx.ext.napoleon"]
+extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc",
+              "sphinx.ext.napoleon", 'sphinx.ext.intersphinx']
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '.venv']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
+    'flask': ('https://flask.palletsprojects.com/en/latest/', None)
+}
 
 
 # -- Options for HTML output -------------------------------------------------
