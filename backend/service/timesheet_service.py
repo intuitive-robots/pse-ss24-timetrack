@@ -132,7 +132,7 @@ class TimesheetService:
         """
         return self.timesheet_repository.get_timesheet_id(username, month, year)
 
-    def add_time_entry(self, timesheet_id: str, time_entry_id: str):
+    def add_time_entry_to_timesheet(self, timesheet_id: str, time_entry_id: str):
         """
         Adds a time entry to a timesheet_data.
         :param timesheet_id: The ID of the timesheet_data
@@ -147,14 +147,14 @@ class TimesheetService:
         timesheet.add_time_entry(time_entry_id)
         return self.timesheet_repository.update_timesheet(timesheet)
 
-    def delete_time_entry(self, timesheet_id: str, time_entry_id: str):
+    def delete_time_entry_from_timesheet(self, timesheet_id: str, time_entry_id: str):
         """
         Removes a time entry from a timesheet.
         :param timesheet_id: The ID of the timesheet
         :param time_entry_id: The ID of the time entry
         :return: The result of the remove operation
         """
-        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id).data
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
         timesheet = Timesheet.from_dict(timesheet_data)

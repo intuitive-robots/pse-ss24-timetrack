@@ -61,8 +61,8 @@ class TimeEntryService:
         if not timesheet_exists_result.is_successful:
             return timesheet_exists_result
 
-        add_entry_result = self.timesheet_service.add_time_entry(
-            time_entry.timesheet_id, time_entry.time_entry_id)
+        add_entry_result = self.timesheet_service.add_time_entry_to_timesheet(
+            time_entry.timesheet_id, entry_creation_result.data["_id"])
         if not add_entry_result.is_successful:
             return add_entry_result
 
@@ -131,7 +131,15 @@ class TimeEntryService:
         :param str entry_id: The ID of the time entry to be deleted.
         :return: A RequestResult object containing the result of the delete operation.
         """
-        return self.time_entry_repository.delete_time_entry(entry_id)
+        if not entry_id:
+            return RequestResult(False, "Entry ID is None", status_code=400)
+
+        delete_result = self.time_entry_repository.delete_time_entry(entry_id)
+
+        if not delete_result.is_successful:
+            return delete_result
+
+        return self.timesheet_service.delete_time_entry_from_timesheet(delete_result.data["timesheetId"], entry_id)
 
     def get_entries_of_timesheet(self, timesheet_id: str) -> list[TimeEntry]:
         """

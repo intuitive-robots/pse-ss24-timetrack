@@ -15,7 +15,7 @@ class WorkEntry(TimeEntry):
 
     def __init__(self, timesheet_id: str,
                  start_time: datetime, end_time: datetime, break_time: float,
-                 activity: str, project_name: str):
+                 activity: str, project_name: str, time_entry_id=None):
         """
         Initializes a new WorkEntry object with the given parameters.
         :param timesheet_id: Id of the timesheet.
@@ -25,7 +25,7 @@ class WorkEntry(TimeEntry):
         :param activity: Activity of the work entry.
         :param project_name: Project name of the work entry.
         """
-        super().__init__(timesheet_id, start_time, end_time, TimeEntryType.WORK_ENTRY)
+        super().__init__(timesheet_id, start_time, end_time, TimeEntryType.WORK_ENTRY, time_entry_id=time_entry_id)
 
         self.break_time = break_time
         self.activity = activity
