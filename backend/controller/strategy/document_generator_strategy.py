@@ -10,7 +10,6 @@ class DocumentGeneratorStrategy(ABC):
         :param data: The data to use for generating the document.
         :return: The generated document.
         """
-        #TODO: Implement this method
         pass
 
     def generate_multiple_documents(self, data: list):
@@ -19,5 +18,4 @@ class DocumentGeneratorStrategy(ABC):
         :param data: The list of data to use for generating the documents.
         :return: The list of generated documents.
         """
-        #TODO: Implement this method
         pass

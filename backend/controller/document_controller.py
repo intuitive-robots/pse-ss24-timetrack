@@ -62,8 +62,18 @@ class DocumentController(MethodView):
         """
         if not request.is_json:
             return jsonify({'error': 'Request must be in JSON format'}), 400
-        #TODO: Implement this method
-        print("Generating multiple documents")
+        request_data = request.get_json()
+        usernames = request_data['usernames']
+        month = request_data['month']
+        year = request_data['year']
+        if not request_data or not usernames or not month or not year:
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        result = self.document_service.generate_multiple_documents(usernames, month, year)
+        if result.status_code != 200:
+            return jsonify({'error': result.message}), result.status_code
+
+        return send_file(result.data, as_attachment=True, download_name='documents.zip')
 
     def _dispatch_request(self, endpoint_mapping):
         """

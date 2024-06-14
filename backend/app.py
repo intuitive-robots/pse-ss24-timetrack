@@ -77,6 +77,7 @@ document_blueprint.add_url_rule('/generateDocument', view_func=document_view, me
 document_blueprint.add_url_rule('/generateMultipleDocuments', view_func=document_view, methods=['GET'])
 app.register_blueprint(document_blueprint, url_prefix='/document')
 
+
 @app.route('/')
 def home():
     return "Flask Backend"
