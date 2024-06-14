@@ -1,4 +1,5 @@
 import os.path
+from datetime import datetime
 
 from flask import request, jsonify, Blueprint, send_file, after_this_request
 from flask.views import MethodView
@@ -52,9 +53,9 @@ class DocumentController(MethodView):
             def delete_file(response):
                 os.remove(file_path)
                 return response
+
             return send_file(file_path, as_attachment=True)
         return jsonify({'error': 'Failed to generate document'}), 500
-
 
     def generate_multiple_documents(self):
         """
@@ -63,13 +64,25 @@ class DocumentController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request must be in JSON format'}), 400
         request_data = request.get_json()
-        usernames = request_data['usernames']
-        month = request_data['month']
-        year = request_data['year']
-        if not request_data or not usernames or not month or not year:
+        usernames = request_data.get('usernames')
+        month = request_data.get('month')
+        year = request_data.get('year')
+        timesheet_ids = request_data.get('timesheetIds')
+        start_date_str = request_data.get('startDate')
+        end_date_str = request_data.get('endDate')
+        username = request_data.get('username')
+        if usernames and month and year:
+            result = self.document_service.generate_multiple_documents(usernames, month, year)
+        elif timesheet_ids:
+            result = self.document_service.generate_multiple_documents_by_id(timesheet_ids)
+        elif start_date_str and end_date_str and username:
+            start_date = datetime.strptime(start_date_str, '%d-%m-%y')
+            end_date = datetime.strptime(end_date_str, '%d-%m-%y')
+
+            result = self.document_service.generate_document_in_date_range(start_date, end_date, username)
+        else:
             return jsonify({'error': 'Missing required fields'}), 400
 
-        result = self.document_service.generate_multiple_documents(usernames, month, year)
         if result.status_code != 200:
             return jsonify({'error': result.message}), result.status_code
 

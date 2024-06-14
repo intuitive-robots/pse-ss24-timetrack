@@ -22,7 +22,6 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
             return RequestResult(False, "No data provided", 400)
 
         fields = fillpdfs.get_form_fields("../documents/Timesheet/timesheet_template.pdf")
-        print(fields)
         full_name = document_data.personal_info.last_name + ", " + document_data.personal_info.first_name
         #TODO: Implement GFB, UB
         data_dict = {
