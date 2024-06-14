@@ -52,7 +52,6 @@ class TimeEntryRepository:
         time_entries = self.db.timeEntries.find({"date": date, "username": username})
         return list(time_entries)
 
-
     #TODO: This method is only used for testing and shouldn't be required
     def get_time_entries(self):
         """
@@ -95,22 +94,29 @@ class TimeEntryRepository:
 
     def delete_time_entry(self, entry_id: str):
         """
-        Deletes a TimeEntry object from the database
+        Deletes a TimeEntry object from the database and returns the corresponding timesheet ID
         :param entry_id: The ID of the TimeEntry object to delete
         :return: A RequestResult object indicating the success of the operation
         """
         if entry_id is None:
             return RequestResult(False, "Entry ID is None", 400)
+
+        time_entry = self.get_time_entry_by_id(entry_id)
+        if not time_entry:
+            return RequestResult(False, "Time Entry not found", 404)
+
+        timesheet_id = time_entry.get("timesheetId")
+
         result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
         if result.deleted_count == 0:
             return RequestResult(False, "Entry not found", 404)
         if result.acknowledged:
-            return RequestResult(True, "Entry deleted successfully", 200)
+            return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
         return RequestResult(False, "Entry deletion failed", 500)
 
     def create_time_entry(self, time_entry: TimeEntry):
         """
-        Creates a new TimeEntry object in the database
+        Creates a new TimeEntry object in the database and returns the id of the entry
         :param time_entry: The TimeEntry object to create
         :return: A RequestResult object indicating the success of the operation
         """
