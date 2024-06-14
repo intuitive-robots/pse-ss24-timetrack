@@ -35,7 +35,7 @@ class TimesheetService:
 
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
-        if timesheet_data['status'] in (TimesheetStatus.WAITING_FOR_APPROVAL.value(), TimesheetStatus.COMPLETE.value()):
+        if timesheet_data['status'] in (TimesheetStatus.WAITING_FOR_APPROVAL.value, TimesheetStatus.COMPLETE.value):
             return RequestResult(False, "Timesheet already signed", 409)
         return self.set_timesheet_status(timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
 
@@ -46,7 +46,7 @@ class TimesheetService:
         :param timesheet_id: The ID of the timesheet to approve
         :return: The result of the approval operation
         """
-        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id).data
+        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet is None:
             return RequestResult(False, "Timesheet not found", 404)
         if timesheet['status'] == 'Complete':
@@ -62,13 +62,13 @@ class TimesheetService:
         :param timesheet_id: The ID of the timesheet to request changes for
         :return: The result of the request change operation
         """
-        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id).data
+        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet is None:
             return RequestResult(False, "Timesheet not found", 404)
         if timesheet['status'] == 'Complete':
             return RequestResult(False, "Timesheet already approved", 409)
         if timesheet['status'] != 'Waiting for Approval':
-            return RequestResult(False, "Timesheet cannot be approved", 400)
+            return RequestResult(False, "HiWi didn't submitted the timesheet", 400)
         return self.set_timesheet_status(timesheet_id, TimesheetStatus.REVISION)
 
     def set_timesheet_status(self, timesheet_id: str, status: TimesheetStatus):
@@ -108,7 +108,9 @@ class TimesheetService:
         :return: A list of timesheet objects
         """
         timesheets_data = self.timesheet_repository.get_timesheets_by_username(username)
-        return list(map(Timesheet.from_dict, timesheets_data))
+        if timesheets_data is None or len(timesheets_data) == 0:
+            return RequestResult(False, "No timesheets found", 404)
+        return RequestResult(True, "", 200, list(map(Timesheet.from_dict, timesheets_data)))
 
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
@@ -117,7 +119,7 @@ class TimesheetService:
         :param status: The status of the timesheets
         :return: A list of timesheet objects
         """
-        timesheets_data = self.timesheet_repository.get_timesheets_by_status(username, status)
+        timesheets_data = self.timesheet_repository.get_timesheets_by_username_status(username, status)
         return list(map(Timesheet.from_dict, timesheets_data))
 
     def get_timesheet_id(self, username: str, month: int, year: int):
