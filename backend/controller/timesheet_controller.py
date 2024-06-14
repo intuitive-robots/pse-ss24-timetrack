@@ -21,7 +21,9 @@ class TimesheetController(MethodView):
         """
         endpoint_mapping = {
             '/get': self.get_timesheets,
-            '/getByUsernameStatus': self.get_timesheets_by_username_status
+            '/getByUsernameStatus': self.get_timesheets_by_username_status,
+            '/getCurrentTimesheet': self.get_current_timesheet,
+            '/getByMonthYear': self.get_timesheets_by_month_year
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -42,9 +44,13 @@ class TimesheetController(MethodView):
         """
         HiWi signs his timesheet
         """
+        #TODO: Add this for every Post / Patch Endpoint
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
         timesheet_id = request_data['timesheetId']
-        
+        if timesheet_id is None:
+            return jsonify({'error': 'No timesheet ID provided'}), 400
         result = self.timesheet_service.sign_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -54,6 +60,8 @@ class TimesheetController(MethodView):
         """
         Supervisor approves a timesheet
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
         timesheet_id = request_data['timesheetId']
         result = self.timesheet_service.approve_timesheet(timesheet_id)
@@ -65,6 +73,8 @@ class TimesheetController(MethodView):
         """
         Supervisor requests changes to a timesheet
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
         timesheet_id = request_data['timesheetId']
         result = self.timesheet_service.request_change(timesheet_id)
@@ -75,16 +85,22 @@ class TimesheetController(MethodView):
         """
         Retrieves timesheets for the current user
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
         username = request_data['username']
         result = self.timesheet_service.get_timesheets_by_username(username)
-        return jsonify(result.message), result.status_code
+        if result.status_code != 200:
+            return jsonify(result.message), result.status_code
+        return jsonify([timesheet.to_dict() for timesheet in result.data]), result.status_code
 
     @jwt_required()
     def get_timesheets_by_month_year(self):
         """
         Retrieves timesheets for the current user by month and year
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
         username = request_data['username']
         month = request_data['month']
@@ -111,6 +127,8 @@ class TimesheetController(MethodView):
         """
         Retrieves timesheets for a specific user and status
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
         username = request_data['username']
         status = request_data['status']
