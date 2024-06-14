@@ -3,6 +3,7 @@ from datetime import datetime
 
 from flask import request, jsonify, Blueprint, send_file, after_this_request
 from flask.views import MethodView
+from flask_jwt_extended import jwt_required
 
 from service.document_service import DocumentService
 
@@ -28,6 +29,7 @@ class DocumentController(MethodView):
         }
         return self._dispatch_request(endpoint_mapping)
 
+    @jwt_required()
     def generate_document(self):
         """
         Generates a new document
@@ -57,6 +59,7 @@ class DocumentController(MethodView):
             return send_file(file_path, as_attachment=True)
         return jsonify({'error': 'Failed to generate document'}), 500
 
+    @jwt_required()
     def generate_multiple_documents(self):
         """
         Generates multiple documents

@@ -6,7 +6,10 @@ from zipfile import ZipFile
 
 from controller.strategy.pdf_generator_strategy import PDFGeneratorStrategy
 from model.document_data import DocumentData
+from model.file.FileType import FileType
 from model.request_result import RequestResult
+from model.user.supervisor import Supervisor
+from service.file_service import FileService
 from service.time_entry_service import TimeEntryService
 from service.timesheet_service import TimesheetService
 from service.user_service import UserService
@@ -20,6 +23,7 @@ class DocumentService:
         self.user_service = UserService()
         self.time_entry_service = TimeEntryService()
         self.timesheet_service = TimesheetService()
+        self.file_service = FileService()
 
     def generate_multiple_documents(self, usernames: list[str], month: int, year: int):
         """
@@ -131,6 +135,15 @@ class DocumentService:
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
             return None
+        supervisor = self.user_service.get_profile(user.supervisor)
+        if not (isinstance
+            (supervisor, Supervisor)):
+            return None
         timesheet = result.data
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet.timesheet_id)
-        return DocumentData(month, year, user.personal_info, user.contract_info, 0.0, time_entries)
+        signature_stream = self.file_service.get_image(username, FileType.SIGNATURE)
+        supervisor_signature_stream = self.file_service.get_image(supervisor.username, FileType.SIGNATURE)
+        if signature_stream is None:
+            return None
+        return DocumentData(month, year, user.personal_info, user.contract_info, 0.0, signature_stream,
+                            supervisor_signature_stream, time_entries)

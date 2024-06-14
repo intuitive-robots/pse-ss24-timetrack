@@ -1,3 +1,4 @@
+import gridfs
 from numpy import uint32
 import calendar
 from model.time_entry_type import TimeEntryType
@@ -9,7 +10,7 @@ class DocumentData:
 
     def __init__(self, month: int, year: int,
                  personal_info: PersonalInfo, contract_info: ContractInfo,
-                 overtime_from_previous_month: float,
+                 overtime_from_previous_month: float, signature, supervisor_signature,
                  time_entries=[]):
         self.overtime_from_previous_month = overtime_from_previous_month
         self.month = month
@@ -17,7 +18,9 @@ class DocumentData:
         self.personal_info = personal_info
         self.contract_info = contract_info
         self.time_entries = time_entries
-        #TODO: Add signature field
+        self.signature = signature
+        self.supervisor_signature = supervisor_signature
+
 
     def get_monthly_working_hours(self):
         """

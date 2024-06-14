@@ -70,7 +70,10 @@ timesheet_blueprint.add_url_rule('/requestChange', view_func=timesheet_view, met
 timesheet_blueprint.add_url_rule('/get', view_func=timesheet_view, methods=['GET'], endpoint='get_timesheets')
 timesheet_blueprint.add_url_rule('/getByUsernameStatus', view_func=timesheet_view, methods=['GET'],
                                  endpoint='get_timesheets_by_username_status')
+timesheet_blueprint.add_url_rule('/ensureExists', view_func=timesheet_view, methods=['POST'],
+                                 endpoint='ensure_timesheet_exists')
 app.register_blueprint(timesheet_blueprint, url_prefix='/timesheet')
+
 
 document_view = DocumentController.as_view('document')
 document_blueprint.add_url_rule('/generateDocument', view_func=document_view, methods=['GET'])
