@@ -1,4 +1,74 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-/backend/model/__pycache__
-/backend/__pycache__
-/backend/.idea
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Sphinx documentation files
+_build/
+docs/_build/
+_build/html
+_build/doctrees
+
+# Flask-specific files
+instance/
+*.pid
+
+# Environments
+.env
+.env.*
+.envrc
+venv/
+env/
+ENV/
+.venv/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite3
+*.db
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db

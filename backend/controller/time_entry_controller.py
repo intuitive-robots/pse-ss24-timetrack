@@ -9,9 +9,13 @@ time_entry_blueprint = Blueprint('time_entry', __name__)
 
 
 class TimeEntryController(MethodView):
+    """
+    Controller for handling requests related to time entries, providing methods for POST and GET requests.
+    """
+
     def __init__(self):
         """
-        Initialize the TimeEntryController with an instance of TimeEntryService.
+        Initialize the TimeEntryController with instances of TimeEntryService and TimesheetService.
         """
         self.time_entry_service = TimeEntryService()
         self.timesheet_service = TimesheetService()
@@ -20,6 +24,8 @@ class TimeEntryController(MethodView):
         """
         Handles POST requests to manage time entry-related actions such as creating time entries,
         vacation time, updating entries, and deleting entries based on the specific endpoint.
+
+        :return: JSON response with the result of the operation.
         """
         endpoint_mapping = {
             '/createWorkEntry': self.create_work_entry,
@@ -32,6 +38,8 @@ class TimeEntryController(MethodView):
     def get(self):
         """
         Handles GET requests for retrieving time entries by their timesheet ID.
+
+        :return: JSON response with time entries or an error message.
         """
         endpoint_mapping = {
             '/getEntriesByTimesheetId': self.get_entries_by_timesheet_id,
@@ -55,6 +63,8 @@ class TimeEntryController(MethodView):
     def create_work_entry(self):
         """
         Creates a new time entry with the provided JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         time_entry_data = request.get_json()
         result = self.time_entry_service.create_work_entry(time_entry_data)
@@ -64,6 +74,8 @@ class TimeEntryController(MethodView):
     def create_vacation_entry(self):
         """
         Creates a new vacation time entry with the provided JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         vacation_data = request.get_json()
         result = self.time_entry_service.add_vacation_entry(vacation_data)
@@ -72,7 +84,9 @@ class TimeEntryController(MethodView):
     @jwt_required()
     def update_time_entry(self):
         """
-        Updates an existing time entry with the provided JSON data.
+        Updates an existing time entry using the provided JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         time_entry_data = request.get_json()
         time_entry_id = time_entry_data.get('timeEntryId')
@@ -83,7 +97,9 @@ class TimeEntryController(MethodView):
     @jwt_required()
     def delete_time_entry(self):
         """
-        Deletes a time entry identified by its ID provided in JSON data.
+        Deletes a time entry identified by its ID provided in the JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         time_entry_id = request.get_json().get('timeEntryId')
         result = self.time_entry_service.delete_time_entry(time_entry_id)
@@ -92,7 +108,9 @@ class TimeEntryController(MethodView):
     @jwt_required()
     def get_entries_by_timesheet_id(self):
         """
-        Retrieves all time entries associated with a specific timesheet ID.
+        Retrieves all time entries associated with a specific timesheet ID based on the provided JSON data.
+
+        :return: JSON response containing a list of time entries.
         """
         timesheet_id = request.get_json().get('timesheetId')
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet_id)

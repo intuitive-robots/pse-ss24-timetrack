@@ -24,18 +24,28 @@ class TimeEntryStrategy(ABC):
     @abstractmethod
     def validate(self, entry: TimeEntry) -> ValidationResult:
         """
-        Abstract method to validate a TimeEntry object.
+        Abstract method to validate a TimeEntry object. Subclasses must implement this method
+        to provide specific validation behavior based on different rules or conditions.
 
-        Subclasses must implement this method to provide specific validation behavior.
-        This method should examine the provided TimeEntry object and determine
-        whether it complies with a particular rule or set of rules.
+        Each validation strategy derived from this class will implement this method to assess
+        a TimeEntry object against specific criteria, determining if the entry meets the required
+        validation standards.
 
-        Args:
-            entry (TimeEntry): The TimeEntry object to validate.
+        :param entry: The TimeEntry object to validate, which contains data such as start and end times,
+                      break durations, and potentially other metadata pertinent to the validation logic.
+        :type entry: TimeEntry
 
-        Returns:
-            ValidationResult: The result of the validation process, typically indicating
-            whether the TimeEntry passed the specific validation and, if applicable,
-            providing messages or codes that explain why the validation passed or failed.
+        :return: A ValidationResult object encapsulating the outcome of the validation process.
+                 The result includes a status indicating success or failure and, optionally, a message
+                 providing details about the validation outcome.
+        :rtype: ValidationResult
+
+        Example:
+            - A `BreakLengthStrategy` might return a failure if the breaks are too short for the
+              recorded working hours.
+            - A `HolidayStrategy` might fail the validation if the work is recorded on a public holiday.
+
+        Note:
+            This method is abstract and must be overridden by subclasses; it should not be called directly.
         """
         pass

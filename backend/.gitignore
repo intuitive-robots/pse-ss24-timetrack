@@ -15,6 +15,12 @@ env.bak/
 venv.bak/
 .venv/
 
+# Sphinx documentation files
+_build/
+docs/_build/
+_build/html
+_build/doctrees
+
 # Flask-specific files
 instance/
 *.pid

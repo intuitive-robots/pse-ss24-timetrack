@@ -10,20 +10,35 @@ from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 
 class WorkEntry(TimeEntry):
     """
-    Represents a work entry in the timesheet.
+    Represents a work entry in the timesheet, capturing detailed information about work periods,
+    activities performed, and breaks taken during the work period.
+
+    Attributes:
+        break_time (float): The duration of the break time in minutes.
+        activity (str): A description of the activity performed during the work entry.
+        project_name (str): The name of the project associated with the work entry.
     """
 
     def __init__(self, timesheet_id: str,
                  start_time: datetime, end_time: datetime, break_time: float,
                  activity: str, project_name: str, time_entry_id=None):
         """
-        Initializes a new WorkEntry object with the given parameters.
-        :param timesheet_id: Id of the timesheet.
-        :param start_time: Start time of the work entry.
-        :param end_time: End time of the work entry.
-        :param break_time: Break time in minutes of the work entry.
-        :param activity: Activity of the work entry.
-        :param project_name: Project name of the work entry.
+        Initializes a new WorkEntry object with specified timesheet ID, start and end times, break time, activity, and project name.
+
+        :param timesheet_id: The unique identifier for the timesheet to which this work entry belongs.
+        :type timesheet_id: str
+        :param start_time: The start time of the work period.
+        :type start_time: datetime
+        :param end_time: The end time of the work period.
+        :type end_time: datetime
+        :param break_time: The duration of break time taken during the work period, in minutes.
+        :type break_time: float
+        :param activity: A description of the activity performed during the work entry.
+        :type activity: str
+        :param project_name: The name of the project associated with the work entry.
+        :type project_name: str
+        :param time_entry_id: Optional unique identifier for the time entry itself.
+        :type time_entry_id: str, optional
         """
         super().__init__(timesheet_id, start_time, end_time, TimeEntryType.WORK_ENTRY, time_entry_id=time_entry_id)
 
@@ -37,8 +52,10 @@ class WorkEntry(TimeEntry):
 
     def to_dict(self):
         """
-        Converts the WorkEntry object to a dictionary format.
-        :return: A dictionary representing the work entry.
+        Converts the WorkEntry object to a dictionary format, including base class attributes and those specific to WorkEntry.
+
+        :return: A dictionary representation of the WorkEntry, suitable for serialization.
+        :rtype: dict
         """
         data = super().to_dict()
         data.update({
@@ -51,8 +68,13 @@ class WorkEntry(TimeEntry):
     @classmethod
     def from_dict(cls, data: dict):
         """
-        Creates a WorkEntry instance from a dictionary containing MongoDB data,
-        utilizing the superclass method to handle common fields.
+        Creates a WorkEntry instance from a dictionary containing data typically retrieved from a database.
+
+        :param data: A dictionary containing all necessary data keys to instantiate a WorkEntry.
+        :type data: dict
+
+        :return: A fully instantiated WorkEntry object.
+        :rtype: WorkEntry
         """
         start_datetime = data['startTime']
         end_datetime = data['endTime']
@@ -80,9 +102,10 @@ class WorkEntry(TimeEntry):
     @classmethod
     def dict_keys(cls):
         """
-        Returns a list of keys used for the dictionary representation of a TimeEntry object by creating a dummy instance.
+        Provides a list of keys that are used in the dictionary representation of a WorkEntry object.
 
-        :return: A list of keys representing the time entry data fields.
+        :return: A list of string keys that represent the attributes of a WorkEntry object.
+        :rtype: list[str]
         """
         dummy_start_time = datetime.now()
         dummy_end_time = dummy_start_time + timedelta(hours=1)
@@ -91,8 +114,14 @@ class WorkEntry(TimeEntry):
 
     def get_duration(self):
         """
-        Calculates the duration of the work entry.
-        :return: The duration of the work entry.
+        Calculates and returns the total duration of the work entry, minus break time, expressed in hours.
+
+        :return: The total number of hours worked, excluding break time.
+        :rtype: float
+
+        Example:
+            - If the start_time is at 9 AM, end_time at 5 PM, and break_time is 60 minutes,
+              the duration would be 7.0 hours.
         """
         start_datetime = self.start_time
         end_datetime = self.end_time

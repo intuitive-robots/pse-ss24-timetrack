@@ -9,6 +9,11 @@ from utils.security_utils import SecurityUtils
 
 
 class UserService:
+    """
+    Provides service-layer functionality to handle user-related operations, such as creating,
+    updating, retrieving, and deleting users. This service works with the UserRepository to
+    interact with the model-data layer, ensuring users are managed according to defined business rules.
+    """
 
     def __init__(self):
         """
@@ -145,6 +150,7 @@ class UserService:
 
         :param str username: The username of the user whose profile is being requested.
         :return: A User model instance representing the user's profile.
+        :rtype: User
         """
         user_data = self.user_repository.find_by_username(username)
 

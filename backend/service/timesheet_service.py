@@ -5,6 +5,12 @@ from model.timesheet_status import TimesheetStatus
 
 
 class TimesheetService:
+    """
+    Provides service-layer functionality to handle timesheet-related operations, such as creating,
+    updating, retrieving, and managing timesheets and their statuses. This service works with the
+    TimesheetRepository to interact with the model-data layer.
+    """
+
     def __init__(self):
         self.timesheet_repository = TimesheetRepository.get_instance()
         #TODO: Add timesheetValidator
@@ -13,10 +19,15 @@ class TimesheetService:
         """
         Ensures that a timesheet exists for the given username, month, and year.
         If the timesheet does not exist, it will be created.
-        :param username: Username of the Hiwi
-        :param month: Month of the timesheet
-        :param year: Year of the timesheet
-        :return: The timesheet object
+
+        :param username: The username of the Hiwi.
+        :type username: str
+        :param month: The month of the timesheet.
+        :type month: int
+        :param year: The year of the timesheet.
+        :type year: int
+        :return: A RequestResult object containing the result of the ensure operation.
+        :rtype: RequestResult
         """
         timesheet = self.timesheet_repository.get_timesheet(username, month, year)
         if timesheet is not None:
@@ -28,9 +39,12 @@ class TimesheetService:
 
     def sign_timesheet(self, timesheet_id: str):
         """
-        Method used by the Hiwi to sign his timesheet
-        :param timesheet_id: The ID of the timesheet to sign
-        :return: The result of the sign operation
+        Method used by the Hiwi to sign his timesheet.
+
+        :param timesheet_id: The ID of the timesheet to sign.
+        :type timesheet_id: str
+        :return: The result of the sign operation.
+        :rtype: RequestResult
         """
         timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
 
@@ -44,8 +58,11 @@ class TimesheetService:
         """
         Method used by the supervisor to sign a timesheet.
         This sets the status to approved.
-        :param timesheet_id: The ID of the timesheet to approve
-        :return: The result of the approval operation
+
+        :param timesheet_id: The ID of the timesheet to approve.
+        :type timesheet_id: str
+        :return: The result of the approval operation.
+        :rtype: RequestResult
         """
         timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet is None:
@@ -61,8 +78,11 @@ class TimesheetService:
         """
         Method used by the supervisor to request changes to a timesheet.
         This sets the status to change requested.
-        :param timesheet_id: The ID of the timesheet to request changes for
-        :return: The result of the request change operation
+
+        :param timesheet_id: The ID of the timesheet to request changes for.
+        :type timesheet_id: str
+        :return: The result of the request change operation.
+        :rtype: RequestResult
         """
         timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet is None:
@@ -76,6 +96,7 @@ class TimesheetService:
     def set_timesheet_status(self, timesheet_id: str, status: TimesheetStatus):
         """
         Sets the status of a timesheet.
+        
         :param timesheet_id: The ID of the timesheet to update
         :param status: The new status of the timesheet
         :return: The result of the status update operation
@@ -85,6 +106,7 @@ class TimesheetService:
     def create_timesheet(self, username: str, month: int, year: int):
         """
         Creates a new timesheet.
+        
         :param username: The username of the Hiwi
         :param month: The month of the timesheet
         :param year: The year of the timesheet
@@ -95,6 +117,7 @@ class TimesheetService:
     def get_timesheet_by_id(self, timesheet_id: str):
         """
         Retrieves a timesheet by its ID.
+        
         :param timesheet_id: The ID of the timesheet
         :return: The timesheet object
         """
@@ -106,6 +129,7 @@ class TimesheetService:
     def get_timesheets_by_username(self, username: str):
         """
         Retrieves all timesheets for a given username.
+        
         :param username: The username of the Hiwi
         :return: A list of timesheet objects
         """
@@ -117,6 +141,7 @@ class TimesheetService:
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
         Retrieves all timesheets for a given username and status.
+        
         :param username: The username of the Hiwi
         :param status: The status of the timesheets
         :return: A list of timesheet objects
@@ -127,6 +152,7 @@ class TimesheetService:
     def get_timesheet_id(self, username: str, month: int, year: int):
         """
         Retrieves the ID of a timesheet.
+        
         :param username: The username of the Hiwi
         :param month: The month of the timesheet
         :param year: The year of the timesheet
@@ -137,6 +163,7 @@ class TimesheetService:
     def add_time_entry_to_timesheet(self, timesheet_id: str, time_entry_id: str):
         """
         Adds a time entry to a timesheet_data.
+        
         :param timesheet_id: The ID of the timesheet_data
         :param time_entry_id: The ID of the time entry
         :return: The result of the add operation
@@ -152,6 +179,7 @@ class TimesheetService:
     def delete_time_entry_from_timesheet(self, timesheet_id: str, time_entry_id: str):
         """
         Removes a time entry from a timesheet.
+        
         :param timesheet_id: The ID of the timesheet
         :param time_entry_id: The ID of the time entry
         :return: The result of the remove operation
@@ -166,6 +194,7 @@ class TimesheetService:
     def get_current_timesheet(self, username: str):
         """
         Retrieves the current timesheet for a given username.
+        
         :param username: The username of the Hiwi
         :return: The timesheet object
         """
@@ -179,6 +208,7 @@ class TimesheetService:
     def get_timesheet(self, username: str, month: int, year: int):
         """
         Retrieves a timesheet by username, month, and year.
+        
         :param username: The username of the Hiwi
         :param month: The month of the timesheet
         :param year: The year of the timesheet

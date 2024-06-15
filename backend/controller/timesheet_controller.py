@@ -1,8 +1,6 @@
-from datetime import datetime
-
 from flask import jsonify, request, Blueprint
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 from model.user.role import UserRole
 from service.auth_service import check_access
@@ -12,12 +10,22 @@ timesheet_blueprint = Blueprint('timesheet', __name__)
 
 
 class TimesheetController(MethodView):
+    """
+    Controller for managing timesheet-related operations such as retrieval, creation, modification,
+    and deletion of timesheet entries.
+    """
+
     def __init__(self):
+        """
+        Initializes TimesheetController with an instance of TimesheetService.
+        """
         self.timesheet_service = TimesheetService()
 
     def get(self):
         """
-        Handles GET requests for retrieving timesheet data
+        Handles GET requests for retrieving timesheet data based on the endpoint.
+
+        :return: JSON response with the timesheet data or an error message.
         """
         endpoint_mapping = {
             '/get': self.get_timesheets,
@@ -29,7 +37,9 @@ class TimesheetController(MethodView):
 
     def patch(self):
         """
-        Handles PATCH requests for updating timesheet data
+        Handles PATCH requests for updating timesheet data based on the endpoint.
+
+        :return: JSON response with the result of the update operation or an error message.
         """
         endpoint_mapping = {
             '/sign': self.sign_timesheet,
@@ -42,7 +52,9 @@ class TimesheetController(MethodView):
     @check_access(roles=[UserRole.HIWI])
     def sign_timesheet(self):
         """
-        HiWi signs his timesheet
+        Allows a HiWi to sign his timesheet.
+
+        :return: JSON response containing the status message and status code.
         """
         #TODO: Add this for every Post / Patch Endpoint
         if not request.is_json:
@@ -58,7 +70,9 @@ class TimesheetController(MethodView):
     @check_access(roles=[UserRole.SUPERVISOR])
     def approve_timesheet(self):
         """
-        Supervisor approves a timesheet
+        Allows a supervisor to approve a timesheet.
+
+        :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
@@ -71,7 +85,9 @@ class TimesheetController(MethodView):
     @check_access(roles=[UserRole.SUPERVISOR])
     def request_change(self):
         """
-        Supervisor requests changes to a timesheet
+        Allows a supervisor to request changes to a timesheet.
+
+        :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
@@ -83,7 +99,9 @@ class TimesheetController(MethodView):
     @jwt_required()
     def get_timesheets(self):
         """
-        Retrieves timesheets for the current user
+        Retrieves timesheets for the current user.
+
+        :return: JSON response containing a list of timesheets or an error message.
         """
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
@@ -97,7 +115,9 @@ class TimesheetController(MethodView):
     @jwt_required()
     def get_timesheets_by_month_year(self):
         """
-        Retrieves timesheets for the current user by month and year
+        Retrieves timesheets for the current user by month and year.
+
+        :return: JSON response containing the timesheet data or an error message.
         """
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
@@ -113,7 +133,9 @@ class TimesheetController(MethodView):
     @jwt_required()
     def get_current_timesheet(self):
         """
-        Retrieves the current timesheet for a user
+        Retrieves the current timesheet for a user.
+
+        :return: JSON response containing the current timesheet data or an error message.
         """
         username = request.get_json()['username']
         result = self.timesheet_service.get_current_timesheet(username)
@@ -125,7 +147,9 @@ class TimesheetController(MethodView):
     @check_access(roles=[UserRole.SUPERVISOR, UserRole.SECRETARY])
     def get_timesheets_by_username_status(self):
         """
-        Retrieves timesheets for a specific user and status
+        Retrieves timesheets for a specific user and status.
+
+        :return: JSON response containing a list of timesheets or an error message.
         """
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
@@ -142,7 +166,7 @@ class TimesheetController(MethodView):
         Dispatches the request to the appropriate handler based on the request path.
 
         :param endpoint_mapping: Dictionary mapping endpoints to function handlers.
-        :return: The response from the handler or an error message if endpoint not found.
+        :return: The response from the handler or an error message if the endpoint is not found.
         """
         request_path = request.path.replace('/timesheet', '', 1)
         for path, func in endpoint_mapping.items():

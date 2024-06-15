@@ -5,6 +5,9 @@ from model.user.user import User
 
 
 class UserFactory(ABC):
+    """
+    Abstract base class for creating User objects based on user roles, including the factory method pattern.
+    """
 
     @staticmethod
     def _role_factory_mapping():
@@ -37,7 +40,6 @@ class UserFactory(ABC):
         :param user_role: The role of the user for which the factory is requested.
         :return: An instance of the appropriate factory if found, otherwise None.
         """
-        # factory_class = UserFactory.ROLE_FACTORY_MAPPING.get(user_role)
         factory_class = UserFactory._role_factory_mapping().get(user_role)
         if factory_class:
             return factory_class()
@@ -56,7 +58,7 @@ class UserFactory(ABC):
     @staticmethod
     def create_user_if_factory_exists(user_data) -> User or None:
         """
-        Create a user if the corresponding factory exists.
+        Create a user if the corresponding factory exists based on the user role specified in user_data.
 
         :param user_data: A dictionary containing data needed to create a user instance.
         :return: An instance of a subclass of UserFactory or None.
