@@ -49,6 +49,13 @@ class WorkEntry(TimeEntry):
         })
         return data
 
+    def get_activity_project_str(self):
+        """
+        Returns the activity and project name as a string.
+        :return: The activity and project name as a string.
+        """
+        return f"{self.activity} - {self.project_name}"
+
     @classmethod
     def from_dict(cls, data: dict):
         """
@@ -128,7 +135,7 @@ class WorkEntry(TimeEntry):
         else:
             minutes = math.floor(remainder * 60)
         # Format the hours and minutes into a string in "hh:mm" format
-        test = float(f"{hours:.0f}.{minutes:.0f}")
+        duration = float(f"{hours:.0f}.{minutes:.0f}")
 
-        return test
+        return duration
 

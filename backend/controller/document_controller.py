@@ -11,6 +11,9 @@ document_blueprint = Blueprint('document', __name__)
 
 
 class DocumentController(MethodView):
+    """
+    Controller class for handling document-related requests.
+    """
 
     def __init__(self):
         """

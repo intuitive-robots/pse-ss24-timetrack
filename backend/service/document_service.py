@@ -8,6 +8,7 @@ from controller.strategy.pdf_generator_strategy import PDFGeneratorStrategy
 from model.document_data import DocumentData
 from model.file.FileType import FileType
 from model.request_result import RequestResult
+from model.user.role import UserRole
 from model.user.supervisor import Supervisor
 from service.file_service import FileService
 from service.time_entry_service import TimeEntryService
@@ -17,8 +18,14 @@ from model.user.hiwi import Hiwi
 
 
 class DocumentService:
+    """
+    The DocumentService class is responsible for generating documents.
+    """
 
     def __init__(self):
+        """
+        Initializes the DocumentService instance.
+        """
         self.pdf_generator_strategy = PDFGeneratorStrategy()
         self.user_service = UserService()
         self.time_entry_service = TimeEntryService()
@@ -27,7 +34,8 @@ class DocumentService:
 
     def generate_multiple_documents(self, usernames: list[str], month: int, year: int):
         """
-        Generates multiple documents for the given month and year.
+        Generates a zip file containing PDF documents for a specified list of users, month, and year.
+        Each document is gathered and generated based on user-specific data for the given time period.
         :param usernames: The usernames of the users for which to generate the documents.
         :param month: The month for which to generate the documents.
         :param year: The year for which to generate the documents.
@@ -42,12 +50,7 @@ class DocumentService:
         output_dir = self.pdf_generator_strategy.generate_multiple_documents(documents).data
         if not output_dir:
             return RequestResult(False, "Failed to generate documents.", status_code=500)
-        stream = BytesIO()
-        with ZipFile(stream, 'w') as zip_file:
-            for file in glob(output_dir + '/*.pdf'):
-                zip_file.write(file, os.path.basename(file))
-                os.remove(file)
-        stream.seek(0)
+        stream = self._create_zip_from_directory(output_dir)
         return RequestResult(True, "Documents generated successfully.", 200, stream)
 
     def generate_document(self, month: int, year: int, username: str):
@@ -66,7 +69,7 @@ class DocumentService:
 
     def generate_multiple_documents_by_id(self, timesheet_ids: list[str]):
         """
-        Generates multiple documents for the given timesheet IDs.
+        Generates a zip file containing PDF documents for a specified list of timesheet IDs.
         :param timesheet_ids: The timesheet IDs for which to generate the documents.
         :return: The generated documents.
         """
@@ -82,13 +85,22 @@ class DocumentService:
         output_dir = self.pdf_generator_strategy.generate_multiple_documents(documents).data
         if not output_dir:
             return RequestResult(False, "Failed to generate documents.", status_code=500)
+        stream = self._create_zip_from_directory(output_dir)
+        return RequestResult(True, "Documents generated successfully.", 200, stream)
+
+    def _create_zip_from_directory(self, output_dir: str) -> BytesIO:
+        """
+        Creates a zip file from all PDF files in the given directory.
+        :param output_dir: The directory containing the PDF files.
+        :return: The zip file as a BytesIO stream.
+        """
         stream = BytesIO()
         with ZipFile(stream, 'w') as zip_file:
             for file in glob(output_dir + '/*.pdf'):
                 zip_file.write(file, os.path.basename(file))
                 os.remove(file)
         stream.seek(0)
-        return RequestResult(True, "Documents generated successfully.", 200, stream)
+        return stream
 
     def generate_document_in_date_range(self, start_date: datetime, end_date: datetime, username: str):
         """
@@ -102,25 +114,23 @@ class DocumentService:
         while start_date <= end_date:
             document = self.gather_document_data(start_date.month, start_date.year, username)
             if document is None:
-                start_date = start_date.replace(
-                    month=start_date.month + 1) if start_date.month < 12 else start_date.replace(
-                    month=1, year=start_date.year + 1)
+                start_date = self._increment_month(start_date)
                 continue
             documents.append(document)
-            start_date = start_date.replace(
-                month=start_date.month + 1) if start_date.month < 12 else start_date.replace(
-                month=1, year=start_date.year + 1)
+            start_date = self._increment_month(start_date)
         output_dir = self.pdf_generator_strategy.generate_multiple_documents(documents).data
         if not output_dir:
             return RequestResult(False, "Failed to generate documents.", status_code=500)
-        stream = BytesIO()
-        with ZipFile(stream, 'w') as zip_file:
-            for file in glob(output_dir + '/*.pdf'):
-                zip_file.write(file, os.path.basename(file))
-                os.remove(file)
-        stream.seek(0)
+        stream = self._create_zip_from_directory(output_dir)
         return RequestResult(True, "Documents generated successfully.", 200, stream)
 
+    def _increment_month(self, date):
+        """
+        Increments the month of the given date. If the month is December, the year is incremented and the month is set to January.
+        :param date: The date to increment.
+        :return: The date with the month incremented.
+        """
+        return date.replace(month=date.month + 1) if date.month < 12 else date.replace(month=1, year=date.year + 1)
     def gather_document_data(self, month: int, year: int, username: str) -> DocumentData | None:
         """
         Gathers the data required for generating a document.
@@ -130,14 +140,13 @@ class DocumentService:
         :return: The document data.
         """
         user = self.user_service.get_profile(username)
-        if not isinstance(user, Hiwi):
+        if user.role != UserRole.HIWI:
             return None
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
             return None
         supervisor = self.user_service.get_profile(user.supervisor)
-        if not (isinstance
-            (supervisor, Supervisor)):
+        if supervisor.role != UserRole.SUPERVISOR:
             return None
         timesheet = result.data
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet.timesheet_id)
