@@ -16,6 +16,7 @@ class VacationEntry(TimeEntry):
                  start_time: datetime, end_time: datetime):
         """
         Initializes a new VacationEntry object with the given parameters.
+        
         :param timesheet_id: Id of the timesheet.
         :param start_time: Start time of the vacation entry.
         :param end_time: End time of the vacation entry.
@@ -44,6 +45,7 @@ class VacationEntry(TimeEntry):
     def get_duration(self):
         """
         Calculates the duration of the vacation entry.
+        
         :return: The duration of the vacation entry.
         """
         # Calculate the duration

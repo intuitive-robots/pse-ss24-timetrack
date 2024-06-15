@@ -18,8 +18,7 @@ class FileRepository:
         """
         Provides a singleton instance of FileRepository.
 
-        Returns:
-            FileRepository: The singleton instance of the FileRepository.
+        :return: FileRepository: The singleton instance of the FileRepository.
         """
         if FileRepository._instance is None:
             FileRepository._instance = FileRepository()
@@ -37,13 +36,12 @@ class FileRepository:
         """
         Uploads an image to MongoDB using GridFS, storing associated metadata.
 
-        Args:
-            file (FileStorage): The file object to be uploaded.
-            username (str): The username associated with the file upload.
-            file_type (FileType): The enum representing the type of the file.
+        
+        :param file (FileStorage): The file object to be uploaded.
+        :param username (str): The username associated with the file upload.
+        :param file_type (FileType): The enum representing the type of the file.
 
-        Returns:
-            RequestResult: Indicates success or failure of the file upload.
+        :return: RequestResult: Indicates success or failure of the file upload.
         """
         try:
             file_content = file.read()
@@ -64,14 +62,13 @@ class FileRepository:
         """
         Updates an existing image in GridFS and its metadata in the MongoDB database.
 
-        Args:
-            file_content (bytes): The content of the file to replace the existing file.
-            gridfs_id (str): The GridFS ID of the existing file to update.
-            username (str): The username associated with the file.
-            file_type (FileType): The enum representing the type of the file.
+        
+        :param file_content (bytes): The content of the file to replace the existing file.
+        :param gridfs_id (str): The GridFS ID of the existing file to update.
+        :param username (str): The username associated with the file.
+        :param file_type (FileType): The enum representing the type of the file.
 
-        Returns:
-            RequestResult: Indicates success or failure of the file update.
+        :return: RequestResult: Indicates success or failure of the file update.
         """
         try:
             self.grid_fs_bucket.delete(gridfs_id)  # Remove the old file
@@ -91,12 +88,10 @@ class FileRepository:
         """
         Retrieves an image file from GridFS based on username and file type.
 
-        Args:
-            username (str): The username associated with the file.
-            file_type (FileType): The type of file to retrieve.
+        :param username (str): The username associated with the file.
+        :param file_type (FileType): The type of file to retrieve.
 
-        Returns:
-            A file-like object containing the image data if found; otherwise, None.
+        :return: A file-like object containing the image data if found; otherwise, None.
         """
         metadata = self.db.file_metadata.find_one({"username": username, "fileType": file_type.value})
         if not metadata:
@@ -110,11 +105,9 @@ class FileRepository:
         """
         Deletes an image and its metadata from GridFS and MongoDB.
 
-        Args:
-            gridfs_id (str): The GridFS ID of the image to delete.
+        : param gridfs_id (str): The GridFS ID of the image to delete.
 
-        Returns:
-            RequestResult: Indicates success or failure of the deletion.
+        :return: RequestResult: Indicates success or failure of the deletion.
         """
         self.grid_fs_bucket.delete(gridfs_id)
 
@@ -128,12 +121,10 @@ class FileRepository:
         """
         Checks whether a file exists in the database based on the username and file type.
 
-        Args:
-            username (str): The username to check for the file.
-            file_type (FileType): The type of file to check.
+        :param username (str): The username to check for the file.
+        :param file_type (FileType): The type of file to check.
 
-        Returns:
-            bool: True if the file exists, False otherwise.
+        :return: bool: True if the file exists, False otherwise.
         """
         return self.db.file_metadata.count_documents({"username": username, "fileType": file_type.value}) > 0
 
@@ -141,11 +132,9 @@ class FileRepository:
         """
         Retrieves the metadata of an image based on the username and file type.
 
-        Args:
-            username (str): The username associated with the image.
-            file_type (FileType): The type of the image.
+        :param username (str): The username associated with the image.
+        :param file_type (FileType): The type of the image.
 
-        Returns:
-            dict: Metadata of the image if found, otherwise None.
+        :return: dict: Metadata of the image if found, otherwise None.
         """
         return self.db.file_metadata.find_one({"username": username, "fileType": file_type.value})

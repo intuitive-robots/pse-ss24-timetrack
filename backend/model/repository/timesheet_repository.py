@@ -18,6 +18,7 @@ class TimesheetRepository:
     def get_instance():
         """
         Singleton instance of the TimesheetRepository class
+        
         :return: TimesheetRepository instance
         """
         if TimesheetRepository._instance is None:
@@ -33,6 +34,7 @@ class TimesheetRepository:
     def get_timesheet_by_id(self, timesheet_id):
         """
         Retrieves a Timesheet object from the database by its ID
+        
         :param timesheet_id: The ID of the Timesheet object
         :return: The Timesheet object if found, otherwise None
         """
@@ -46,6 +48,7 @@ class TimesheetRepository:
     def get_timesheet(self, username: str, month: int, year: int):
         """
         Retrieves a Timesheet object from the database by username, month, and year
+        
         :param username: Username of the Hiwi
         :param month: Month of the timesheet
         :param year: Year of the timesheet
@@ -61,6 +64,7 @@ class TimesheetRepository:
     def get_current_timesheet(self, username: str):
         """
         Retrieves the current timesheet for the given username
+        
         :param username: Username of the Hiwi
         :return: object if found, otherwise None
         """
@@ -75,6 +79,7 @@ class TimesheetRepository:
     def get_timesheet_by_time_period(self, username:str, start_date: date, end_date: date):
         """
         Retrieves all timesheets for a given username within a specified time period
+        
         :param username: Username of the Hiwi
         :param start_date: Start date of the time period
         :param end_date: End date of the time period
@@ -88,6 +93,7 @@ class TimesheetRepository:
     def get_timesheets(self):
         """
         Retrieves all Timesheet objects from the database
+        
         :return: A list of all Timesheet objects
         """
         timesheets = self.db.timesheets.find()
@@ -96,6 +102,7 @@ class TimesheetRepository:
     def get_timesheet_by_status(self, status: TimesheetStatus):
         """
         Retrieves all Timesheet objects from the database with the given status
+        
         :param status: The status of the timesheet
         :return: A list of Timesheet objects with the given status
         """
@@ -107,6 +114,7 @@ class TimesheetRepository:
     def get_timesheet_id(self, username: str, month: int, year: int):
         """
         Retrieves the timesheet ID for the given username, month, and year
+        
         :param username: Username of the Hiwi
         :param month: Month of the timesheet
         :param year: Year of the timesheet
@@ -122,6 +130,7 @@ class TimesheetRepository:
     def update_timesheet(self, timesheet):
         """
         Updates a timesheet in the database.
+        
         :param timesheet: The timesheet object to be updated.
         :return: The ID of the updated timesheet.
         """
@@ -140,6 +149,7 @@ class TimesheetRepository:
     def set_timesheet_status(self, timesheet_id, status):
         """
         Updates the status of a timesheet in the database.
+        
         :param timesheet_id: The ID of the timesheet to update.
         :param status: The new status of the timesheet.
         :return: A RequestResult object indicating the success of the operation.
@@ -158,6 +168,7 @@ class TimesheetRepository:
     def delete_timesheet(self, timesheet_id):
         """
         Deletes a timesheet from the database.
+        
         :param timesheet_id: The ID of the timesheet to delete.
         :return: A RequestResult object indicating the success of the operation.
         """
@@ -173,6 +184,7 @@ class TimesheetRepository:
     def create_timesheet(self, timesheet: Timesheet):
         """
         Creates a timesheet in the database.
+        
         :param timesheet: The timesheet object to create.
         :return: A RequestResult object indicating the success of the operation.
         """
@@ -189,6 +201,7 @@ class TimesheetRepository:
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
         Retrieves all timesheets for a given username with a specified status
+        
         :param username: Username of the Hiwi
         :param status: Status of the timesheet
         :return: A list of timesheets for the given username with the specified status
@@ -201,6 +214,7 @@ class TimesheetRepository:
     def get_timesheets_by_username(self, username: str):
         """
         Retrieves all timesheets for a given username
+        
         :param username: Username of the Hiwi
         :return: A list of timesheets for the given username
         """

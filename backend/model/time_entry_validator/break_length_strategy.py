@@ -24,12 +24,9 @@ class BreakLengthStrategy(TimeEntryStrategy):
         """
         Validates the break time in the TimeEntry based on the total work duration.
 
-        Args:
-            entry (TimeEntry): The entry to validate.
+        :param entry (TimeEntry): The entry to validate.
 
-        Returns:
-            ValidationResult: The result of the validation, indicating whether the
-            break length meets the legal requirements.
+        :return: ValidationResult: The result of the validation, indicating whether the break length meets the legal requirements.
         """
         if not hasattr(entry, 'break_time') or entry.break_time is None:
             return ValidationResult(ValidationStatus.FAILURE, "Break time information is missing or invalid.")

@@ -30,8 +30,7 @@ class TimeEntryStrategy(ABC):
         This method should examine the provided TimeEntry object and determine
         whether it complies with a particular rule or set of rules.
 
-        Args:
-            entry (TimeEntry): The TimeEntry object to validate.
+        :param entry (TimeEntry): The TimeEntry object to validate.
 
         Returns:
             ValidationResult: The result of the validation process, typically indicating

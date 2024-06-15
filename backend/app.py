@@ -1,3 +1,5 @@
+""" This is the main python module where we call the run method of the flask app."""
+
 import secrets
 from datetime import timedelta, datetime
 
@@ -93,7 +95,9 @@ def create_user():
     """
     Creates a test user in the database
     TODO: This is a hardcoded user, replace this with a React form
-    :return: A string indicating that the user was created
+    
+    Returns:
+        A string indicating that the user was created
     """
     password = "test_password"
     hashed_password = SecurityUtils.hash_password(password)
@@ -145,6 +149,7 @@ def create_time_entry():
 def read_time_entries():
     """
     Reads all time entries from the database
+    
     :return: A JSON string containing all time entries
     """
     entry_repo = TimeEntryRepository.get_instance()
@@ -156,6 +161,7 @@ def read_time_entries():
 def read_timesheets():
     """
     Reads all timesheets from the database
+    
     :return: A JSON string containing all timesheets
     """
     timesheet_repo = TimesheetRepository.get_instance()
@@ -186,6 +192,7 @@ def create_timesheet():
 def check_mongodb_connection():
     """
     Check the connection to the MongoDB database
+    
     :return: A string indicating the connection status
     """
     return check_db_connection()

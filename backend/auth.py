@@ -13,7 +13,8 @@ user_repo = UserRepository.get_instance()
 def init_auth_routes(app):
     """
     This function initializes the authentication routes for the application.
-    :param app: The flask application
+    
+    :param app: The flask application.
     """
 
     @app.after_request
@@ -21,6 +22,7 @@ def init_auth_routes(app):
         """
         This function refreshes the JWT token if it is about to expire.
         For more information check out how the after_request decorator works in Flask.
+        
         :param response: The response object of a request
         :return: The response object of the request
         """

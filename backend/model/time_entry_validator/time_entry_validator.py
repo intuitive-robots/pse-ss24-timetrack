@@ -24,8 +24,7 @@ class TimeEntryValidator:
         logic defined in separate classes. Each rule must have a `validate` method that
         accepts a `TimeEntry` object as its parameter.
 
-        Args:
-            rule (TimeEntryStrategy): A validation strategy instance that contains specific validation logic to apply to TimeEntry objects.
+        :param rule (TimeEntryStrategy): A validation strategy instance that contains specific validation logic to apply to TimeEntry objects.
         """
         self.validationRules.append(rule)
 

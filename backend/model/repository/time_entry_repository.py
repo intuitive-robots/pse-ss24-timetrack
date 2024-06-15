@@ -15,6 +15,7 @@ class TimeEntryRepository:
     def get_instance():
         """
         Singleton instance of the TimeEntryRepository class
+        
         :return: TimeEntryRepository instance
         """
         if TimeEntryRepository._instance is None:
@@ -30,6 +31,7 @@ class TimeEntryRepository:
     def get_time_entry_by_id(self, time_entry_id):
         """
         Retrieves a TimeEntry object from the database by its ID
+        
         :param time_entry_id: The ID of the TimeEntry object
         :return: The TimeEntry object if found, otherwise None
         """
@@ -43,6 +45,7 @@ class TimeEntryRepository:
     def get_time_entries_by_date(self, date, username):
         """
         Retrieves all TimeEntry objects from the database for a given date
+        
         :param username: The username for which to retrieve TimeEntry objects
         :param date: The date for which to retrieve TimeEntry objects
         :return: A list of TimeEntry objects for the given date
@@ -56,6 +59,7 @@ class TimeEntryRepository:
     def get_time_entries(self):
         """
         Retrieves all TimeEntry objects from the database
+        
         :return: A list of all TimeEntry objects
         """
         time_entries = self.db.timeEntries.find()
@@ -76,6 +80,7 @@ class TimeEntryRepository:
     def update_time_entry(self, time_entry: TimeEntry):
         """
         Updates a TimeEntry object in the database
+        
         :param time_entry: The TimeEntry object to update
         :return: A RequestResult object indicating the success of the operation
         """
@@ -95,6 +100,7 @@ class TimeEntryRepository:
     def delete_time_entry(self, entry_id: str):
         """
         Deletes a TimeEntry object from the database and returns the corresponding timesheet ID
+        
         :param entry_id: The ID of the TimeEntry object to delete
         :return: A RequestResult object indicating the success of the operation
         """
@@ -117,6 +123,7 @@ class TimeEntryRepository:
     def create_time_entry(self, time_entry: TimeEntry):
         """
         Creates a new TimeEntry object in the database and returns the id of the entry
+        
         :param time_entry: The TimeEntry object to create
         :return: A RequestResult object indicating the success of the operation
         """

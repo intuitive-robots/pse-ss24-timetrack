@@ -7,6 +7,7 @@ class ValidationStatus(Enum):
 
     Attributes:
         SUCCESS: Indicates that the validation was successful.
+        WARNING: Indicates that there is a warning in the validation.
         FAILURE: Indicates that the validation failed.
     """
     SUCCESS = auto()

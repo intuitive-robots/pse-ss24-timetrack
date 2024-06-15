@@ -18,6 +18,7 @@ class WorkEntry(TimeEntry):
                  activity: str, project_name: str, time_entry_id=None):
         """
         Initializes a new WorkEntry object with the given parameters.
+        
         :param timesheet_id: Id of the timesheet.
         :param start_time: Start time of the work entry.
         :param end_time: End time of the work entry.
@@ -38,6 +39,7 @@ class WorkEntry(TimeEntry):
     def to_dict(self):
         """
         Converts the WorkEntry object to a dictionary format.
+        
         :return: A dictionary representing the work entry.
         """
         data = super().to_dict()
@@ -92,6 +94,7 @@ class WorkEntry(TimeEntry):
     def get_duration(self):
         """
         Calculates the duration of the work entry.
+        
         :return: The duration of the work entry.
         """
         start_datetime = self.start_time

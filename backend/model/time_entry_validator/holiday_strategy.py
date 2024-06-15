@@ -20,11 +20,9 @@ class HolidayStrategy(TimeEntryStrategy):
         """
         Checks if the date of the entry falls on a public holiday.
 
-        Args:
-            entry (TimeEntry): The time entry to validate.
+        :param entry (TimeEntry): The time entry to validate.
 
-        Returns:
-            ValidationResult: Indicates whether the entry date is a public holiday.
+        :return: ValidationResult: Indicates whether the entry date is a public holiday.
         """
         if entry.date in self.holiday_calendar:
             holiday_name = self.holiday_calendar.get(entry.date)

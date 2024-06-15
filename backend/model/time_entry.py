@@ -7,6 +7,7 @@ class TimeEntry(ABC):
     def __init__(self, timesheet_id: str, start_time: datetime, end_time: datetime, entry_type: TimeEntryType, time_entry_id = None):
         """
         Initializes a new TimeEntry object with the given parameters.
+        
         :param timesheet_id: The unique identifier for the timesheet.
         :param start_time: The start time of the time entry.
         :param end_time: The end time of the time entry.
@@ -21,6 +22,7 @@ class TimeEntry(ABC):
     def set_id(self, time_entry_id):
         """
         Sets the ID of the time entry.
+        
         :param time_entry_id: The ID of the time entry.
         """
         self.time_entry_id = time_entry_id
@@ -29,6 +31,7 @@ class TimeEntry(ABC):
     def to_dict(self):
         """
         Converts the TimeEntry object to a dictionary format.
+        
         :return: A dictionary representing the time entry.
         """
         return {
@@ -62,6 +65,7 @@ class TimeEntry(ABC):
     def get_duration(self):
         """
         Calculates the duration of the time entry.
+        
         :return: The duration of the time entry.
         """
         pass

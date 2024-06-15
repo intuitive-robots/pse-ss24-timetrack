@@ -9,8 +9,7 @@ class AdminFactory(UserFactory):
         """
         Creates and returns an Admin object based on the provided data.
 
-        :param user_data: A dictionary containing user details including username, password hash, personal
-        information and role.
+        :param user_data: A dictionary containing user details including username, password hash, personal information and role.
         :return: A User object initialized as an Admin with the provided data.
         """
         personal_info = None

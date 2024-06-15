@@ -14,6 +14,7 @@ class TimesheetStatus(Enum):
     def get_status_by_value(value: str):
         """
         Get the status by its value.
+        
         :return: The status with the given value.
         """
         for status in TimesheetStatus:
@@ -24,6 +25,7 @@ class TimesheetStatus(Enum):
     def __str__(self):
         """
         Get the value of the status.
+        
         :return: The value of the status.
         """
         return self.value
