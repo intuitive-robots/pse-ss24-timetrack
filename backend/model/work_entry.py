@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta
 
 from model.time_entry import TimeEntry
@@ -65,6 +66,13 @@ class WorkEntry(TimeEntry):
         })
         return data
 
+    def get_activity_project_str(self):
+        """
+        Returns the activity and project name as a string.
+        :return: The activity and project name as a string.
+        """
+        return f"{self.activity} - {self.project_name}"
+
     @classmethod
     def from_dict(cls, data: dict):
         """
@@ -112,7 +120,9 @@ class WorkEntry(TimeEntry):
         dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, 0, "", "")
         return list(dummy_entry.to_dict().keys())
 
+    """
     def get_duration(self):
+
         """
         Calculates and returns the total duration of the work entry, minus break time, expressed in hours.
 
@@ -123,6 +133,7 @@ class WorkEntry(TimeEntry):
             - If the start_time is at 9 AM, end_time at 5 PM, and break_time is 60 minutes,
               the duration would be 7.0 hours.
         """
+
         start_datetime = self.start_time
         end_datetime = self.end_time
         # Calculate the duration
@@ -131,3 +142,31 @@ class WorkEntry(TimeEntry):
         duration -= timedelta(minutes=self.break_time)
         # Return the duration in hours
         return duration.total_seconds() / 3600
+    """
+
+    def get_duration(self):
+        """
+        Calculates the duration of the work entry.
+        :return: The duration of the work entry in "hh:mm" format.
+        """
+        start_datetime = self.start_time
+        end_datetime = self.end_time
+        # Calculate the duration
+        duration = end_datetime - start_datetime
+        # Subtract the break time
+        duration -= timedelta(minutes=self.break_time)
+        # Get the duration in hours as a float
+        duration_in_hours = duration.total_seconds() / 3600
+        # Get the hours and remaining minutes
+        hours, remainder = divmod(duration_in_hours, 1)
+
+        # This fixes the floating point issue with the remainder
+        if duration.total_seconds() % 60 >= 1:
+            minutes = math.ceil(remainder * 60)
+        else:
+            minutes = math.floor(remainder * 60)
+        # Format the hours and minutes into a string in "hh:mm" format
+        duration = float(f"{hours:.0f}.{minutes:.0f}")
+
+        return duration
+

@@ -153,5 +153,4 @@ class UserService:
         :rtype: User
         """
         user_data = self.user_repository.find_by_username(username)
-
         return UserFactory.create_user_if_factory_exists(user_data)

@@ -35,6 +35,15 @@ class TimesheetController(MethodView):
         }
         return self._dispatch_request(endpoint_mapping)
 
+    def post(self):
+        """
+        Handles POST requests for creating timesheets
+        """
+        endpoint_mapping = {
+            '/ensureExists': self.ensure_timesheet_exists
+        }
+        return self._dispatch_request(endpoint_mapping)
+
     def patch(self):
         """
         Handles PATCH requests for updating timesheet data based on the endpoint.
@@ -47,6 +56,26 @@ class TimesheetController(MethodView):
             '/requestChange': self.request_change
         }
         return self._dispatch_request(endpoint_mapping)
+
+    @jwt_required()
+    def ensure_timesheet_exists(self):
+        """
+        Ensures that a timesheet exists for the given username, month, and year.
+        If the timesheet does not exist, it will be created.
+        :return: The timesheet object
+        """
+        if not request.is_json:
+            return jsonify({'error': 'Request must be in JSON format'}), 400
+        request_data = request.get_json()
+        if request_data is None:
+            return jsonify({'error': 'Request data is missing'}), 400
+        username = request_data['username']
+        month = request_data['month']
+        year = request_data['year']
+        if not username or not month or not year:
+            return jsonify({'error': 'Missing required fields'}), 400
+        result = self.timesheet_service.ensure_timesheet_exists(username, month, year)
+        return jsonify(result.message), result.status_code
 
     @jwt_required()
     @check_access(roles=[UserRole.HIWI])

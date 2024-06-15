@@ -171,9 +171,9 @@ class TimeEntryService:
         # TODO: Use TimeEntryValidator to check if timesheet_id is valid object id
 
         entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+
         if not entries_data:
             return []
-
         time_entries = []
         for entry_data in entries_data:
             entry_type = TimeEntryType.get_type_by_value(entry_data['entryType'])
