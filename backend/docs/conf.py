@@ -12,19 +12,25 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 project = 'IntuitiveTimeTracking'
-copyright = '2024, Phil'
-author = 'Dominik Pollok, Phil Gengenbach, Alina Petri, José Ayala, Johann Kohl'
+copyright = '2024, IntuitiveTimeTracking'
+authors = [
+    'Dominik Pollok',
+    'Phil Gengenbach',
+    'Alina Petri',
+    'José Ayala',
+    'Johann Kohl'
+]
+author = '\n'.join(authors)
 release = '0.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc",
+extensions = ["sphinx.ext.viewcode", "sphinx.ext.autodoc",
               "sphinx.ext.napoleon", 'sphinx.ext.intersphinx']
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
 
 
 intersphinx_mapping = {
