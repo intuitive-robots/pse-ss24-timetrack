@@ -3,8 +3,9 @@ from model.time_entry import TimeEntry
 
 class TimeEntryValidator:
     """
-    Manages the validation of `TimeEntry` objects against a set of defined validation rules.
-    This validator uses a strategy pattern to allow for dynamic addition and removal of validation rules.
+    Handles the validation of `TimeEntry` objects against a set of dynamically manageable validation rules.
+    This class utilizes a strategy pattern to facilitate the flexible addition and removal of validation strategies,
+    enabling custom validation scenarios for different types of time entries.
 
     Attributes:
         validationRules (list): A list of validation rules that `TimeEntry` objects will be checked against.
@@ -12,49 +13,42 @@ class TimeEntryValidator:
 
     def __init__(self):
         """
-        Initializes the TimeEntryValidator with an empty list of validation rules.
+        Constructs a TimeEntryValidator with an empty list, ready to accept validation strategies.
         """
         self.validationRules = []
 
     def add_validation_rule(self, rule):
         """
-        Adds a new validation rule to the validator.
+        Adds a new validation strategy to the list of rules. Each strategy must be an object that
+        implements a `validate` method capable of processing a `TimeEntry` object.
 
-        This method allows for adding custom rules that implement specific validation
-        logic defined in separate classes. Each rule must have a `validate` method that
-        accepts a `TimeEntry` object as its parameter.
-
-        :param rule (TimeEntryStrategy): A validation strategy instance that contains specific validation logic to apply to TimeEntry objects.
+        :param rule: A validation strategy instance, typically derived from the TimeEntryStrategy class,
+                     which includes specific validation logic for TimeEntry objects.
+        :type rule: TimeEntryStrategy
         """
         self.validationRules.append(rule)
 
     def remove_validation_rule(self, rule):
         """
-        Removes a validation rule from the validator.
+        Removes a specified validation strategy from the list of rules. This method allows for dynamic
+        adjustments to the validation process, accommodating changes in validation requirements or contexts.
 
-        This method allows for the dynamic removal of validation rules from the validator,
-        useful for adapting the validation process to different contexts or requirements.
-
-        Args:
-            rule (TimeEntryStrategy): The validation strategy instance to remove from the
-            current set of validation rules.
+        :param rule: The validation strategy instance to remove.
+        :type rule: TimeEntryStrategy
         """
         self.validationRules.remove(rule)
 
     def validate_entry(self, timeEntry: TimeEntry):
         """
-        Validates a `TimeEntry` object using all the accumulated validation rules.
+        Validates a `TimeEntry` object against all active validation strategies. This method applies
+        each rule to the `TimeEntry` object and collects the results.
 
-        This method iterates through each validation rule and applies its `validate` method
-        to the provided `TimeEntry` object. This is a way to enforce all validation rules
-        that have been added to the validator.
+        :param timeEntry: The `TimeEntry` object to validate, containing all necessary data for the validations.
+        :type timeEntry: TimeEntry
 
-        Args:
-            timeEntry (TimeEntry): The `TimeEntry` object to validate.
-
-        Returns:
-            list: A list of `ValidationResult` objects from each validation rule applied,
-            indicating the success or failure of each validation.
+        :return: A list of `ValidationResult` objects, each representing the outcome of a single validation strategy
+        applied to the `TimeEntry` object. Each result includes information about whether the validation was
+        successful, along with any relevant messages. :rtype: list[ValidationResult]
         """
         results = []
         for rule in self.validationRules:

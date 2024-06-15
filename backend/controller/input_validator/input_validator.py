@@ -7,7 +7,7 @@ class InputValidator:
     Base class for input validators.
     """
 
-    def is_valid(self, data) -> ValidationResult:
+    def is_valid(self, data: dict) -> ValidationResult:
         """
         Validate the input data. Should be overridden by subclasses.
 

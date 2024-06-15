@@ -12,6 +12,11 @@ from service.timesheet_service import TimesheetService
 
 
 class TimeEntryService:
+    """
+    Manages time entry operations, interfacing with the TimeEntryRepository for data storage and retrieval,
+    the TimesheetService for handling related timesheet operations, and a validator for time entry data validation.
+    """
+
     def __init__(self):
         """
         Initializes a new instance of the TimeEntryService class.
@@ -34,9 +39,12 @@ class TimeEntryService:
         """
         General method to handle addition of work or vacation time entries.
 
-        :param dict entry_data: Time entry data.
-        :param TimeEntryType entry_type: The type of the entry (e.g., WorkEntry or VacationEntry).
+        :param entry_data: Time entry data.
+        :type entry_data: dict
+        :param entry_type: The type of the entry (e.g., WorkEntry or VacationEntry).
+        :type entry_type: TimeEntryType
         :return: A RequestResult object containing the outcome.
+        :rtype: RequestResult
         """
         username = get_jwt_identity()
         entry_data['entryType'] = entry_type.value
@@ -76,8 +84,10 @@ class TimeEntryService:
         """
         Creates a new work time entry in the system based on the provided entry data.
 
-        :param dict entry_data: A dictionary containing time entry attributes necessary for creating a new time entry.
+        :param entry_data: A dictionary containing time entry attributes necessary for creating a new time entry.
+        :type entry_data: dict
         :return: A RequestResult object containing the result of the create operation.
+        :rtype: RequestResult
         """
         return self._add_time_entry(entry_data, TimeEntryType.WORK_ENTRY)
 
@@ -85,8 +95,10 @@ class TimeEntryService:
         """
         Adds a new vacation time entry based on the provided entry data.
 
-        :param dict entry_data: A dictionary containing vacation time entry attributes.
+        :param entry_data: A dictionary containing vacation time entry attributes.
+        :type entry_data: dict
         :return: A RequestResult object containing the result of the add operation.
+        :rtype: RequestResult
         """
         # TODO Implement vacation logic
         return self._add_time_entry(entry_data, TimeEntryType.VACATION_ENTRY)
@@ -95,9 +107,12 @@ class TimeEntryService:
         """
         Updates an existing time entry in the system with the provided update data after validating the data.
 
-        :param str entry_id: The ID of the time entry to update.
-        :param dict update_data: A dictionary with time entry attributes that should be updated.
+        :param entry_id: The ID of the time entry to update.
+        :type entry_id: str
+        :param update_data: A dictionary with time entry attributes that should be updated.
+        :type update_data: dict
         :return: RequestResult object containing the result of the update operation.
+        :rtype: RequestResult
         """
         existing_entry_data = self.time_entry_repository.get_time_entry_by_id(entry_id)
         if not existing_entry_data:
@@ -128,8 +143,10 @@ class TimeEntryService:
         """
         Deletes a time entry from the system identified by its ID.
 
-        :param str entry_id: The ID of the time entry to be deleted.
+        :param entry_id: The ID of the time entry to be deleted.
+        :type entry_id: str
         :return: A RequestResult object containing the result of the delete operation.
+        :rtype: RequestResult
         """
         if not entry_id:
             return RequestResult(False, "Entry ID is None", status_code=400)
@@ -146,8 +163,10 @@ class TimeEntryService:
         Retrieves a list of time entries associated with a specific timesheet ID and converts them into
         TimeEntry objects, considering the specific type of each entry.
 
-        :param str timesheet_id: The ID of the timesheet for which to retrieve entries.
+        :param timesheet_id: The ID of the timesheet for which to retrieve entries.
+        :type timesheet_id: str
         :return: A list of TimeEntry model instances representing all time entries for the specified timesheet.
+        :rtype: list[TimeEntry]
         """
         # TODO: Use TimeEntryValidator to check if timesheet_id is valid object id
 

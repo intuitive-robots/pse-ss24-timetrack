@@ -5,6 +5,11 @@ from model.user.personal_information import PersonalInfo
 
 
 class HiwiFactory(UserFactory):
+    """
+    A factory class for creating HiWi user objects.
+    Extends the UserFactory class.
+    """
+
     def create_user(self, user_data: dict) -> Hiwi:
         """
         Creates and returns a Hiwi object based on the provided data.

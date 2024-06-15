@@ -11,9 +11,16 @@ from utils.object_utils import ObjectUtils
 
 
 class TimeEntryDataValidator(InputValidator):
+    """
+    A validator class for time entry data in a project management system. This class
+    checks the validity of different fields specific to time entries.
+    """
+
     def __init__(self):
         """
         Initializes the TimeEntryDataValidator with predefined regex patterns for validating time entry fields.
+        These patterns ensure that the input for various fields like timesheet ID and project name conforms
+        to expected formats.
         """
         self.field_patterns = {
             'timesheetId': r'^[0-9a-fA-F]{24}$',  # Alphanumeric exactly 10 characters long
@@ -29,7 +36,8 @@ class TimeEntryDataValidator(InputValidator):
         Validates the completeness and correctness of time entry data based on the entry type.
 
         :param time_entry_data: A dictionary containing time entry details to validate.
-        :return: ValidationResult indicating if the time entry data is valid.
+        :return: ValidationResult: An object indicating whether the time entry data is valid, including
+                              a message and status code.
         """
         time_entry_data = ObjectUtils.convert_objectids_to_strings(time_entry_data)
 

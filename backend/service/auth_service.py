@@ -12,6 +12,11 @@ from utils.security_utils import SecurityUtils
 
 
 class AuthenticationService:
+    """
+    Provides authentication services including login, logout, token generation, and password reset.
+    This service interfaces with the UserRepository to manage user data and security operations.
+    """
+
     def __init__(self):
         """
         Initializes the AuthenticationService with an instance of UserRepository.
@@ -23,8 +28,11 @@ class AuthenticationService:
         Generates a JWT token for a given user with additional claims.
 
         :param username: The username of the user.
+        :type username: str
         :param role: The role of the user.
+        :type role: UserRole
         :return: A JWT access token as a string.
+        :rtype: str
         """
         additional_claims = {"role": str(role)}
         return create_access_token(identity=username, additional_claims=additional_claims)
@@ -34,6 +42,7 @@ class AuthenticationService:
         Retrieves a user based on the JWT identity from the current request context.
 
         :return: A User object if the token is valid, otherwise None.
+        :rtype: User or None
         """
         username = get_jwt_identity()
         if not username:
@@ -49,6 +58,7 @@ class AuthenticationService:
         Logs out the user by unsetting the JWT cookies.
 
         :return: A RequestResult indicating the success of the logout operation.
+        :rtype: RequestResult
         """
         response = jsonify({"msg": "logout successful"})
         unset_jwt_cookies(response)
@@ -59,8 +69,11 @@ class AuthenticationService:
         Authenticates a user and returns a JWT token if the credentials are valid.
 
         :param username: The username of the user.
+        :type username: str
         :param password: The password of the user.
+        :type password: str
         :return: A RequestResult including a token if authentication is successful, otherwise an error message.
+        :rtype: RequestResult
         """
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
@@ -76,8 +89,11 @@ class AuthenticationService:
         Resets the password for a given username.
 
         :param username: The username for which to reset the password.
+        :type username: str
         :param new_password: The new password.
+        :type new_password: str
         :return: A RequestResult indicating the success or failure of the reset process.
+        :rtype: RequestResult
         """
         if not username or not new_password:
             return RequestResult(False, "Username and new password must be provided", status_code=400)
@@ -104,12 +120,23 @@ def check_access(roles: [UserRole] = []):
     Decorator function to check if the user has the required role to access the endpoint.
 
     :param roles: A list of UserRole objects that are allowed to access the endpoint.
+    :type roles: list[UserRole]
     :return: The decorator function.
+    :rtype: function
     """
 
     def decorator(f):
         @wraps(f)
         def decorator_function(*args, **kwargs):
+            """
+            Decorated function to verify JWT and check user role.
+
+            :param args: Positional arguments to pass to the original function.
+            :param kwargs: Keyword arguments to pass to the original function.
+            :return: The original function if access is granted, or raises NoAuthorizationError.
+            :rtype: function
+            """
+
             # calling @jwt_required()
             verify_jwt_in_request()
             # fetching current user from db

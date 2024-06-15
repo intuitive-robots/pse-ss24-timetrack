@@ -5,6 +5,12 @@ from model.timesheet_status import TimesheetStatus
 
 
 class TimesheetService:
+    """
+    Provides service-layer functionality to handle timesheet-related operations, such as creating,
+    updating, retrieving, and managing timesheets and their statuses. This service works with the
+    TimesheetRepository to interact with the model-data layer.
+    """
+
     def __init__(self):
         self.timesheet_repository = TimesheetRepository.get_instance()
         #TODO: Add timesheetValidator
@@ -13,11 +19,15 @@ class TimesheetService:
         """
         Ensures that a timesheet exists for the given username, month, and year.
         If the timesheet does not exist, it will be created.
-        
-        :param username: Username of the Hiwi
-        :param month: Month of the timesheet
-        :param year: Year of the timesheet
-        :return: The timesheet object
+
+        :param username: The username of the Hiwi.
+        :type username: str
+        :param month: The month of the timesheet.
+        :type month: int
+        :param year: The year of the timesheet.
+        :type year: int
+        :return: A RequestResult object containing the result of the ensure operation.
+        :rtype: RequestResult
         """
         timesheet = self.timesheet_repository.get_timesheet(username, month, year)
         if timesheet is not None:
@@ -29,10 +39,12 @@ class TimesheetService:
 
     def sign_timesheet(self, timesheet_id: str):
         """
-        Method used by the Hiwi to sign his timesheet
-        
-        :param timesheet_id: The ID of the timesheet to sign
-        :return: The result of the sign operation
+        Method used by the Hiwi to sign his timesheet.
+
+        :param timesheet_id: The ID of the timesheet to sign.
+        :type timesheet_id: str
+        :return: The result of the sign operation.
+        :rtype: RequestResult
         """
         timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
 
@@ -46,9 +58,11 @@ class TimesheetService:
         """
         Method used by the supervisor to sign a timesheet.
         This sets the status to approved.
-        
-        :param timesheet_id: The ID of the timesheet to approve
-        :return: The result of the approval operation
+
+        :param timesheet_id: The ID of the timesheet to approve.
+        :type timesheet_id: str
+        :return: The result of the approval operation.
+        :rtype: RequestResult
         """
         timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet is None:
@@ -64,9 +78,11 @@ class TimesheetService:
         """
         Method used by the supervisor to request changes to a timesheet.
         This sets the status to change requested.
-        
-        :param timesheet_id: The ID of the timesheet to request changes for
-        :return: The result of the request change operation
+
+        :param timesheet_id: The ID of the timesheet to request changes for.
+        :type timesheet_id: str
+        :return: The result of the request change operation.
+        :rtype: RequestResult
         """
         timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet is None:

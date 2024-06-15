@@ -8,6 +8,11 @@ from model.user.role import UserRole
 
 
 class UserDataValidator(InputValidator):
+    """
+    A class that validates user data against predefined regular expression patterns
+    to ensure data conforms to the expected formats.
+    """
+
     def __init__(self):
         """
         Initializes the UserDataValidator with predefined regex patterns for validating user data fields.
@@ -54,7 +59,7 @@ class UserDataValidator(InputValidator):
         Validates that the provided role value represents a valid UserRole.
 
         :param role: The role value to validate.
-        :return: Boolean indicating whether the role value is valid.
+        :return: Boolean, True if the role value is valid, otherwise False.
         """
         role = UserRole.get_role_by_value(role)
         if role is None:

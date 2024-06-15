@@ -13,7 +13,8 @@ class TimesheetValidator:
 
     def __init__(self):
         """
-        Initializes the TimesheetValidator with an empty list of validation rules.
+        Initializes the TimesheetValidator with an empty list of validation rules, ready to be populated with
+        specific validation strategies.
         """
         self.validationRules = []
         self.time_entry_service = None  # TODO: Add a TimeEntryService attribute
@@ -27,9 +28,8 @@ class TimesheetValidator:
         logic defined in separate classes. Each rule must have a `validate` method that
         accepts a `Timesheet` object as its parameter.
 
-        Args:
-            rule (TimesheetStrategy): A validation strategy instance that contains
-            specific validation logic to apply to Timesheet objects.
+        :param rule: The validation strategy to be added, which must implement the TimesheetStrategy interface.
+        :type rule: :class:`~model.timesheet_strategy.TimesheetStrategy`
         """
         self.validationRules.append(rule)
 
@@ -40,26 +40,27 @@ class TimesheetValidator:
         This method allows for the dynamic removal of validation rules from the validator,
         useful for adapting the validation process to different contexts or requirements.
 
-        Args:
-            rule (TimesheetStrategy): The validation strategy instance to remove from the
-            current set of validation rules.
+        :param rule: The validation strategy to be removed, which should currently be part of the validation rules.
+        :type rule: TimesheetStrategy
         """
         self.validationRules.remove(rule)
 
     def validateTimesheet(self, timesheet: Timesheet):
         """
-        Validates a `Timesheet` object using all the accumulated validation rules.
+        Validates a given `Timesheet` object against all registered validation strategies to assess its compliance
+        with each of the configured rules.
 
-        This method iterates through each validation rule and applies its `validate` method
-        to the provided `Timesheet` object. This is a way to enforce all validation rules
-        that have been added to the validator.
+        :param timesheet: The `Timesheet` object to validate.
+        :type timesheet: Timesheet
 
-        Args:
-            timesheet (Timesheet): The `Timesheet` object to validate.
+        :return: A list of `ValidationResult` instances, each representing the outcome from one of the validation
+                 strategies applied to the `Timesheet`.
+        :rtype: list[ValidationResult]
 
-        Returns:
-            list: A list of `ValidationResult` objects from each validation rule applied,
-            indicating the success or failure of each validation.
+        Note:
+            This method assumes that an external service (`time_entry_service`) is available to fetch time entries
+            related to the timesheet, which are necessary for certain validations. The availability of this service
+            and its proper function must be ensured before validation.
         """
         time_entries = self.time_entry_service.get_Entries_of_Timesheet(timesheet)  # TODO Make sure that method exists
 

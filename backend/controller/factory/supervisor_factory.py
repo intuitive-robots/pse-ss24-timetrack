@@ -4,6 +4,11 @@ from model.user.supervisor import Supervisor
 
 
 class SupervisorFactory(UserFactory):
+    """
+    A factory class for creating Supervisor user objects.
+    Extends the UserFactory class.
+    """
+
     def create_user(self, user_data: dict) -> Supervisor:
         """
         Creates and returns a Supervisor object based on the provided data.

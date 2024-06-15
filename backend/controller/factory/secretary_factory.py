@@ -5,6 +5,11 @@ from model.user.user import User
 
 
 class SecretaryFactory(UserFactory):
+    """
+    A factory class for creating Secretary user objects.
+    Extends the UserFactory class.
+    """
+
     def create_user(self, user_data: dict) -> User:
         """
         Creates and returns a User object for a Secretary based on the provided data.

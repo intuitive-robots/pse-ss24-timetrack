@@ -10,16 +10,18 @@ from model.timesheet_status import TimesheetStatus
 
 class TimesheetRepository:
     """
-    Repository class for managing Timesheet objects in the database
+    Repository class for managing Timesheet objects within a MongoDB database. Provides functions for creating,
+    retrieving, updating, and deleting timesheets, as well as managing their statuses.
     """
     _instance = None
 
     @staticmethod
     def get_instance():
         """
-        Singleton instance of the TimesheetRepository class
-        
-        :return: TimesheetRepository instance
+        Provides a singleton instance of TimesheetRepository, ensuring it operates with a single state
+        across the application.
+
+        :return: The singleton instance of TimesheetRepository.
         """
         if TimesheetRepository._instance is None:
             TimesheetRepository._instance = TimesheetRepository()
@@ -27,16 +29,16 @@ class TimesheetRepository:
 
     def __init__(self):
         """
-        Initializes the TimesheetRepository instance
+        Initializes the TimesheetRepository by connecting to the MongoDB database.
         """
         self.db = initialize_db()
 
     def get_timesheet_by_id(self, timesheet_id):
         """
-        Retrieves a Timesheet object from the database by its ID
-        
-        :param timesheet_id: The ID of the Timesheet object
-        :return: The Timesheet object if found, otherwise None
+        Retrieves a Timesheet object from the MongoDB database using its ObjectId.
+
+        :param timesheet_id: The MongoDB ObjectId of the Timesheet to retrieve.
+        :return: The Timesheet object if found; otherwise, None.
         """
         if timesheet_id is None:
             return None
@@ -47,12 +49,12 @@ class TimesheetRepository:
 
     def get_timesheet(self, username: str, month: int, year: int):
         """
-        Retrieves a Timesheet object from the database by username, month, and year
-        
-        :param username: Username of the Hiwi
-        :param month: Month of the timesheet
-        :param year: Year of the timesheet
-        :return: object if found, otherwise None
+        Retrieves a Timesheet from the database based on the username, month, and year.
+
+        :param username: The username associated with the timesheet.
+        :param month: The month for which the timesheet is recorded.
+        :param year: The year for which the timesheet is recorded.
+        :return: The Timesheet object if found; otherwise, None.
         """
         if username is None or month is None or year is None:
             return None
@@ -63,10 +65,10 @@ class TimesheetRepository:
 
     def get_current_timesheet(self, username: str):
         """
-        Retrieves the current timesheet for the given username
-        
-        :param username: Username of the Hiwi
-        :return: object if found, otherwise None
+        Retrieves the most recent timesheet for a given username that has not been submitted.
+
+        :param username: The username for whom to retrieve the current timesheet.
+        :return: The current Timesheet object if found; otherwise, None.
         """
         if username is None:
             return None
@@ -78,12 +80,12 @@ class TimesheetRepository:
 
     def get_timesheet_by_time_period(self, username:str, start_date: date, end_date: date):
         """
-        Retrieves all timesheets for a given username within a specified time period
-        
-        :param username: Username of the Hiwi
-        :param start_date: Start date of the time period
-        :param end_date: End date of the time period
-        :return: A list of timesheets for the given username within the specified time period
+        Retrieves timesheets for a specified time period for a given username.
+
+        :param username: The username for whom to retrieve timesheets.
+        :param start_date: The start date of the time period.
+        :param end_date: The end date of the time period.
+        :return: A list of Timesheet objects within the specified date range.
         """
         if username is None or start_date is None or end_date is None:
             return None
@@ -127,12 +129,12 @@ class TimesheetRepository:
             return timesheet_data['_id']
         return None
 
-    def update_timesheet(self, timesheet):
+    def update_timesheet(self, timesheet) -> RequestResult:
         """
-        Updates a timesheet in the database.
-        
-        :param timesheet: The timesheet object to be updated.
-        :return: The ID of the updated timesheet.
+        Updates a specific Timesheet in the database.
+
+        :param timesheet: The Timesheet object to update.
+        :return: A RequestResult indicating the success or failure of the update operation.
         """
         if timesheet is None:
             return RequestResult(False, "Please provide a timesheet to update.", 400)
@@ -146,7 +148,7 @@ class TimesheetRepository:
             return RequestResult(True, "Timesheet updated successfully", 200)
         return RequestResult(False, "Timesheet update failed", 500)
 
-    def set_timesheet_status(self, timesheet_id, status):
+    def set_timesheet_status(self, timesheet_id, status) -> RequestResult:
         """
         Updates the status of a timesheet in the database.
         
@@ -165,12 +167,12 @@ class TimesheetRepository:
             return RequestResult(True, "Timesheet status updated successfully", 200)
         return RequestResult(False, "Timesheet status update failed", 500)
 
-    def delete_timesheet(self, timesheet_id):
+    def delete_timesheet(self, timesheet_id) -> RequestResult:
         """
-        Deletes a timesheet from the database.
-        
-        :param timesheet_id: The ID of the timesheet to delete.
-        :return: A RequestResult object indicating the success of the operation.
+        Deletes a Timesheet from the database based on its ObjectId.
+
+        :param timesheet_id: The ObjectId of the Timesheet to delete.
+        :return: A RequestResult indicating the success or failure of the deletion.
         """
         if timesheet_id is None:
             return RequestResult(False, "Please provide a timesheet ID to delete the timesheet.", 400)
@@ -183,10 +185,10 @@ class TimesheetRepository:
 
     def create_timesheet(self, timesheet: Timesheet):
         """
-        Creates a timesheet in the database.
-        
-        :param timesheet: The timesheet object to create.
-        :return: A RequestResult object indicating the success of the operation.
+         Creates a new Timesheet in the database.
+
+        :param timesheet: The Timesheet object to create.
+        :return: A RequestResult indicating the success or failure of the creation operation.
         """
         if timesheet is None:
             return RequestResult(False, "Please provide a timesheet to create.", 400)

@@ -5,6 +5,11 @@ from model.user.user import User
 
 
 class AdminFactory(UserFactory):
+    """
+    A factory class for creating Admin user objects.
+    Extends the UserFactory class.
+    """
+
     def create_user(self, user_data: dict) -> User:
         """
         Creates and returns an Admin object based on the provided data.

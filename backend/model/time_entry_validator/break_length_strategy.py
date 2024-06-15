@@ -1,14 +1,15 @@
 from controller.input_validator.validation_result import ValidationResult
 from controller.input_validator.validation_status import ValidationStatus
 from model.time_entry import TimeEntry
+from model.time_entry_type import TimeEntryType
 from model.time_entry_validator.time_entry_strategy import TimeEntryStrategy
 
 
 class BreakLengthStrategy(TimeEntryStrategy):
     """
-    Validates the break times of a TimeEntry according to work law regulations.
-    The law requires different break lengths based on the total duration of work,
-    efficiently determined by iterating through a sorted list of thresholds.
+    Strategy class for validating the break times of a TimeEntry according to work law regulations.
+    Break lengths are determined based on the total duration of work, with thresholds that dictate
+    the minimum required break length for different work durations.
     """
 
     DEFAULT_MINIMUM_BREAK_LENGTH = 0
@@ -22,12 +23,24 @@ class BreakLengthStrategy(TimeEntryStrategy):
 
     def validate(self, entry: TimeEntry) -> ValidationResult:
         """
-        Validates the break time in the TimeEntry based on the total work duration.
+        Validates the break time specified in a TimeEntry object against legal requirements,
+        based on the total duration of work performed. The method checks if the break time
+        meets or exceeds the required duration specified by work duration thresholds.
 
-        :param entry (TimeEntry): The entry to validate.
+        :param entry: The TimeEntry object containing details of the work duration and break time.
+        :type entry: TimeEntry
 
-        :return: ValidationResult: The result of the validation, indicating whether the break length meets the legal requirements.
+        :return: ValidationResult indicating whether the break time is sufficient as per legal standards.
+        :rtype: ValidationResult
+
+        Usage:
+            If the work duration is 6 hours and above, a break of 30 minutes or more is required,
+            the validation will pass if the break time is equal to or more than the required break time,
+            otherwise it will fail, providing a detailed message.
         """
+        if entry.entry_type != TimeEntryType.WORK_ENTRY:
+            return ValidationResult(ValidationStatus.SUCCESS, "Break length is not applicable for non-work entries.")
+
         if not hasattr(entry, 'break_time') or entry.break_time is None:
             return ValidationResult(ValidationStatus.FAILURE, "Break time information is missing or invalid.")
 
