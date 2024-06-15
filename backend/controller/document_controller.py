@@ -13,11 +13,13 @@ document_blueprint = Blueprint('document', __name__)
 class DocumentController(MethodView):
     """
     Controller class for handling document-related requests.
+
     """
 
     def __init__(self):
         """
         Initializes the DocumentController instance
+
         """
         self.document_service = DocumentService()
         pass
@@ -25,6 +27,7 @@ class DocumentController(MethodView):
     def get(self):
         """
         Handles GET requests for retrieving document data
+
         """
         endpoint_mapping = {
             '/generateDocument': self.generate_document,
@@ -36,6 +39,7 @@ class DocumentController(MethodView):
     def generate_document(self):
         """
         Generates a new document
+
         """
 
         if not request.is_json:
@@ -66,6 +70,7 @@ class DocumentController(MethodView):
     def generate_multiple_documents(self):
         """
         Generates multiple documents
+
         """
         if not request.is_json:
             return jsonify({'error': 'Request must be in JSON format'}), 400
@@ -99,6 +104,7 @@ class DocumentController(MethodView):
         Dispatches the request to the appropriate handler based on the request path.
 
         :param endpoint_mapping: Dictionary mapping endpoints to function handlers.
+
         :return: The response from the handler or an error message if endpoint not found.
         """
         request_path = request.path.replace('/document', '', 1)

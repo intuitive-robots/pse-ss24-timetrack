@@ -9,6 +9,10 @@ from model.time_entry_type import TimeEntryType
 
 
 class PDFGeneratorStrategy(DocumentGeneratorStrategy):
+    """
+    The PDFGeneratorStrategy class is responsible for generating PDF documents.
+
+    """
     TEMPLATE_PATH = "resources/timesheet_template.pdf"
     TEMP_DIR = "resources/temp/"
     SIGNATURE_WIDTH = 300
@@ -21,7 +25,9 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     def generate_document(self, document_data: DocumentData):
         """
         Generates a PDF document based on the given data.
+
         :param document_data: The data to use for generating the PDF document.
+
         :return: The generated PDF document.
         """
         if document_data is None:
@@ -54,6 +60,7 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     def _place_signature(self, pdf_path, output_path, signature_path, type_hiwi: bool):
         """
         Places the signature on the PDF document.
+
         :param pdf_path: The path to the PDF document.
         :param output_path: The path to the output PDF document.
         :param signature_path: The path to the signature image.
@@ -66,8 +73,10 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     def _get_output_path(self, document_data, suffix):
         """
         Returns the output path for the generated PDF document.
+
         :param document_data: The document data.
         :param suffix: The suffix to append to the file name.
+
         :return: The output path for the generated PDF document.
         """
         return os.path.join(self.TEMP_DIR,
@@ -76,8 +85,10 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     def _format_time_entry_data(self, time_entry, i):
         """
         Formats the time entry data for the PDF document.
+
         :param time_entry: The time entry data to format.
         :param i: The index of the time entry.
+
         :return: The formatted time entry data.
         """
         formatted_data = {}
@@ -96,7 +107,9 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     def _prepare_data_dict(self, document_data):
         """
         Prepares the data dictionary for the PDF document.
+
         :param document_data: The document data.
+
         :return: The data dictionary for the PDF document.
         """
         personal_info = document_data.personal_info
@@ -125,7 +138,9 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     def _temporary_store_signature(self, signature_stream, path):
         """
         Stores the signature image in a temporary file.
+
         :param signature_stream: The signature image stream.
+
         :param path: The path to store the signature image.
         """
         with open(path, "wb") as file:
@@ -138,7 +153,9 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     def generate_multiple_documents(self, documents: list[DocumentData]):
         """
         Generates multiple PDF documents based on the given list of data.
+
         :param documents: The list of data to use for generating the PDF documents.
+
         :return: The list of generated PDF documents.
         """
         if documents is None:
