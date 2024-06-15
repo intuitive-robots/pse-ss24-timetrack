@@ -1,6 +1,6 @@
-from backend.model.user.personal_information import PersonalInfo
-from backend.model.user.role import UserRole
-from backend.model.user.user import User
+from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
+from model.user.user import User
 
 
 class Secretary(User):
