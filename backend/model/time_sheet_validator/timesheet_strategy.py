@@ -7,41 +7,55 @@ from model.timesheet import Timesheet
 
 class TimesheetStrategy(ABC):
     """
-    Abstract base class for defining validation strategies for Timesheet objects.
+    Abstract base class for defining validation strategies for Timesheet objects. This class serves
+    as a foundation for implementing various validation strategies as part of a strategy pattern,
+    enabling dynamic validation logic tailored to specific requirements of Timesheet objects.
 
-    This class provides a framework for implementing various validation strategies
-    as part of a strategy pattern in validating Timesheet objects. Each subclass
-    should provide a concrete implementation of the validate method that encapsulates
-    the specific validation logic applicable to the Timesheet being validated.
+    Each subclass of TimesheetStrategy is expected to implement the `validate` method, which encapsulates
+    the validation logic specific to the aspect of the timesheet that needs to be validated, such as
+    adherence to working hours limits, validation of project-specific time allocations, or compliance
+    with labor regulations.
     """
 
     def __init__(self):
         """
-        Initializes a new instance of a TimesheetStrategy.
-
-        This setup prepares the strategy for validation, ensuring that all necessary
-        components or properties are initialized.
+        Initializes a new instance of a TimesheetStrategy. This constructor can be overridden by
+        subclasses to set up necessary configurations or initial state specific to the validation
+        requirements.
         """
         pass
 
     @abstractmethod
     def validate(self, timesheet: Timesheet, time_entries: list[TimeEntry]) -> ValidationResult:
         """
-        Abstract method to validate a Timesheet object.
+        Abstract method that must be implemented by all subclasses to perform specific validation
+        on a Timesheet object, taking into consideration all related TimeEntry records.
 
-        Subclasses must implement this method to provide specific validation behavior.
-        This method should examine the provided Timesheet object and determine
-        whether it complies with a particular rule or set of rules. The validation
-        might consider factors such as total hours worked, compliance with labor laws,
-        and adherence to project-specific time allocations.
+        This method evaluates the Timesheet and its associated TimeEntries against predefined
+        validation criteria, which may vary depending on the specific implementation. For example,
+        one strategy might check that the total hours recorded do not exceed legal work limits,
+        while another could verify that time entries fall within approved project scopes.
 
-        Args:
-            timesheet (Timesheet): The Timesheet object to validate.
-            time_entries (TimeEntry): A list of all time entries within the timesheet month.
+        :param timesheet: The Timesheet object that is subject to validation. It represents a
+                          collection of work records for a specific period.
+        :type timesheet: Timesheet
 
-        Returns:
-            ValidationResult: The result of the validation process, typically indicating
-            whether the Timesheet passed the specific validation and, if applicable,
-            providing messages or codes that explain why the validation passed or failed.
+        :param time_entries: A list of TimeEntry objects that belong to the timesheet. These are
+                             the individual records of work that cumulatively make up the timesheet.
+        :type time_entries: list[TimeEntry]
+
+        :return: A ValidationResult object that indicates the outcome of the validation process.
+                 This result includes a status (e.g., success, failure, or warning) and a message
+                 detailing the reasons for the validation outcome.
+        :rtype: ValidationResult
+
+        Examples:
+            - If timesheet hours exceed a regulatory or contractual limit, the validate method
+              might return a ValidationResult with a FAILURE status and an appropriate message.
+            - If all checks pass, the method would return a ValidationResult with a SUCCESS status.
+
+        Note:
+            This method is abstract and should be overridden in each subclass with specific logic
+            appropriate to the particular validation being implemented.
         """
         pass

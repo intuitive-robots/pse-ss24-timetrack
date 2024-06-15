@@ -6,7 +6,9 @@ from model.user.user import User
 
 class UserRepository:
     """
-    Repository class for managing user data in the database.
+    Repository class for managing user data in the database. It provides functionalities
+    for creating, retrieving, updating, and deleting users, as well as retrieving them by
+    specific criteria such as username or role.
     """
     _instance = None  # Singleton instance of the UserRepository class.
 
@@ -15,7 +17,7 @@ class UserRepository:
         """
         Retrieves the singleton instance of the UserRepository class.
 
-        :return: Singleton instance of UserRepository.
+        :return: Singleton instance of UserRepository, ensuring that only one instance exists globally.
         """
         if UserRepository._instance is None:
             UserRepository._instance = UserRepository()
@@ -23,16 +25,17 @@ class UserRepository:
 
     def __init__(self):
         """
-        Initializes the UserRepository class and connects to the database.
+        Initializes the UserRepository class by establishing a connection to the database.
+        This connection is used for all data operations within this repository.
         """
         self.db = initialize_db()
 
     def create_user(self, user: User):
         """
-        Creates a new user in the database.
+        Creates a new user in the database. Checks if the user already exists to prevent duplicates.
 
-        :param user: The User object to be created.
-        :return: RequestResult indicating the success or failure of the create operation.
+        :param user: The User object to be created in the database.
+        :return: RequestResult indicating the success or failure of the create operation,
         """
         if user is None:
             return RequestResult(False, "User object is None", 400)
@@ -45,10 +48,10 @@ class UserRepository:
 
     def find_by_username(self, username):
         """
-        Finds data of a user in the database by their username.
+        Retrieves a user's data from the database by their username.
 
         :param username: The username of the user to find.
-        :return: A dictionary with the user's information if found, otherwise None.
+        :return: A dictionary with the user's data if found, otherwise None.
         """
         if username is None:
             return None
@@ -58,9 +61,9 @@ class UserRepository:
 
     def update_user(self, user: User) -> RequestResult:
         """
-        Updates a user in the database.
+        Updates an existing user in the database based on the provided User object.
 
-        :param user: The User object to be updated.
+        :param user: The User object containing updated data for the user.
         :return: RequestResult indicating the success or failure of the update operation.
         """
         result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
@@ -74,10 +77,10 @@ class UserRepository:
 
     def delete_user(self, username) -> RequestResult:
         """
-        Deletes a user from the database.
+        Deletes a user from the database by their username.
 
-        :param username: The username of the user to be deleted.
-        :return: RequestResult indicating the success or failure of the delete operation.
+        :param username: The username of the user to delete.
+        :return: RequestResult indicating the success or failure of the deletion process.
         """
         if username is None:
             return RequestResult(False, "Please provide a username to delete the user.", 400)
@@ -94,17 +97,17 @@ class UserRepository:
         """
         Retrieves all users from the database.
 
-        :return: A list of dictionaries containing the user data.
+        :return: A list of dictionaries, each containing the data of one user.
         """
         users_data = self.db.users.find()
         return list(users_data)
 
     def get_users_by_role(self, role: UserRole) -> list[dict]:
         """
-        Retrieves all users from the database with a specific role.
+        Retrieves all users from the database with a specified role.
 
-        :param role: The role of the users to retrieve.
-        :return: A list of dictionaries containing the user data with the specified role.
+        :param role: The UserRole to filter users by.
+        :return: A list of dictionaries, each containing the data of one user with the specified role.
         """
         users_data = self.db.users.find({"role": role.value})
         return list(users_data)

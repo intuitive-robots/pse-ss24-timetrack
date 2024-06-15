@@ -5,12 +5,16 @@ from model.user.user import User
 
 
 class AdminFactory(UserFactory):
+    """
+    A factory class for creating Admin user objects.
+    Extends the UserFactory class.
+    """
+
     def create_user(self, user_data: dict) -> User:
         """
         Creates and returns an Admin object based on the provided data.
 
-        :param user_data: A dictionary containing user details including username, password hash, personal
-        information and role.
+        :param user_data: A dictionary containing user details including username, password hash, personal information and role.
         :return: A User object initialized as an Admin with the provided data.
         """
         personal_info = None

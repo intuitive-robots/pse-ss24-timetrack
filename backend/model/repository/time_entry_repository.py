@@ -7,15 +7,18 @@ from model.time_entry import TimeEntry
 
 class TimeEntryRepository:
     """
-    Repository class for managing TimeEntry objects in the database
+    Repository class for managing TimeEntry objects in a MongoDB database via GridFS. Handles the operations for
+    uploading, updating, retrieving, and deleting time entries along with their associated metadata.
     """
     _instance = None
 
     @staticmethod
     def get_instance():
         """
-        Singleton instance of the TimeEntryRepository class
-        :return: TimeEntryRepository instance
+        Provides a singleton instance of TimeEntryRepository to ensure only one instance
+        is used throughout the application.
+        
+        :return: The singleton instance of TimeEntryRepository.
         """
         if TimeEntryRepository._instance is None:
             TimeEntryRepository._instance = TimeEntryRepository()
@@ -23,15 +26,17 @@ class TimeEntryRepository:
 
     def __init__(self):
         """
-        Initializes the TimeEntryRepository instance
+        Initializes the TimeEntryRepository by setting up a connection to the MongoDB database.
         """
         self.db = initialize_db()
 
     def get_time_entry_by_id(self, time_entry_id):
         """
-        Retrieves a TimeEntry object from the database by its ID
-        :param time_entry_id: The ID of the TimeEntry object
-        :return: The TimeEntry object if found, otherwise None
+        Retrieves a TimeEntry object from the MongoDB database using its ID.
+
+        :param time_entry_id: The MongoDB ObjectId of the TimeEntry to retrieve.
+
+        :return: The TimeEntry object if found, otherwise None.
         """
         if time_entry_id is None:
             return None
@@ -42,10 +47,12 @@ class TimeEntryRepository:
 
     def get_time_entries_by_date(self, date, username):
         """
-        Retrieves all TimeEntry objects from the database for a given date
-        :param username: The username for which to retrieve TimeEntry objects
-        :param date: The date for which to retrieve TimeEntry objects
-        :return: A list of TimeEntry objects for the given date
+        Retrieves all TimeEntry objects for a specific date and username.
+
+        :param date: The date for which to retrieve TimeEntry objects.
+        :param username: The username associated with the TimeEntry objects.
+
+        :return: A list of TimeEntry objects for the specified date and username.
         """
         if date is None or username is None:
             return None
@@ -56,6 +63,7 @@ class TimeEntryRepository:
     def get_time_entries(self):
         """
         Retrieves all TimeEntry objects from the database
+
         :return: A list of all TimeEntry objects
         """
         time_entries = self.db.timeEntries.find()
@@ -63,10 +71,11 @@ class TimeEntryRepository:
 
     def get_time_entries_by_timesheet_id(self, timesheet_id: str):
         """
-        Retrieves all TimeEntry objects from the database that are associated with a specific timesheet ID.
+        Retrieves all TimeEntry objects associated with a specific timesheet ID from the MongoDB database.
 
-        :param timesheet_id: The ID of the timesheet for which to retrieve TimeEntry objects.
-        :return: A list of all TimeEntry documents associated with the given timesheet ID.
+        :param timesheet_id: The timesheet ID to query for TimeEntry objects.
+
+        :return: A list of TimeEntry objects linked to the specified timesheet.
         """
         if not timesheet_id:
             return []
@@ -74,14 +83,16 @@ class TimeEntryRepository:
         time_entries = [entry for entry in cursor]
         return list(time_entries)
 
-    def update_time_entry(self, time_entry: TimeEntry):
+    def update_time_entry(self, time_entry: TimeEntry) -> RequestResult:
         """
-        Updates a TimeEntry object in the database
-        :param time_entry: The TimeEntry object to update
-        :return: A RequestResult object indicating the success of the operation
+        Updates an existing TimeEntry object in the MongoDB database.
+
+        :param time_entry: The TimeEntry object to update.
+
+        :return: A RequestResult indicating the success or failure of the update operation.
         """
         if time_entry is None:
-            return None
+            return RequestResult(False, "Time entry object is None", 400)
         result = self.db.timeEntries.update_one({"_id": ObjectId(time_entry.time_entry_id)},
                                                 {"$set": time_entry.to_dict()})
 
@@ -95,9 +106,11 @@ class TimeEntryRepository:
 
     def delete_time_entry(self, entry_id: str):
         """
-        Deletes a TimeEntry object from the database and returns the corresponding timesheet ID
-        :param entry_id: The ID of the TimeEntry object to delete
-        :return: A RequestResult object indicating the success of the operation
+        Deletes a TimeEntry object from the MongoDB database using its ID.
+
+        :param entry_id: The ID of the TimeEntry to delete.
+
+        :return: A RequestResult indicating the success or failure of the delete operation.
         """
         if entry_id is None:
             return RequestResult(False, "Entry ID is None", 400)
@@ -117,9 +130,10 @@ class TimeEntryRepository:
 
     def create_time_entry(self, time_entry: TimeEntry):
         """
-        Creates a new TimeEntry object in the database and returns the id of the entry
-        :param time_entry: The TimeEntry object to create
-        :return: A RequestResult object indicating the success of the operation
+        Creates a new TimeEntry object in the MongoDB database.
+
+        :param time_entry: The TimeEntry object to create.
+        :return: A RequestResult indicating the success or failure of the creation operation.
         """
         if time_entry is None:
             return RequestResult(False, "Time entry object is None", 400)

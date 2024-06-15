@@ -12,9 +12,14 @@ user_blueprint = Blueprint('user', __name__)
 
 
 class UserController(MethodView):
+    """
+    Controller for managing user-related actions like creating, updating, and deleting users,
+    managing login sessions, and handling user files.
+    """
+
     def __init__(self):
         """
-        Initialize the UserController with instances of UserService and AuthService.
+        Initializes UserController with UserService, AuthenticationService, and FileService instances.
         """
         self.user_service = UserService()
         self.auth_service = AuthenticationService()
@@ -22,8 +27,9 @@ class UserController(MethodView):
 
     def post(self):
         """
-        Handles POST requests to manage user-related actions such as create, login, logout,
-        reset password, and delete user based on the specific endpoint.
+        Handles POST requests to manage user-related actions based on the specific endpoint.
+
+        :return: JSON response based on the action performed.
         """
         endpoint_mapping = {
             '/createUser': self.create_user,
@@ -39,6 +45,8 @@ class UserController(MethodView):
     def get(self):
         """
         Handles GET requests for retrieving user profiles, user lists, or users by specific roles.
+
+        :return: JSON response with user data or an error message.
         """
         endpoint_mapping = {
             '/getProfile': self.get_profile,
@@ -51,6 +59,8 @@ class UserController(MethodView):
     def delete(self):
         """
         Handles DELETE requests to delete user files.
+
+        :return: JSON response indicating the outcome of the file deletion.
         """
         endpoint_mapping = {
             '/deleteFile': self.delete_user_file
@@ -75,6 +85,8 @@ class UserController(MethodView):
     def create_user(self):
         """
         Creates a new user with the provided JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         user_data = request.get_json()
         result = self.user_service.create_user(user_data)
@@ -85,6 +97,8 @@ class UserController(MethodView):
     def update_user(self):
         """
         Updates an existing user's data with the provided JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         user_data = request.get_json()
         result = self.user_service.update_user(user_data)
@@ -95,6 +109,8 @@ class UserController(MethodView):
     def delete_user(self):
         """
         Deletes a user identified by their username provided in JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         username_data = request.get_json()
         result = self.user_service.delete_user(username_data['username'])
@@ -102,7 +118,9 @@ class UserController(MethodView):
 
     def login(self):
         """
-        Authenticates a user and returns a JWT token if successful.
+        Deletes a user identified by their username provided in JSON data.
+
+        :return: JSON response containing the status message and status code.
         """
         credentials = request.get_json()
         result = self.auth_service.login(credentials['username'], credentials['password'])
@@ -114,6 +132,8 @@ class UserController(MethodView):
     def logout(self):
         """
         Logs out a user by terminating their session or token.
+
+        :return: JSON response with the logout confirmation message.
         """
         result = self.auth_service.logout()
         return jsonify(result.message), result.status_code
@@ -123,6 +143,8 @@ class UserController(MethodView):
     def reset_password(self):
         """
         Resets the password for a user based on the provided JSON data.
+
+        :return: JSON response with the result of the password reset attempt.
         """
         credentials = request.get_json()
         result = self.auth_service.reset_password(credentials['username'], credentials['password'])
@@ -132,6 +154,8 @@ class UserController(MethodView):
     def get_profile(self):
         """
         Retrieves the profile information for the currently authenticated user.
+
+        :return: JSON response containing the user's profile data.
         """
         user_profile = self.user_service.get_profile(get_jwt_identity())
         return jsonify(user_profile.to_dict()), 200
@@ -141,6 +165,8 @@ class UserController(MethodView):
     def get_users(self):
         """
         Retrieves a list of all users in the system.
+
+        :return: JSON response containing a list of user profiles.
         """
         users = self.user_service.get_users()
         user_dict_list = [user.to_dict() for user in users]
@@ -151,6 +177,8 @@ class UserController(MethodView):
     def get_users_by_role(self):
         """
         Retrieves a list of users filtered by a specific role provided via query parameters.
+
+        :return: JSON response containing a list of user profiles filtered by role.
         """
         data = request.get_json()
         users_data = self.user_service.get_users_by_role(data['role'])
@@ -163,8 +191,7 @@ class UserController(MethodView):
         Handles the uploading of a file for the currently authenticated user. The file type is determined
         from form data or a query parameter, and the file is then processed and stored accordingly.
 
-        Returns:
-            JSON response with the status message and HTTP status code.
+        :return: JSON response with the status message and HTTP status code.
         """
         username = get_jwt_identity()
         file = request.files.get('file')
@@ -187,9 +214,7 @@ class UserController(MethodView):
         """
         Retrieves a file for the specified username and file type
 
-        Returns:
-            The file as a download if found, or a JSON response indicating an error with an appropriate
-            HTTP status code if not found or if parameters are missing.
+        :return: The file as a download if found, or a JSON response indicating an error with an appropriate HTTP status code if not found or if parameters are missing.
         """
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
@@ -216,8 +241,7 @@ class UserController(MethodView):
         """
         Deletes a file associated with the given username and specified file type.
 
-        Returns:
-            A JSON response with the result of the deletion attempt and an appropriate HTTP status code.
+        :return: A JSON response with the result of the deletion attempt and an appropriate HTTP status code.
         """
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
