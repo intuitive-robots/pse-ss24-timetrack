@@ -64,6 +64,7 @@ class TimesheetController(MethodView):
         If the timesheet does not exist, it will be created.
         :return: The timesheet object
         """
+        #TODO: Get Methode falls Felder fehlen / Wiederholte Codezeilen -> Prüfung auslagern
         if not request.is_json:
             return jsonify({'error': 'Request must be in JSON format'}), 400
         request_data = request.get_json()
