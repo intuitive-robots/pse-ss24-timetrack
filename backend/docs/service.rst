@@ -1,6 +1,14 @@
 service package
 ===============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   service.document
+
 Submodules
 ----------
 

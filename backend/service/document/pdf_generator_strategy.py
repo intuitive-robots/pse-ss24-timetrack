@@ -1,8 +1,7 @@
 import os
 from datetime import datetime
-import fillpdf
 from fillpdf import fillpdfs
-from controller.strategy.document_generator_strategy import DocumentGeneratorStrategy
+from service.document.document_generator_strategy import DocumentGeneratorStrategy
 from model.document_data import DocumentData
 from model.request_result import RequestResult
 from model.time_entry_type import TimeEntryType

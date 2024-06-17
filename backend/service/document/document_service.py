@@ -4,17 +4,15 @@ from glob import glob
 from io import BytesIO
 from zipfile import ZipFile
 
-from controller.strategy.pdf_generator_strategy import PDFGeneratorStrategy
+from service.document.pdf_generator_strategy import PDFGeneratorStrategy
 from model.document_data import DocumentData
 from model.file.FileType import FileType
 from model.request_result import RequestResult
 from model.user.role import UserRole
-from model.user.supervisor import Supervisor
 from service.file_service import FileService
 from service.time_entry_service import TimeEntryService
 from service.timesheet_service import TimesheetService
 from service.user_service import UserService
-from model.user.hiwi import Hiwi
 
 
 class DocumentService:

@@ -120,7 +120,7 @@ class WorkEntry(TimeEntry):
         dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, 0, "", "")
         return list(dummy_entry.to_dict().keys())
 
-    """
+
     def get_duration(self):
 
         """
@@ -142,7 +142,6 @@ class WorkEntry(TimeEntry):
         duration -= timedelta(minutes=self.break_time)
         # Return the duration in hours
         return duration.total_seconds() / 3600
-    """
 
     def get_duration(self):
         """

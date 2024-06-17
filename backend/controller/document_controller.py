@@ -5,7 +5,7 @@ from flask import request, jsonify, Blueprint, send_file, after_this_request
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required
 
-from service.document_service import DocumentService
+from service.document.document_service import DocumentService
 
 document_blueprint = Blueprint('document', __name__)
 
