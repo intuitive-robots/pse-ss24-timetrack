@@ -9,7 +9,11 @@ const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login} = useAuth();
+  const { login, isAuthenticated} = useAuth();
+
+  if (isAuthenticated) {
+    navigate('/');
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

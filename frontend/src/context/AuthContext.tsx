@@ -6,6 +6,7 @@ interface AuthState {
   token: string | null;
   role: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   user: any | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -19,6 +20,7 @@ const initialState: AuthState = {
   token: localStorage.getItem('token'),
   role: null,
   isAuthenticated: false,
+  isLoading: true,
   user: null,
   login: async () => {},
   logout: async () => {},
@@ -46,6 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
           token,
           role: decoded.role,
           isAuthenticated: true,
+          isLoading: false,
         }));
 
         (async () => {
@@ -62,7 +65,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
       } catch (error) {
         console.error('Error decoding token:', error);
       }
+    } else {
+      setAuthState(prevState => ({ ...prevState, isLoading: false }));
     }
+
   }, []);
 
   /**
@@ -83,6 +89,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
         token: response.accessToken,
         role: decoded.role,
         isAuthenticated: true,
+        isLoading: false,
         user: profile,
         login: handleLogin,
         logout: handleLogout,
