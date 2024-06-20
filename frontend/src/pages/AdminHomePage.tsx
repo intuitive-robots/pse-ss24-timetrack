@@ -42,7 +42,7 @@ const AdminHomePage = (): React.ReactElement => {
                                 key={user._id}
                                 name={user.personalInfo.firstName}
                                 lastName={user.personalInfo.lastName}
-                                role={user.employmentDetails.role}
+                                role={user.role}
                                 profileImageUrl={ProfilePlaceholder}
                                 onView={() => {}}
                                 onEdit={() => {}}

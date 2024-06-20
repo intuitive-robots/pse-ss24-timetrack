@@ -11,7 +11,7 @@ import axiosInstance from "./AxiosInstance";
  */
 const login = async (username: string, password: string) => {
   try {
-    const response = await axiosInstance.post('/token', { username, password });
+    const response = await axiosInstance.post('/user/login', { username, password });
     if (response.data.accessToken) {
       localStorage.setItem('user', JSON.stringify(response.data));
     }
@@ -30,7 +30,7 @@ const login = async (username: string, password: string) => {
  */
 const getProfile = async () => {
   try {
-    const response = await axiosInstance.get('/profile');
+    const response = await axiosInstance.get('user/getProfile');
     return response.data;
   } catch (error) {
     console.error('Profile could not be retrieved');
@@ -43,7 +43,7 @@ const getProfile = async () => {
  */
 const logout = async () => {
   try {
-    await axiosInstance.post('/logout');
+    await axiosInstance.post('user/logout');
     localStorage.removeItem('user');
   } catch (error) {
     console.error('Logout failed');
@@ -59,7 +59,7 @@ const logout = async () => {
  */
 const getUsers = async () => {
   try {
-    const response = await axiosInstance.get('/readUsers');
+    const response = await axiosInstance.get('user/getUsers');
     return response.data;
   } catch (error) {
     console.error('Users could not be retrieved');
