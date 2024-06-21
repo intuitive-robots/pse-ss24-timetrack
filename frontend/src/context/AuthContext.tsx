@@ -81,7 +81,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
   const handleLogin = async (username: string, password: string) => {
     try {
       const response = await loginService(username, password);
-      console.log(response)
       localStorage.setItem('token', response.accessToken);
       const decoded: any = jwtDecode(response.accessToken);
       const profile = await getProfile();

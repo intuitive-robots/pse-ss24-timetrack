@@ -13,7 +13,8 @@ const login = async (username: string, password: string) => {
   try {
     const response = await axiosInstance.post('/user/login', { username, password });
     if (response.data.accessToken) {
-      localStorage.setItem('user', JSON.stringify(response.data));
+      const tokenValue = response.data.accessToken;
+      localStorage.setItem('token', tokenValue);
     }
     return response.data;
   } catch (error) {
@@ -44,7 +45,7 @@ const getProfile = async () => {
 const logout = async () => {
   try {
     await axiosInstance.post('user/logout');
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   } catch (error) {
     console.error('Logout failed');
   }
