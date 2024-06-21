@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import TextInput from '../components/input/TextInput';
-import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-// import {login} from "../services/AuthService";
 import { useAuth } from '../context/AuthContext';
 
 const LoginForm: React.FC = () => {
@@ -19,27 +17,6 @@ const LoginForm: React.FC = () => {
     event.preventDefault();
     try {
       await login(username, password);
-
-      // After login, get the token from localStorage to decode and determine role
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('Unauthorized');
-        return;
-      }
-
-      const decoded: any = jwtDecode(token);
-
-      switch (decoded.role) {
-          case 'Admin':
-            navigate('/admin-home'); // Navigate to admin home page
-            break;
-          case 'HiWi':
-            navigate('/hiwi-home'); // Navigate to hiwi home page
-            break;
-          default:
-            navigate('/'); // Navigate to default home or error page
-            break;
-      }
     } catch (error) {
       console.error('Login Error:', error);
     }
