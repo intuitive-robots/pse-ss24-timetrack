@@ -81,7 +81,7 @@ class AuthenticationService:
         user = UserFactory.create_user_if_factory_exists(user_data)
         if user and SecurityUtils.check_password(password, user.password_hash):
             access_token = self.create_token(username, user.role)
-            return RequestResult(True, "Authentication successful", data={'access_token': access_token}, status_code=200)
+            return RequestResult(True, "Authentication successful", data={'accessToken': access_token}, status_code=200)
         return RequestResult(False, "Invalid username or password", status_code=401)
 
     def reset_password(self, username, new_password):

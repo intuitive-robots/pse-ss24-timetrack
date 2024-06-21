@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import LayoutWrapper from "../components/LayoutWrapper";
-import UserCard from "../components/UserCard";
-import ProfilePlaceholder from "../assets/images/profile_placeholder.png";
-import {getUsers} from "../services/AuthService";
-import {User} from "../interfaces/User";
+import LayoutWrapper from "../../components/LayoutWrapper";
+import UserCard from "../../components/UserCard";
+import ProfilePlaceholder from "../../assets/images/profile_placeholder.png"
+import {getUsers} from "../../services/AuthService";
+import {User} from "../../interfaces/User";
 
 /**
  * AdminHomePage component serves as the main landing page for the application.
@@ -42,7 +42,7 @@ const AdminHomePage = (): React.ReactElement => {
                                 key={user._id}
                                 name={user.personalInfo.firstName}
                                 lastName={user.personalInfo.lastName}
-                                role={user.employmentDetails.role}
+                                role={user.role}
                                 profileImageUrl={ProfilePlaceholder}
                                 onView={() => {}}
                                 onEdit={() => {}}
