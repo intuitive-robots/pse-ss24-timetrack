@@ -64,6 +64,7 @@ class UserService:
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
 
+        #TODO: AccountCreation and LastLogin are also required fields, which should not be the case.
         for key in User.dict_keys():
             if key not in user_data.keys():
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
@@ -77,6 +78,23 @@ class UserService:
         user = user_factory.create_user(user_data)
         if not user:
             return RequestResult(False, "User creation failed", status_code=500)
+        if user.role == UserRole.HIWI:
+            if 'supervisor' not in user_data:
+                return RequestResult(False, "Supervisor is required for HiWi creation", status_code=400)
+            supervisor_data = self.user_repository.find_by_username(user_data['supervisor'])
+            if not supervisor_data:
+                return RequestResult(False, "Supervisor not found", status_code=404)
+            if supervisor_data['role'] != 'Supervisor':
+                return RequestResult(False, "Supervisor must be of role 'Supervisor'", status_code=400)
+            supervisor_data['hiwis'].append(user_data['username'])
+            result_user_creation = self.user_repository.create_user(user)
+            if not result_user_creation.is_successful:
+                return RequestResult(False, "Failed to create HiWi", status_code=500)
+            result_supervisor_update = self.user_repository.update_user_by_dict(supervisor_data)
+            if not result_supervisor_update.is_successful:
+                return RequestResult(False, "Failed to update supervisor. HiWi was not created.",
+                                     status_code=500)
+            return RequestResult(True, "HiWi created successfully", status_code=201)
 
         return self.user_repository.create_user(user)
 

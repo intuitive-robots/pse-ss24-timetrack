@@ -35,6 +35,21 @@ class Supervisor(User):
         """
         self.hiwis.remove(hiwi)
 
+    @classmethod
+    def from_dict(cls, supervisor_data: dict):
+        """
+        Creates a Supervisor object from a dictionary.
+        """
+
+        #TODO: Missing: CurrentTimesheetIds
+        supervisor = cls(
+            username=supervisor_data["username"],
+            password_hash=supervisor_data["passwordHash"],
+            personal_info=PersonalInfo.from_dict(supervisor_data["personalInfo"]),
+            hiwis=supervisor_data["hiwis"]
+        )
+        return supervisor
+
     def to_dict(self):
         """
         Converts the Supervisor object to a dictionary.
@@ -43,6 +58,6 @@ class Supervisor(User):
         """
         user_dict = super().to_dict()
         user_dict.update({
-            "hiwis": [hiwi.to_dict() for hiwi in self.hiwis],
+            "hiwis": [hiwi for hiwi in self.hiwis],
         })
         return user_dict

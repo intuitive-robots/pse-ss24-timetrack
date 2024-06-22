@@ -34,7 +34,7 @@ def init_auth_routes(app):
                 access_token = create_access_token(identity=get_jwt_identity())
                 data = response.get_json()
                 if type(data) is dict:
-                    data["access_token"] = access_token
+                    data["accessToken"] = access_token
                     response.data = json.dumps(data)
             return response
         except (RuntimeError, KeyError):

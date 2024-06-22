@@ -1,6 +1,9 @@
+import datetime
+
 from bson import ObjectId
 
 from db import initialize_db
+from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
 from model.time_entry import TimeEntry
 
@@ -29,6 +32,7 @@ class TimeEntryRepository:
         Initializes the TimeEntryRepository by setting up a connection to the MongoDB database.
         """
         self.db = initialize_db()
+        self.timesheet_repository = TimesheetRepository.get_instance()
 
     def get_time_entry_by_id(self, time_entry_id):
         """
@@ -56,8 +60,14 @@ class TimeEntryRepository:
         """
         if date is None or username is None:
             return None
-        time_entries = self.db.timeEntries.find({"date": date, "username": username})
+        start_date = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
+        end_date = datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
+        timesheet_id = self.timesheet_repository.get_timesheet_id(username, date.month, date.year)
+        time_entries = self.db.timeEntries.find({"startTime": {"$gte": start_date, "$lt": end_date},
+                                                 "timesheetId": str(timesheet_id)})
         return list(time_entries)
+
+
 
     #TODO: This method is only used for testing and shouldn't be required
     def get_time_entries(self):
