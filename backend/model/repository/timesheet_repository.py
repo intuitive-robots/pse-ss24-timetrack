@@ -129,6 +129,25 @@ class TimesheetRepository:
             return timesheet_data['_id']
         return None
 
+    def update_timesheet_by_dict(self, timesheet_data: dict) -> RequestResult:
+        """
+        Updates a specific Timesheet in the database.
+
+        :param timesheet_data: The dictionary of a Timesheet object to update.
+        :return: A RequestResult indicating the success or failure of the update operation.
+        """
+        if timesheet_data is None:
+            return RequestResult(False, "Please provide a timesheet to update.", 400)
+        result = self.db.timesheets.update_one({"_id": ObjectId(timesheet_data['_id'])},
+                                               {"$set": timesheet_data})
+        if result.matched_count == 0:
+            return RequestResult(False, "Timesheet not found", 404)
+        if result.modified_count == 0:
+            return RequestResult(False, "Timesheet update failed", 500)
+        if result.acknowledged:
+            return RequestResult(True, "Timesheet updated successfully", 200)
+        return RequestResult(False, "Timesheet update failed", 500)
+
     def update_timesheet(self, timesheet) -> RequestResult:
         """
         Updates a specific Timesheet in the database.

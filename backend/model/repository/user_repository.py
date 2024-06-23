@@ -81,7 +81,7 @@ class UserRepository:
         """
         Updates an existing user in the database based on the provided User object.
 
-        :param user_data: The User object containing updated data for the user.
+        :param user_data: The User data containing updated data for the user.
         :return: RequestResult indicating the success or failure of the update operation.
         """
         result = self.db.users.update_one({"username": user_data['username']}, {"$set": user_data})
