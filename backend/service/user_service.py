@@ -133,6 +133,16 @@ class UserService:
         :param username: The username of the user to be deleted.
         :return: A RequestResult object containing the result of the delete operation.
         """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == 'HiWi':
+            supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
+            supervisor_data['hiwis'].remove(user_data['username'])
+            result_supervisor_update = self.user_repository.update_user_by_dict(supervisor_data)
+            if not result_supervisor_update.is_successful:
+                return RequestResult(False, "Failed to remove Hiwi from Supervisor. Hiwi was not deleted.",
+                                     status_code=500)
         return self.user_repository.delete_user(username)
 
     def get_users(self) -> list[User]:
@@ -174,3 +184,23 @@ class UserService:
         """
         user_data = self.user_repository.find_by_username(username)
         return UserFactory.create_user_if_factory_exists(user_data)
+
+    def get_hiwis(self, username: str):
+        """
+        Retrieves a list of Hiwis managed by a Supervisor identified by their username.
+
+        :param str username: The username of the Supervisor whose Hiwis are being requested.
+        :return: A list of Hiwi model instances representing the Supervisor's Hiwis.
+        :rtype: list[Hiwi]
+        """
+        supervisor_data = self.user_repository.find_by_username(username)
+        if not supervisor_data:
+            return RequestResult(False, "Supervisor not found", status_code=404)
+        if supervisor_data['role'] != 'Supervisor':
+            return RequestResult(False, "User is not a Supervisor", status_code=400)
+        hiwis_data = list(self.get_profile(hiwi_username) for hiwi_username in supervisor_data['hiwis'])
+        if not hiwis_data:
+            return RequestResult(False, "No Hiwis found", status_code=404)
+        return RequestResult(True, "", status_code=200, data=hiwis_data)
+
+

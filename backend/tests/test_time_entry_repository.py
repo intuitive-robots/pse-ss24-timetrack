@@ -17,19 +17,19 @@ class TestTimeEntryRepository(unittest.TestCase):
         Test the get_time_entry_by_id method of the TimeEntryRepository class.
         """
 
-        test_time_entry = {'_id': ObjectId('666a1ace21bc45a25b4263d8'), 'timesheetId': '666c1331d28499aff172091c',
+        test_time_entry_data = {'_id': ObjectId('666a1ace21bc45a25b4263d8'), 'timesheetId': '666c1331d28499aff172091c',
                            'startTime': datetime.datetime(2022, 3, 1, 8, 18),
                            'endTime': datetime.datetime(2022, 3, 1, 10, 0),
                            'entryType': 'Work Entry', 'breakTime': 22,
                            'activity': 'Bissle Python Programmieren dies das',
                            'projectName': 'Python Projekt'}
-        self.assertEqual(self.time_entry_repository.get_time_entry_by_id("666a1ace21bc45a25b4263d8"), test_time_entry)
+        self.assertEqual(test_time_entry_data, self.time_entry_repository.get_time_entry_by_id("666a1ace21bc45a25b4263d8"))
 
     def test_get_time_entries_by_date(self):
         """
         Test the get_time_entries_by_date method of the TimeEntryRepository class.
         """
-        test_time_entries = [
+        test_time_entry_data = [
                 {'_id': ObjectId('666a1ace21bc45a25b4263d8'), 'timesheetId': '666c1331d28499aff172091c',
                     'startTime': datetime.datetime(2022, 3, 1, 8, 18),
                     'endTime': datetime.datetime(2022, 3, 1, 10, 0),
@@ -43,13 +43,13 @@ class TestTimeEntryRepository(unittest.TestCase):
                     'activity': 'Bissle Python Programmieren dies das aktuell',
                     'projectName': 'Es ist bald Zeit für einen neuen Pull'}
             ]
-        self.assertEqual(self.time_entry_repository.get_time_entries_by_date(datetime.datetime(2022, 3, 1), "testHiWi"), test_time_entries)
+        self.assertEqual(test_time_entry_data, self.time_entry_repository.get_time_entries_by_date(datetime.datetime(2022, 3, 1), "testHiWi"))
 
     def test_get_time_entries_by_timesheet_id(self):
         """
         Test the get_time_entries_by_timesheet_id method of the TimeEntryRepository class.
         """
-        test_time_entries = [
+        test_time_entry_data = [
                 {'_id': ObjectId('666a1ace21bc45a25b4263d8'),
                     'timesheetId': '666c1331d28499aff172091c',
                     'startTime': datetime.datetime(2022, 3, 1, 8, 18),
@@ -72,31 +72,36 @@ class TestTimeEntryRepository(unittest.TestCase):
                     'projectName': 'Bug Fix Delete'},
             ]
 
-        self.assertEqual(self.time_entry_repository.get_time_entries_by_timesheet_id("666c1331d28499aff172091c"), test_time_entries)
+        self.assertEqual(test_time_entry_data,
+                         self.time_entry_repository.get_time_entries_by_timesheet_id("666c1331d28499aff172091c"))
 
     def test_update_time_entry(self):
         """
         Test the update_time_entry method of the TimeEntryRepository class.
         """
-        test_original_time_entry = {'_id': ObjectId('666a1ace21bc45a25b4263d8'), 'timesheetId': '666c1331d28499aff172091c',
+        test_original_time_entry_data = {'_id': ObjectId('666a1ace21bc45a25b4263d8'),
+                           'timesheetId': '666c1331d28499aff172091c',
                            'startTime': datetime.datetime(2022, 3, 1, 8, 18),
                            'endTime': datetime.datetime(2022, 3, 1, 10, 0),
                            'entryType': 'Work Entry', 'breakTime': 22,
                            'activity': 'Bissle Python Programmieren dies das',
                            'projectName': 'Python Projekt'}
-        test_modified_time_entry = {'_id': ObjectId('666a1ace21bc45a25b4263d8'),
-                                    'timesheetId': '666c1331d28499aff172091c',
-                                    'startTime': datetime.datetime(2022, 3, 1, 8, 18),
-                                    'endTime': datetime.datetime(2022, 3, 1, 10, 0),
-                                    'entryType': 'Work Entry', 'breakTime': 10,
-                                    'activity': 'Bissle Java Programmieren dies das',
-                                    'projectName': 'Java Projekt'}
-        test_original_time_entry_object = TimeEntry.from_dict(test_original_time_entry)
-        test_modified_time_entry_object = TimeEntry.from_dict(test_modified_time_entry)
+        test_modified_time_entry_data = {'_id': ObjectId('666a1ace21bc45a25b4263d8'),
+                           'timesheetId': '666c1331d28499aff172091c',
+                           'startTime': datetime.datetime(2022, 3, 1, 8, 18),
+                           'endTime': datetime.datetime(2022, 3, 1, 10, 0),
+                           'entryType': 'Work Entry', 'breakTime': 10,
+                           'activity': 'Bissle Java Programmieren dies das',
+                           'projectName': 'Java Projekt'}
+        test_original_time_entry = TimeEntry.from_dict(test_original_time_entry_data)
+        test_modified_time_entry = TimeEntry.from_dict(test_modified_time_entry_data)
 
-        self.time_entry_repository.update_time_entry(test_modified_time_entry_object)
-        self.assertEqual(self.time_entry_repository.get_time_entry_by_id("666a1ace21bc45a25b4263d8"), test_modified_time_entry)
-        self.time_entry_repository.update_time_entry(test_original_time_entry_object)
+        self.time_entry_repository.update_time_entry(test_modified_time_entry)
+
+        self.assertEqual(test_modified_time_entry_data,
+                         self.time_entry_repository.get_time_entry_by_id("666a1ace21bc45a25b4263d8"))
+        # Reset the time entry to its original state
+        self.time_entry_repository.update_time_entry(test_original_time_entry)
 
     if __name__ == '__main__':
         unittest.main()

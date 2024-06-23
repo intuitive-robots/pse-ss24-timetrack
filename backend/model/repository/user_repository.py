@@ -4,6 +4,8 @@ from model.user.role import UserRole
 from model.user.user import User
 
 
+# TODO: Repository methods should receive a dict instead of a User object ->
+# This should be the case for all repositories
 class UserRepository:
     """
     Repository class for managing user data in the database. It provides functionalities

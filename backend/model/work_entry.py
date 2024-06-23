@@ -92,13 +92,14 @@ class WorkEntry(TimeEntry):
 
         if isinstance(end_datetime, str):
             end_datetime = datetime.fromisoformat(data['endTime'])
-
+        time_entry_id = data.get('_id', None)
         timesheet_id = data['timesheetId']
         break_time = data.get('breakTime', 0)
         activity = data.get('activity', '')
         project_name = data.get('projectName', '')
 
         return cls(
+            time_entry_id=time_entry_id,
             timesheet_id=timesheet_id,
             start_time=start_datetime,
             end_time=end_datetime,
