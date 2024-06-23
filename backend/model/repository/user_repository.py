@@ -4,6 +4,8 @@ from model.user.role import UserRole
 from model.user.user import User
 
 
+# TODO: Repository methods should receive a dict instead of a User object ->
+# This should be the case for all repositories
 class UserRepository:
     """
     Repository class for managing user data in the database. It provides functionalities
@@ -67,6 +69,22 @@ class UserRepository:
         :return: RequestResult indicating the success or failure of the update operation.
         """
         result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
+        if result.matched_count == 0:
+            return RequestResult(False, "User not found", 404)
+        if result.modified_count == 0:
+            return RequestResult(False, "User update failed", 500)
+        if result.acknowledged:
+            return RequestResult(True, "User updated successfully", 200)
+        return RequestResult(False, "User update failed", 500)
+
+    def update_user_by_dict(self, user_data: dict) -> RequestResult:
+        """
+        Updates an existing user in the database based on the provided User object.
+
+        :param user_data: The User object containing updated data for the user.
+        :return: RequestResult indicating the success or failure of the update operation.
+        """
+        result = self.db.users.update_one({"username": user_data['username']}, {"$set": user_data})
         if result.matched_count == 0:
             return RequestResult(False, "User not found", 404)
         if result.modified_count == 0:

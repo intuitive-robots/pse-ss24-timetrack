@@ -64,6 +64,7 @@ class UserService:
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
 
+        #TODO: AccountCreation and LastLogin are also required fields, which should not be the case.
         for key in User.dict_keys():
             if key not in user_data.keys():
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
@@ -77,6 +78,23 @@ class UserService:
         user = user_factory.create_user(user_data)
         if not user:
             return RequestResult(False, "User creation failed", status_code=500)
+        if user.role == UserRole.HIWI:
+            if 'supervisor' not in user_data:
+                return RequestResult(False, "Supervisor is required for HiWi creation", status_code=400)
+            supervisor_data = self.user_repository.find_by_username(user_data['supervisor'])
+            if not supervisor_data:
+                return RequestResult(False, "Supervisor not found", status_code=404)
+            if supervisor_data['role'] != 'Supervisor':
+                return RequestResult(False, "Supervisor must be of role 'Supervisor'", status_code=400)
+            supervisor_data['hiwis'].append(user_data['username'])
+            result_user_creation = self.user_repository.create_user(user)
+            if not result_user_creation.is_successful:
+                return RequestResult(False, "Failed to create HiWi", status_code=500)
+            result_supervisor_update = self.user_repository.update_user_by_dict(supervisor_data)
+            if not result_supervisor_update.is_successful:
+                return RequestResult(False, "Failed to update supervisor. HiWi was not created.",
+                                     status_code=500)
+            return RequestResult(True, "HiWi created successfully", status_code=201)
 
         return self.user_repository.create_user(user)
 
@@ -115,6 +133,16 @@ class UserService:
         :param username: The username of the user to be deleted.
         :return: A RequestResult object containing the result of the delete operation.
         """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == 'HiWi':
+            supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
+            supervisor_data['hiwis'].remove(user_data['username'])
+            result_supervisor_update = self.user_repository.update_user_by_dict(supervisor_data)
+            if not result_supervisor_update.is_successful:
+                return RequestResult(False, "Failed to remove Hiwi from Supervisor. Hiwi was not deleted.",
+                                     status_code=500)
         return self.user_repository.delete_user(username)
 
     def get_users(self) -> list[User]:
@@ -156,3 +184,23 @@ class UserService:
         """
         user_data = self.user_repository.find_by_username(username)
         return UserFactory.create_user_if_factory_exists(user_data)
+
+    def get_hiwis(self, username: str):
+        """
+        Retrieves a list of Hiwis managed by a Supervisor identified by their username.
+
+        :param str username: The username of the Supervisor whose Hiwis are being requested.
+        :return: A list of Hiwi model instances representing the Supervisor's Hiwis.
+        :rtype: list[Hiwi]
+        """
+        supervisor_data = self.user_repository.find_by_username(username)
+        if not supervisor_data:
+            return RequestResult(False, "Supervisor not found", status_code=404)
+        if supervisor_data['role'] != 'Supervisor':
+            return RequestResult(False, "User is not a Supervisor", status_code=400)
+        hiwis_data = list(self.get_profile(hiwi_username) for hiwi_username in supervisor_data['hiwis'])
+        if not hiwis_data:
+            return RequestResult(False, "No Hiwis found", status_code=404)
+        return RequestResult(True, "", status_code=200, data=hiwis_data)
+
+

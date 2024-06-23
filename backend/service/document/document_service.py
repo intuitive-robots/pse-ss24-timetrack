@@ -144,7 +144,7 @@ class DocumentService:
         :return: The date with the month incremented.
         """
         return date.replace(month=date.month + 1) if date.month < 12 else date.replace(month=1, year=date.year + 1)
-    def gather_document_data(self, month: int, year: int, username: str) -> DocumentData | None:
+    def gather_document_data(self, month: int, year: int, username: str):
         """
         Gathers the data required for generating a document.
 

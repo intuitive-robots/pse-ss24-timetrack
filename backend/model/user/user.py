@@ -1,3 +1,5 @@
+import datetime
+
 from db import initialize_db
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
@@ -20,7 +22,7 @@ class User:
         self.password_hash = password_hash
         self.personal_info = personal_info
         self.role = role
-        self.account_creation = None
+        self.account_creation = datetime.datetime.now()
         self.last_login = None
 
     def is_admin(self):

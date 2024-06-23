@@ -47,6 +47,30 @@ class VacationEntry(TimeEntry):
         return super().to_dict()
 
     @classmethod
+    def from_dict(cls, data: dict):
+        """
+        Creates a VacationEntry object from a dictionary.
+        """
+        start_datetime = data['startTime']
+        end_datetime = data['endTime']
+
+        if isinstance(start_datetime, str):
+            start_datetime = datetime.fromisoformat(data['startTime'])
+
+        if isinstance(end_datetime, str):
+            end_datetime = datetime.fromisoformat(data['endTime'])
+        time_entry_id = data.get('_id', None)
+        timesheet_id = data['timesheetId']
+
+        return cls(
+            time_entry_id=time_entry_id,
+            timesheet_id=timesheet_id,
+            start_time=start_datetime,
+            end_time=end_datetime
+        )
+
+
+    @classmethod
     def dict_keys(cls):
         """
         Provides a list of keys that are used in the dictionary representation of a VacationEntry object.

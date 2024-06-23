@@ -45,12 +45,13 @@ user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'
 user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'], endpoint='reset_password')
 user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['POST'], endpoint='update_user')
 user_blueprint.add_url_rule('/getProfile', view_func=user_view, methods=['GET'], endpoint='get_profile')
-user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['POST'], endpoint='delete_user')
+user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['DELETE'], endpoint='delete_user')
 user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
 user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
 user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['POST'], endpoint='upload_user_file')
 user_blueprint.add_url_rule('/getFile', view_func=user_view, methods=['GET'], endpoint='get_user_file')
 user_blueprint.add_url_rule('/deleteFile', view_func=user_view, methods=['DELETE'], endpoint='delete_user_file')
+user_blueprint.add_url_rule('/getHiwis', view_func=user_view, methods=['GET'], endpoint='get_hiwis')
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 

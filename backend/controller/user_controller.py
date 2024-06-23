@@ -37,8 +37,7 @@ class UserController(MethodView):
             '/login': self.login,
             '/logout': self.logout,
             '/resetPassword': self.reset_password,
-            '/deleteUser': self.delete_user,
-            '/uploadFile': self.upload_user_file,
+            '/uploadFile': self.upload_user_file
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -53,6 +52,7 @@ class UserController(MethodView):
             '/getUsers': self.get_users,
             '/getUsersByRole': self.get_users_by_role,
             '/getFile': self.get_user_file,
+            '/getHiwis': self.get_hiwis
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -63,7 +63,9 @@ class UserController(MethodView):
         :return: JSON response indicating the outcome of the file deletion.
         """
         endpoint_mapping = {
-            '/deleteFile': self.delete_user_file
+            '/deleteFile': self.delete_user_file,
+            '/deleteUser': self.delete_user
+
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -103,6 +105,7 @@ class UserController(MethodView):
         user_data = request.get_json()
         result = self.user_service.update_user(user_data)
         return jsonify(result.message), result.status_code
+
 
     @jwt_required()
     @check_access(roles=[UserRole.ADMIN])
@@ -214,7 +217,8 @@ class UserController(MethodView):
         """
         Retrieves a file for the specified username and file type
 
-        :return: The file as a download if found, or a JSON response indicating an error with an appropriate HTTP status code if not found or if parameters are missing.
+        :return: The file as a download if found, or a JSON response indicating an error with an
+        appropriate HTTP status code if not found or if parameters are missing.
         """
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
@@ -234,6 +238,19 @@ class UserController(MethodView):
             as_attachment=True,
             download_name=f"{username}_{file_type}.jpg"
         )
+
+    @jwt_required()
+    @check_access(roles=[UserRole.SUPERVISOR])
+    def get_hiwis(self):
+        """
+        Retrieves all Hiwis assigned to the currently authenticated Supervisor.
+
+        :return: A JSON response with the list of Hiwis and an appropriate HTTP status code.
+        """
+        username = get_jwt_identity()
+        result = self.user_service.get_hiwis(username)
+        hiwis_data = [hiwi.to_dict() for hiwi in result.data]
+        return jsonify(hiwis_data), result.status_code
 
 
     @jwt_required()
