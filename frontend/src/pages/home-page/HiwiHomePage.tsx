@@ -9,6 +9,7 @@ import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 import TimeEntryTile from "../../components/TimeEntryTile";
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
 import QuickActionButton from "../../components/input/QuickActionButton";
+import MonthTimespan from "../../components/MonthTimespan";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -36,7 +37,7 @@ const HiwiHomePage = (): React.ReactElement => {
                     <div className="flex flex-row gap-8 items-center">
                         <div className="flex flex-row gap-4">
                             <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                            <p className="text-lg font-semibold text-nav-gray">April 30, 2024 - May 31, 2024</p>
+                            <MonthTimespan month={4} year={2024}/>
                         </div>
                         <div className="flex gap-4">
                             <ListIconCardButton

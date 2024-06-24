@@ -97,6 +97,7 @@ const getTimesheetByUsernameStatus = async (username: string, status: string) =>
  */
 const getCurrentTimesheet = async (username: string) => {
   try {
+    console.log(`Fetching current Timesheet of ${username}`);
     const response = await axiosInstance.get('/timesheet/getCurrentTimesheet', {
         data: { username: username }
     });
