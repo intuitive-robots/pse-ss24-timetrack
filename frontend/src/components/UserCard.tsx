@@ -37,7 +37,7 @@ const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastNa
               onClick={() => {}}
           />
           <IconButton
-              icon={RemoveIcon} // Adjust the size and color as necessary
+              icon={RemoveIcon}
               onClick={() => {}}
               bgColor="bg-purple-100"
               hover="hover:bg-purple-200"

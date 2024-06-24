@@ -39,7 +39,7 @@ const AdminHomePage = (): React.ReactElement => {
                     <div>
                         {users.map(user => (
                             <UserCard
-                                key={user._id}
+                                key={user.username}
                                 name={user.personalInfo.firstName}
                                 lastName={user.personalInfo.lastName}
                                 role={user.role}

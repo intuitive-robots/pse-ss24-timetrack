@@ -4,23 +4,39 @@ interface ListIconCardButtonProps {
   iconSrc: string;
   label: string;
   onClick: () => void;
+  orientation?: 'left' | 'right';
 }
 
 /**
  * ListIconCardButton component renders a button with an SVG icon and label.
+ * You can specify the orientation of the icon relative to the label.
  *
  * @component
  * @param {ListIconCardButtonProps} props - The props passed to the ListIconCardButton component.
  * @returns {React.ReactElement} A React Element that renders a button with an SVG icon and label.
  */
-const ListIconCardButton: React.FC<ListIconCardButtonProps> = ({ iconSrc, label, onClick }) => {
+const ListIconCardButton: React.FC<ListIconCardButtonProps> = ({ iconSrc, label, onClick, orientation = 'left' }) => {
+  const marginClass = orientation === 'left' ? 'mr-2' : 'ml-2';
+
+  const iconElement = <img src={iconSrc} alt={label} className={`h-5 w-5 ${marginClass}`} />;
+  const labelElement = <p className="font-semibold text-[#717171]">{label}</p>;
+
   return (
     <button
       className="flex items-center px-4 py-2 border rounded-lg text-gray-500 hover:bg-gray-100"
       onClick={onClick}
     >
-      <img src={iconSrc} alt={label} className="h-5 w-5 mr-2" />
-      <p className="font-semibold text-[#717171]">{label}</p>
+      {orientation === 'right' ? (
+        <>
+          {labelElement}
+          {iconElement}
+        </>
+      ) : (
+        <>
+          {iconElement}
+          {labelElement}
+        </>
+      )}
     </button>
   );
 };
