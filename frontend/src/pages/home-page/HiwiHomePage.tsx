@@ -7,6 +7,8 @@ import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 import TimeEntryTile from "../../components/TimeEntryTile";
+import SignSheetIcon from "../../assets/images/sign_icon.svg";
+import QuickActionButton from "../../components/input/QuickActionButton";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -18,6 +20,7 @@ const HiwiHomePage = (): React.ReactElement => {
     const { user } = useAuth();
 
     useEffect(() => {
+        console.log(user)
         if (user && user.username) {
             getCurrentTimesheet(user.username)
                 .then(setTimesheet)
@@ -55,11 +58,35 @@ const HiwiHomePage = (): React.ReactElement => {
                     <div className="flex mt-6 gap-12">
                         <img src={VerticalTimeLine} alt="Vertical Time Line"/>
 
-                        <div className="w-full">
-                            <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                            <TimeEntryTile  entryName={"Entwicklung des Backends"} projectName={"Project Alpha"} workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}  onDelete={() => {}} onEdit={() => {}}  />
+                        <div className="flex flex-col w-full h-full justify-between">
+                            <div>
+                                <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                                <TimeEntryTile entryName={"Entwicklung des Backends"} projectName={"Project Alpha"}
+                                               workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}
+                                               onDelete={() => {
+                                               }} onEdit={() => {
+                                }}/>
+                            </div>
+
+                            <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                         </div>
+
+
                     </div>
+
+
+                    <div className="flex">
+                        <QuickActionButton
+                            icon={SignSheetIcon}
+                            label="Sign Sheet"
+                            onClick={() => {
+
+                            }}
+                            bgColor="bg-purple-600"
+                        hover="hover:bg-purple-700"
+                    />
+                    </div>
+
 
                 </div>
             }
