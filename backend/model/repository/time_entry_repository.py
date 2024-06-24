@@ -152,6 +152,7 @@ class TimeEntryRepository:
             return RequestResult(False, "Time entry already exists", 409)
 
         time_entry_dict = time_entry.to_dict()
+        time_entry_dict.pop("_id")
         result = self.db.timeEntries.insert_one(time_entry_dict)
 
         if result.acknowledged:

@@ -1,6 +1,6 @@
 import os
 
-from model.repository.FileRepository import FileRepository
+from model.repository.file_repository import FileRepository
 from model.request_result import RequestResult
 from model.file.FileType import FileType
 

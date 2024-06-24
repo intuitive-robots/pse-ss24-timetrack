@@ -21,7 +21,7 @@ class TestTimeEntryRepository(unittest.TestCase):
                            'startTime': datetime.datetime(2022, 3, 1, 8, 18),
                            'endTime': datetime.datetime(2022, 3, 1, 10, 0),
                            'entryType': 'Work Entry', 'breakTime': 22,
-                           'activity': 'Bissle Python Programmieren dies das',
+                           'activity': 'Test Activity',
                            'projectName': 'Python Projekt'}
         self.assertEqual(test_time_entry_data, self.time_entry_repository.get_time_entry_by_id("666a1ace21bc45a25b4263d8"))
 
@@ -33,14 +33,14 @@ class TestTimeEntryRepository(unittest.TestCase):
                 {'_id': ObjectId('666a1ace21bc45a25b4263d8'), 'timesheetId': '666c1331d28499aff172091c',
                     'startTime': datetime.datetime(2022, 3, 1, 8, 18),
                     'endTime': datetime.datetime(2022, 3, 1, 10, 0),
-                    'entryType': 'Work Entry', 'breakTime': 22, 'activity': 'Bissle Python Programmieren dies das',
+                    'entryType': 'Work Entry', 'breakTime': 22, 'activity': 'Test Activity',
                     'projectName': 'Python Projekt'},
                 {'_id': ObjectId('666c020f7a409003113fedf9'),
                     'timesheetId': '666c1331d28499aff172091c',
                     'startTime': datetime.datetime(2022, 3, 1, 12, 20, 30, 656000),
                     'endTime': datetime.datetime(2022, 3, 1, 10, 0,0),
                     'entryType': 'Work Entry', 'breakTime': 22,
-                    'activity': 'Bissle Python Programmieren dies das aktuell',
+                    'activity': 'Test Activity',
                     'projectName': 'Es ist bald Zeit für einen neuen Pull'}
             ]
         self.assertEqual(test_time_entry_data, self.time_entry_repository.get_time_entries_by_date(datetime.datetime(2022, 3, 1), "testHiWi"))
@@ -54,21 +54,21 @@ class TestTimeEntryRepository(unittest.TestCase):
                     'timesheetId': '666c1331d28499aff172091c',
                     'startTime': datetime.datetime(2022, 3, 1, 8, 18),
                     'endTime': datetime.datetime(2022, 3, 1, 10, 0),
-                    'entryType': 'Work Entry', 'breakTime': 22, 'activity': 'Bissle Python Programmieren dies das',
+                    'entryType': 'Work Entry', 'breakTime': 22, 'activity': 'Test Activity',
                     'projectName': 'Python Projekt'},
                 {'_id': ObjectId('666c020f7a409003113fedf9'),
                     'timesheetId': '666c1331d28499aff172091c',
                     'startTime': datetime.datetime(2022, 3, 1, 12, 20, 30, 656000),
                     'endTime': datetime.datetime(2022, 3, 1, 10, 0,0),
                     'entryType': 'Work Entry', 'breakTime': 22,
-                    'activity': 'Bissle Python Programmieren dies das aktuell',
+                    'activity': 'Test Activity',
                     'projectName': 'Es ist bald Zeit für einen neuen Pull'},
                 {'_id': ObjectId('666c9d6d6796c3856a1c5bdd'),
                     'timesheetId': '666c1331d28499aff172091c',
                     'startTime': datetime.datetime(2008, 8, 12, 14, 20, 30, 656000),
                     'endTime': datetime.datetime(2022, 3, 1, 10, 0,0),
                     'entryType': 'Work Entry', 'breakTime': 22,
-                    'activity': 'Bissle Python Programmieren dies das aktuell',
+                    'activity': 'Test Activity',
                     'projectName': 'Bug Fix Delete'},
             ]
 

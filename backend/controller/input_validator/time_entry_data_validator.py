@@ -49,6 +49,8 @@ class TimeEntryDataValidator(InputValidator):
             return ValidationResult(ValidationStatus.FAILURE, "Invalid entry type specified.")
 
         required_keys = entry_class.dict_keys()
+        required_keys.remove('_id')
+
         missing_keys = [key for key in required_keys if key not in time_entry_data]
         if missing_keys:
             return ValidationResult(ValidationStatus.FAILURE, f"Missing required fields: {', '.join(missing_keys)}")
