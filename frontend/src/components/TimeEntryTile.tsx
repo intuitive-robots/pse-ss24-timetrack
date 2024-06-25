@@ -3,6 +3,7 @@ import ListIconCardButton from "./navbar/ListIconCardButton";
 import EditDocumentIcon from "../assets/images/edit_document.svg"
 import RemoveIcon from "../assets/images/remove_icon.svg"
 import IconButton from "./navbar/IconButton";
+import CalendarDay from "./CalendarDay";
 
 interface TimeEntryTileProps {
   date: string;
@@ -19,10 +20,7 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({entryName, projectName, wo
   return (
       <div className="flex items-center p-4 bg-white shadow rounded-lg mb-4 justify-between">
           <div className="flex gap-5 items-center">
-              <div className="bg-[#F4F4F4] rounded-md px-3 py-2.5 items-center justify-center">
-                  <p className="text-[#3B3B3B] font-bold text-center">12</p>
-                  <p className="text-[#C2C2C2] font-semibold">May</p>
-              </div>
+              <CalendarDay entry={{startTime: "2022-05-27T12:20:30.656+00:00"}}/>
               <div className="flex flex-col gap-0.5">
                   <p className="text-md font-semibold">{entryName}</p>
                   <p className="text-sm font-semibold text-[#9F9F9F]">{projectName}</p>

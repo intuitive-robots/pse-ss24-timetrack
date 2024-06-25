@@ -18,12 +18,12 @@ interface ListIconCardButtonProps {
 const ListIconCardButton: React.FC<ListIconCardButtonProps> = ({ iconSrc, label, onClick, orientation = 'left' }) => {
   const marginClass = orientation === 'left' ? 'mr-2' : 'ml-2';
 
-  const iconElement = <img src={iconSrc} alt={label} className={`h-5 w-5 ${marginClass}`} />;
+  const iconElement = <img src={iconSrc} alt={label} className={`h-4 w-4 ${marginClass}`} />;
   const labelElement = <p className="font-semibold text-[#717171]">{label}</p>;
 
   return (
     <button
-      className="flex items-center px-4 py-2 border rounded-lg text-gray-500 hover:bg-gray-100"
+      className="flex items-center px-4 py-2 border-1.7 rounded-lg text-gray-500 hover:bg-gray-100"
       onClick={onClick}
     >
       {orientation === 'right' ? (

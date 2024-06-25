@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      plugins: [
+
+      ],
       colors: {
         light: {  // Light Theme
           background: '#ffffff',

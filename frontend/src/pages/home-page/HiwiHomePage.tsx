@@ -60,16 +60,50 @@ const HiwiHomePage = (): React.ReactElement => {
                         <img src={VerticalTimeLine} alt="Vertical Time Line"/>
 
                         <div className="flex flex-col w-full h-full justify-between">
-                            <div>
-                                <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                            <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                            <div className="overflow-y-clip hover:overflow-y-auto max-h-96">
                                 <TimeEntryTile entryName={"Entwicklung des Backends"} projectName={"Project Alpha"}
                                                workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}
                                                onDelete={() => {
                                                }} onEdit={() => {
                                 }}/>
+                                <TimeEntryTile entryName={"Entwicklung des Backends"} projectName={"Project Alpha"}
+                                               workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}
+                                               onDelete={() => {
+                                               }} onEdit={() => {
+                                }}/>
+                                <TimeEntryTile entryName={"Entwicklung des Backends"} projectName={"Project Alpha"}
+                                               workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}
+                                               onDelete={() => {
+                                               }} onEdit={() => {
+                                }}/>
+                                <TimeEntryTile entryName={"Entwicklung des Backends"} projectName={"Project Alpha"}
+                                               workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}
+                                               onDelete={() => {
+                                               }} onEdit={() => {
+                                }}/>
+                                <TimeEntryTile entryName={"Entwicklung des Backends"} projectName={"Project Alpha"}
+                                               workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}
+                                               onDelete={() => {
+                                               }} onEdit={() => {
+                                }}/><TimeEntryTile entryName={"Entwicklung des Backends"} projectName={"Project Alpha"}
+                                                   workTime={"4,5h"} breakTime={"15m"} period="11:00 - 15:45" date={""}
+                                                   onDelete={() => {
+                                                   }} onEdit={() => {
+                            }}/>
+
+
                             </div>
 
-                            <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                            <div className="flex mt-12 flex-col gap-2 items-center">
+                                <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                                <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
+                                    <p>Work</p>
+                                    <p>Breaks</p>
+                                    <p>Period</p>
+                                </div>
+                            </div>
+
                         </div>
 
 

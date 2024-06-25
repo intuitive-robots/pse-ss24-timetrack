@@ -24,7 +24,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrap
         {/* Sidebar navigation bar */}
         <NavigationBar/>
         {/* Main content area that takes remaining space */}
-        <div className="flex-1 overflow-auto p-4 items-start justify-start">
+        <div className="flex-1 overflow-clip p-4 items-start justify-start">
           {pageContent}
         </div>
       </div>
