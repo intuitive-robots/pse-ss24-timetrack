@@ -83,13 +83,22 @@ class TimesheetRepository:
         Retrieves timesheets for a specified time period for a given username.
 
         :param username: The username for whom to retrieve timesheets.
-        :param start_date: The start date of the time period.
-        :param end_date: The end date of the time period.
+        :param start_date: The start date of the time period. Includes timesheets with the month and year of the start_date.
+        :param end_date: The end date of the time period. Includes timesheets with the month and year of the end_date.
         :return: A list of Timesheet objects within the specified date range.
         """
         if username is None or start_date is None or end_date is None:
             return None
-        timesheet_data = self.db.timesheets.find({"username": username, "date": {"$gte": start_date, "$lte": end_date}})
+        start_month = start_date.month
+        start_year = start_date.year
+        end_month = end_date.month
+        end_year = end_date.year
+        timesheet_data = self.db.timesheets.find({"username": username,
+                                                  "$or": [
+                                                      {"year": {"$gt": start_year, "$lt": end_year}},
+                                                      {"year": start_year, "month": {"$gte": start_month}},
+                                                      {"year": end_year, "month": {"$lte": end_month}}
+                                                  ]})
         return list(timesheet_data)
 
     def get_timesheets(self):
@@ -129,6 +138,31 @@ class TimesheetRepository:
             return timesheet_data['_id']
         return None
 
+    def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
+        """
+        Retrieves all timesheets for a given username with a specified status
+
+        :param username: Username of the Hiwi
+        :param status: Status of the timesheet
+        :return: A list of timesheets for the given username with the specified status
+        """
+        if username is None or status is None:
+            return None
+        timesheets = self.db.timesheets.find({"username": username, "status": status})
+        return list(timesheets)
+
+    def get_timesheets_by_username(self, username: str):
+        """
+        Retrieves all timesheets for a given username
+
+        :param username: Username of the Hiwi
+        :return: A list of timesheets for the given username
+        """
+        if username is None:
+            return None
+        timesheets = self.db.timesheets.find({"username": username})
+        return list(timesheets)
+
     def update_timesheet_by_dict(self, timesheet_data: dict) -> RequestResult:
         """
         Updates a specific Timesheet in the database.
@@ -167,7 +201,7 @@ class TimesheetRepository:
             return RequestResult(True, "Timesheet updated successfully", 200)
         return RequestResult(False, "Timesheet update failed", 500)
 
-    def set_timesheet_status(self, timesheet_id, status) -> RequestResult:
+    def set_timesheet_status(self, timesheet_id: str, status) -> RequestResult:
         """
         Updates the status of a timesheet in the database.
         
@@ -202,6 +236,25 @@ class TimesheetRepository:
             return RequestResult(True, "Timesheet deleted successfully", 200)
         return RequestResult(False, "Timesheet deletion failed", 500)
 
+    def create_timesheet_by_dict(self, timesheet_data: dict):
+        """
+         Creates a new Timesheet in the database.
+
+        :param timesheet: The Timesheet object to create.
+        :return: A RequestResult indicating the success or failure of the creation operation.
+        """
+        if timesheet_data is None:
+            return RequestResult(False, "Please provide a timesheet to create.", 400)
+        if self.get_timesheet(timesheet_data['username'], timesheet_data['month'], timesheet_data['year']) is not None:
+            return RequestResult(False, "Timesheet already exists", 409)
+        if '_id' in timesheet_data:
+            del timesheet_data['_id']
+        result = self.db.timesheets.insert_one(timesheet_data)
+        if result.acknowledged:
+            return RequestResult(True, f'Timesheet created successfully with ID: {str(result.inserted_id)}', 201,
+                                 data={"_id": result.inserted_id})
+        return RequestResult(False, "Timesheet creation failed", 500)
+
     def create_timesheet(self, timesheet: Timesheet):
         """
          Creates a new Timesheet in the database.
@@ -219,27 +272,24 @@ class TimesheetRepository:
             return RequestResult(True, "Timesheet created successfully", 201)
         return RequestResult(False, "Timesheet creation failed", 500)
 
-    def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
+    def delete_timesheet(self, timesheet_id: str):
         """
-        Retrieves all timesheets for a given username with a specified status
-        
-        :param username: Username of the Hiwi
-        :param status: Status of the timesheet
-        :return: A list of timesheets for the given username with the specified status
-        """
-        if username is None or status is None:
-            return None
-        timesheets = self.db.timesheets.find({"username": username, "status": status})
-        return list(timesheets)
+        Deletes a Timesheet object from the MongoDB database using its ID.
+        This method is only for TESTING! It does NOT delete all the time entries linked to the timesheet.
 
-    def get_timesheets_by_username(self, username: str):
+        :param timesheet_id: The ID of the Timesheet to delete.
+
+        :return: A RequestResult indicating the success or failure of the delete operation.
         """
-        Retrieves all timesheets for a given username
-        
-        :param username: Username of the Hiwi
-        :return: A list of timesheets for the given username
-        """
-        if username is None:
-            return None
-        timesheets = self.db.timesheets.find({"username": username})
-        return list(timesheets)
+        if timesheet_id is None:
+            return RequestResult(False, "Timesheet ID is None", 400)
+
+        result = self.db.timesheets.delete_one({"_id": ObjectId(timesheet_id)})
+        if result.deleted_count == 0:
+            return RequestResult(False, "Timesheet not found", 404)
+
+        if result.acknowledged:
+            return RequestResult(True, "Timesheet deleted successfully", 200)
+        return RequestResult(False, "Timesheet deletion failed", 500)
+
+

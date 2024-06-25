@@ -141,6 +141,7 @@ class TimeEntryRepository:
             timesheet_data["timeEntryIds"].append(ObjectId(result.inserted_id))
             timesheet_result = self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
             if not timesheet_result.is_successful:
+                #TODO: Delete the time entry if the timesheet update fails
                 return RequestResult(False, "Failed to update timesheet", 500)
 
             return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201,
