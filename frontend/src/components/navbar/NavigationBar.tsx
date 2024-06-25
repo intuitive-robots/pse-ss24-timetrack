@@ -39,6 +39,12 @@ const NavigationBar: React.FC = (): React.ReactElement => {
           Data: ["Analysis", "Documents"],
           Support: ["Assigned Employees", "Projects", "Guidelines"],
         };
+      case 'Secretary':
+        return {
+          General: ["Home"],
+          Data: ["Analysis", "Documents"],
+          Support: ["Employees", "Guidelines"],
+        };
       default:
         return {
 
