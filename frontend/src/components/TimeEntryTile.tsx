@@ -16,12 +16,12 @@ interface TimeEntryTileProps {
   onDelete: () => void;
 }
 
-const TimeEntryTile: React.FC<TimeEntryTileProps> = ({entryName, projectName, workTime, breakTime, period}) => {
+const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectName, workTime, breakTime, period}) => {
   return (
-      <div className="flex items-center p-4 bg-white shadow rounded-lg mb-4 justify-between">
-          <div className="flex gap-5 items-center">
-              <CalendarDay entry={{startTime: "2022-05-27T12:20:30.656+00:00"}}/>
-              <div className="flex flex-col gap-0.5">
+      <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4 justify-between">
+          <div className="flex gap-5 ">
+              <CalendarDay dayTime={date} />
+              <div className="flex flex-col w-60 mt-1.5 gap-0.5">
                   <p className="text-md font-semibold">{entryName}</p>
                   <p className="text-sm font-semibold text-[#9F9F9F]">{projectName}</p>
               </div>
@@ -33,19 +33,18 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({entryName, projectName, wo
               <p className="text-md font-semibold text-[#3B3B3B]">{period}</p>
           </div>
 
-          <div className="flex gap-5">
+          <div className="flex gap-5 ">
               <ListIconCardButton
-              iconSrc={EditDocumentIcon}
-              label="Edit"
-              onClick={() => {
-              }}
-          />
-          <IconButton
-              icon={RemoveIcon}
-              onClick={() => {}}
-              bgColor="bg-purple-100"
-              hover="hover:bg-purple-200"
-          />
+                  iconSrc={EditDocumentIcon}
+                  label="Edit"
+                  onClick={() => {}}
+              />
+              <IconButton
+                  icon={RemoveIcon}
+                  onClick={() => {}}
+                  bgColor="bg-purple-100"
+                  hover="hover:bg-purple-200"
+              />
           </div>
 
       </div>

@@ -19,13 +19,17 @@ module.exports = {
           text: '#f5f5f5',
         },
         'border-gray': 'rgba(215, 215, 215, 0.22)',
+        'card-gray': '#EFEFEF',
         'navbar-selected-bg': '#f1eaff',
         'subtitle': '#BDBDBD',
-        'nav-gray': '#343434'
+        'nav-gray': '#343434',
+        'headline': '#343434'
       },
       boxShadow: {
         'profilebar-shadow': '0 6px 10px rgba(0, 0, 0, 0.03)', // Profile Bar Shadow
         'navbar-shadow': '0 6px 10px rgba(0, 0, 0, 0.02)', // Navbar Shadow
+        'card-shadow': '0 4px 10px rgba(0, 0, 0, 0.05)',
+        'inside-card-shadow': '0 0 8px rgba(0, 0, 0, 0.04)'
       },
       borderWidth: {
         '1.7': '1.7px',
