@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ActionButton from "../input/ActionButton";
 import AddUserIcon from "../../assets/images/add_user_icon.svg"
+import {useAuth} from "../../context/AuthContext";
 
 interface MenuItems {
   [key: string]: string[];
@@ -14,12 +15,36 @@ interface MenuItems {
  */
 const NavigationBar: React.FC = (): React.ReactElement => {
   const [activeItem, setActiveItem] = useState<string>("Home");
+  const { role } = useAuth();
 
-  const menuItems: MenuItems = {
-    General: ["Home"],
-    Data: ["Analysis", "Documents"],
-    Support: ["Contract", "Guidelines"],
-  };
+  const menuItems = getMenuItemsByRole(role);
+
+  function getMenuItemsByRole(role: string | null): MenuItems {
+    switch (role) {
+      case 'Admin':
+        return {
+          General: ["Home"],
+          Data: ["Analysis", "Documents"],
+          Support: ["Guidelines"],
+        };
+      case 'HiWi':
+        return {
+          General: ["Home"],
+          Data: ["Analysis", "Documents"],
+          Support: ["Contract", "Guidelines"],
+        };
+      case 'Supervisor':
+        return {
+          General: ["Home"],
+          Data: ["Analysis", "Documents"],
+          Support: ["Assigned Employees", "Projects", "Guidelines"],
+        };
+      default:
+        return {
+
+        };
+    }
+  }
 
   return (
     <div className="flex-col w-72 h-full shadow-navbar-shadow border-r-2.7 border-border-gray">
