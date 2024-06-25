@@ -23,7 +23,8 @@ module.exports = {
         'navbar-selected-bg': '#f1eaff',
         'subtitle': '#BDBDBD',
         'nav-gray': '#343434',
-        'headline': '#343434'
+        'headline': '#343434',
+        'card-title': '#1B1B1B'
       },
       boxShadow: {
         'profilebar-shadow': '0 6px 10px rgba(0, 0, 0, 0.03)', // Profile Bar Shadow
