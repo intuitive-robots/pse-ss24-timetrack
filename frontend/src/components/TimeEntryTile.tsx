@@ -4,6 +4,7 @@ import EditDocumentIcon from "../assets/images/edit_document.svg"
 import RemoveIcon from "../assets/images/remove_icon.svg"
 import IconButton from "./navbar/IconButton";
 import CalendarDay from "./CalendarDay";
+import ListTileInfo from "./list/ListTileInfo";
 
 interface TimeEntryTileProps {
   date: string;
@@ -16,9 +17,9 @@ interface TimeEntryTileProps {
   onDelete: () => void;
 }
 
-const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectName, workTime, breakTime, period}) => {
+const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectName, workTime, breakTime, period, onEdit, onDelete}) => {
   return (
-      <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4 justify-between">
+      <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between">
           <div className="flex gap-5 ">
               <CalendarDay dayTime={date} />
               <div className="flex flex-col w-60 mt-1.5 gap-0.5">
@@ -27,21 +28,19 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectNa
               </div>
           </div>
 
-          <div className="flex flex-row gap-12">
-              <p className="text-md font-semibold text-[#3B3B3B]">{workTime}</p>
-              <p className="text-md font-semibold text-[#3B3B3B]">{breakTime}</p>
-              <p className="text-md font-semibold text-[#3B3B3B]">{period}</p>
-          </div>
+          <ListTileInfo items={
+              [workTime, breakTime, period]
+          }/>
 
           <div className="flex gap-5 ">
               <ListIconCardButton
                   iconSrc={EditDocumentIcon}
                   label="Edit"
-                  onClick={() => {}}
+                  onClick={() => onEdit()}
               />
               <IconButton
                   icon={RemoveIcon}
-                  onClick={() => {}}
+                  onClick={() => onDelete()}
                   bgColor="bg-purple-100"
                   hover="hover:bg-purple-200"
               />

@@ -18,7 +18,7 @@ interface QuickActionButtonProps {
 const QuickActionButton: React.FC<QuickActionButtonProps> = ({icon, label, onClick, bgColor, hover }: QuickActionButtonProps): React.ReactElement => {
   return (
     <button
-      className={`flex items-center gap-3 py-2.5 px-5 ${bgColor} text-white rounded-lg shadow mt-4 ${hover} transition-colors`}
+      className={`flex items-center gap-3 py-2.5 px-5 ${bgColor} text-white rounded-lg shadow ${hover} transition-colors`}
       onClick={onClick}
     >
       <img src={icon} alt="" className=""/>

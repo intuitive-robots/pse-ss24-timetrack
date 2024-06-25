@@ -9,7 +9,9 @@ import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 import TimeEntryTile from "../../components/TimeEntryTile";
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
 import QuickActionButton from "../../components/input/QuickActionButton";
-import MonthTimespan from "../../components/MonthTimespan";
+import MonthTimespan from "../../components/timesheet/MonthTimespan";
+import {TimeEntry} from "../../interfaces/TimeEntry";
+import TimeEntryListView from "../../components/timesheet/TimeEntryListView";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -40,6 +42,70 @@ const HiwiHomePage = (): React.ReactElement => {
         { entryName: "Dokumentation Erstellung", projectName: "Project Theta", workTime: "2h", breakTime: "5m", period: "10:00 - 12:00", date: "2022-05-08T12:20:30.656+00:00" }
     ];
 
+    const objectEntries: TimeEntry[] = [
+        {
+            _id: "666a1ace21bc45a25b4263d8",
+            activity: "Entwicklung des Backends",
+            breakTime: 15,
+            endTime: "2022-05-10T15:45:00Z",
+            entryType: "Work Entry",
+            projectName: "Project Alpha",
+            startTime: "2022-05-01T11:00:00Z",
+            timesheetId: "666c1331d28499aff172091c"
+        },
+        {
+            _id: "666b2dcf25bd45b36b4274d9",
+            activity: "Frontend Überarbeitung",
+            breakTime: 10,
+            endTime: "2022-05-02T12:30:00Z",
+            entryType: "Work Entry",
+            projectName: "Project Beta",
+            startTime: "2022-05-02T09:00:00Z",
+            timesheetId: "666c1331d28499aff172091c"
+        },
+        {
+            _id: "666b2dcf25bd45b36b4274d9",
+            activity: "Frontend Überarbeitung",
+            breakTime: 10,
+            endTime: "2022-05-02T12:30:00Z",
+            entryType: "Work Entry",
+            projectName: "Project Beta",
+            startTime: "2022-05-02T09:00:00Z",
+            timesheetId: "666c1331d28499aff172091c"
+        },
+        {
+            _id: "666b2dcf25bd45b36b4274d9",
+            activity: "Frontend Überarbeitung",
+            breakTime: 10,
+            endTime: "2022-05-02T12:30:00Z",
+            entryType: "Work Entry",
+            projectName: "Project Beta",
+            startTime: "2022-05-02T09:00:00Z",
+            timesheetId: "666c1331d28499aff172091c"
+        },
+        {
+            _id: "666b2dcf25bd45b36b4274d9",
+            activity: "Frontend Überarbeitung",
+            breakTime: 10,
+            endTime: "2022-05-02T12:30:00Z",
+            entryType: "Work Entry",
+            projectName: "Project Beta",
+            startTime: "2022-05-02T09:00:00Z",
+            timesheetId: "666c1331d28499aff172091c"
+        },
+        {
+            _id: "666b2dcf25bd45b36b4274d9",
+            activity: "Frontend Überarbeitung",
+            breakTime: 10,
+            endTime: "2022-05-02T12:30:00Z",
+            entryType: "Work Entry",
+            projectName: "Project Beta",
+            startTime: "2022-05-02T09:00:00Z",
+            timesheetId: "666c1331d28499aff172091c"
+        },
+
+    ];
+
     return (
         <LayoutWrapper
             pageContent={
@@ -67,27 +133,28 @@ const HiwiHomePage = (): React.ReactElement => {
 
                     <h1 className="text-3xl font-bold text-headline mt-4">Hello Nico,</h1>
 
-                    <div className="flex mt-6 gap-12">
+                    <div className="flex flex-row mt-8 gap-12">
                         <img src={VerticalTimeLine} alt="Vertical Time Line"/>
 
                         <div className="flex flex-col w-full h-full justify-between">
                             <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                            <div className="overflow-y-auto max-h-[28rem]">
-                                 {entries.map((entry, index) => (
-                                     <TimeEntryTile
-                                        key={index}
-                                        entryName={entry.entryName}
-                                        projectName={entry.projectName}
-                                        workTime={entry.workTime}
-                                        breakTime={entry.breakTime}
-                                        period={entry.period}
-                                        date={entry.date.replace(/-..T/, `-${index + 1 < 10 ? '0' : ''}${index + 1}T`)}
-                                        onDelete={() => {}}
-                                        onEdit={() => {}}
-                                    />
-                                ))}
+                            <TimeEntryListView entries={objectEntries}/>
+                            {/*<div className="overflow-y-auto max-h-[28rem]">*/}
+                            {/*     {entries.map((entry, index) => (*/}
+                            {/*         <TimeEntryTile*/}
+                            {/*            key={index}*/}
+                            {/*            entryName={entry.entryName}*/}
+                            {/*            projectName={entry.projectName}*/}
+                            {/*            workTime={entry.workTime}*/}
+                            {/*            breakTime={entry.breakTime}*/}
+                            {/*            period={entry.period}*/}
+                            {/*            date={entry.date.replace(/-..T/, `-${index + 1 < 10 ? '0' : ''}${index + 1}T`)}*/}
+                            {/*            onDelete={() => {}}*/}
+                            {/*            onEdit={() => {}}*/}
+                            {/*        />*/}
+                            {/*    ))}*/}
 
-                            </div>
+                            {/*</div>*/}
 
                             <div className="flex mt-8 flex-col gap-2 items-center">
                                 <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
@@ -97,14 +164,10 @@ const HiwiHomePage = (): React.ReactElement => {
                                     <p>Period</p>
                                 </div>
                             </div>
-
                         </div>
-
-
                     </div>
 
-
-                    <div className="flex">
+                    <div className="w-fit ml-auto">
                         <QuickActionButton
                             icon={SignSheetIcon}
                             label="Sign Sheet"

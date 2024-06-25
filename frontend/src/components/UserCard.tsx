@@ -18,14 +18,14 @@ interface UserCardProps {
 
 const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastName, onView, onEdit, onDelete }) => {
   return (
-      <div className="flex items-center p-4 bg-white shadow rounded-lg mb-4">
+      <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
           <UserInfo
               name={name}
               lastName={lastName}
               role={role}
               profileImageUrl={profileImageUrl}
           />
-          <div className="flex ml-auto gap-4">
+          <div className="flex ml-auto gap-5">
               <ListIconCardButton
               iconSrc={ViewUserIcon}
               label="View"
