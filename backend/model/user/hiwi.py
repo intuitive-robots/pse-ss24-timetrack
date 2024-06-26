@@ -1,3 +1,4 @@
+from model.timesheet import Timesheet
 from model.user.contract_information import ContractInfo
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
@@ -53,3 +54,22 @@ class Hiwi(User):
             "contractInfo": self.contract_info.to_dict() if self.contract_info is not None else {},
         })
         return user_dict
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """
+        Creates a Hiwi instance from a dictionary containing data typically retrieved from a database.
+
+        :param data: A dictionary containing all necessary data keys to instantiate a Hiwi.
+        :type data: dict
+
+        :return: A fully instantiated Hiwi object.
+        :rtype: Hiwi
+        """
+        user = super().from_dict(data)
+        supervisor = data['supervisor']
+        contract_info = ContractInfo.from_dict(data['contractInfo'])
+        hiwi = cls(user.username, user.password_hash, user.personal_info, supervisor, contract_info)
+        hiwi.timesheets = [Timesheet.from_dict(ts) for ts in data['timesheets']]
+        return hiwi
+

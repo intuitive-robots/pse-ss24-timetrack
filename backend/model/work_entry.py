@@ -66,6 +66,21 @@ class WorkEntry(TimeEntry):
         })
         return data
 
+    def to_str_dict(self):
+        """
+        Converts the WorkEntry object to a dictionary format with string values, including base class attributes and those specific to WorkEntry.
+
+        :return: A dictionary representation of the WorkEntry, suitable for serialization.
+        :rtype: dict
+        """
+        data = super().to_str_dict()
+        data.update({
+            "breakTime": self.break_time,
+            "activity": self.activity,
+            "projectName": self.project_name
+        })
+        return data
+
     def get_activity_project_str(self):
         """
         Returns the activity and project name as a string.

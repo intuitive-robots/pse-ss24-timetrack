@@ -92,8 +92,36 @@ class Timesheet:
         :return: A dictionary representation of the Timesheet object.
         :rtype: dict
         """
-        #TODO: never include _id? or if it's None don't return?
+        if self.timesheet_id is None:
+            return {
+                "username": self.username,
+                "month": self.month,
+                "year": self.year,
+                "status": str(self.status),
+                "totalTime": self.total_time,
+                "overtime": self.overtime,
+                "lastSignatureChange": self.last_signature_change
+            }
         return {
+            "_id": self.timesheet_id,
+            "username": self.username,
+            "month": self.month,
+            "year": self.year,
+            "status": str(self.status),
+            "totalTime": self.total_time,
+            "overtime": self.overtime,
+            "lastSignatureChange": self.last_signature_change
+        }
+
+    def to_str_dict(self):
+        """
+        Converts the Timesheet object to a dictionary suitable for serialization, typically for database storage or API responses.
+
+        :return: A dictionary representation of the Timesheet object.
+        :rtype: dict
+        """
+        return {
+            "_id": str(self.timesheet_id),
             "username": self.username,
             "month": self.month,
             "year": self.year,

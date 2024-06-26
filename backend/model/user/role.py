@@ -7,7 +7,7 @@ class UserRole(Enum):
     There are 4 different user roles: assistant scientist (HiWi), supervisor, secretary and admin.
     """
 
-    HIWI = "HiWi"
+    HIWI = "Hiwi"
     SUPERVISOR = "Supervisor"
     SECRETARY = "Secretary"
     ADMIN = "Admin"

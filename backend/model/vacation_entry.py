@@ -46,6 +46,15 @@ class VacationEntry(TimeEntry):
         """
         return super().to_dict()
 
+    def to_str_dict(self):
+        """
+        Converts the VacationEntry object to a dictionary format, including all base class attributes
+        and any that are specific to the VacationEntry class.
+
+        :return: A dictionary representation of the VacationEntry, suitable for serialization.
+        :rtype: dict
+        """
+        return super().to_str_dict()
     @classmethod
     def from_dict(cls, data: dict):
         """

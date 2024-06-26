@@ -4,6 +4,7 @@ import unittest
 from bson import ObjectId
 
 from model.repository.user_repository import UserRepository
+from model.user.hiwi import Hiwi
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 from model.user.user import User
@@ -46,6 +47,39 @@ class TestUserRepository(unittest.TestCase):
 
         self.assertEqual(test_user_data, created_user_data)
         self.user_repository.delete_user("testAdmin10")
+
+    def test_create_user_hiwi(self):
+        """
+        Test the create_user method of the UserRepository class for a Hiwi user.
+        """
+        test_user_data = {
+            "username": "testHiwi10",
+            "passwordHash": "test_password",
+            "role": "Hiwi",
+            "personalInfo": {
+                "firstName": "Test",
+                "lastName": "LastName",
+                "email": "test@gmail.com",
+                "personalNumber": "6381212",
+                "instituteName": "Info Institute"
+            },
+            "contractInfo": {
+                "hourlyWage": 12.40,
+                "workingHours": 18,
+                "vacationHours": 19
+            },
+            "supervisor": "testSupervisor1",
+            "lastLogin": None,
+            "timesheets": []
+        }
+
+        test_user = Hiwi.from_dict(test_user_data)
+        self.user_repository.create_user(test_user)
+        created_user_data = self.user_repository.find_by_username("testHiwi10")
+        created_user_data.pop("_id")
+        created_user_data.pop("accountCreation")
+        self.assertEqual(test_user_data, created_user_data)
+        self.user_repository.delete_user("testHiwi10")
 
     def test_find_by_username(self):
         """

@@ -104,7 +104,7 @@ class TimeEntryRepository:
         """
         if time_entry is None:
             return RequestResult(False, "Time entry object is None", 400)
-        result = self.db.timeEntries.update_one({"_id": ObjectId(time_entry.time_entry_id)},
+        result = self.db.timeEntries.update_one({"_id": time_entry.time_entry_id},
                                                 {"$set": time_entry.to_dict()})
 
         if result.matched_count == 0:

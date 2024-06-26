@@ -141,7 +141,7 @@ class TimesheetController(MethodView):
         result = self.timesheet_service.get_timesheets_by_username(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
-        return jsonify([timesheet.to_dict() for timesheet in result.data]), result.status_code
+        return jsonify([timesheet.to_str_dict() for timesheet in result.data]), result.status_code
 
     @jwt_required()
     def get_timesheets_by_month_year(self):
@@ -161,7 +161,7 @@ class TimesheetController(MethodView):
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
-        return jsonify(result.data.to_dict()), result.status_code
+        return jsonify(result.data.to_str_dict()), result.status_code
 
     @jwt_required()
     def get_current_timesheet(self):
@@ -176,7 +176,7 @@ class TimesheetController(MethodView):
         result = self.timesheet_service.get_current_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
-        return jsonify(result.data.to_dict()), result.status_code
+        return jsonify(result.data.to_str_dict()), result.status_code
 
     @jwt_required()
     @check_access(roles=[UserRole.SUPERVISOR, UserRole.SECRETARY])
@@ -195,7 +195,7 @@ class TimesheetController(MethodView):
         timesheets = self.timesheet_service.get_timesheets_by_username_status(username, status)
         if timesheets is None or len(timesheets) == 0:
             return jsonify({'error': 'No timesheets found'}), 404
-        return jsonify([timesheet.to_dict() for timesheet in timesheets]), 200
+        return jsonify([timesheet.to_str_dict() for timesheet in timesheets]), 200
 
     def _dispatch_request(self, endpoint_mapping):
         """

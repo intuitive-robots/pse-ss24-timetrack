@@ -43,6 +43,7 @@ class UserRepository:
             return RequestResult(False, "User object is None", 400)
         if self.find_by_username(user.username):
             return RequestResult(False, "User already exists", 409)
+
         result = self.db.users.insert_one(user.to_dict())
         if result.acknowledged:
             return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
