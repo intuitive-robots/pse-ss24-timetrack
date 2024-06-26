@@ -1,3 +1,4 @@
+
 import datetime
 
 from bson import ObjectId
@@ -103,7 +104,7 @@ class TimeEntryRepository:
         """
         if time_entry is None:
             return RequestResult(False, "Time entry object is None", 400)
-        result = self.db.timeEntries.update_one({"_id": ObjectId(time_entry.time_entry_id)},
+        result = self.db.timeEntries.update_one({"_id": time_entry.time_entry_id},
                                                 {"$set": time_entry.to_dict()})
 
         if result.matched_count == 0:
@@ -113,30 +114,6 @@ class TimeEntryRepository:
         if result.acknowledged:
             return RequestResult(True, "Entry updated successfully", 200)
         return RequestResult(False, "Entry update failed", 500)
-
-    def delete_time_entry(self, entry_id: str):
-        """
-        Deletes a TimeEntry object from the MongoDB database using its ID.
-
-        :param entry_id: The ID of the TimeEntry to delete.
-
-        :return: A RequestResult indicating the success or failure of the delete operation.
-        """
-        if entry_id is None:
-            return RequestResult(False, "Entry ID is None", 400)
-
-        time_entry = self.get_time_entry_by_id(entry_id)
-        if not time_entry:
-            return RequestResult(False, "Time Entry not found", 404)
-
-        timesheet_id = time_entry.get("timesheetId")
-
-        result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
-        if result.deleted_count == 0:
-            return RequestResult(False, "Entry not found", 404)
-        if result.acknowledged:
-            return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
-        return RequestResult(False, "Entry deletion failed", 500)
 
     def create_time_entry(self, time_entry: TimeEntry):
         """
@@ -151,10 +128,42 @@ class TimeEntryRepository:
         if self.get_time_entry_by_id(time_entry.time_entry_id):
             return RequestResult(False, "Time entry already exists", 409)
 
+        if not self.timesheet_repository.get_timesheet_by_id(time_entry.timesheet_id):
+            return RequestResult(False, "Timesheet not found", 404)
+
         time_entry_dict = time_entry.to_dict()
+        if '_id' in time_entry_dict:
+            del time_entry_dict['_id']
+
         result = self.db.timeEntries.insert_one(time_entry_dict)
 
         if result.acknowledged:
             return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201,
                                  data={"_id": ObjectId(result.inserted_id)})
         return RequestResult(False, "Time entry creation failed", 500)
+
+    def delete_time_entry(self, entry_id: str):
+        """
+        Deletes a TimeEntry object from the MongoDB database using its ID.
+
+        :param entry_id: The ID of the TimeEntry to delete.
+
+        :return: A RequestResult indicating the success or failure of the delete operation.
+        """
+        if entry_id is None:
+            return RequestResult(False, "Entry ID is None", 400)
+
+        time_entry_data = self.get_time_entry_by_id(entry_id)
+        if not time_entry_data:
+            return RequestResult(False, "Time Entry not found", 404)
+
+        timesheet_id = time_entry_data.get("timesheetId")
+
+        result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
+        if result.deleted_count == 0:
+            return RequestResult(False, "Entry not found", 404)
+
+        if result.acknowledged:
+            return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
+        return RequestResult(False, "Entry deletion failed", 500)
+

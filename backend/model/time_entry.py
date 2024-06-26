@@ -19,7 +19,8 @@ class TimeEntry(ABC):
         entry_type (TimeEntryType): The type of time entry, which dictates additional behaviors.
     """
 
-    def __init__(self, timesheet_id: str, start_time: datetime, end_time: datetime, entry_type: TimeEntryType, time_entry_id = None):
+    def __init__(self, timesheet_id: str, start_time: datetime, end_time: datetime, entry_type: TimeEntryType,
+                 time_entry_id = None):
         """
         Initializes a new instance of the TimeEntry class with specified values.
 
@@ -60,6 +61,20 @@ class TimeEntry(ABC):
         """
         return {
             '_id': self.time_entry_id,
+            'timesheetId': str(self.timesheet_id),
+            'startTime': self.start_time,
+            'endTime': self.end_time,
+            'entryType': self.entry_type.value
+        }
+
+    @abstractmethod
+    def to_str_dict(self):
+        """
+        Abstract method that must be overridden in subclasses to convert the specific TimeEntry object
+        to a dictionary format with string values, suitable for serialization or storage.
+        """
+        return {
+            '_id': str(self.time_entry_id),
             'timesheetId': str(self.timesheet_id),
             'startTime': self.start_time,
             'endTime': self.end_time,

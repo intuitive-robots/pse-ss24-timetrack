@@ -133,14 +133,15 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing a list of timesheets or an error message.
         """
-        if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
-        request_data = request.get_json()
-        username = request_data['username']
+
+        request_data = request.args
+        username = request_data.get('username')
+        if username is None:
+            return jsonify({'error': 'No username provided'}), 400
         result = self.timesheet_service.get_timesheets_by_username(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
-        return jsonify([timesheet.to_dict() for timesheet in result.data]), result.status_code
+        return jsonify([timesheet.to_str_dict() for timesheet in result.data]), result.status_code
 
     @jwt_required()
     def get_timesheets_by_month_year(self):
@@ -149,16 +150,18 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing the timesheet data or an error message.
         """
-        if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
-        request_data = request.get_json()
-        username = request_data['username']
-        month = request_data['month']
-        year = request_data['year']
+
+        request_data = request.args
+        username = request_data.get('username')
+        month = int(request_data.get('month'))
+        year = int(request_data.get('year'))
+        print(username, month, year)
+        if username is None or month is None or year is None:
+            return jsonify({'error': 'Missing required fields'}), 400
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
-        return jsonify(result.data.to_dict()), result.status_code
+        return jsonify(result.data.to_str_dict()), result.status_code
 
     @jwt_required()
     def get_current_timesheet(self):
@@ -167,11 +170,13 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing the current timesheet data or an error message.
         """
-        username = request.get_json()['username']
+        username = request.args.get('username')
+        if username is None:
+            return jsonify({'error': 'No username provided'}), 400
         result = self.timesheet_service.get_current_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
-        return jsonify(result.data.to_dict()), result.status_code
+        return jsonify(result.data.to_str_dict()), result.status_code
 
     @jwt_required()
     @check_access(roles=[UserRole.SUPERVISOR, UserRole.SECRETARY])
@@ -181,15 +186,16 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing a list of timesheets or an error message.
         """
-        if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
-        request_data = request.get_json()
-        username = request_data['username']
-        status = request_data['status']
+
+        request_data = request.args
+        username = request_data.get('username')
+        status = request_data.get('status')
+        if username is None or status is None:
+            return jsonify({'error': 'Missing required fields'}), 400
         timesheets = self.timesheet_service.get_timesheets_by_username_status(username, status)
         if timesheets is None or len(timesheets) == 0:
             return jsonify({'error': 'No timesheets found'}), 404
-        return jsonify([timesheet.to_dict() for timesheet in timesheets]), 200
+        return jsonify([timesheet.to_str_dict() for timesheet in timesheets]), 200
 
     def _dispatch_request(self, endpoint_mapping):
         """

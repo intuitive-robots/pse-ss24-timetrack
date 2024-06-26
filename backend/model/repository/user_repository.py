@@ -43,6 +43,7 @@ class UserRepository:
             return RequestResult(False, "User object is None", 400)
         if self.find_by_username(user.username):
             return RequestResult(False, "User already exists", 409)
+
         result = self.db.users.insert_one(user.to_dict())
         if result.acknowledged:
             return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
@@ -64,7 +65,7 @@ class UserRepository:
     def update_user(self, user: User) -> RequestResult:
         """
         Updates an existing user in the database based on the provided User object.
-
+c
         :param user: The User object containing updated data for the user.
         :return: RequestResult indicating the success or failure of the update operation.
         """
@@ -81,7 +82,7 @@ class UserRepository:
         """
         Updates an existing user in the database based on the provided User object.
 
-        :param user_data: The User object containing updated data for the user.
+        :param user_data: The User data containing updated data for the user.
         :return: RequestResult indicating the success or failure of the update operation.
         """
         result = self.db.users.update_one({"username": user_data['username']}, {"$set": user_data})

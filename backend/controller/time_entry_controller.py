@@ -112,7 +112,9 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing a list of time entries.
         """
-        timesheet_id = request.get_json().get('timesheetId')
+        timesheet_id = request.args.get('timesheetId')
+        if timesheet_id is None:
+            return jsonify('No timesheet ID provided'), 400
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet_id)
-        time_entries_data = [entry.to_dict() for entry in time_entries]
+        time_entries_data = [entry.to_str_dict() for entry in time_entries]
         return jsonify(time_entries_data), 200
