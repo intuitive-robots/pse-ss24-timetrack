@@ -7,6 +7,7 @@ from model.repository.user_repository import UserRepository
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 from model.user.user import User
+from service.user_service import UserService
 
 
 class TestUserRepository(unittest.TestCase):
@@ -22,13 +23,13 @@ class TestUserRepository(unittest.TestCase):
         Test the create_user method of the UserRepository class.
         """
         test_user_data = {
-            "username": "testAdmin1",
+            "username": "testAdmin10",
             "role": "Admin",
             "passwordHash": "test_password_hash",
             "personalInfo": {
                 "firstName": "Test",
                 "lastName": "Admin",
-                "email": "test@gmail.com",
+                "email": "test@gmail1.com",
                 "personalNumber": "6381212",
                 "instituteName": "Info Institute"
             },
@@ -38,33 +39,26 @@ class TestUserRepository(unittest.TestCase):
 
         test_user = User.from_dict(test_user_data)
         self.user_repository.create_user(test_user)
-        created_user_data = self.user_repository.find_by_username("testAdmin1")
+        created_user_data = self.user_repository.find_by_username("testAdmin10")
         created_user_data.pop("_id")
         created_user_data.pop("accountCreation")
         test_user_data.pop("accountCreation")
 
         self.assertEqual(test_user_data, created_user_data)
-        self.user_repository.delete_user("testAdmin1")
+        self.user_repository.delete_user("testAdmin10")
 
     def test_find_by_username(self):
         """
         Test the find_by_username method of the UserRepository class.
         """
-        test_user_data = {
-            "accountCreation": datetime.datetime(2024, 6, 24, 21, 23, 11, 302000),
-            "passwordHash": "$2b$12$gUFnPv9enUu8/w8XPnv.oexAZqG3f9c3vXEkYb5h/w6lQNiK.E/9O",
-            "personalInfo": {
-                "email": "test@gmail.com",
-                "firstName": "Test",
-                "instituteName": "Info Institute",
-                "lastName": "Admin",
-                "personalNumber": "6381212"
-            },
-            "role": "Admin",
-            "username": "testAdmin"
-        }
-        received_user_data = self.user_repository.find_by_username("testAdmin")
-        received_user_data.pop("_id")
+        test_user_data = {'_id': ObjectId('667c433eba00f12151afe642'),
+                          'username': 'testAdmin1',
+                          'passwordHash': '$2b$12$rF70HhTTx2BgBcx5Qp.H7eK7WDApKgFZNg1DLiHu9B9scj1t7sMV2',
+                          'personalInfo': {'firstName': 'Nico', 'lastName': 'Admin1',
+                                           'email': 'test@gmail1.com', 'personalNumber': '6381211',
+                                           'instituteName': 'Info Institute'}, 'role': 'Admin',
+                          'accountCreation': datetime.datetime(2024, 6, 26, 18, 35, 8, 252000)}
+        received_user_data = self.user_repository.find_by_username("testAdmin1")
         received_user_data.pop("lastLogin")
         self.assertEqual(test_user_data, received_user_data)
 
@@ -72,27 +66,11 @@ class TestUserRepository(unittest.TestCase):
         """
         Test the update_user method of the UserRepository class.
         """
-        test_user_data = self.user_repository.find_by_username("testAdmin")
-        test_user_data["personalInfo"]["email"] = "testUpdateMethod@gmail.com"
-        test_user = User.from_dict(test_user_data)
-        self.user_repository.update_user(test_user)
-        updated_user_data = self.user_repository.find_by_username("testAdmin")
-        updated_user_data.pop("lastLogin")
-        test_user_data.pop("lastLogin")
-        self.assertEqual(test_user_data, updated_user_data)
-        test_user_data["personalInfo"]["email"] = "usedInTests@gmail.com"
-        test_user = User.from_dict(test_user_data)
-        self.user_repository.update_user(test_user)
-
-    def test_update_user(self):
-        """
-        Test the update_user method of the UserRepository class.
-        """
-        test_user_data = self.user_repository.find_by_username("testAdmin")
+        test_user_data = self.user_repository.find_by_username("testAdmin1")
         test_user_data["personalInfo"]["email"] = "testUpdateMethodDict@gmail.com"
         user = User.from_dict(test_user_data)
         self.user_repository.update_user(user)
-        updated_user_data = self.user_repository.find_by_username("testAdmin")
+        updated_user_data = self.user_repository.find_by_username("testAdmin1")
         updated_user_data.pop("lastLogin")
         test_user_data.pop("lastLogin")
         self.assertEqual(test_user_data, updated_user_data)
@@ -104,14 +82,14 @@ class TestUserRepository(unittest.TestCase):
         """
         Test the update_user_by_dict method of the UserRepository class.
         """
-        test_user_data = self.user_repository.find_by_username("testAdmin")
+        test_user_data = self.user_repository.find_by_username("testAdmin1")
         test_user_data["personalInfo"]["email"] = "testUpdateMethodDict@gmail.com"
         self.user_repository.update_user_by_dict(test_user_data)
-        updated_user_data = self.user_repository.find_by_username("testAdmin")
+        updated_user_data = self.user_repository.find_by_username("testAdmin1")
         updated_user_data.pop("lastLogin")
         test_user_data.pop("lastLogin")
         self.assertEqual(test_user_data, updated_user_data)
-        test_user_data["personalInfo"]["email"] = "usedInTests@gmail.com"
+        test_user_data["personalInfo"]["email"] = "test@gmail1.com"
         self.user_repository.update_user_by_dict(test_user_data)
 
     def test_delete_user(self):
