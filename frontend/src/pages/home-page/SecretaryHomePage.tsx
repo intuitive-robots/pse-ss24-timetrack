@@ -1,5 +1,4 @@
 import React from 'react';
-import LayoutWrapper from "../../components/LayoutWrapper";
 
 /**
  * Secretary Homepage component serves as the main landing page for the application.

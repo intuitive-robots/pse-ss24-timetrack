@@ -3,7 +3,7 @@ import ListIconCardButton from "./navbar/ListIconCardButton";
 import EditDocumentIcon from "../assets/images/edit_document.svg"
 import RemoveIcon from "../assets/images/remove_icon.svg"
 import IconButton from "./navbar/IconButton";
-import CalendarDay from "./CalendarDay";
+import CalendarDay from "./calendar/CalendarDay";
 import ListTileInfo from "./list/ListTileInfo";
 
 interface TimeEntryTileProps {
@@ -41,8 +41,8 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectNa
               <IconButton
                   icon={RemoveIcon}
                   onClick={() => onDelete()}
-                  bgColor="bg-purple-100"
-                  hover="hover:bg-purple-200"
+                  bgColor="white"
+                  hover="hover:white"
               />
           </div>
 

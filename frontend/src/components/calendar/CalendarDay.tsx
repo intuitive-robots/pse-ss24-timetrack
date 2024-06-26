@@ -5,7 +5,7 @@ interface CalendarDayProps {
 }
 
 const CalendarDay: React.FC<CalendarDayProps> = ({ dayTime }) => {
-    const date = new Date(dayTime);
+    const date : Date = new Date(dayTime);
 
     const formatDate = (date: Date): { day: number, month: string } => {
         return {

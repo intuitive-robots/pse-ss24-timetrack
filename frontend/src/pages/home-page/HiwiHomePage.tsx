@@ -31,16 +31,16 @@ const HiwiHomePage = (): React.ReactElement => {
         }
     }, [user]);
 
-    const entries = [
-        { entryName: "Entwicklung des Backends", projectName: "Project Alpha", workTime: "4,5h", breakTime: "15m", period: "11:00 - 15:45", date: "2022-05-01T12:20:30.656+00:00" },
-        { entryName: "Frontend Überarbeitung", projectName: "Project Beta", workTime: "3,5h", breakTime: "10m", period: "09:00 - 12:30", date: "2022-05-02T12:20:30.656+00:00" },
-        { entryName: "Datenbank Optimierung", projectName: "Project Gamma", workTime: "5h", breakTime: "20m", period: "10:00 - 15:00", date: "2022-05-03T12:20:30.656+00:00" },
-        { entryName: "API Entwicklung", projectName: "Project Delta", workTime: "6h", breakTime: "30m", period: "08:00 - 14:30", date: "2022-05-04T12:20:30.656+00:00" },
-        { entryName: "Performance Tests", projectName: "Project Epsilon", workTime: "7h", breakTime: "45m", period: "07:30 - 15:15", date: "2022-05-05T12:20:30.656+00:00" },
-        { entryName: "UI/UX Design", projectName: "Project Zeta", workTime: "4h", breakTime: "15m", period: "13:00 - 17:00", date: "2022-05-06T12:20:30.656+00:00" },
-        { entryName: "System Integration", projectName: "Project Eta", workTime: "3,5h", breakTime: "10m", period: "12:00 - 15:30", date: "2022-05-07T12:20:30.656+00:00" },
-        { entryName: "Dokumentation Erstellung", projectName: "Project Theta", workTime: "2h", breakTime: "5m", period: "10:00 - 12:00", date: "2022-05-08T12:20:30.656+00:00" }
-    ];
+    // const entries = [
+    //     { entryName: "Entwicklung des Backends", projectName: "Project Alpha", workTime: "4,5h", breakTime: "15m", period: "11:00 - 15:45", date: "2022-05-01T12:20:30.656+00:00" },
+    //     { entryName: "Frontend Überarbeitung", projectName: "Project Beta", workTime: "3,5h", breakTime: "10m", period: "09:00 - 12:30", date: "2022-05-02T12:20:30.656+00:00" },
+    //     { entryName: "Datenbank Optimierung", projectName: "Project Gamma", workTime: "5h", breakTime: "20m", period: "10:00 - 15:00", date: "2022-05-03T12:20:30.656+00:00" },
+    //     { entryName: "API Entwicklung", projectName: "Project Delta", workTime: "6h", breakTime: "30m", period: "08:00 - 14:30", date: "2022-05-04T12:20:30.656+00:00" },
+    //     { entryName: "Performance Tests", projectName: "Project Epsilon", workTime: "7h", breakTime: "45m", period: "07:30 - 15:15", date: "2022-05-05T12:20:30.656+00:00" },
+    //     { entryName: "UI/UX Design", projectName: "Project Zeta", workTime: "4h", breakTime: "15m", period: "13:00 - 17:00", date: "2022-05-06T12:20:30.656+00:00" },
+    //     { entryName: "System Integration", projectName: "Project Eta", workTime: "3,5h", breakTime: "10m", period: "12:00 - 15:30", date: "2022-05-07T12:20:30.656+00:00" },
+    //     { entryName: "Dokumentation Erstellung", projectName: "Project Theta", workTime: "2h", breakTime: "5m", period: "10:00 - 12:00", date: "2022-05-08T12:20:30.656+00:00" }
+    // ];
 
     const objectEntries: TimeEntry[] = [
         {
