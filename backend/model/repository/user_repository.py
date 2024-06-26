@@ -64,7 +64,7 @@ class UserRepository:
     def update_user(self, user: User) -> RequestResult:
         """
         Updates an existing user in the database based on the provided User object.
-
+c
         :param user: The User object containing updated data for the user.
         :return: RequestResult indicating the success or failure of the update operation.
         """

@@ -42,12 +42,10 @@ class DocumentController(MethodView):
 
         """
 
-        if not request.is_json:
-            return jsonify({'error': 'Request must be in JSON format'}), 400
-        request_data = request.get_json()
-        month = request_data['month']
-        year = request_data['year']
-        username = request_data['username']
+        request_data = request.args
+        month = int(request_data.get('month'))
+        year = int(request_data.get('year'))
+        username = request_data.get('username')
         if not month or not year or not username:
             return jsonify({'error': 'Missing required fields'}), 400
 
@@ -72,13 +70,12 @@ class DocumentController(MethodView):
         Generates multiple documents
 
         """
-        if not request.is_json:
-            return jsonify({'error': 'Request must be in JSON format'}), 400
-        request_data = request.get_json()
-        usernames = request_data.get('usernames')
-        month = request_data.get('month')
-        year = request_data.get('year')
-        timesheet_ids = request_data.get('timesheetIds')
+
+        request_data = request.args
+        usernames = request_data.getlist('usernames')
+        month = int(request_data.get('month'))
+        year = int(request_data.get('year'))
+        timesheet_ids = request_data.getlist('timesheetIds')
         start_date_str = request_data.get('startDate')
         end_date_str = request_data.get('endDate')
         username = request_data.get('username')

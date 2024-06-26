@@ -59,7 +59,7 @@ class TimeEntry(ABC):
         :rtype: dict
         """
         return {
-            '_id': self.time_entry_id,
+            '_id': str(self.time_entry_id),
             'timesheetId': str(self.timesheet_id),
             'startTime': self.start_time,
             'endTime': self.end_time,

@@ -4,7 +4,9 @@ import unittest
 from bson import ObjectId
 
 from model.repository.time_entry_repository import TimeEntryRepository
+from model.repository.timesheet_repository import TimesheetRepository
 from model.time_entry import TimeEntry
+from model.work_entry import WorkEntry
 
 
 class TestTimeEntryRepository(unittest.TestCase):
@@ -17,13 +19,13 @@ class TestTimeEntryRepository(unittest.TestCase):
         Test the get_time_entry_by_id method of the TimeEntryRepository class.
         """
 
-        test_time_entry_data = {'_id': ObjectId('666a1ace21bc45a25b4263d8'), 'timesheetId': '666c1331d28499aff172091c',
-                           'startTime': datetime.datetime(2022, 3, 1, 8, 18),
+        test_time_entry_data = {'_id': ObjectId('666c020f7a409003113fedf9'), 'timesheetId': '6679ca2935df0d8f7202c5fa',
+                           'startTime': datetime.datetime(2022, 3, 1, 12, 20, 30, 656000),
                            'endTime': datetime.datetime(2022, 3, 1, 10, 0),
                            'entryType': 'Work Entry', 'breakTime': 22,
                            'activity': 'Test Activity',
-                           'projectName': 'Python Projekt'}
-        self.assertEqual(test_time_entry_data, self.time_entry_repository.get_time_entry_by_id("666a1ace21bc45a25b4263d8"))
+                           'projectName': 'Es ist bald Zeit für einen neuen Pull'}
+        self.assertEqual(test_time_entry_data, self.time_entry_repository.get_time_entry_by_id("666c020f7a409003113fedf9"))
 
     def test_get_time_entries_by_date(self):
         """
@@ -75,6 +77,7 @@ class TestTimeEntryRepository(unittest.TestCase):
         self.assertEqual(test_time_entry_data,
                          self.time_entry_repository.get_time_entries_by_timesheet_id("666c1331d28499aff172091c"))
 
+
     def test_update_time_entry(self):
         """
         Test the update_time_entry method of the TimeEntryRepository class.
@@ -97,7 +100,6 @@ class TestTimeEntryRepository(unittest.TestCase):
         test_modified_time_entry = TimeEntry.from_dict(test_modified_time_entry_data)
 
         self.time_entry_repository.update_time_entry(test_modified_time_entry)
-
         self.assertEqual(test_modified_time_entry_data,
                          self.time_entry_repository.get_time_entry_by_id("666a1ace21bc45a25b4263d8"))
         # Reset the time entry to its original state
