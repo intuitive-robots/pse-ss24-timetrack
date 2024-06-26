@@ -18,6 +18,7 @@ module.exports = {
           background: '#121212',
           text: '#f5f5f5',
         },
+        'accent': '#7F37FF',
         'border-gray': 'rgba(215, 215, 215, 0.22)',
         'card-gray': '#EFEFEF',
         'navbar-selected-bg': '#f1eaff',

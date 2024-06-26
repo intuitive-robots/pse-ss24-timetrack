@@ -4,6 +4,7 @@ import {Routes, Route } from 'react-router-dom';
 import ProfileBar from './profile/ProfileBar';
 import HomePage from "../pages/home-page/HomePage";
 import GuidelinePage from "../pages/GuidelinePage";
+import ContractPage from "../pages/ContractPage";
 
 interface LayoutWrapperProps {
   pageContent: React.ReactNode;
@@ -32,6 +33,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrap
             <Routes>
                 <Route path="home" element={<HomePage/>} />
                 <Route path="guidelines" element={<GuidelinePage/>} />
+                <Route path="contract" element={<ContractPage/>} />
             </Routes>
         </div>
       </div>
