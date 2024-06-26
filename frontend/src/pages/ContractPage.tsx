@@ -12,7 +12,6 @@ const ContractPage = (): React.ReactElement => {
 
     return (
         <div className="px-6 py-6">
-            <p className="text-lg font-medium text-subtitle">Institute for Intuitive Robotics</p>
             <h1 className="text-3xl font-bold text-gray-800 mt-5">Contract Details</h1>
             <div className="flex flex-col min-w-96 w-7/12 mt-5 py-7 px-10 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg gap-5">
                 <div className="">
