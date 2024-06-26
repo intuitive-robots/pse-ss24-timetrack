@@ -107,82 +107,80 @@ const HiwiHomePage = (): React.ReactElement => {
     ];
 
     return (
-        <LayoutWrapper
-            pageContent={
-                <div className="px-6 py-6">
+        <div className="px-6 py-6">
 
-                    <div className="flex flex-row gap-8 items-center">
-                        <div className="flex flex-row gap-4">
-                            <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                            <MonthTimespan month={4} year={2024}/>
-                        </div>
-                        <div className="flex gap-4">
-                            <ListIconCardButton
-                                iconSrc={LeftNavbarIcon}
-                                label={"Before"}
-                                onClick={() => {}}
-                            />
-                            <ListIconCardButton
-                                iconSrc={RightNavbarIcon}
-                                label={"Next"}
-                                orientation={"right"}
-                                onClick={() => {}}
-                            />
-                        </div>
-                    </div>
-
-                    <h1 className="text-3xl font-bold text-headline mt-4">Hello Nico,</h1>
-
-                    <div className="flex flex-row mt-8 gap-12">
-                        <img src={VerticalTimeLine} alt="Vertical Time Line"/>
-
-                        <div className="flex flex-col w-full h-full justify-between">
-                            <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                            <TimeEntryListView entries={objectEntries}/>
-                            {/*<div className="overflow-y-auto max-h-[28rem]">*/}
-                            {/*     {entries.map((entry, index) => (*/}
-                            {/*         <TimeEntryTile*/}
-                            {/*            key={index}*/}
-                            {/*            entryName={entry.entryName}*/}
-                            {/*            projectName={entry.projectName}*/}
-                            {/*            workTime={entry.workTime}*/}
-                            {/*            breakTime={entry.breakTime}*/}
-                            {/*            period={entry.period}*/}
-                            {/*            date={entry.date.replace(/-..T/, `-${index + 1 < 10 ? '0' : ''}${index + 1}T`)}*/}
-                            {/*            onDelete={() => {}}*/}
-                            {/*            onEdit={() => {}}*/}
-                            {/*        />*/}
-                            {/*    ))}*/}
-
-                            {/*</div>*/}
-
-                            <div className="flex mt-8 flex-col gap-2 items-center">
-                                <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                                <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
-                                    <p>Work</p>
-                                    <p>Breaks</p>
-                                    <p>Period</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="w-fit ml-auto">
-                        <QuickActionButton
-                            icon={SignSheetIcon}
-                            label="Sign Sheet"
-                            onClick={() => {
-
-                            }}
-                            bgColor="bg-purple-600"
-                        hover="hover:bg-purple-700"
-                    />
-                    </div>
-
-
+            <div className="flex flex-row gap-8 items-center">
+                <div className="flex flex-row gap-4">
+                    <p className="text-lg font-semibold text-subtitle">This Month,</p>
+                    <MonthTimespan month={4} year={2024}/>
                 </div>
-            }
-        />
+                <div className="flex gap-4">
+                    <ListIconCardButton
+                        iconSrc={LeftNavbarIcon}
+                        label={"Before"}
+                        onClick={() => {
+                        }}
+                    />
+                    <ListIconCardButton
+                        iconSrc={RightNavbarIcon}
+                        label={"Next"}
+                        orientation={"right"}
+                        onClick={() => {
+                        }}
+                    />
+                </div>
+            </div>
+
+            <h1 className="text-3xl font-bold text-headline mt-4">Hello Nico,</h1>
+
+            <div className="flex flex-row mt-8 gap-12">
+                <img src={VerticalTimeLine} alt="Vertical Time Line"/>
+
+                <div className="flex flex-col w-full h-full justify-between">
+                    <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                    <TimeEntryListView entries={objectEntries}/>
+                    {/*<div className="overflow-y-auto max-h-[28rem]">*/}
+                    {/*     {entries.map((entry, index) => (*/}
+                    {/*         <TimeEntryTile*/}
+                    {/*            key={index}*/}
+                    {/*            entryName={entry.entryName}*/}
+                    {/*            projectName={entry.projectName}*/}
+                    {/*            workTime={entry.workTime}*/}
+                    {/*            breakTime={entry.breakTime}*/}
+                    {/*            period={entry.period}*/}
+                    {/*            date={entry.date.replace(/-..T/, `-${index + 1 < 10 ? '0' : ''}${index + 1}T`)}*/}
+                    {/*            onDelete={() => {}}*/}
+                    {/*            onEdit={() => {}}*/}
+                    {/*        />*/}
+                    {/*    ))}*/}
+
+                    {/*</div>*/}
+
+                    <div className="flex mt-8 flex-col gap-2 items-center">
+                        <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                        <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
+                            <p>Work</p>
+                            <p>Breaks</p>
+                            <p>Period</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="w-fit ml-auto">
+                <QuickActionButton
+                    icon={SignSheetIcon}
+                    label="Sign Sheet"
+                    onClick={() => {
+
+                    }}
+                    bgColor="bg-purple-600"
+                    hover="hover:bg-purple-700"
+                />
+            </div>
+
+
+        </div>
     );
 };
 

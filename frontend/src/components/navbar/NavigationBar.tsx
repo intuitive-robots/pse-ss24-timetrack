@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ActionButton from "../input/ActionButton";
 import AddUserIcon from "../../assets/images/add_user_icon.svg"
 import {useAuth} from "../../context/AuthContext";
+import {useNavigate} from "react-router-dom";
 
 interface MenuItems {
   [key: string]: string[];
@@ -16,6 +17,7 @@ interface MenuItems {
 const NavigationBar: React.FC = (): React.ReactElement => {
   const [activeItem, setActiveItem] = useState<string>("Home");
   const { role } = useAuth();
+  const navigate = useNavigate();
 
   const menuItems = getMenuItemsByRole(role);
 
@@ -52,6 +54,12 @@ const NavigationBar: React.FC = (): React.ReactElement => {
     }
   }
 
+  function handleItemClick(item: string) {
+    setActiveItem(item);
+    const path = `${item.toLowerCase().replace(/\s+/g, '-')}`;
+    navigate(path);
+  }
+
   return (
     <div className="flex-col w-72 h-full shadow-navbar-shadow border-r-2.7 border-border-gray">
       <div className="h-full py-14 px-6 gap-6 flex flex-col font-semibold">
@@ -69,7 +77,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
                                                 ? "bg-navbar-selected-bg text-gray-800"
                                                 : "text-gray-600 hover:bg-navbar-selected-bg"
                                             }`}
-                onClick={() => setActiveItem(item)}
+                onClick={() => handleItemClick(item)}
               >
                 {item}
               </button>
