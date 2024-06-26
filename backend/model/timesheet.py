@@ -23,7 +23,7 @@ class Timesheet:
 
     def __init__(self, username: str, month: int, year: int,
                  timesheet_id=None, status=TimesheetStatus.NOT_SUBMITTED, total_time=0.0,
-                 overtime=0.0, last_signature_change=datetime.now(), time_entry_ids=[]):
+                 overtime=0.0, last_signature_change=datetime.now()):
         """
         Initializes a new Timesheet object with the given parameters.
 
@@ -43,8 +43,6 @@ class Timesheet:
         :type overtime: float
         :param last_signature_change: The datetime of the last signature update, defaults to current time.
         :type last_signature_change: datetime
-        :param time_entry_ids: A list of ObjectIds for the time entries in this timesheet, defaults to an empty list.
-        :type time_entry_ids: list[ObjectId]
         """
         self.timesheet_id = timesheet_id
         self.username = username
@@ -54,7 +52,6 @@ class Timesheet:
         self.total_time = total_time
         self.overtime = overtime
         self.last_signature_change = last_signature_change
-        self.time_entry_ids = time_entry_ids
 
     @staticmethod
     def from_dict(timesheet_dict: dict):
@@ -75,8 +72,7 @@ class Timesheet:
             status=TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED)),
             total_time=timesheet_dict.get("totalTime", 0.0),
             overtime=timesheet_dict.get("overtime", 0.0),
-            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.now()),
-            time_entry_ids=[ObjectId(id) for id in timesheet_dict.get("timeEntryIds", [])]
+            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.now())
         )
         return timesheet
 
@@ -89,24 +85,6 @@ class Timesheet:
         """
         self.timesheet_id = timesheet_id
 
-    def add_time_entry(self, time_entry_id):
-        """
-        Adds a new time entry ObjectId to the timesheet.
-
-        :param time_entry_id: The ObjectId of the time entry to add.
-        :type time_entry_id: ObjectId
-        """
-        self.time_entry_ids.append(ObjectId(time_entry_id))
-
-    def remove_time_entry(self, time_entry_id):
-        """
-        Removes a time entry ObjectId from the timesheet.
-
-        :param time_entry_id: The ObjectId of the time entry to remove.
-        :type time_entry_id: ObjectId
-        """
-        self.time_entry_ids.remove(ObjectId(time_entry_id))
-
     def to_dict(self):
         """
         Converts the Timesheet object to a dictionary suitable for serialization, typically for database storage or API responses.
@@ -114,6 +92,7 @@ class Timesheet:
         :return: A dictionary representation of the Timesheet object.
         :rtype: dict
         """
+        #TODO: never include _id? or if it's None don't return?
         return {
             "username": self.username,
             "month": self.month,
@@ -121,6 +100,5 @@ class Timesheet:
             "status": str(self.status),
             "totalTime": self.total_time,
             "overtime": self.overtime,
-            "lastSignatureChange": self.last_signature_change,
-            "timeEntryIds": self.time_entry_ids
+            "lastSignatureChange": self.last_signature_change
         }

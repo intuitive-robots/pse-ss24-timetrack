@@ -52,6 +52,8 @@ class TimeEntryDataValidator(InputValidator):
         required_keys.remove('_id')
 
         missing_keys = [key for key in required_keys if key not in time_entry_data]
+        #TODO: removed _id, since otherwise it wouldn't validate to create a time entry without an _id
+        missing_keys = [key for key in missing_keys if key != '_id']
         if missing_keys:
             return ValidationResult(ValidationStatus.FAILURE, f"Missing required fields: {', '.join(missing_keys)}")
 
