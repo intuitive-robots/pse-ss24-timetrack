@@ -80,7 +80,7 @@ class UserService:
             return RequestResult(False, "User creation failed", status_code=500)
         if user.role == UserRole.HIWI:
             if 'supervisor' not in user_data:
-                return RequestResult(False, "Supervisor is required for HiWi creation", status_code=400)
+                return RequestResult(False, "Supervisor is required for Hiwi creation", status_code=400)
             supervisor_data = self.user_repository.find_by_username(user_data['supervisor'])
             if not supervisor_data:
                 return RequestResult(False, "Supervisor not found", status_code=404)

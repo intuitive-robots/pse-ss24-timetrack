@@ -78,7 +78,7 @@ class TimesheetRepository:
             return timesheet_data
         return None
 
-    def get_timesheet_by_time_period(self, username:str, start_date: date, end_date: date):
+    def get_timesheets_by_time_period(self, username:str, start_date: date, end_date: date):
         """
         Retrieves timesheets for a specified time period for a given username.
 
@@ -96,8 +96,9 @@ class TimesheetRepository:
         timesheet_data = self.db.timesheets.find({"username": username,
                                                   "$or": [
                                                       {"year": {"$gt": start_year, "$lt": end_year}},
-                                                      {"year": start_year, "month": {"$gte": start_month}},
-                                                      {"year": end_year, "month": {"$lte": end_month}}
+                                                      {"$and": [{"year": start_year}, {"year": {"$lt": end_year}}], "month": {"$gte": start_month}},
+                                                      {"$and": [{"year": end_year}, {"year": {"$gt": start_year}}], "month": {"$lte": end_month}},
+                                                      {"$and": [{"year": end_year}, {"year": start_year}, {"month": {"$gte": start_month}}, {"month": {"$lte": end_month}}]}
                                                   ]})
         return list(timesheet_data)
 
@@ -110,7 +111,7 @@ class TimesheetRepository:
         timesheets = self.db.timesheets.find()
         return list(timesheets)
 
-    def get_timesheet_by_status(self, status: TimesheetStatus):
+    def get_timesheets_by_status(self, status: TimesheetStatus):
         """
         Retrieves all Timesheet objects from the database with the given status
         
@@ -148,7 +149,7 @@ class TimesheetRepository:
         """
         if username is None or status is None:
             return None
-        timesheets = self.db.timesheets.find({"username": username, "status": status})
+        timesheets = self.db.timesheets.find({"username": username, "status": str(status)})
         return list(timesheets)
 
     def get_timesheets_by_username(self, username: str):
@@ -220,22 +221,6 @@ class TimesheetRepository:
             return RequestResult(True, "Timesheet status updated successfully", 200)
         return RequestResult(False, "Timesheet status update failed", 500)
 
-    def delete_timesheet(self, timesheet_id) -> RequestResult:
-        """
-        Deletes a Timesheet from the database based on its ObjectId.
-
-        :param timesheet_id: The ObjectId of the Timesheet to delete.
-        :return: A RequestResult indicating the success or failure of the deletion.
-        """
-        if timesheet_id is None:
-            return RequestResult(False, "Please provide a timesheet ID to delete the timesheet.", 400)
-        result = self.db.timesheets.delete_one({"_id": ObjectId(timesheet_id)})
-        if result.deleted_count == 0:
-            return RequestResult(False, "Timesheet deletion failed", 500)
-        if result.acknowledged:
-            return RequestResult(True, "Timesheet deleted successfully", 200)
-        return RequestResult(False, "Timesheet deletion failed", 500)
-
     def create_timesheet_by_dict(self, timesheet_data: dict):
         """
          Creates a new Timesheet in the database.
@@ -269,25 +254,22 @@ class TimesheetRepository:
         timesheet_data = timesheet.to_dict()
         result = self.db.timesheets.insert_one(timesheet_data)
         if result.acknowledged:
-            return RequestResult(True, "Timesheet created successfully", 201)
+            return RequestResult(True, f'Timesheet created successfully with ID: {str(result.inserted_id)}', 201,
+                                 data={"_id": result.inserted_id})
         return RequestResult(False, "Timesheet creation failed", 500)
 
-    def delete_timesheet(self, timesheet_id: str):
+    def delete_timesheet(self, timesheet_id) -> RequestResult:
         """
-        Deletes a Timesheet object from the MongoDB database using its ID.
-        This method is only for TESTING! It does NOT delete all the time entries linked to the timesheet.
+        Deletes a Timesheet from the database based on its ObjectId.
 
-        :param timesheet_id: The ID of the Timesheet to delete.
-
-        :return: A RequestResult indicating the success or failure of the delete operation.
+        :param timesheet_id: The ObjectId of the Timesheet to delete.
+        :return: A RequestResult indicating the success or failure of the deletion.
         """
         if timesheet_id is None:
-            return RequestResult(False, "Timesheet ID is None", 400)
-
+            return RequestResult(False, "Please provide a timesheet ID to delete the timesheet.", 400)
         result = self.db.timesheets.delete_one({"_id": ObjectId(timesheet_id)})
         if result.deleted_count == 0:
-            return RequestResult(False, "Timesheet not found", 404)
-
+            return RequestResult(False, "Timesheet deletion failed", 500)
         if result.acknowledged:
             return RequestResult(True, "Timesheet deleted successfully", 200)
         return RequestResult(False, "Timesheet deletion failed", 500)

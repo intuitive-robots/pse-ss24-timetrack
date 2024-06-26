@@ -137,13 +137,6 @@ class TimeEntryRepository:
         result = self.db.timeEntries.insert_one(time_entry_dict)
 
         if result.acknowledged:
-            timesheet_data = self.timesheet_repository.get_timesheet_by_id(time_entry.timesheet_id)
-            timesheet_data["timeEntryIds"].append(ObjectId(result.inserted_id))
-            timesheet_result = self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
-            if not timesheet_result.is_successful:
-                #TODO: Delete the time entry if the timesheet update fails
-                return RequestResult(False, "Failed to update timesheet", 500)
-
             return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201,
                                  data={"_id": ObjectId(result.inserted_id)})
         return RequestResult(False, "Time entry creation failed", 500)
@@ -170,11 +163,5 @@ class TimeEntryRepository:
             return RequestResult(False, "Entry not found", 404)
 
         if result.acknowledged:
-            timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-            timesheet_data["timeEntryIds"].remove(ObjectId(entry_id))
-            timesheet_result = self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
-            if not timesheet_result.is_successful:
-                return RequestResult(False, "Failed to delete time-entry from timesheet", 500)
-
             return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
         return RequestResult(False, "Entry deletion failed", 500)

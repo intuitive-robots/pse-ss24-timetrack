@@ -4,6 +4,7 @@ import datetime
 from bson import ObjectId
 
 from model.repository.timesheet_repository import TimesheetRepository
+from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
 
 
@@ -16,202 +17,231 @@ class TestSheetRepository(unittest.TestCase):
         """
         Test the get_timesheet_by_id method of the TimesheetRepository class.
         """
-        test_timesheet_data = {'_id': ObjectId('666c1331d28499aff172091c'),
-                               'username': 'testHiWi',
-                               'month': 3,
-                               'year': 2022,
-                               'status': 'Not Submitted',
-                               'totalTime': 0,
-                               'overtime': 0,
-                               'lastSignatureChange': datetime.datetime(2024, 6, 12, 17, 22, 32, 468000),
-                               'timeEntryIds': [ObjectId('666a1ace21bc45a25b4263d8'),
-                                                ObjectId('666c020f7a409003113fedf9'),
-                                                ObjectId('666c022a7a409003113fedfb')]}
-        self.assertEqual(test_timesheet_data, self.timesheet_repository.get_timesheet_by_id(str(test_timesheet_data['_id'])))
-
-    def test_get_timesheet(self):
-        """
-        Test the get_timesheet method of the TimesheetRepository class.
-        """
-        test_timesheet_data = {'_id': ObjectId('666c1331d28499aff172091c'),
-                               'username': 'testHiWi',
-                               'month': 3,
-                               'year': 2022,
-                               'status': 'Not Submitted',
-                               'totalTime': 0,
-                               'overtime': 0,
-                               'lastSignatureChange': datetime.datetime(2024, 6, 12, 17, 22, 32, 468000),
-                               'timeEntryIds': [ObjectId('666a1ace21bc45a25b4263d8'),
-                                                ObjectId('666c020f7a409003113fedf9'),
-                                                ObjectId('666c022a7a409003113fedfb')]}
-        self.assertEqual(test_timesheet_data, self.timesheet_repository.get_timesheet(test_timesheet_data['username'],
-                                                                                      test_timesheet_data['month'],
-                                                                                      test_timesheet_data['year']))
-
-    #TODO: check if only most recent one is returned, in case there are multiple not complete timesheets (update database)
-    def test_get_current_timesheet(self):
-        """
-        Test the get_current_timesheet method of the TimesheetRepository class.
-        """
-        print(self.timesheet_repository.get_timesheet_by_id('6669be2d8e45219d011d6e15'))
-        test_timesheet_data = {'_id': ObjectId('6669be2d8e45219d011d6e15'),
-                               'username': 'test1',
+        test_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                               'username': 'testHiwi1',
                                'month': 5,
                                'year': 2024,
                                'status': 'Not Submitted',
                                'totalTime': 0.0,
                                'overtime': 0.0,
-                               'lastSignatureChange': datetime.datetime(2024, 6, 12, 17, 22, 32, 468000),
-                               'timeEntryIds': [ObjectId('666c022a7a409003113fedfb'),
-                                                ObjectId('666c9d816796c3856a1c5bde'),
-                                                ObjectId('666ca0f9036a5486bc54ad98'),
-                                                ObjectId('666ca119036a5486bc54ad99')]}
-        self.assertEqual(test_timesheet_data, self.timesheet_repository.get_current_timesheet(test_timesheet_data['username']))
+                               'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
 
-    #TODO: change get_timesheet_by_time_period, since it assumes that a date type is stored in the database
-    def test_get_timesheet_by_time_period(self):
-        test_timesheet = [{'_id': ObjectId('666a161bb46b51b1f8526b85'),
-                           'username': 'test1',
-                           'month': 4,
-                           'year': 2024,
-                           'status': 'Complete',
-                           'totalTime': 0.0,
-                           'overtime': 0.0,
-                           'lastSignatureChange': datetime.datetime(2024, 6, 12, 23, 41, 45, 279000),
-                           'timeEntryIds': []}]
+        self.assertEqual(test_timesheet_data,
+                         self.timesheet_repository.get_timesheet_by_id(str(test_timesheet_data['_id'])))
 
-        self.assertEqual(test_timesheet, self.timesheet_repository.get_timesheet_by_time_period('test1',
-                                                                                                datetime.datetime(2022, 6, 12, 0, 0, 0, 0),
-                                                                                                datetime.datetime(2024, 4, 12, 0, 0, 0, 0)))
+    def test_get_timesheet(self):
+        """
+        Test the get_timesheet method of the TimesheetRepository class.
+        """
+        test_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                               'username': 'testHiwi1',
+                               'month': 5,
+                               'year': 2024,
+                               'status': 'Not Submitted',
+                               'totalTime': 0.0,
+                               'overtime': 0.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
+        self.assertEqual(test_timesheet_data, self.timesheet_repository.get_timesheet(test_timesheet_data['username'],
+                                                                                      test_timesheet_data['month'],
+                                                                                      test_timesheet_data['year']))
+
+    def test_get_current_timesheet(self):
+        """
+        Test the get_current_timesheet method of the TimesheetRepository class.
+        """
+        test_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                               'username': 'testHiwi1',
+                               'month': 5,
+                               'year': 2024,
+                               'status': 'Not Submitted',
+                               'totalTime': 0.0,
+                               'overtime': 0.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
+        self.assertEqual(test_timesheet_data,
+                         self.timesheet_repository.get_current_timesheet(test_timesheet_data['username']))
+
+    def test_get_timesheets_by_time_period(self):
+        test_timesheet_data = [
+            {'_id': ObjectId('667bd050cf0aa6181e9c8dd9'),
+             'username': 'testHiwi1',
+             'month': 4,
+             'year': 2024,
+             'status': 'Complete',
+             'totalTime': 0.0,
+             'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
+            {'_id': ObjectId('667bd14ecf0aa6181e9c8dda'),
+             'username': 'testHiwi1',
+             'month': 3,
+             'year': 2024,
+             'status': 'Complete',
+             'totalTime': 0.0,
+             'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
+        self.assertEqual(test_timesheet_data,
+                         self.timesheet_repository.get_timesheets_by_time_period(test_timesheet_data[0]['username'],
+                                                                                 datetime.date(2024, 3, 12),
+                                                                                 datetime.date(2024, 4, 12)))
 
     def test_get_timesheets(self):
         print(self.timesheet_repository.get_timesheets())
-        test_timesheets_data = [{'_id': ObjectId('6669be2d8e45219d011d6e15'), 'username': 'test1', 'month': 5, 'year': 2024,
-                 'status': 'Not Submitted', 'totalTime': 0.0, 'overtime': 0.0,
-                 'lastSignatureChange': datetime.datetime(2024, 6, 12, 17, 22, 32, 468000),
-                 'timeEntryIds': [ObjectId('666c022a7a409003113fedfb'), ObjectId('666c9d816796c3856a1c5bde'),
-                                  ObjectId('666ca0f9036a5486bc54ad98'), ObjectId('666ca119036a5486bc54ad99')]},
-                {'_id': ObjectId('666a161bb46b51b1f8526b85'), 'username': 'test1', 'month': 4, 'year': 2024,
-                 'status': 'Complete', 'totalTime': 0.0, 'overtime': 0.0,
-                 'lastSignatureChange': datetime.datetime(2024, 6, 12, 23, 41, 45, 279000), 'timeEntryIds': []},
-                {'_id': ObjectId('666b66b37435ad8c9e23304a'), 'username': 'test123', 'month': 8, 'year': 2008,
-                 'status': 'Not Submitted', 'totalTime': 0.0, 'overtime': 0.0,
-                 'lastSignatureChange': datetime.datetime(2024, 6, 13, 23, 35, 24, 216000), 'timeEntryIds': []},
-                {'_id': ObjectId('666c1331d28499aff172091c'), 'username': 'testHiWi', 'month': 3, 'year': 2022,
-                 'status': 'Not Submitted', 'totalTime': 0, 'overtime': 0,
-                 'lastSignatureChange': datetime.datetime(2024, 6, 12, 17, 22, 32, 468000),
-                 'timeEntryIds': [ObjectId('666a1ace21bc45a25b4263d8'), ObjectId('666c020f7a409003113fedf9'),
-                                  ObjectId('666c022a7a409003113fedfb')]}]
+        test_timesheets_data = [
+            {'_id': ObjectId('6679ca2935df0d8f7202c5fa'), 'username': 'testHiwi1', 'month': 5, 'year': 2024,
+             'status': 'Not Submitted', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)},
+            {'_id': ObjectId('667bd050cf0aa6181e9c8dd9'), 'username': 'testHiwi1', 'month': 4, 'year': 2024,
+             'status': 'Complete', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
+            {'_id': ObjectId('667bd14ecf0aa6181e9c8dda'), 'username': 'testHiwi1', 'month': 3, 'year': 2024,
+             'status': 'Complete', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
+            {'_id': ObjectId('667bd177cf0aa6181e9c8ddb'), 'username': 'testHiwi2', 'month': 5, 'year': 2024,
+             'status': 'Waiting for Approval', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000), 'timeEntryIds': []},
+            {'_id': ObjectId('667bd187cf0aa6181e9c8ddc'), 'username': 'testHiwi3', 'month': 5, 'year': 2024,
+             'status': 'Revision', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000), 'timeEntryIds': []}]
+
         self.assertEqual(test_timesheets_data, self.timesheet_repository.get_timesheets())
 
-    def test_get_timesheet_by_status(self):
+    def test_get_timesheets_by_status(self):
         """
         Test the get_timesheet_by_status method of the TimesheetRepository class.
         """
-        test_timesheets = [{'_id': ObjectId('6669be2d8e45219d011d6e15'), 'username': 'test1', 'month': 5, 'year': 2024,
-                            'status': 'Not Submitted', 'totalTime': 0.0, 'overtime': 0.0,
-                            'lastSignatureChange': datetime.datetime(2024, 6, 12, 17, 22, 32, 468000),
-                            'timeEntryIds': [ObjectId('666c022a7a409003113fedfb'), ObjectId('666c9d816796c3856a1c5bde'),
-                                             ObjectId('666ca0f9036a5486bc54ad98'),
-                                             ObjectId('666ca119036a5486bc54ad99')]},
-                           {'_id': ObjectId('666b66b37435ad8c9e23304a'), 'username': 'test123', 'month': 8,
-                            'year': 2008, 'status': 'Not Submitted', 'totalTime': 0.0, 'overtime': 0.0,
-                            'lastSignatureChange': datetime.datetime(2024, 6, 13, 23, 35, 24, 216000),
-                            'timeEntryIds': []},
-                           {'_id': ObjectId('666c1331d28499aff172091c'), 'username': 'testHiWi', 'month': 3,
-                            'year': 2022, 'status': 'Not Submitted', 'totalTime': 0, 'overtime': 0,
-                            'lastSignatureChange': datetime.datetime(2024, 6, 12, 17, 22, 32, 468000),
-                            'timeEntryIds': [ObjectId('666a1ace21bc45a25b4263d8'), ObjectId('666c020f7a409003113fedf9'),
-                                             ObjectId('666c022a7a409003113fedfb')]}]
+        test_timesheet_data = [{'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                                'username': 'testHiwi1',
+                                'month': 5,
+                                'year': 2024,
+                                'status': 'Not Submitted',
+                                'totalTime': 0.0,
+                                'overtime': 0.0,
+                                'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}]
 
-        self.assertEqual(test_timesheets, self.timesheet_repository.get_timesheet_by_status(TimesheetStatus.NOT_SUBMITTED))
-        self.assertEqual([], self.timesheet_repository.get_timesheet_by_status(TimesheetStatus.REVISION))
+        self.assertEqual(test_timesheet_data,
+                         self.timesheet_repository.get_timesheets_by_status(TimesheetStatus.NOT_SUBMITTED))
 
     def test_get_timesheet_id(self):
         """
         Test the get_timesheet_id method of the TimesheetRepository class.
         """
-        test_timesheet = {'_id': ObjectId('666a161bb46b51b1f8526b85'),
-                          'username': 'test1',
-                          'month': 4,
-                          'year': 2024,
-                          'status': 'Complete',
-                          'totalTime': 0.0,
-                          'overtime': 0.0,
-                          'lastSignatureChange': datetime.datetime(2024, 6, 12, 23, 41, 45, 279000),
-                          'timeEntryIds': []}
-        self.assertEqual(test_timesheet['_id'], self.timesheet_repository.get_timesheet_id(test_timesheet['username'],
-                                                                                           test_timesheet['month'],
-                                                                                           test_timesheet['year']))
+        test_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                               'username': 'testHiwi1',
+                               'month': 5,
+                               'year': 2024,
+                               'status': 'Not Submitted',
+                               'totalTime': 0.0,
+                               'overtime': 0.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
+        self.assertEqual(test_timesheet_data['_id'],
+                         self.timesheet_repository.get_timesheet_id(test_timesheet_data['username'],
+                                                                    test_timesheet_data['month'],
+                                                                    test_timesheet_data['year']))
 
     def test_get_timesheets_by_username_status(self):
         """
         Test the get_timesheets_by_username_status method of the TimesheetRepository class.
         """
+        test_timesheet_data = [{'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                                'username': 'testHiwi1',
+                                'month': 5,
+                                'year': 2024,
+                                'status': 'Not Submitted',
+                                'totalTime': 0.0,
+                                'overtime': 0.0,
+                                'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}]
+        self.assertEqual(test_timesheet_data,
+                         self.timesheet_repository.get_timesheets_by_username_status(test_timesheet_data[0]['username'],
+                                                                                     TimesheetStatus.NOT_SUBMITTED))
 
+    def test_get_timesheets_by_username(self):
+        test_timesheet_data = [
+            {'_id': ObjectId('6679ca2935df0d8f7202c5fa'), 'username': 'testHiwi1', 'month': 5, 'year': 2024,
+             'status': 'Not Submitted', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)},
+            {'_id': ObjectId('667bd050cf0aa6181e9c8dd9'), 'username': 'testHiwi1', 'month': 4, 'year': 2024,
+             'status': 'Complete', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
+            {'_id': ObjectId('667bd14ecf0aa6181e9c8dda'), 'username': 'testHiwi1', 'month': 3, 'year': 2024,
+             'status': 'Complete', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
+        self.assertEqual(test_timesheet_data, self.timesheet_repository.get_timesheets_by_username(test_timesheet_data[0]['username']))
 
-    def test_update_timesheet_by_dict(self):
+    def test_update_timesheet(self):
         """
         Test the update_timesheet_by_dict method of the TimesheetRepository class.
         """
-        test_original_timesheet = {'_id': ObjectId('666a161bb46b51b1f8526b85'),
-                                   'username': 'test1',
-                                   'month': 4,
-                                   'year': 2024,
-                                   'status': 'Complete',
-                                   'totalTime': 0.0,
-                                   'overtime': 0.0,
-                                   'lastSignatureChange': datetime.datetime(2024, 6, 12, 23, 41, 45, 279000),
-                                   'timeEntryIds': []}
-        test_modified_timesheet = {'_id': ObjectId('666a161bb46b51b1f8526b85'),
-                                   'username': 'test1',
-                                   'month': 4,
-                                   'year': 2024,
-                                   'status': 'Complete',
-                                   'totalTime': 1.0,
-                                   'overtime': 1.0,
-                                   'lastSignatureChange': datetime.datetime(2024, 6, 13, 23, 41, 45, 279000),
-                                   'timeEntryIds': []}
-        self.timesheet_repository.update_timesheet_by_dict(test_modified_timesheet)
-        self.assertEqual(test_modified_timesheet, self.timesheet_repository.get_timesheet_by_id('666a161bb46b51b1f8526b85'))
-        self.timesheet_repository.update_timesheet_by_dict(test_original_timesheet)
+        test_original_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                                        'username': 'testHiwi1',
+                                        'month': 5,
+                                        'year': 2024,
+                                        'status': 'Not Submitted',
+                                        'totalTime': 0.0,
+                                        'overtime': 0.0,
+                                        'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
+        test_modified_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                                        'username': 'testHiwi1',
+                                        'month': 5,
+                                        'year': 2024,
+                                        'status': 'Not Submitted',
+                                        'totalTime': 1.0,
+                                        'overtime': 1.0,
+                                        'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
+        self.timesheet_repository.update_timesheet(Timesheet.from_dict(test_modified_timesheet_data))
+        self.assertEqual(test_modified_timesheet_data,
+                         self.timesheet_repository.get_timesheet_by_id(test_modified_timesheet_data['_id']))
+        # Reset the database to its original state
+        self.timesheet_repository.update_timesheet(Timesheet.from_dict(test_original_timesheet_data))
 
-    #TODO: test_update_timesheet (by Timesheet)?
     def test_set_timesheet_status(self):
         """
         Test the set_timesheet_status method of the TimesheetRepository class.
         """
-        print(self.timesheet_repository.get_timesheet_by_id('6679ca2935df0d8f7202c5fa'))
-        test_timesheet = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
-                          'username': 'testHiWi',
-                          'month': 5,
-                          'year': 2024,
-                          'status': 'Not Submitted',
-                          'totalTime': 0.0,
-                          'overtime': 0.0,
-                          'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
-                          'timeEntryIds': [ObjectId('6679ce1b327b11ba6160cc1a')]}
-        self.timesheet_repository.set_timesheet_status(str(test_timesheet['_id']), TimesheetStatus.COMPLETE)
-        self.assertEqual(str(TimesheetStatus.COMPLETE), self.timesheet_repository.get_timesheet_by_id(str(test_timesheet['_id']))['status'])
-        self.timesheet_repository.set_timesheet_status(str(test_timesheet['_id']), TimesheetStatus.NOT_SUBMITTED)
+        test_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                               'username': 'testHiwi1',
+                               'month': 5,
+                               'year': 2024,
+                               'status': 'Not Submitted',
+                               'totalTime': 0.0,
+                               'overtime': 0.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
+        self.timesheet_repository.set_timesheet_status(str(test_timesheet_data['_id']), TimesheetStatus.COMPLETE)
+        self.assertEqual(str(TimesheetStatus.COMPLETE),
+                         self.timesheet_repository.get_timesheet_by_id(str(test_timesheet_data['_id']))['status'])
+        self.timesheet_repository.set_timesheet_status(str(test_timesheet_data['_id']), TimesheetStatus.NOT_SUBMITTED)
 
-    def test_create_timesheet_by_dict(self):
+    def test_create_timesheet(self):
         """
         Test the create_timesheet_by_dict method of the TimesheetRepository class.
         """
         test_timesheet_data = {'_id': None,
-                                   'username': 'test1',
-                                   'month': 4,
-                                   'year': 2024,
-                                   'status': 'Complete',
-                                   'totalTime': 1.0,
-                                   'overtime': 1.0,
-                                   'lastSignatureChange': datetime.datetime(2024, 6, 13, 23, 41, 45, 279000),
-                                   'timeEntryIds': []}
-        result = self.timesheet_repository.create_timesheet_by_dict(test_timesheet_data)
+                               'username': 'testCreateUser',
+                               'month': 4,
+                               'year': 2024,
+                               'status': 'Complete',
+                               'totalTime': 1.0,
+                               'overtime': 1.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 13, 23, 41, 45, 279000)}
+        result = self.timesheet_repository.create_timesheet(Timesheet.from_dict(test_timesheet_data))
         test_timesheet_data['_id'] = result.data['_id']
         self.assertEqual(test_timesheet_data, self.timesheet_repository.get_timesheet_by_id(str(result.data['_id'])))
-        self.timesheet_repository.delete_timesheet(str(test_timesheet_data['_id']))
+        # Delete Timesheet and return database to its original state
+        self.timesheet_repository.delete_timesheet(str(result.data['_id']))
+
+    def test_delete_timesheet(self):
+        """
+        Test the create_timesheet_by_dict method of the TimesheetRepository class.
+        """
+        test_timesheet_data = {'_id': None,
+                               'username': 'testCreateUser',
+                               'month': 4,
+                               'year': 2024,
+                               'status': 'Complete',
+                               'totalTime': 1.0,
+                               'overtime': 1.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 13, 23, 41, 45, 279000)}
+        result = self.timesheet_repository.create_timesheet(Timesheet.from_dict(test_timesheet_data))
+        self.timesheet_repository.delete_timesheet(str(result.data['_id']))
+        self.assertIsNone(self.timesheet_repository.get_timesheet_by_id(str(result.data['_id'])))
 
     if __name__ == '__main__':
         unittest.main()
