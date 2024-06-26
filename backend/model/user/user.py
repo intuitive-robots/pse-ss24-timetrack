@@ -9,7 +9,7 @@ db = initialize_db()
 
 class User:
 
-    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole):
+    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole, account_creation: datetime.datetime= datetime.datetime.now()):
         """
         Initializes a new User object with basic details.
 
@@ -22,7 +22,7 @@ class User:
         self.password_hash = password_hash
         self.personal_info = personal_info
         self.role = role
-        self.account_creation = datetime.datetime.now()
+        self.account_creation = account_creation
         self.last_login = None
 
     def is_admin(self):
@@ -45,10 +45,10 @@ class User:
         password_hash = user_data["passwordHash"]
         personal_info_data = user_data["personalInfo"]
         role = UserRole.get_role_by_value(user_data["role"])
-
+        account_creation = user_data.get("accountCreation")
         personal_info = PersonalInfo.from_dict(personal_info_data)
 
-        return User(username, password_hash, personal_info, role)
+        return User(username, password_hash, personal_info, role, account_creation)
 
     def to_dict(self):
         """

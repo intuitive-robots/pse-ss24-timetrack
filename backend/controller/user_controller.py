@@ -183,8 +183,11 @@ class UserController(MethodView):
 
         :return: JSON response containing a list of user profiles filtered by role.
         """
-        data = request.get_json()
-        users_data = self.user_service.get_users_by_role(data['role'])
+        args = request.args
+        if 'role' not in args:
+            return jsonify({'error': 'Role parameter is required'}), 400
+        role = args['role']
+        users_data = self.user_service.get_users_by_role(role)
         result = [user.to_dict() for user in users_data]
         return jsonify(result), 200
 
