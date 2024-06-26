@@ -3,6 +3,7 @@ import ActionButton from "../input/ActionButton";
 import AddUserIcon from "../../assets/images/add_user_icon.svg"
 import {useAuth} from "../../context/AuthContext";
 import {useNavigate} from "react-router-dom";
+import navigationIcons from "./NavigationIcons";
 
 interface MenuItems {
   [key: string]: string[];
@@ -61,7 +62,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
   }
 
   return (
-    <div className="flex-col w-72 h-full shadow-navbar-shadow border-r-2.7 border-border-gray">
+    <div className="flex-col w-72 h-full shadow-navbar-shadow border-r-2.7 border-border-gray transition-all duration-200 ease-in-out">
       <div className="h-full py-14 px-6 gap-6 flex flex-col font-semibold">
         {Object.keys(menuItems).map((section) => (
           <div key={section}>
@@ -69,18 +70,20 @@ const NavigationBar: React.FC = (): React.ReactElement => {
               {section}
             </div>
             {menuItems[section].map((item) => (
-              <button
-                key={item}
-                className={`text-left w-full py-1.5 px-4 rounded-md
+                <button
+                    key={item}
+                    className={`flex items-center text-left w-full py-2 px-4 rounded-md
                                             ${
-                                              activeItem === item
-                                                ? "bg-navbar-selected-bg text-gray-800"
-                                                : "text-gray-600 hover:bg-navbar-selected-bg"
-                                            }`}
-                onClick={() => handleItemClick(item)}
-              >
-                {item}
-              </button>
+                        activeItem === item
+                            ? "bg-navbar-selected-bg text-gray-800 py-2 transition duration-300 ease-in-out transform"
+                            : "text-gray-600 hover:bg-navbar-selected-bg"
+                    }`}
+                    onClick={() => handleItemClick(item)}
+                >
+                  <img src={activeItem === item ? navigationIcons[item].active : navigationIcons[item].default}
+                       className="mr-3 fill-amber-200" alt={`${item} icon`}/>
+                  {item}
+                </button>
             ))}
           </div>
         ))}
