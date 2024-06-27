@@ -112,19 +112,7 @@ class TestUserRepository(unittest.TestCase):
         user = User.from_dict(test_user_data)
         self.user_repository.update_user(user)
 
-    def test_update_user_by_dict(self):
-        """
-        Test the update_user_by_dict method of the UserRepository class.
-        """
-        test_user_data = self.user_repository.find_by_username("testAdmin1")
-        test_user_data["personalInfo"]["email"] = "testUpdateMethodDict@gmail.com"
-        self.user_repository.update_user_by_dict(test_user_data)
-        updated_user_data = self.user_repository.find_by_username("testAdmin1")
-        updated_user_data.pop("lastLogin")
-        test_user_data.pop("lastLogin")
-        self.assertEqual(test_user_data, updated_user_data)
-        test_user_data["personalInfo"]["email"] = "test@gmail1.com"
-        self.user_repository.update_user_by_dict(test_user_data)
+
 
     def test_delete_user(self):
         """

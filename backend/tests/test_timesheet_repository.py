@@ -100,7 +100,16 @@ class TestSheetRepository(unittest.TestCase):
              'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
             {'_id': ObjectId('667bd187cf0aa6181e9c8ddc'), 'username': 'testHiwi3', 'month': 5, 'year': 2024,
              'status': 'Revision', 'totalTime': 0.0, 'overtime': 0.0,
-             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
+            {'_id': ObjectId('667d49287974c1dbec35c7d1'),
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000),
+             'month': 6,
+             'overtime': 0,
+             'status': 'Not Submitted',
+             'totalTime': 0,
+             'username': 'testHiwi2',
+             'year': 2024}
+        ]
 
         self.assertEqual(test_timesheets_data, self.timesheet_repository.get_timesheets())
 
@@ -115,7 +124,16 @@ class TestSheetRepository(unittest.TestCase):
                                 'status': 'Not Submitted',
                                 'totalTime': 0.0,
                                 'overtime': 0.0,
-                                'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}]
+                                'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)},
+                               {'_id': ObjectId('667d49287974c1dbec35c7d1'),
+                                'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000),
+                                'month': 6,
+                                'overtime': 0,
+                                'status': 'Not Submitted',
+                                'totalTime': 0,
+                                'username': 'testHiwi2',
+                                'year': 2024}
+                               ]
 
         self.assertEqual(test_timesheet_data,
                          self.timesheet_repository.get_timesheets_by_status(TimesheetStatus.NOT_SUBMITTED))

@@ -4,6 +4,7 @@ from controller.input_validator.validation_status import ValidationStatus
 from model.repository.user_repository import UserRepository
 from model.request_result import RequestResult
 from model.user.role import UserRole
+from model.user.supervisor import Supervisor
 from model.user.user import User
 from utils.security_utils import SecurityUtils
 
@@ -90,7 +91,7 @@ class UserService:
             result_user_creation = self.user_repository.create_user(user)
             if not result_user_creation.is_successful:
                 return RequestResult(False, "Failed to create HiWi", status_code=500)
-            result_supervisor_update = self.user_repository.update_user_by_dict(supervisor_data)
+            result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
                 return RequestResult(False, "Failed to update supervisor. HiWi was not created.",
                                      status_code=500)
@@ -136,10 +137,10 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
-        if user_data['role'] == 'HiWi':
+        if user_data['role'] == 'Hiwi':
             supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
             supervisor_data['hiwis'].remove(user_data['username'])
-            result_supervisor_update = self.user_repository.update_user_by_dict(supervisor_data)
+            result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
                 return RequestResult(False, "Failed to remove Hiwi from Supervisor. Hiwi was not deleted.",
                                      status_code=500)

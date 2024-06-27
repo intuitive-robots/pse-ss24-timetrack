@@ -100,7 +100,7 @@ class TestUserService(unittest.TestCase):
         self.assertIsNotNone(created_user_data['accountCreation'])
         created_user_data.pop('accountCreation')
         self.assertEqual(data_to_compare, created_user_data)
-        self.user_repository.delete_user(test_user_data["username"])
+        self.user_service.delete_user(test_user_data["username"])
 
     def test_create_user_supervisor(self):
         """

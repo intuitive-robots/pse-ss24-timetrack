@@ -78,22 +78,6 @@ c
             return RequestResult(True, "User updated successfully", 200)
         return RequestResult(False, "User update failed", 500)
 
-    def update_user_by_dict(self, user_data: dict) -> RequestResult:
-        """
-        Updates an existing user in the database based on the provided User object.
-
-        :param user_data: The User data containing updated data for the user.
-        :return: RequestResult indicating the success or failure of the update operation.
-        """
-        result = self.db.users.update_one({"username": user_data['username']}, {"$set": user_data})
-        if result.matched_count == 0:
-            return RequestResult(False, "User not found", 404)
-        if result.modified_count == 0:
-            return RequestResult(False, "User update failed", 500)
-        if result.acknowledged:
-            return RequestResult(True, "User updated successfully", 200)
-        return RequestResult(False, "User update failed", 500)
-
     def delete_user(self, username) -> RequestResult:
         """
         Deletes a user from the database by their username.
