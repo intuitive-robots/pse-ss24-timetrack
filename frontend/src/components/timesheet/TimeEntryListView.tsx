@@ -13,7 +13,16 @@ const formatTime = (dateString: string) => {
 
 const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries }) => {
 
-
+    const calculateWorkTime = (startTime: string, endTime: string) => {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    let diff = (end.getTime() - start.getTime()) / 1000;
+    diff /= 60;
+    const hours = Math.floor(diff / 60);
+    const minutes = diff % 60;
+    const decimalHours = (minutes / 60).toFixed(1);
+    return `${hours + parseFloat(decimalHours)}h`;
+};
 
     return (
         <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
@@ -22,8 +31,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries }) => {
                     key={entry._id}
                     entryName={entry.activity}
                     projectName={entry.projectName}
-                    workTime={new Date(entry.endTime).getHours() - new Date(entry.startTime).getHours() + 'h ' +
-                              (new Date(entry.endTime).getMinutes() - new Date(entry.startTime).getMinutes()) + 'm'}
+                    workTime={calculateWorkTime(entry.startTime, entry.endTime)}
                     breakTime={entry.breakTime.toString() + "m"}
                     period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
                     date={entry.startTime}

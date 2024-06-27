@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import LayoutWrapper from "../../components/LayoutWrapper";
 import {useAuth} from "../../context/AuthContext";
-import {getCurrentTimesheet} from "../../services/TimesheetService";
-import ListIconCardButton from "../../components/navbar/ListIconCardButton";
+import {getCurrentTimesheet, getTimesheetByMonthYear} from "../../services/TimesheetService";
+import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
-import TimeEntryTile from "../../components/TimeEntryTile";
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
 import QuickActionButton from "../../components/input/QuickActionButton";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import {TimeEntry} from "../../interfaces/TimeEntry";
 import TimeEntryListView from "../../components/timesheet/TimeEntryListView";
+import {getEntriesByTimesheetId} from "../../services/TimeEntryService";
+import {Timesheet} from "../../interfaces/Timesheet";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -19,92 +19,58 @@ import TimeEntryListView from "../../components/timesheet/TimeEntryListView";
  * @returns {React.ReactElement} A React Element that renders the main homepage of the application.
  */
 const HiwiHomePage = (): React.ReactElement => {
-    const [timesheet, setTimesheet] = useState(null);
+    const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
+    const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
     const { user } = useAuth();
+    const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const [year, setYear] = useState(new Date().getFullYear());
+
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+
 
     useEffect(() => {
-        console.log(user)
+        // console.log(user)
         if (user && user.username) {
-            getCurrentTimesheet(user.username)
-                .then(setTimesheet)
-                .catch(error => console.error('Failed to fetch timesheet:', error));
+            getTimesheetByMonthYear(user.username, month, year)
+                .then(fetchedTimesheet => {
+                    setTimesheet(fetchedTimesheet);
+                })
+                .catch(error => console.error('Failed to fetch timesheet for given month and year:', error));
         }
-    }, [user]);
+    }, [user, month, year]);
 
-    // const entries = [
-    //     { entryName: "Entwicklung des Backends", projectName: "Project Alpha", workTime: "4,5h", breakTime: "15m", period: "11:00 - 15:45", date: "2022-05-01T12:20:30.656+00:00" },
-    //     { entryName: "Frontend Überarbeitung", projectName: "Project Beta", workTime: "3,5h", breakTime: "10m", period: "09:00 - 12:30", date: "2022-05-02T12:20:30.656+00:00" },
-    //     { entryName: "Datenbank Optimierung", projectName: "Project Gamma", workTime: "5h", breakTime: "20m", period: "10:00 - 15:00", date: "2022-05-03T12:20:30.656+00:00" },
-    //     { entryName: "API Entwicklung", projectName: "Project Delta", workTime: "6h", breakTime: "30m", period: "08:00 - 14:30", date: "2022-05-04T12:20:30.656+00:00" },
-    //     { entryName: "Performance Tests", projectName: "Project Epsilon", workTime: "7h", breakTime: "45m", period: "07:30 - 15:15", date: "2022-05-05T12:20:30.656+00:00" },
-    //     { entryName: "UI/UX Design", projectName: "Project Zeta", workTime: "4h", breakTime: "15m", period: "13:00 - 17:00", date: "2022-05-06T12:20:30.656+00:00" },
-    //     { entryName: "System Integration", projectName: "Project Eta", workTime: "3,5h", breakTime: "10m", period: "12:00 - 15:30", date: "2022-05-07T12:20:30.656+00:00" },
-    //     { entryName: "Dokumentation Erstellung", projectName: "Project Theta", workTime: "2h", breakTime: "5m", period: "10:00 - 12:00", date: "2022-05-08T12:20:30.656+00:00" }
-    // ];
+    useEffect(() => {
+        if (timesheet == null) {
+            setTimeEntries([]);
+        }
 
-    const objectEntries: TimeEntry[] = [
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            activity: "Entwicklung des Backends",
-            breakTime: 15,
-            endTime: "2022-05-10T15:45:00Z",
-            entryType: "Work Entry",
-            projectName: "Project Alpha",
-            startTime: "2022-05-01T11:00:00Z",
-            timesheetId: "666c1331d28499aff172091c"
-        },
-        {
-            _id: "666b2dcf25bd45b36b4274d9",
-            activity: "Frontend Überarbeitung",
-            breakTime: 10,
-            endTime: "2022-05-02T12:30:00Z",
-            entryType: "Work Entry",
-            projectName: "Project Beta",
-            startTime: "2022-05-02T09:00:00Z",
-            timesheetId: "666c1331d28499aff172091c"
-        },
-        {
-            _id: "666b2dcf25bd45b36b4274d9",
-            activity: "Frontend Überarbeitung",
-            breakTime: 10,
-            endTime: "2022-05-02T12:30:00Z",
-            entryType: "Work Entry",
-            projectName: "Project Beta",
-            startTime: "2022-05-02T09:00:00Z",
-            timesheetId: "666c1331d28499aff172091c"
-        },
-        {
-            _id: "666b2dcf25bd45b36b4274d9",
-            activity: "Frontend Überarbeitung",
-            breakTime: 10,
-            endTime: "2022-05-02T12:30:00Z",
-            entryType: "Work Entry",
-            projectName: "Project Beta",
-            startTime: "2022-05-02T09:00:00Z",
-            timesheetId: "666c1331d28499aff172091c"
-        },
-        {
-            _id: "666b2dcf25bd45b36b4274d9",
-            activity: "Frontend Überarbeitung",
-            breakTime: 10,
-            endTime: "2022-05-02T12:30:00Z",
-            entryType: "Work Entry",
-            projectName: "Project Beta",
-            startTime: "2022-05-02T09:00:00Z",
-            timesheetId: "666c1331d28499aff172091c"
-        },
-        {
-            _id: "666b2dcf25bd45b36b4274d9",
-            activity: "Frontend Überarbeitung",
-            breakTime: 10,
-            endTime: "2022-05-02T12:30:00Z",
-            entryType: "Work Entry",
-            projectName: "Project Beta",
-            startTime: "2022-05-02T09:00:00Z",
-            timesheetId: "666c1331d28499aff172091c"
-        },
+        if (timesheet && timesheet._id) {
+            getEntriesByTimesheetId(timesheet._id)
+                .then(fetchedEntries => {
+                    setTimeEntries(fetchedEntries);
+                })
+                .catch(error => console.error('Failed to fetch entries for timesheet:', error));
+        }
+    }, [timesheet]);
 
-    ];
+    const handleMonthChange = (direction: string) => {
+        if (direction === 'next') {
+            if (month === 12) {
+                setMonth(1);
+                setYear(prevYear => prevYear + 1);
+            } else {
+                setMonth(prevMonth => prevMonth + 1);
+            }
+        } else if (direction === 'prev') {
+            if (month === 1) {
+                setMonth(12);
+                setYear(prevYear => prevYear - 1);
+            } else {
+                setMonth(prevMonth => prevMonth - 1);
+            }
+        }
+    };
 
     return (
         <div className="px-6 py-6">
@@ -112,21 +78,20 @@ const HiwiHomePage = (): React.ReactElement => {
             <div className="flex flex-row gap-8 items-center">
                 <div className="flex flex-row gap-4">
                     <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                    <MonthTimespan month={4} year={2024}/>
+                    <MonthTimespan month={month} year={year}/>
                 </div>
                 <div className="flex gap-4">
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
-                        onClick={() => {
-                        }}
+                        onClick={() => handleMonthChange('prev')}
                     />
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
                         orientation={"right"}
-                        onClick={() => {
-                        }}
+                        onClick={() => handleMonthChange('next')}
+                        disabled={month === currentMonth && year === currentYear}
                     />
                 </div>
             </div>
@@ -138,23 +103,7 @@ const HiwiHomePage = (): React.ReactElement => {
 
                 <div className="flex flex-col w-full h-full justify-between">
                     <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                    <TimeEntryListView entries={objectEntries}/>
-                    {/*<div className="overflow-y-auto max-h-[28rem]">*/}
-                    {/*     {entries.map((entry, index) => (*/}
-                    {/*         <TimeEntryTile*/}
-                    {/*            key={index}*/}
-                    {/*            entryName={entry.entryName}*/}
-                    {/*            projectName={entry.projectName}*/}
-                    {/*            workTime={entry.workTime}*/}
-                    {/*            breakTime={entry.breakTime}*/}
-                    {/*            period={entry.period}*/}
-                    {/*            date={entry.date.replace(/-..T/, `-${index + 1 < 10 ? '0' : ''}${index + 1}T`)}*/}
-                    {/*            onDelete={() => {}}*/}
-                    {/*            onEdit={() => {}}*/}
-                    {/*        />*/}
-                    {/*    ))}*/}
-
-                    {/*</div>*/}
+                    <TimeEntryListView entries={timeEntries ?? []}/>
 
                     <div className="flex mt-8 flex-col gap-2 items-center">
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>

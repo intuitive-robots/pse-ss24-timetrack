@@ -1,6 +1,6 @@
 import React from 'react';
 import UserInfo from "./UserInfo";
-import ListIconCardButton from "./navbar/ListIconCardButton";
+import ListIconCardButton from "./input/ListIconCardButton";
 import EditUserIcon from "../assets/images/edit_user_icon.svg"
 import ViewUserIcon from "../assets/images/view_icon.svg"
 import RemoveIcon from "../assets/images/remove_icon.svg"

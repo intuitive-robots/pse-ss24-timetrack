@@ -1,4 +1,6 @@
 import axiosInstance from "./AxiosInstance";
+import {Timesheet} from "../interfaces/Timesheet";
+import axios from "axios";
 
 /**
  * Signs the current timesheet for the user.
@@ -61,17 +63,34 @@ const getTimesheets = async () => {
 };
 
 /**
- * Fetches the timesheet by month and year.
- * @returns The timesheet for the specified month and year.
- * @throws An error if the retrieval fails.
+ * Fetches the timesheet for the specified user, month, and year.
+ * @param username The username of the user whose timesheet is being requested.
+ * @param month The month of the timesheet.
+ * @param year The year of the timesheet.
+ * @returns A Promise that resolves to a Timesheet object or null if not found.
  */
-const getTimesheetByMonthYear = async (month: number, year: number) => {
+const getTimesheetByMonthYear = async (username: string, month: number, year: number) : Promise<Timesheet | null> => {
   try {
-    const response = await axiosInstance.get('/timesheet/getTimesheetByMonthYear', { params: { month, year } });
-    return response.data;
+    const response = await axiosInstance.get('/timesheet/getByMonthYear', {
+      params: {
+        username: username,
+        month: month,
+        year: year
+      }
+    });
+    if (response.data) {
+      return response.data as Timesheet;
+    } else {
+      return null;
+    }
   } catch (error) {
-    console.error('Fetching timesheet by month and year failed');
-    throw error;
+    if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+      console.log('No timesheet found for the given parameters', error);
+      return null;
+    } else {
+      console.error('Fetching timesheet by month and year failed', error);
+      throw error;
+    }
   }
 };
 
@@ -99,8 +118,9 @@ const getCurrentTimesheet = async (username: string) => {
   try {
     console.log(`Fetching current Timesheet of ${username}`);
     const response = await axiosInstance.get('/timesheet/getCurrentTimesheet', {
-        data: { username: username }
+        params: { username: username }
     });
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Fetching current timesheet failed', error);

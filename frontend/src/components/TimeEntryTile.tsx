@@ -1,5 +1,5 @@
 import React from 'react';
-import ListIconCardButton from "./navbar/ListIconCardButton";
+import ListIconCardButton from "./input/ListIconCardButton";
 import EditDocumentIcon from "../assets/images/edit_document.svg"
 import RemoveIcon from "../assets/images/remove_icon.svg"
 import IconButton from "./navbar/IconButton";
