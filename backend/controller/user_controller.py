@@ -90,6 +90,8 @@ class UserController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         user_data = request.get_json()
         result = self.user_service.create_user(user_data)
         return jsonify(result.message), result.status_code
@@ -102,6 +104,8 @@ class UserController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         user_data = request.get_json()
         result = self.user_service.update_user(user_data)
         return jsonify(result.message), result.status_code
@@ -115,6 +119,8 @@ class UserController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         username_data = request.get_json()
         result = self.user_service.delete_user(username_data['username'])
         return jsonify(result.message), result.status_code
@@ -125,6 +131,8 @@ class UserController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         credentials = request.get_json()
         result = self.auth_service.login(credentials['username'], credentials['password'])
         if not result.is_successful:
@@ -149,6 +157,8 @@ class UserController(MethodView):
 
         :return: JSON response with the result of the password reset attempt.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         credentials = request.get_json()
         result = self.auth_service.reset_password(credentials['username'], credentials['password'])
         return jsonify(result), result.status_code

@@ -66,6 +66,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_data = request.get_json()
         result = self.time_entry_service.create_work_entry(time_entry_data)
         return jsonify(result.message), result.status_code
@@ -77,6 +79,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         vacation_data = request.get_json()
         result = self.time_entry_service.add_vacation_entry(vacation_data)
         return jsonify(result.message), result.status_code
@@ -88,6 +92,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_data = request.get_json()
         time_entry_id = time_entry_data.get('timeEntryId')
         time_entry_data.pop('timeEntryId')
@@ -101,6 +107,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_id = request.get_json().get('timeEntryId')
         result = self.time_entry_service.delete_time_entry(time_entry_id)
         return jsonify(result.message), result.status_code
