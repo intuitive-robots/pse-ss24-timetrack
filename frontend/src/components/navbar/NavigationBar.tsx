@@ -30,7 +30,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
           Data: ["Analysis", "Documents"],
           Support: ["Guidelines"],
         };
-      case 'HiWi':
+      case 'Hiwi':
         return {
           General: ["Home"],
           Data: ["Analysis", "Documents"],
