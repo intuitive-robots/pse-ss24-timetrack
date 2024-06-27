@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import ListIconCardButton from "../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../assets/images/nav_button_left.svg";
 import RightNavbarIcon from "../assets/images/nav_button_right.svg";
@@ -6,83 +6,27 @@ import VerticalTimeLine from "../assets/images/time_line_vertical.svg";
 import YearTimespan from "../components/YearTimespan";
 import TimesheetListView from "../components/timesheet/TimesheetListView";
 import {Timesheet} from "../interfaces/Timesheet";
-import {StatusType} from "../interfaces/StatusType";
+import {useAuth} from "../context/AuthContext";
+import {getTimesheets} from "../services/TimesheetService";
 
 
 const DocumentPage: React.FC = () => {
 
-    const sheets: Timesheet[] = [
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            username: "Entwicklung des Backends",
-            month: 5,
-            year: 2024,
-            status: StatusType.Revision,
-            totalTime: 175.5,
-            overtime: 20,
-            lastSignatureChange: "22.05.2024"
-        },
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            username: "Entwicklung des Backends",
-            month: 5,
-            year: 2024,
-            status: StatusType.Waiting,
-            totalTime: 175.5,
-            overtime: 20,
-            lastSignatureChange: "22.05.2024"
-        },
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            username: "Entwicklung des Backends",
-            month: 5,
-            year: 2024,
-            status: StatusType.Pending,
-            totalTime: 175.5,
-            overtime: 20,
-            lastSignatureChange: "22.05.2024"
-        },
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            username: "Entwicklung des Backends",
-            month: 5,
-            year: 2024,
-            status: StatusType.Complete,
-            totalTime: 175.5,
-            overtime: 20,
-            lastSignatureChange: "22.05.2024"
-        },
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            username: "Entwicklung des Backends",
-            month: 5,
-            year: 2024,
-            status: StatusType.Complete,
-            totalTime: 175.5,
-            overtime: 20,
-            lastSignatureChange: "22.05.2024"
-        },
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            username: "Entwicklung des Backends",
-            month: 5,
-            year: 2024,
-            status: StatusType.Complete,
-            totalTime: 175.5,
-            overtime: 20,
-            lastSignatureChange: "22.05.2024"
-        },
-        {
-            _id: "666a1ace21bc45a25b4263d8",
-            username: "Entwicklung des Backends",
-            month: 5,
-            year: 2024,
-            status: StatusType.Complete,
-            totalTime: 175.5,
-            overtime: 20,
-            lastSignatureChange: "22.05.2024"
-        }
-    ];
+    const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
+    const { user } = useAuth();
+
+     useEffect(() => {
+    if (user && user.username) {
+      getTimesheets(user.username)
+        .then(sheets => {
+          setTimesheets(sheets);
+        })
+        .catch(error => {
+          console.error('Failed to load timesheets:', error);
+          setTimesheets([]);
+        });
+    }
+  }, [user]);
 
     return (
         <div className="px-6 py-6">
@@ -115,8 +59,9 @@ const DocumentPage: React.FC = () => {
                 <img src={VerticalTimeLine} alt="Vertical Time Line"/>
 
                 <div className="flex flex-col w-full h-full justify-between">
-                    <TimesheetListView sheets={sheets}/>
-                     <div className="flex mt-8 flex-col gap-2 items-center">
+                    <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                    <TimesheetListView sheets={timesheets}/>
+                    <div className="flex mt-8 flex-col gap-2 items-center">
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                         <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
                             <p>Work</p>

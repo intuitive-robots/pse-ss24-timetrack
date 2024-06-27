@@ -48,17 +48,23 @@ const requestChange = async () => {
 };
 
 /**
- * Retrieves all timesheets.
- * @returns The list of all timesheets.
- * @throws An error if the retrieval fails.
+ * Retrieves an array of timesheets for a specific user or an empty array if none are found.
+ * @param username The username for which to retrieve timesheets.
+ * @returns A Promise that resolves to an array of Timesheet objects.
  */
-const getTimesheets = async () => {
+const getTimesheets = async (username: string): Promise<Timesheet[]> => {
   try {
-    const response = await axiosInstance.get('/timesheet/getTimesheets');
-    return response.data;
+    const response = await axiosInstance.get('/timesheet/get', {
+      params: { username }
+    });
+    if (response.data && Array.isArray(response.data)) {
+      return response.data as Timesheet[];
+    } else {
+      return [];
+    }
   } catch (error) {
-    console.error('Fetching timesheets failed');
-    throw error;
+    console.error('Fetching timesheets failed', error);
+    return [];
   }
 };
 

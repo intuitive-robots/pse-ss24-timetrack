@@ -41,8 +41,8 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectNa
               <IconButton
                   icon={RemoveIcon}
                   onClick={() => onDelete()}
-                  bgColor="white"
-                  hover="hover:white"
+                  bgColor="bg-purple-100"
+                  hover="hover:bg-purple-200"
               />
           </div>
 
