@@ -181,5 +181,6 @@ class TimeEntryService:
                 time_entries.append(WorkEntry.from_dict(entry_data))
             elif entry_type == TimeEntryType.VACATION_ENTRY:
                 time_entries.append(VacationEntry.from_dict(entry_data))
+        sorted_time_entries = sorted(time_entries, key=lambda entry: entry.start_time, reverse=True)
 
-        return time_entries
+        return sorted_time_entries
