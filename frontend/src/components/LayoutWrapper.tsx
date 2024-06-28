@@ -1,6 +1,12 @@
 import React from 'react';
 import NavigationBar from './navbar/NavigationBar';
+import {Routes, Route } from 'react-router-dom';
 import ProfileBar from './profile/ProfileBar';
+import HomePage from "../pages/home-page/HomePage";
+import GuidelinePage from "../pages/GuidelinePage";
+import ContractPage from "../pages/ContractPage";
+import DocumentPage from "../pages/DocumentsPage";
+import AnalysisPage from "../pages/AnalysisPage";
 
 interface LayoutWrapperProps {
   pageContent: React.ReactNode;
@@ -24,8 +30,15 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrap
         {/* Sidebar navigation bar */}
         <NavigationBar/>
         {/* Main content area that takes remaining space */}
-        <div className="flex-1 overflow-auto p-4 items-start justify-start">
-          {pageContent}
+        <div className="flex-1 overflow-clip p-4 items-start justify-start">
+          {/*{pageContent}*/}
+            <Routes>
+                <Route path="home" element={<HomePage/>} />
+                <Route path="analysis" element={<AnalysisPage/>} />
+                <Route path="documents" element={<DocumentPage/>} />
+                <Route path="guidelines" element={<GuidelinePage/>} />
+                <Route path="contract" element={<ContractPage/>} />
+            </Routes>
         </div>
       </div>
     </div>
