@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import LayoutWrapper from "../../components/LayoutWrapper";
 import HiwiCard from "../../components/HiwiCard";
-import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg"
+import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
+import StatusFilter from "../../components/StatusFilter";
+import { StatusType } from "../../interfaces/StatusType";
 
 /**
  * Supervisor Homepage component serves as the main landing page for the application.
@@ -9,6 +11,22 @@ import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg"
  * @returns {React.ReactElement} A React Element that renders the main homepage of the application.
  */
 const SupervisorHomePage = (): React.ReactElement => {
+    const [filter, setFilter] = useState<StatusType | null>(null);
+
+    const employees = [
+        { name: 'Nico', lastName: 'Revision', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Revision },
+        { name: 'Tom', lastName: 'Revision', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Revision },
+        { name: 'Nico', lastName: 'Waiting', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Waiting },
+        { name: 'Tom', lastName: 'Pending', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Pending },
+        { name: 'Nico', lastName: 'Pending', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Pending },
+        { name: 'Tom', lastName: 'Complete', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Complete },
+        { name: 'Nico', lastName: 'Complete', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Complete },
+        { name: 'Tom', lastName: 'Complete', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Complete },
+    ];
+
+    const filteredEmployees = filter
+        ? employees.filter(employee => employee.status === filter)
+        : employees;
 
     return (
         <LayoutWrapper
@@ -19,22 +37,22 @@ const SupervisorHomePage = (): React.ReactElement => {
                     <h2 className="text-md font-medium text-subtitle mt-1">You have X assigned employees with Y open timesheets</h2>
                     <div className="h-5"/>
                     <div className="px-4">
-                        <div className="flex flex-row gap-6 text-md font-medium px-3 py-2 bg-stone-50 items-center rounded-lg max-w-80">
-                            <div className="bg-white rounded-lg shadow-lg px-6 py-1">
-                                <p className="text-[#212121]">View all</p>
-                            </div>
-                            <p className="text-[#606060]">Pending</p>
-                            <p className="text-[#606060]">Waiting</p>
-                        </div>
+                        <StatusFilter setFilter={setFilter} />
 
-                        <div className="flex flex-col py-6">
-                            <HiwiCard name={'Nico'} lastName={'Maier'} role={'Hilfswissenschaftler'} profileImageUrl={ProfilePlaceholder} onCheck={() => {}} />
-                            <HiwiCard name={'Nico'} lastName={'Maier'} role={'Hilfswissenschaftler'} profileImageUrl={ProfilePlaceholder} onCheck={() => {}} />
-                            <HiwiCard name={'Nico'} lastName={'Maier'} role={'Hilfswissenschaftler'} profileImageUrl={ProfilePlaceholder} onCheck={() => {}} />
+                        <div className="flex flex-col py-6 overflow-y-auto max-h-96">
+                            {filteredEmployees.map((employee, index) => (
+                                <HiwiCard
+                                    key={index}
+                                    name={employee.name}
+                                    lastName={employee.lastName}
+                                    role={employee.role}
+                                    profileImageUrl={employee.profileImageUrl}
+                                    status={employee.status}
+                                    onCheck={() => {}}
+                                />
+                            ))}
                         </div>
                     </div>
-
-
                 </div>
             }
         />

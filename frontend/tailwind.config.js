@@ -21,6 +21,8 @@ module.exports = {
         'accent': '#7F37FF',
         'border-gray': 'rgba(215, 215, 215, 0.22)',
         'card-gray': '#EFEFEF',
+        'filter-active': '#212121',
+        'filter-inactive': '#606060',
         'navbar-selected-bg': '#f1eaff',
         'subtitle': '#BDBDBD',
         'nav-gray': '#343434',

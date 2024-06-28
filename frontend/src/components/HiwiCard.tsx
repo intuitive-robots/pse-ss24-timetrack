@@ -2,7 +2,9 @@ import React from 'react';
 import UserInfo from "./UserInfo";
 import ListIconCardButton from "./navbar/ListIconCardButton";
 import CheckTimesheetIcon from "../assets/images/check_timesheet_icon.svg"
-import Status from "./navbar/Status";
+import StatusLabel from "./Status";
+import {StatusType} from "../interfaces/StatusType";
+import StatusFilter from "./StatusFilter";
 
 
 interface HiwiCardProps {
@@ -10,10 +12,11 @@ interface HiwiCardProps {
   lastName: string;
   role: string;
   profileImageUrl: string;
+  status: StatusType;
   onCheck: () => void;
 }
 
-const HiwiCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastName, onCheck}) => {
+const HiwiCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastName, status, onCheck}) => {
   return (
       <div className="flex items-center p-4 bg-white shadow rounded-lg mb-4">
           <UserInfo
@@ -29,8 +32,8 @@ const HiwiCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastNa
                   onClick={() => {
                   }}
               />
-              <div className="pr-6">
-                  <Status label={'Warning'} bgColor={'[#FCC6C6]'} color={'[#F97D7D]'} /> {/*TODO: Farben an Status anpassen, aktuell noch hard gecodet*/}
+              <div className="pr-6 items-center justify-center">
+                  <StatusLabel status={status} />
               </div>
 
           </div>
