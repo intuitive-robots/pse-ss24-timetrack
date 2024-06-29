@@ -1,13 +1,19 @@
 import GuidelinePage from "../../pages/GuidelinePage";
 import React from "react";
 import HiwiHomePage from "../../pages/home-page/HiwiHomePage";
-import DocumentRoleMapping from "../../pages/document-page/DocumentRoleMapping";
 import ContractPage from "../../pages/ContractPage";
 import SupervisorHomePage from "../../pages/home-page/SupervisorHomePage";
 import AnalysisPage from "../../pages/AnalysisPage";
 import EmployeesPage from "../../pages/EmployeesPage";
 import DocumentPage from "../../pages/document-page/DocumentPage";
 import AdminHomePage from "../../pages/home-page/AdminHomePage";
+import HiwiAnalysisPage from "../../pages/analysis-page/HiwiAnalysisPage";
+import SupervisorAnalysisPage from "../../pages/analysis-page/SupervisorAnalysisPage";
+import ProjectsPage from "../../pages/ProjectsPage";
+import SecretaryDocumentPage from "../../pages/document-page/SecretaryDocumentPage";
+import SupervisorEmployeesPage from "../../pages/employees/SupervisorEmployeesPage";
+import SecretaryEmployeesPage from "../../pages/employees/SecretaryEmployeesPage";
+import AdminAnalysisPage from "../../pages/analysis-page/AdminAnalysisPage";
 
 const commonRoutes = {
     "/guidelines": GuidelinePage,
@@ -23,20 +29,27 @@ export const routesConfig: RoutesConfig  = {
   Hiwi: {
     ...commonRoutes,
     "/home": HiwiHomePage,
-    "/documents": DocumentRoleMapping,
-    "/contract": ContractPage,
+    "/analysis": HiwiAnalysisPage,
+    "/documents": DocumentPage,
+    "/contract": ContractPage
   },
   Supervisor: {
     ...commonRoutes,
     "/home": SupervisorHomePage,
-    "/analysis": AnalysisPage,
-    "/employees": EmployeesPage,
-    "/documents": DocumentPage,
+    "/analysis": SupervisorAnalysisPage,
+    "/employees": SupervisorEmployeesPage,
+    "/projects": ProjectsPage,
+  },
+  Secretary: {
+    ...commonRoutes,
+    "/home": SupervisorHomePage,
+    "/analysis": SupervisorAnalysisPage,
+    "/documents": SecretaryDocumentPage,
+    "/employees": SecretaryEmployeesPage,
   },
   Admin: {
     ...commonRoutes,
     "/home": AdminHomePage,
-    "/analysis": AnalysisPage,
-    "/documents": DocumentPage,
+    "/analysis": AdminAnalysisPage,
   }
 };
