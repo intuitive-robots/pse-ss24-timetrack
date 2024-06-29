@@ -1,10 +1,9 @@
 import React from 'react';
 import UserInfo from "./UserInfo";
-import ListIconCardButton from "./navbar/ListIconCardButton";
+import ListIconCardButton from "./input/ListIconCardButton";
 import CheckTimesheetIcon from "../assets/images/check_timesheet_icon.svg"
 import StatusLabel from "./Status";
 import {StatusType} from "../interfaces/StatusType";
-import StatusFilter from "./StatusFilter";
 
 
 interface HiwiCardProps {

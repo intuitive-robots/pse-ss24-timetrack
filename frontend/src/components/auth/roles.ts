@@ -8,8 +8,6 @@ export enum Roles {
   Supervisor = 'Supervisor',
   Secretary = 'Secretary',
   Admin = 'Admin',
-
-
 }
 
 export const RoleHomePageMap = {
