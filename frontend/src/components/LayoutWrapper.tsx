@@ -2,13 +2,8 @@ import React from 'react';
 import NavigationBar from './navbar/NavigationBar';
 import {Routes, Route } from 'react-router-dom';
 import ProfileBar from './profile/ProfileBar';
-import HomePage from "../pages/home-page/HomePage";
-import GuidelinePage from "../pages/GuidelinePage";
-import ContractPage from "../pages/ContractPage";
-import DocumentPage from "../pages/document-page/DocumentPage";
-import AnalysisPage from "../pages/AnalysisPage";
-import EmployeesPage from "../pages/EmployeesPage";
-import DocumentRoleMapping from "../pages/document-page/DocumentRoleMapping";
+import {useAuth} from "../context/AuthContext";
+import {routesConfig} from "./auth/RouteConfig";
 
 interface LayoutWrapperProps {
   pageContent: React.ReactNode;
@@ -22,6 +17,9 @@ interface LayoutWrapperProps {
  * @returns {React.ReactElement} The rendered component.
  */
 const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrapperProps): React.ReactElement => {
+    const {role} = useAuth();
+    const currentRoutes = role ? (routesConfig[role] || {}) : {};
+
   return (
     <div className="flex h-screen flex-col min-h-screen select-none">
       {/* Full-width profile bar at the top of the page */}
@@ -35,12 +33,15 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrap
         <div className="flex-1 overflow-clip p-4 items-start justify-start">
           {/*{pageContent}*/}
             <Routes>
-                <Route path="home" element={<HomePage/>} />
-                <Route path="analysis" element={<AnalysisPage/>} />
-                <Route path="documents" element={<DocumentRoleMapping/>} />
-                <Route path="guidelines" element={<GuidelinePage/>} />
-                <Route path="contract" element={<ContractPage/>} />
-                <Route path="employees" element={<EmployeesPage/>} />
+                {/*<Route path="home" element={<HomePage/>} />*/}
+                {/*<Route path="analysis" element={<AnalysisPage/>} />*/}
+                {/*<Route path="documents" element={<DocumentRoleMapping/>} />*/}
+                {/*<Route path="guidelines" element={<GuidelinePage/>} />*/}
+                {/*<Route path="contract" element={<ContractPage/>} />*/}
+                {/*<Route path="employees" element={<EmployeesPage/>} />*/}
+                {Object.entries(currentRoutes).map(([path, Component]) => (
+                    <Route key={path} path={path} element={<Component />} />
+                  ))}
             </Routes>
         </div>
       </div>
