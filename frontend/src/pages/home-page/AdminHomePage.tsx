@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import LayoutWrapper from "../../components/LayoutWrapper";
 import UserCard from "../../components/UserCard";
-import ProfilePlaceholder from "../../assets/images/profile_placeholder.png"
+import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg"
 import {getUsers} from "../../services/AuthService";
 import {User} from "../../interfaces/User";
 

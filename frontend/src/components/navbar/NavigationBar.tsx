@@ -27,7 +27,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
       case 'Admin':
         return {
           General: ["Home"],
-          Data: ["Analysis", "Documents"],
+          Data: ["Analysis"],
           Support: ["Guidelines"],
         };
       case 'Hiwi':
@@ -39,8 +39,8 @@ const NavigationBar: React.FC = (): React.ReactElement => {
       case 'Supervisor':
         return {
           General: ["Home"],
-          Data: ["Analysis", "Documents"],
-          Support: ["Assigned Employees", "Projects", "Guidelines"],
+          Data: ["Analysis"],
+          Support: ["Employees", "Projects", "Guidelines"],
         };
       case 'Secretary':
         return {
@@ -80,7 +80,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
                     }`}
                     onClick={() => handleItemClick(item)}
                 >
-                  <img src={activeItem === item ? navigationIcons[item].active : navigationIcons[item].default}
+                  <img src={activeItem === item ? navigationIcons[item.replace(/\s+/, '')].active : navigationIcons[item.replace(/\s+/, '')].default}
                        className="mr-3 fill-amber-200" alt={`${item} icon`}/>
                   {item}
                 </button>

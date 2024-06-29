@@ -126,7 +126,6 @@ const getCurrentTimesheet = async (username: string) => {
     const response = await axiosInstance.get('/timesheet/getCurrentTimesheet', {
         params: { username: username }
     });
-    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Fetching current timesheet failed', error);
