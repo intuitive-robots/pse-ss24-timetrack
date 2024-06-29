@@ -80,7 +80,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
                     }`}
                     onClick={() => handleItemClick(item)}
                 >
-                  <img src={activeItem === item ? navigationIcons[item].active : navigationIcons[item].default}
+                  <img src={activeItem === item ? navigationIcons[item.replace(/\s+/, '')].active : navigationIcons[item.replace(/\s+/, '')].default}
                        className="mr-3 fill-amber-200" alt={`${item} icon`}/>
                   {item}
                 </button>
