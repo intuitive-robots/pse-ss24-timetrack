@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
-import ListIconCardButton from "../components/input/ListIconCardButton";
-import LeftNavbarIcon from "../assets/images/nav_button_left.svg";
-import RightNavbarIcon from "../assets/images/nav_button_right.svg";
-import VerticalTimeLine from "../assets/images/time_line_vertical.svg";
-import YearTimespan from "../components/YearTimespan";
-import TimesheetListView from "../components/timesheet/TimesheetListView";
-import {Timesheet} from "../interfaces/Timesheet";
-import {useAuth} from "../context/AuthContext";
-import {getTimesheets} from "../services/TimesheetService";
+import ListIconCardButton from "../../components/input/ListIconCardButton";
+import LeftNavbarIcon from "../../assets/images/nav_button_left.svg";
+import RightNavbarIcon from "../../assets/images/nav_button_right.svg";
+import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
+import YearTimespan from "../../components/YearTimespan";
+import TimesheetListView from "../../components/timesheet/TimesheetListView";
+import {Timesheet} from "../../interfaces/Timesheet";
+import {useAuth} from "../../context/AuthContext";
+import {getTimesheets} from "../../services/TimesheetService";
 
 
 const DocumentPage: React.FC = () => {

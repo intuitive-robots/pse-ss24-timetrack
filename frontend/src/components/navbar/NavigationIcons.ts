@@ -24,6 +24,8 @@ const navigationIcons: NavigationIcons = {
   Documents: { default: DocumentIcon, active: DocumentIconActive },
   Contract: { default: ContractIcon, active: ContractIconActive },
   Guidelines: { default: GuidelineIcon, active: GuidelineIcon },
+  Employees: { default: HomeIcon, active: HomeIconActive },
+  Projects: { default: HomeIcon, active: HomeIconActive },
 };
 
 export default navigationIcons;
