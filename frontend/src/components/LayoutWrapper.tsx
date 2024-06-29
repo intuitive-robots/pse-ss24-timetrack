@@ -5,9 +5,10 @@ import ProfileBar from './profile/ProfileBar';
 import HomePage from "../pages/home-page/HomePage";
 import GuidelinePage from "../pages/GuidelinePage";
 import ContractPage from "../pages/ContractPage";
-import DocumentPage from "../pages/document-page/DocumentsPage";
+import DocumentPage from "../pages/document-page/DocumentPage";
 import AnalysisPage from "../pages/AnalysisPage";
 import EmployeesPage from "../pages/EmployeesPage";
+import DocumentRoleMapping from "../pages/document-page/DocumentRoleMapping";
 
 interface LayoutWrapperProps {
   pageContent: React.ReactNode;
@@ -36,7 +37,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ pageContent }: LayoutWrap
             <Routes>
                 <Route path="home" element={<HomePage/>} />
                 <Route path="analysis" element={<AnalysisPage/>} />
-                <Route path="documents" element={<DocumentPage/>} />
+                <Route path="documents" element={<DocumentRoleMapping/>} />
                 <Route path="guidelines" element={<GuidelinePage/>} />
                 <Route path="contract" element={<ContractPage/>} />
                 <Route path="employees" element={<EmployeesPage/>} />

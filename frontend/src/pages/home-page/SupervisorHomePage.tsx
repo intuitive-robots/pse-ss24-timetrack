@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import LayoutWrapper from "../../components/LayoutWrapper";
 import HiwiCard from "../../components/HiwiCard";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import StatusFilter from "../../components/StatusFilter";

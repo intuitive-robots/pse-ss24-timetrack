@@ -27,7 +27,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
       case 'Admin':
         return {
           General: ["Home"],
-          Data: ["Analysis", "Documents"],
+          Data: ["Analysis"],
           Support: ["Guidelines"],
         };
       case 'Hiwi':
