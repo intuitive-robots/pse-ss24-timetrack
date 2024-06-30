@@ -20,7 +20,7 @@ class TimeEntry(ABC):
     """
 
     def __init__(self, timesheet_id: str, start_time: datetime, end_time: datetime, entry_type: TimeEntryType,
-                 time_entry_id = None):
+                 time_entry_id=None):
         """
         Initializes a new instance of the TimeEntry class with specified values.
 

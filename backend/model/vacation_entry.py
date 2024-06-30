@@ -18,7 +18,7 @@ class VacationEntry(TimeEntry):
     """
 
     def __init__(self, timesheet_id: str,
-                 start_time: datetime, end_time: datetime):
+                 start_time: datetime, end_time: datetime, time_entry_id=None):
         """
         Initializes a new VacationEntry object with specified timesheet ID, start time, and end time,
         automatically setting the entry type to VACATION_ENTRY.
@@ -31,7 +31,7 @@ class VacationEntry(TimeEntry):
         :type end_time: datetime
         """
 
-        super().__init__(timesheet_id, start_time, end_time, TimeEntryType.VACATION_ENTRY)
+        super().__init__(timesheet_id, start_time, end_time, TimeEntryType.VACATION_ENTRY, time_entry_id)
         self.time_entry_validator = TimeEntryValidator()
         self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
         self.time_entry_validator.add_validation_rule(HolidayStrategy())

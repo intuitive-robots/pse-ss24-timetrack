@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 from model.timesheet import Timesheet
 from model.user.contract_information import ContractInfo
 from model.user.personal_information import PersonalInfo
@@ -23,13 +25,13 @@ class Hiwi(User):
         self.timesheets = []
         self.contract_info = contract_info
 
-    def add_timesheet(self, timesheet):
+    def add_timesheet(self, timesheet_id: ObjectId):
         """
         Adds a timesheet entry to the list of timesheets.
 
         :param timesheet: The timesheet to be added.
         """
-        self.timesheets.append(timesheet)
+        self.timesheets.append(timesheet_id)
 
     def update_contract_info(self, hourly_wage, working_hours, vacation_hours):
         """
@@ -50,7 +52,7 @@ class Hiwi(User):
         user_dict = super().to_dict()
         user_dict.update({
             "supervisor": self.supervisor,
-            "timesheets": [ts.to_dict() for ts in self.timesheets],
+            "timesheets": [ts for ts in self.timesheets],
             "contractInfo": self.contract_info.to_dict() if self.contract_info is not None else {},
         })
         return user_dict
