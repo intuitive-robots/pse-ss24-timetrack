@@ -9,7 +9,7 @@ from model.user.user import User
 
 class Hiwi(User):
     def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo,
-                 supervisor: str, contract_info: ContractInfo):
+                 supervisor: str, contract_info: ContractInfo, timesheets=[]):
         """
         Initializes a new instance of the Hiwi class, which extends the User class.
 
@@ -22,7 +22,7 @@ class Hiwi(User):
 
         super().__init__(username, password_hash, personal_info, UserRole.HIWI)
         self.supervisor = supervisor
-        self.timesheets = []
+        self.timesheets = timesheets
         self.contract_info = contract_info
 
     def add_timesheet(self, timesheet_id: ObjectId):
