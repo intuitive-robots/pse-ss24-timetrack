@@ -10,7 +10,7 @@ time_entry_blueprint = Blueprint('time_entry', __name__)
 
 class TimeEntryController(MethodView):
     """
-    Controller for handling requests related to time entries, providing methods for POST and GET requests.
+    controller for handling requests related to time entries, providing methods for POST and GET requests.
     """
 
     def __init__(self):

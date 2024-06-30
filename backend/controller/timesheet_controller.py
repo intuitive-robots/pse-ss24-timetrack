@@ -11,7 +11,7 @@ timesheet_blueprint = Blueprint('timesheet', __name__)
 
 class TimesheetController(MethodView):
     """
-    Controller for managing timesheet-related operations such as retrieval, creation, modification,
+    controller for managing timesheet-related operations such as retrieval, creation, modification,
     and deletion of timesheet entries.
     """
 

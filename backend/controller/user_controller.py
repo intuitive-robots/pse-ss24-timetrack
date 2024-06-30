@@ -13,7 +13,7 @@ user_blueprint = Blueprint('user', __name__)
 
 class UserController(MethodView):
     """
-    Controller for managing user-related actions like creating, updating, and deleting users,
+    controller for managing user-related actions like creating, updating, and deleting users,
     managing login sessions, and handling user files.
     """
 
@@ -161,7 +161,7 @@ class UserController(MethodView):
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         credentials = request.get_json()
         result = self.auth_service.reset_password(credentials['username'], credentials['password'])
-        return jsonify(result), result.status_code
+        return jsonify(result.message), result.status_code
 
     @jwt_required()
     def get_profile(self):
