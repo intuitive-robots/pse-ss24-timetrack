@@ -1,7 +1,6 @@
 import axiosInstance from "./AxiosInstance";
 import { TimeEntry } from "../interfaces/TimeEntry";
 import axios from "axios";
-import {data} from "browserslist";
 
 /**
  * Creates a work entry.
