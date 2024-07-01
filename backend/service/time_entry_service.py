@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask_jwt_extended import get_jwt_identity
 
 from controller.input_validator.time_entry_data_validator import TimeEntryDataValidator
@@ -35,7 +36,7 @@ class TimeEntryService:
             TimeEntryType.VACATION_ENTRY: VacationEntry
         }
 
-    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType):
+    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str):
         """
         General method to handle addition of work or vacation time entries.
 
@@ -46,7 +47,6 @@ class TimeEntryService:
         :return: A RequestResult object containing the outcome.
         :rtype: RequestResult
         """
-        username = get_jwt_identity()
         entry_data['entryType'] = entry_type.value
         validation_result = self.entry_validator.is_valid(entry_data)
         if validation_result.status == ValidationStatus.FAILURE:
@@ -69,39 +69,39 @@ class TimeEntryService:
         if not timesheet_exists_result.is_successful:
             return timesheet_exists_result
 
-        add_entry_result = self.timesheet_service.add_time_entry_to_timesheet(
-            time_entry.timesheet_id, entry_creation_result.data["_id"])
-        if not add_entry_result.is_successful:
-            return add_entry_result
-
         if validation_result.status == ValidationStatus.WARNING:
             return RequestResult(True, f"{entry_type.name} entry added with warnings ´{validation_result.message}´",
-                                 status_code=200)
+                                 status_code=200, data={"_id": entry_creation_result.data["_id"]})
 
-        return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200)
+        return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200,
+                             data={"_id": entry_creation_result.data["_id"]})
 
-    def create_work_entry(self, entry_data: dict) -> RequestResult:
+    def create_work_entry(self, entry_data: dict, username: str) -> RequestResult:
         """
         Creates a new work time entry in the system based on the provided entry data.
 
         :param entry_data: A dictionary containing time entry attributes necessary for creating a new time entry.
         :type entry_data: dict
+        :param username: The username of the user creating the time entry.
+        :type username: str
         :return: A RequestResult object containing the result of the create operation.
         :rtype: RequestResult
         """
-        return self._add_time_entry(entry_data, TimeEntryType.WORK_ENTRY)
+        return self._add_time_entry(entry_data, TimeEntryType.WORK_ENTRY, username)
 
-    def add_vacation_entry(self, entry_data: dict) -> RequestResult:
+    def create_vacation_entry(self, entry_data: dict, username: str) -> RequestResult:
         """
         Adds a new vacation time entry based on the provided entry data.
 
         :param entry_data: A dictionary containing vacation time entry attributes.
         :type entry_data: dict
+        :param username: The username of the user creating the time entry.
+        :type username: str
         :return: A RequestResult object containing the result of the add operation.
         :rtype: RequestResult
         """
         # TODO Implement vacation logic
-        return self._add_time_entry(entry_data, TimeEntryType.VACATION_ENTRY)
+        return self._add_time_entry(entry_data, TimeEntryType.VACATION_ENTRY, username)
 
     def update_time_entry(self, entry_id: str, update_data: dict) -> RequestResult:
         """
@@ -126,7 +126,7 @@ class TimeEntryService:
             return RequestResult(False, validation_result.message, status_code=400)
 
         updated_time_entry = TimeEntry.from_dict(updated_entry_data)
-        updated_time_entry.set_id(entry_id)
+        updated_time_entry.set_id(ObjectId(entry_id))
         if not updated_time_entry:
             return RequestResult(False, "Failed to construct updated time entry", status_code=500)
 
@@ -153,12 +153,9 @@ class TimeEntryService:
 
         delete_result = self.time_entry_repository.delete_time_entry(entry_id)
 
-        if not delete_result.is_successful:
-            return delete_result
+        return delete_result
 
-        return self.timesheet_service.delete_time_entry_from_timesheet(delete_result.data["timesheetId"], entry_id)
-
-    def get_entries_of_timesheet(self, timesheet_id: str) -> list[TimeEntry]:
+    def get_entries_of_timesheet(self, timesheet_id: str):
         """
         Retrieves a list of time entries associated with a specific timesheet ID and converts them into
         TimeEntry objects, considering the specific type of each entry.
@@ -166,9 +163,8 @@ class TimeEntryService:
         :param timesheet_id: The ID of the timesheet for which to retrieve entries.
         :type timesheet_id: str
         :return: A list of TimeEntry model instances representing all time entries for the specified timesheet.
-        :rtype: list[TimeEntry]
+        :rtype: RequestResult
         """
-        # TODO: Use TimeEntryValidator to check if timesheet_id is valid object id
 
         entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
 
@@ -181,6 +177,7 @@ class TimeEntryService:
                 time_entries.append(WorkEntry.from_dict(entry_data))
             elif entry_type == TimeEntryType.VACATION_ENTRY:
                 time_entries.append(VacationEntry.from_dict(entry_data))
-        sorted_time_entries = sorted(time_entries, key=lambda entry: entry.start_time, reverse=True)
 
-        return sorted_time_entries
+        sorted_time_entries = sorted(time_entries, key=lambda entry: entry.start_time, reverse=True)
+        return RequestResult(is_successful=True, message="", status_code=200, data=sorted_time_entries)
+

@@ -20,6 +20,7 @@ class HiwiFactory(UserFactory):
         personal_info = None
         contract_info = None
         supervisor = None
+        timesheets = []
 
         if 'personalInfo' in user_data:
             personal_info = PersonalInfo.from_dict(user_data['personalInfo'])

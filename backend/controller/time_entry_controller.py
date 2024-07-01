@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from service.time_entry_service import TimeEntryService
 from service.timesheet_service import TimesheetService
@@ -69,7 +69,8 @@ class TimeEntryController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_data = request.get_json()
-        result = self.time_entry_service.create_work_entry(time_entry_data)
+        username = get_jwt_identity()
+        result = self.time_entry_service.create_work_entry(time_entry_data, username)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
@@ -82,7 +83,8 @@ class TimeEntryController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         vacation_data = request.get_json()
-        result = self.time_entry_service.add_vacation_entry(vacation_data)
+        username = get_jwt_identity()
+        result = self.time_entry_service.create_vacation_entry(vacation_data, username)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
