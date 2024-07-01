@@ -1,5 +1,4 @@
 import React from 'react';
-import TimeEntryTile from "../TimeEntryTile";
 import {Timesheet} from "../../interfaces/Timesheet";
 import TimesheetTile from "../TimesheetTile";
 import {getStatusType, StatusType} from "../../interfaces/StatusType";

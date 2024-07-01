@@ -1,6 +1,7 @@
 import { Roles } from "../auth/roles";
 import AddUserIcon from "../../assets/images/add_user_icon.svg";
 import VacationIcon from "../../assets/images/vacation_icon.svg";
+import {usePopup} from "../popup/PopupContext";
 
 interface ButtonConfig {
   icon: any;
@@ -13,6 +14,7 @@ type ButtonConfigurations = {
 };
 
 export const buttonConfigurations: ButtonConfigurations  = {
+
   Admin: [
     {
       icon: AddUserIcon,
