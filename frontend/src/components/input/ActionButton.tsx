@@ -36,7 +36,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
       onClick={onClick}
     >
       <img src={icon} alt="" className=""/>
-      <p className="text-white font-semibold">{label}</p>
+      <p className="text-white font-semibold text-nowrap">{label}</p>
     </button>
   );
 };
