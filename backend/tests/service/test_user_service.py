@@ -221,9 +221,9 @@ class TestUserService(unittest.TestCase):
             "role": "Admin",
             "personalInfo": {
                 "firstName": "Nico",
-                "lastName": "Admin1",
+                "lastName": "Admin",
                 "email": "test@gmail1.com",
-                "personalNumber": "6381211",
+                "personalNumber": "6981211",
                 "instituteName": "Info Institute"
             },
             "lastLogin": None

@@ -1,5 +1,7 @@
 import unittest
 
+from flask_jwt_extended import get_jwt_identity
+
 from app import app
 from model.repository.user_repository import UserRepository
 from model.user.user import User
@@ -32,6 +34,7 @@ class TestUserController(unittest.TestCase):
             "password": "test_password"
         }
         response = self.client.post('/user/login', json=user)
+
         self.assertEqual(response.status_code, 200)
 
     def test_create_user(self):
