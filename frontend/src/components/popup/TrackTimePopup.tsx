@@ -1,50 +1,98 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {usePopup} from "./PopupContext";
+import ShortInputField from "../input/ShortInputField";
+import ActivityIcon from "../../assets/images/activity_icon.svg";
+import BreakIcon from "../../assets/images/coffee_icon.svg";
+import TimeIcon from "../../assets/images/time_icon.svg";
+import CalendarIcon from "../../assets/images/calendar_day.svg";
+import DialogButton from "../input/DialogButton";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
 
+    const [activity, setActivity] = useState('');
+    const [project, setProject] = useState('');
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [breakTime, setBreakTime] = useState('');
+
     return (
-        <div className="track-time-popup">
-            <h2 className="text-lg font-semibold mb-4">Create Time Entry</h2>
-            <p className="text-sm mb-6">Fill in the fields below to add a Working Day</p>
+        <div className="">
+            <div className="flex flex-col gap-1">
+                <h2 className="text-2xl font-bold">Create Time Entry</h2>
+                <p className="text-lg font-medium text-[#707070] mb-6">Fill in the fields below to add a Working Day</p>
+            </div>
 
             <form className="space-y-6">
-                <div className="form-group">
-                    <label htmlFor="activity" className="block text-sm font-medium text-gray-700">Work Activity</label>
-                    <input type="text" id="activity" className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Activity"/>
+                <div className="flex flex-row gap-4">
+                    <ShortInputField
+                        icon={ActivityIcon}
+                        title="Activity"
+                        type="text"
+                        placeholder="Activity"
+                        value={activity}
+                        onChange={setActivity}
+                    />
+                    <ShortInputField
+                        icon={ActivityIcon}
+                        type="text"
+                        title="Project"
+                        placeholder="Project"
+                        value={project}
+                        onChange={setProject}
+                    />
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="project" className="block text-sm font-medium text-gray-700">Project</label>
-                    <input type="text" id="project" className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Project Alpha"/>
-                </div>
+                <div className="flex flex-col gap-3">
+                    <ShortInputField
+                            icon={CalendarIcon}
+                            type="text"
+                            title="Working Time"
+                            placeholder="23.04.2024"
+                            value={startTime}
+                            onChange={setStartTime}
+                    />
+                    <div className="flex gap-10">
+                        <ShortInputField
+                            icon={TimeIcon}
+                            type="time"
+                            placeholder="08:00 AM"
+                            value={startTime}
+                            onChange={setStartTime}
+                        />
 
-                <div className="form-group">
-                    <label className="block text-sm font-medium text-gray-700">Working Time</label>
-                    <div className="flex gap-4">
-                        <input type="text" placeholder="08:00 AM" className="w-full border-gray-300 rounded-md shadow-sm"/>
-                        <span className="text-gray-500 self-center">-</span>
-                        <input type="text" placeholder="12:00 AM" className="w-full border-gray-300 rounded-md shadow-sm"/>
+                        <ShortInputField
+                            icon={TimeIcon}
+                            type="time"
+                            placeholder="12:00 AM"
+                            value={endTime}
+                            onChange={setEndTime}
+                        />
                     </div>
+
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="break" className="block text-sm font-medium text-gray-700">Break</label>
-                    <input type="text" id="break" className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="15 min"/>
-                </div>
+                <ShortInputField
+                        icon={BreakIcon}
+                        type="number"
+                        title={"Break Time"}
+                        placeholder="15"
+                        suffix={"min"}
+                        value={breakTime}
+                        onChange={setBreakTime}
+                    />
 
-                <div className="flex justify-between">
-                    <button
-                        type="button"
-                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+                <div className="flex flex-row gap-3 justify-end">
+                    <DialogButton
+                        label="Cancel"
+                        secondary={true}
                         onClick={closePopup}
-                    >
-                        Cancel
-                    </button>
-                    <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-r">
-                        Add Entry
-                    </button>
+                    />
+                    <DialogButton
+                        label="Add Entry"
+                        primary={true}
+                        onClick={closePopup}
+                    />
                 </div>
             </form>
         </div>
