@@ -84,7 +84,6 @@ class TestSheetRepository(unittest.TestCase):
                                                                                  datetime.date(2024, 4, 12)))
 
     def test_get_timesheets(self):
-        print(self.timesheet_repository.get_timesheets())
         test_timesheets_data = [
             {'_id': ObjectId('6679ca2935df0d8f7202c5fa'), 'username': 'testHiwi1', 'month': 5, 'year': 2024,
              'status': 'Not Submitted', 'totalTime': 0.0, 'overtime': 0.0,
@@ -100,7 +99,11 @@ class TestSheetRepository(unittest.TestCase):
              'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
             {'_id': ObjectId('667bd187cf0aa6181e9c8ddc'), 'username': 'testHiwi3', 'month': 5, 'year': 2024,
              'status': 'Revision', 'totalTime': 0.0, 'overtime': 0.0,
+             'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
+            {'_id': ObjectId('667d49287974c1dbec35c7d1'), 'username': 'testHiwi2', 'month': 6, 'year': 2024,
+             'status': 'Complete', 'totalTime': 0, 'overtime': 0,
              'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
+
 
         self.assertEqual(test_timesheets_data, self.timesheet_repository.get_timesheets())
 
