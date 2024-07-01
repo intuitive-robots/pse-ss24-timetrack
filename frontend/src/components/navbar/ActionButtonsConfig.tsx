@@ -1,12 +1,14 @@
 import { Roles } from "../auth/roles";
 import AddUserIcon from "../../assets/images/add_user_icon.svg";
 import VacationIcon from "../../assets/images/vacation_icon.svg";
-import {usePopup} from "../popup/PopupContext";
+import TrackTimePopup from "../popup/TrackTimePopup";
+import React, {ReactElement} from "react";
 
 interface ButtonConfig {
   icon: any;
   label: string;
   action: () => void;
+  popup: ReactElement;
 }
 
 type ButtonConfigurations = {
@@ -20,6 +22,7 @@ export const buttonConfigurations: ButtonConfigurations  = {
       icon: AddUserIcon,
       label: "Add User",
       action: () => console.log("Managing users"),
+      popup: <TrackTimePopup/>
     },
   ],
   Hiwi: [
@@ -27,11 +30,13 @@ export const buttonConfigurations: ButtonConfigurations  = {
       icon: AddUserIcon,
       label: "Track Time",
       action: () => console.log("Tracks Time"),
+      popup: <TrackTimePopup/>
     },
     {
       icon: VacationIcon,
       label: "Add Vacation",
       action: () => console.log("Add Vacation"),
+      popup: <TrackTimePopup/>
     }
   ],
   Supervisor: [
@@ -39,6 +44,7 @@ export const buttonConfigurations: ButtonConfigurations  = {
       icon: AddUserIcon,
       label: "Add Project",
       action: () => console.log("Add Project"),
+      popup: <TrackTimePopup/>
     },
   ],
   Secretary: [

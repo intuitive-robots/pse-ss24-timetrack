@@ -2,7 +2,7 @@ import React from 'react';
 import {Routes, Route } from 'react-router-dom';
 import {useAuth} from "../../context/AuthContext";
 import {routesConfig} from "../auth/RouteConfig";
-import {PopupProvider} from "../popup/PopupContext";
+import {PopupProvider, usePopup} from "../popup/PopupContext";
 import ProfileBar from "../profile/ProfileBar";
 import NavigationBar from "../navbar/NavigationBar";
 import LayoutContentWithPopup from "./LayoutContentWithPopup";
@@ -18,7 +18,7 @@ const LayoutWrapper = (): React.ReactElement => {
     const {role} = useAuth();
     const currentRoutes = role ? (routesConfig[role] || {}) : {};
 
-  return (
+    return (
       <PopupProvider>
           <div className="flex h-screen flex-col min-h-screen select-none">
           {/* Full-width profile bar at the top of the page */}
@@ -42,7 +42,7 @@ const LayoutWrapper = (): React.ReactElement => {
           </div>
         </div>
       </PopupProvider>
-  );
+    );
 };
 
 export default LayoutWrapper;

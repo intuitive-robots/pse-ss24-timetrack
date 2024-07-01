@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import ActionButton from "../input/ActionButton";
-import AddUserIcon from "../../assets/images/add_user_icon.svg"
 import {useAuth} from "../../context/AuthContext";
 import {useNavigate} from "react-router-dom";
 import navigationIcons from "./NavigationIcons";
-import {buttonConfigurations} from "./ActionButtonsConfig";
 import {isValidRole} from "../auth/roles";
+import {buttonConfigurations} from "./ActionButtonsConfig";
+import PopupActionButton from "../input/PopupActionButton";
 
 interface MenuItems {
   [key: string]: string[];
@@ -23,6 +22,8 @@ const NavigationBar: React.FC = (): React.ReactElement => {
   const navigate = useNavigate();
 
   const menuItems = getMenuItemsByRole(role);
+
+
 
   function getMenuItemsByRole(role: string | null): MenuItems {
     switch (role) {
@@ -94,18 +95,24 @@ const NavigationBar: React.FC = (): React.ReactElement => {
         ))}
         <div className="mt-auto">
           {buttons.length > 0 && (
-              <ActionButton
+              // <ActionButton
+              //     icon={buttons[0].icon}
+              //     label={buttons[0].label}
+              //     onClick={buttons[0].action}
+              //     primary={true}
+              // />
+              <PopupActionButton
                   icon={buttons[0].icon}
                   label={buttons[0].label}
-                  onClick={buttons[0].action}
+                  popupComponent={buttons[0].popup}
                   primary={true}
               />
           )}
           {buttons.length > 1 && (
-              <ActionButton
+              <PopupActionButton
                   icon={buttons[1].icon}
                   label={buttons[1].label}
-                  onClick={buttons[1].action}
+                  popupComponent={buttons[1].popup}
                   secondary={true}
               />
           )}
