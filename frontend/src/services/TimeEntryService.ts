@@ -65,7 +65,10 @@ const updateTimeEntry = async (timeEntryId: string, entryData: Partial<TimeEntry
  */
 const deleteTimeEntry = async (timeEntryId: string) => {
   try {
-    const response = await axiosInstance.post('/timeEntry/deleteTimeEntry', { timeEntryId });
+    const response = await axiosInstance.post('/timeEntry/deleteTimeEntry',
+        {
+          'timeEntryId': timeEntryId
+        });
     return response.data;
   } catch (error) {
     console.error('Deleting time entry failed');
