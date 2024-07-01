@@ -32,21 +32,8 @@ class TestTimesheetService(unittest.TestCase):
         self.assertTrue(result.is_successful)
         self.assertEqual(result.status_code, 201)
         self.assertIsNotNone(self.timesheet_repository.get_timesheet(test_username, 8, 2024))
-        #TODO: delete timesheet
-
-    def test_create_timesheet(self):
-        """
-        Test the create_timesheet method of the TimesheetService class.
-        """
-        # Test creating a timesheet for a user
-        test_username = "testHiwi1"
-        test_month = 8
-        test_year = 2024
-        result = self.timesheet_service._create_timesheet(test_username, test_month, test_year)
-        self.assertTrue(result.is_successful)
-        self.assertIsNotNone(self.timesheet_repository.get_timesheet(test_username, test_month, test_year))
-        timesheet_id = self.timesheet_repository.get_timesheet_id(test_username, test_month, test_year)
-        delete_result = self.timesheet_repository.delete_timesheet(timesheet_id)
+        timesheet_id = self.timesheet_repository.get_timesheet_id(test_username, 8, 2024)
+        delete_result = self.timesheet_service.delete_timesheet_by_id(timesheet_id)
         self.assertTrue(delete_result.is_successful)
 
     def test_sign_timesheet(self):

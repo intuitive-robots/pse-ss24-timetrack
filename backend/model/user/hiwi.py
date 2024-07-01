@@ -33,6 +33,9 @@ class Hiwi(User):
         """
         self.timesheets.append(timesheet_id)
 
+    def remove_timesheet(self, timesheet_id: ObjectId):
+        self.timesheets.remove(timesheet_id)
+
     def update_contract_info(self, hourly_wage, working_hours, vacation_hours):
         """
         Updates the contract information for the Hiwi.

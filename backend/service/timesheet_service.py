@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
 from model.timesheet import Timesheet
@@ -126,7 +128,26 @@ class TimesheetService:
 
             return RequestResult(True, "Timesheet created", 201, {"_id": result.data["_id"]})
 
-        return
+        return RequestResult(False, "Failed to create timesheet", 500)
+
+    def delete_timesheet_by_id(self, timesheet_id: str):
+        """
+        Deletes a timesheet by its ID.
+
+        :param timesheet_id: The ID of the timesheet
+        :return: The result of the delete operation
+        """
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
+            return RequestResult(False, "Timesheet not found", 404)
+        result = self.timesheet_repository.delete_timesheet(timesheet_id)
+        if result.is_successful:
+            hiwi = self.user_service.get_profile(timesheet_data["username"])
+            hiwi.remove_timesheet(ObjectId(timesheet_id))
+            update_result = self.user_service.update_user(hiwi.to_dict())
+            if not update_result.is_successful:
+                return update_result
+        return result
 
     def get_timesheet_by_id(self, timesheet_id: str):
         """
