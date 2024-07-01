@@ -1,6 +1,7 @@
 import axiosInstance from "./AxiosInstance";
 import { TimeEntry } from "../interfaces/TimeEntry";
 import axios from "axios";
+import {data} from "browserslist";
 
 /**
  * Creates a work entry.
@@ -8,9 +9,11 @@ import axios from "axios";
  * @returns The created work entry.
  * @throws An error if the request fails.
  */
-const createWorkEntry = async (entryData: TimeEntry) => {
+const createWorkEntry = async (entryData: Record<string, any>) => {
   try {
-    const response = await axiosInstance.post('/timeEntry/createWorkEntry', entryData);
+    const response = await axiosInstance.post('/timeEntry/createWorkEntry', {
+        ...entryData
+    });
     return response.data;
   } catch (error) {
     console.error('Creating work entry failed');

@@ -21,8 +21,9 @@ const DialogButton: React.FC<DialogButtonProps> = ({
     : "bg-gray-200 hover:bg-gray-300 text-gray-800";
   return (
     <button
-      className={`transition ease-in duration-100 rounded-xl py-1.5 px-7 font-medium ${buttonClass}`}
-      onClick={onClick}
+        type={"button"}
+        className={`transition ease-in duration-100 rounded-xl py-1.5 px-7 font-medium ${buttonClass}`}
+        onClick={onClick}
     >
       {label}
     </button>

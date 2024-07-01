@@ -6,15 +6,61 @@ import BreakIcon from "../../assets/images/coffee_icon.svg";
 import TimeIcon from "../../assets/images/time_icon.svg";
 import CalendarIcon from "../../assets/images/calendar_day.svg";
 import DialogButton from "../input/DialogButton";
+import {createWorkEntry} from "../../services/TimeEntryService";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
 
     const [activity, setActivity] = useState('');
     const [project, setProject] = useState('');
+    const [date, setDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-    const [breakTime, setBreakTime] = useState('');
+    const [breakTime, setBreakTime] = useState(0);
+
+    const handleSubmit = async () => {
+        if (!activity || !project || !date || !startTime || !endTime || !breakTime) {
+            alert("Please fill all the fields correctly.");
+            return;
+        }
+
+        const dateParts = date.split(".");
+        if (dateParts.length !== 3) {
+            alert("Invalid date format. Please use DD.MM.YYYY format.");
+            return;
+        }
+        const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+
+        const fullStartTime = new Date(`${formattedDate}T${startTime}:00`);
+        const fullEndTime = new Date(`${formattedDate}T${endTime}:00`);
+
+        if (isNaN(fullStartTime.getTime()) || isNaN(fullEndTime.getTime())) {
+            alert("Invalid date or time values.");
+            return;
+        }
+
+        const formattedStartTime = fullStartTime.toISOString();
+        const formattedEndTime = fullEndTime.toISOString();
+
+
+        const entryData = {
+            activity,
+            projectName: project,
+            startTime: `${formattedStartTime}`,
+            endTime: `${formattedEndTime}`,
+            breakTime: breakTime,
+        };
+        console.log(entryData)
+
+        try {
+            const createdEntry = await createWorkEntry(entryData);
+            console.log('Work entry created:', createdEntry);
+            closePopup();
+        } catch (error) {
+            alert("Failed to create work entry.");
+            console.error('Error creating work entry:', error);
+        }
+    };
 
     return (
         <div className="">
@@ -49,8 +95,8 @@ const TrackTimePopup: React.FC = () => {
                             type="text"
                             title="Working Time"
                             placeholder="23.04.2024"
-                            value={startTime}
-                            onChange={setStartTime}
+                            value={date}
+                            onChange={setDate}
                     />
                     <div className="flex gap-10">
                         <ShortInputField
@@ -78,8 +124,8 @@ const TrackTimePopup: React.FC = () => {
                         title={"Break Time"}
                         placeholder="15"
                         suffix={"min"}
-                        value={breakTime}
-                        onChange={setBreakTime}
+                        value={breakTime.toString()}
+                        onChange={(value) => setBreakTime(parseInt(value))}
                     />
 
                 <div className="flex flex-row gap-3 justify-end">
@@ -91,7 +137,7 @@ const TrackTimePopup: React.FC = () => {
                     <DialogButton
                         label="Add Entry"
                         primary={true}
-                        onClick={closePopup}
+                        onClick={handleSubmit}
                     />
                 </div>
             </form>
