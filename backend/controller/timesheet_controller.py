@@ -86,7 +86,6 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
-        #TODO: Add this for every Post / Patch Endpoint
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()

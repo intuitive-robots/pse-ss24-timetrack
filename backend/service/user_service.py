@@ -61,7 +61,6 @@ class UserService:
         """
         if 'password' not in user_data:  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
-
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
 
@@ -69,13 +68,10 @@ class UserService:
         for key in User.dict_keys():
             if key not in user_data.keys():
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
-
         self.user_validator.is_valid(user_data)  # check if field format is valid
-
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
             return RequestResult(False, "Invalid user role specified", status_code=400)
-
         user = user_factory.create_user(user_data)
         if not user:
             return RequestResult(False, "User creation failed", status_code=500)
@@ -108,18 +104,15 @@ class UserService:
         """
         if 'username' not in user_data:
             return RequestResult(False, "Username must be provided for user update", status_code=400)
-
         existing_user_data = self.user_repository.find_by_username(user_data['username'])
         if not existing_user_data:
             return RequestResult(False, "User not found", status_code=404)
-
         updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash"])
 
         # Validate the updated user data
         validation_result = self.user_validator.is_valid(updated_user_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
-
         # Create a user object using the factory
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
@@ -169,7 +162,6 @@ class UserService:
         parsedRole = UserRole.get_role_by_value(role)
         if not parsedRole:
             return []
-
         users_data = self.user_repository.get_users_by_role(parsedRole)
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
 
