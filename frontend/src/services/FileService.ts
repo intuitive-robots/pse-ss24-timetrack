@@ -5,6 +5,11 @@ interface UploadFileResponse {
   status: string;
 }
 
+export interface FileData {
+  url: string;
+  name: string;
+}
+
 const fileURL = '/user';
 
 /**
@@ -31,6 +36,24 @@ async function uploadFile(file: File, fileType: string = "Signature"): Promise<U
   }
 }
 
+const getUserFile = async (username: string, fileType: string): Promise<string | null> => {
+  try {
+    const response = await axiosInstance.get(`${fileURL}/getFile`, {
+      params: { username, fileType },
+      responseType: 'blob'
+    });
+
+    if (response.status === 200 && response.data) {
+      return window.URL.createObjectURL(new Blob([response.data]));
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching file:', error);
+    return null;
+  }
+}
+
 export {
   uploadFile,
+  getUserFile
 };
