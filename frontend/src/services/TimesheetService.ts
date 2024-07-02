@@ -91,7 +91,7 @@ const getTimesheetByMonthYear = async (username: string, month: number, year: nu
     }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
-      console.log('No timesheet found for the given parameters', error);
+      // console.log('No timesheet found for the given parameters', error);
       return null;
     } else {
       console.error('Fetching timesheet by month and year failed', error);
@@ -133,4 +133,12 @@ const getCurrentTimesheet = async (username: string) => {
   }
 };
 
-export { signTimesheet, approveTimesheet, requestChange, getTimesheets, getTimesheetByMonthYear, getTimesheetByUsernameStatus, getCurrentTimesheet };
+export {
+  signTimesheet,
+  approveTimesheet,
+  requestChange,
+  getTimesheets,
+  getTimesheetByMonthYear,
+  getTimesheetByUsernameStatus,
+  getCurrentTimesheet
+};
