@@ -12,7 +12,7 @@ interface StatusFilterProps {
  * @param {StatusFilterProps} props - The props passed to the Status component.
  * @returns {React.ReactElement} A React Element that renders the status filter bar with the correct activated status.
  */
-/*
+
 const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
     const statuses = ['View all', StatusType.Pending, StatusType.Waiting];
 
@@ -48,9 +48,11 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
                         } ${index !== statuses.length - 1 ? 'mr-2' : ''}`}
                         onClick={() => handleStatusClick(status)}
                     >
-                        <div className={`absolute inset-0 rounded-lg bg-white -z-10 opacity-0 transition-opacity duration-300 ${activeStatus === status ? 'opacity-100' : 'opacity-0'}`}></div>
+                        {activeStatus === status && (
+                            <div className="absolute inset-0 rounded-lg bg-white -z-10 transform scale-105"></div>
+                        )}
                         <p className={`${activeStatus === status ? 'text-filter-active' : 'text-[#606060]'}`}>
-                            {status}
+                          {status}
                         </p>
                     </div>
                 ))}
@@ -60,9 +62,9 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
 }
 
 export default StatusFilter;
-*/
+
 /*
-*/
+
 const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
   const statuses = ['View all', StatusType.Pending, StatusType.Waiting];
 
@@ -105,3 +107,4 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
 
 export default StatusFilter;
 
+*/
