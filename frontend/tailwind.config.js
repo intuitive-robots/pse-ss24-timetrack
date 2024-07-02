@@ -5,9 +5,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      plugins: [
-
-      ],
       colors: {
         light: {  // Light Theme
           background: '#ffffff',
@@ -18,30 +15,13 @@ module.exports = {
           background: '#121212',
           text: '#f5f5f5',
         },
-        'accent': '#7F37FF',
         'border-gray': 'rgba(215, 215, 215, 0.22)',
-        'card-gray': '#EFEFEF',
-        'filter-active': '#212121',
-        'filter-inactive': '#606060',
         'navbar-selected-bg': '#f1eaff',
-        'subtitle': '#BDBDBD',
-        'nav-gray': '#343434',
-        'headline': '#343434',
-        'card-title': '#1B1B1B',
-        'pending-bg': '#FCE2CB',
-        'pending-fg': '#F8A255',
-        'complete-bg': '#C6FDCF',
-        'complete-fg': '#76E287',
-        'waiting-bg': '#FCE2CB',
-        'waiting-fg': '#F8A255',
-        'revision-bg': '#FCC6C6',
-        'revision-fg': '#F97D7D',
+        'subtitle': '#BDBDBD'
       },
       boxShadow: {
         'profilebar-shadow': '0 6px 10px rgba(0, 0, 0, 0.03)', // Profile Bar Shadow
         'navbar-shadow': '0 6px 10px rgba(0, 0, 0, 0.02)', // Navbar Shadow
-        'card-shadow': '0 4px 10px rgba(0, 0, 0, 0.05)',
-        'inside-card-shadow': '0 0 8px rgba(0, 0, 0, 0.04)'
       },
       borderWidth: {
         '1.7': '1.7px',

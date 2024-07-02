@@ -1,18 +1,20 @@
 import React, { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import {useAuth} from "../../context/AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const {isAuthenticated, isLoading} = useAuth();
+/**
+ * Hook to check if user is authenticated
+ */
+const useAuth = () => {
+  const user = localStorage.getItem('user');
+  return !!user;
+};
 
-  if (isLoading) {
-    console.log("Loading authentication status");
-    return <div></div>;
-  }
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const isAuthenticated = useAuth();
 
   //TODO Add Role check
 

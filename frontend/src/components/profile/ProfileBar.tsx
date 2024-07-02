@@ -4,7 +4,7 @@ import RightArrow from "../../assets/images/arrow_right.svg";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import UserInfo from "../UserInfo";
-import ProfilePicture from "../../assets/images/profile_placeholder.svg"
+import ProfilePicture from "../../assets/images/profile_placeholder.png"
 import SearchInput from "./SearchInput";
 
 /**

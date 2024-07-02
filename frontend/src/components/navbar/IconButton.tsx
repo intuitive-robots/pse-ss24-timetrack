@@ -18,7 +18,7 @@ interface IconButtonProps {
 const IconButton: React.FC<IconButtonProps> = ({ onClick, icon, bgColor, hover, size = 'w-10 h-10' }: IconButtonProps): React.ReactElement => {
   return (
     <button
-      className={`flex items-center justify-center ${size} ${bgColor} rounded-md ${hover} transition-colors`}
+      className={`flex items-center justify-center ${size} ${bgColor} rounded-md ${hover}  transition-colors`}
       onClick={onClick}
     >
       <img src={icon} alt=""/>
