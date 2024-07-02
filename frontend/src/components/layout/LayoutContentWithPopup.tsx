@@ -1,4 +1,4 @@
-import React, {FC, ReactNode} from 'react';
+import React, {FC} from 'react';
 import { Routes, Route } from 'react-router-dom';
 import {usePopup} from "../popup/PopupContext";
 

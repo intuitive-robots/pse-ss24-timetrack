@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import HiwiCard from "../../components/HiwiCard";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
-import StatusFilter from "../../components/StatusFilter";
+import StatusFilter from "../../components/status/StatusFilter";
 import { StatusType } from "../../interfaces/StatusType";
 
 /**

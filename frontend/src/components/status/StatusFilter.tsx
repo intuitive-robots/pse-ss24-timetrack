@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {getStatusType, StatusType} from "../interfaces/StatusType";
+import {getStatusType, StatusType} from "../../interfaces/StatusType";
 
 interface StatusFilterProps {
     setFilter: (status: StatusType | null) => void;
