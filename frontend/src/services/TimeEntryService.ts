@@ -8,9 +8,11 @@ import axios from "axios";
  * @returns The created work entry.
  * @throws An error if the request fails.
  */
-const createWorkEntry = async (entryData: TimeEntry) => {
+const createWorkEntry = async (entryData: Record<string, any>) => {
   try {
-    const response = await axiosInstance.post('/timeEntry/createWorkEntry', entryData);
+    const response = await axiosInstance.post('/timeEntry/createWorkEntry', {
+        ...entryData
+    });
     return response.data;
   } catch (error) {
     console.error('Creating work entry failed');
@@ -62,7 +64,10 @@ const updateTimeEntry = async (timeEntryId: string, entryData: Partial<TimeEntry
  */
 const deleteTimeEntry = async (timeEntryId: string) => {
   try {
-    const response = await axiosInstance.post('/timeEntry/deleteTimeEntry', { timeEntryId });
+    const response = await axiosInstance.post('/timeEntry/deleteTimeEntry',
+        {
+          'timeEntryId': timeEntryId
+        });
     return response.data;
   } catch (error) {
     console.error('Deleting time entry failed');

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useAuth} from "../../context/AuthContext";
-import {getCurrentTimesheet, getTimesheetByMonthYear} from "../../services/TimesheetService";
+import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
@@ -12,6 +12,13 @@ import {TimeEntry} from "../../interfaces/TimeEntry";
 import TimeEntryListView from "../../components/timesheet/TimeEntryListView";
 import {getEntriesByTimesheetId} from "../../services/TimeEntryService";
 import {Timesheet} from "../../interfaces/Timesheet";
+import Status from "../../components/status/Status";
+import {StatusType} from "../../interfaces/StatusType";
+import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
+import {isValidRole} from "../../components/auth/roles";
+import {roles} from "aria-query";
+import DocumentPage from "../document-page/DocumentPage";
+import DocumentStatus from "../../components/status/DocumentStatus";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -21,16 +28,14 @@ import {Timesheet} from "../../interfaces/Timesheet";
 const HiwiHomePage = (): React.ReactElement => {
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
     const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
-    const { user } = useAuth();
+    const { user, role} = useAuth();
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
-
     useEffect(() => {
-        // console.log(user)
         if (user && user.username) {
             getTimesheetByMonthYear(user.username, month, year)
                 .then(fetchedTimesheet => {
@@ -70,6 +75,26 @@ const HiwiHomePage = (): React.ReactElement => {
                 setMonth(prevMonth => prevMonth - 1);
             }
         }
+    };
+
+    const getStatusOrButton = () => {
+        if (!timesheet || !user) return null;
+        const timesheetStatus = timesheet.status;
+        if (!isValidTimesheetStatus(timesheetStatus) || !isValidRole(role)) return null;
+
+        const mappedStatus = statusMapping[role][timesheetStatus];
+
+        return ["Not Submitted", "Revision"].includes(timesheetStatus) ? (
+            <QuickActionButton
+                icon={SignSheetIcon}
+                label="Sign Sheet"
+                onClick={() => {/* TODO: Signature Logic */}}
+                bgColor="bg-purple-600"
+                hover="hover:bg-purple-700"
+            />
+        ) : (
+            <DocumentStatus status={mappedStatus} />
+        );
     };
 
     return (
@@ -116,16 +141,8 @@ const HiwiHomePage = (): React.ReactElement => {
                 </div>
             </div>
 
-            <div className="w-fit ml-auto">
-                <QuickActionButton
-                    icon={SignSheetIcon}
-                    label="Sign Sheet"
-                    onClick={() => {
-
-                    }}
-                    bgColor="bg-purple-600"
-                    hover="hover:bg-purple-700"
-                />
+            <div className="w-fit ml-auto absolute right-14 bottom-10">
+                {getStatusOrButton()}
             </div>
 
 

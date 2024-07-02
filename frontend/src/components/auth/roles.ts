@@ -5,4 +5,6 @@ export enum Roles {
   Admin = 'Admin',
 }
 
-
+export function isValidRole(role: any): role is Roles {
+  return Object.values(Roles).includes(role);
+}

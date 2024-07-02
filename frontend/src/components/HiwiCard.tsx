@@ -2,7 +2,7 @@ import React from 'react';
 import UserInfo from "./UserInfo";
 import ListIconCardButton from "./input/ListIconCardButton";
 import CheckTimesheetIcon from "../assets/images/check_timesheet_icon.svg"
-import StatusLabel from "./Status";
+import StatusLabel from "./status/Status";
 import {StatusType} from "../interfaces/StatusType";
 
 

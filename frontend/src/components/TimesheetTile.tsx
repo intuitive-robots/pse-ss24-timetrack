@@ -3,7 +3,7 @@ import DownloadIcon from "../assets/images/download_icon.svg";
 import IconButton from "./navbar/IconButton";
 import ListTileInfo from "./list/ListTileInfo";
 import CalendarMonth from "./calendar/CalendarMonth";
-import StatusLabel from "./Status";
+import StatusLabel from "./status/Status";
 import {StatusType} from "../interfaces/StatusType";
 
 interface TimesheetTileProps {
