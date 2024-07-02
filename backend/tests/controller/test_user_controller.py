@@ -76,7 +76,7 @@ class TestUserController(unittest.TestCase):
         }
         access_token = self.authenticate("testAdmin1", "test_password")
         response = self.client.post('/user/updateUser', json=update_data,
-                                     headers={"Authorization": f"Bearer {access_token}"})
+                                    headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 200)
         user_data = self.user_repository.find_by_username("testAdmin1")
         self.assertEqual(user_data['personalInfo']['email'], "usedInTest@gmail.com")
@@ -88,10 +88,10 @@ class TestUserController(unittest.TestCase):
         Test the delete_user method of the UserController class.
         """
         user_data = {
-            "username":"testAdmin10",
+            "username": "testAdmin10",
             "password": "test_password",
             "role": "Admin",
-            "personalInfo":{
+            "personalInfo": {
                 "firstName": "Nico",
                 "lastName": "Admin10",
                 "email": "test@gmail.com",
@@ -135,7 +135,124 @@ class TestUserController(unittest.TestCase):
         access_token = self.authenticate("testAdmin1", "test")
         self.assertIsNotNone(access_token)
         self.client.post('/user/resetPassword', json={"username": "testAdmin1", "password": "test_password"},
+                         headers={"Authorization": f"Bearer {access_token}"})
+
+    def test_get_profile(self):
+        """
+        Test the get_profile method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+        response = self.client.get('/user/getProfile', headers={"Authorization": f"Bearer {access_token}"})
+        print(response.json)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['username'], "testAdmin1")
+
+    def test_get_users(self):
+        """
+        Test the get_users method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+        response = self.client.get('/user/getUsers', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.json)
+        self.assertIsInstance(response.json, list)
+        self.assertGreaterEqual(len(response.json), 1)
+
+    def test_get_users_by_role_admin(self):
+        """
+        Test the get_users_by_role method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+        response = self.client.get('/user/getUsersByRole?role=Admin',
+                                   headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.json)
+        self.assertIsInstance(response.json, list)
+        self.assertGreaterEqual(len(response.json), 1)
+        for admin in response.json:
+            self.assertEqual(admin['role'], "Admin")
+
+    def test_get_users_by_role_hiwi(self):
+        """
+        Test the get_users_by_role method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+        response = self.client.get('/user/getUsersByRole?role=Hiwi',
+                                   headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.json)
+        self.assertIsInstance(response.json, list)
+        self.assertGreaterEqual(len(response.json), 1)
+        for hiwi in response.json:
+            self.assertEqual(hiwi['role'], "Hiwi")
+
+    def test_get_users_by_role_supervisor(self):
+        """
+        Test the get_users_by_role method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+        response = self.client.get('/user/getUsersByRole?role=Supervisor',
+                                   headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.json)
+        self.assertIsInstance(response.json, list)
+        self.assertGreaterEqual(len(response.json), 1)
+        for supervisor in response.json:
+            self.assertEqual(supervisor['role'], "Supervisor")
+
+    def test_upload_user_file(self):
+        """
+        Test the upload_user_file method of the UserController class.
+        """
+        access_token = self.authenticate("testHiwi1", "test_password")
+        file = open("../resources/testProfilePic.jpg", "rb")
+        response = self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
                                     headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 201)
+        file.close()
+        self.client.delete('/user/deleteFile?username=testHiwi1&fileType=Signature',
+                           headers={"Authorization": f"Bearer {access_token}"})
 
+    def test_get_user_file(self):
+        """
+        Test the get_user_file method of the UserController class.
+        """
+        access_token = self.authenticate("testHiwi1", "test_password")
+        file = open("../resources/testProfilePic.jpg", "rb")
+        response = self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 201)
+        user_file = self.client.get('/user/getFile?username=testHiwi1&fileType=Signature',
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        self.assertIsNotNone(user_file)
+        file.close()
+        self.client.delete('/user/deleteFile?username=testHiwi1&fileType=Signature',
+                           headers={"Authorization": f"Bearer {access_token}"})
 
+    def test_get_hiwis(self):
+        """
+        Test the get_hiwis method of the UserController class.
+        """
+        access_token = self.authenticate("testSupervisor1", "test_password")
+        response = self.client.get('/user/getHiwis', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.json)
+        self.assertIsInstance(response.json, list)
+        self.assertGreaterEqual(len(response.json), 1)
+        for hiwi in response.json:
+            self.assertEqual(hiwi['role'], "Hiwi")
 
+    def test_delete_user_file(self):
+        """
+        Test the delete_user_file method of the UserController class.
+        """
+        access_token = self.authenticate("testHiwi1", "test_password")
+        file = open("../resources/testProfilePic.jpg", "rb")
+        response = self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 201)
+        response = self.client.delete('/user/deleteFile?username=testHiwi1&fileType=Signature',
+                                      headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        received_file = self.client.get('/user/getFile?username=testHiwi1&fileType=Signature', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(received_file.status_code, 404)

@@ -22,7 +22,7 @@ class DocumentController(MethodView):
 
         """
         self.document_service = DocumentService()
-        pass
+
 
     def get(self):
         """
@@ -60,6 +60,7 @@ class DocumentController(MethodView):
             def delete_file(response):
                 os.remove(file_path)
                 return response
+
 
             return send_file(file_path, as_attachment=True)
         return jsonify({'error': 'Failed to generate document'}), 500

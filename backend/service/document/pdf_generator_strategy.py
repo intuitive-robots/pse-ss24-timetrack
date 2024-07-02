@@ -12,8 +12,9 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
     The PDFGeneratorStrategy class is responsible for generating PDF documents.
 
     """
-    TEMPLATE_PATH = "resources/timesheet_template.pdf"
-    TEMP_DIR = "resources/temp/"
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    TEMPLATE_PATH = os.path.join(BASE_DIR, "../resources/timesheet_template.pdf")
+    TEMP_DIR = os.path.join(BASE_DIR, "../resources/temp/")
     SIGNATURE_WIDTH = 300
     SIGNATURE_HEIGHT = 30
     SIGNATURE_X_POS = 18
@@ -54,6 +55,7 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         output_path_pdf_approved = self._get_output_path(document_data, "Approved.pdf")
         self._place_signature(output_path_pdf_signed, output_path_pdf_approved, supervisor_signature_path, False)
         self._cleanup_temp_files([output_path_pdf, output_path_pdf_signed, signature_path, supervisor_signature_path])
+
         return RequestResult(True, "Document generated successfully", 200, output_path_pdf_approved)
 
     def _place_signature(self, pdf_path, output_path, signature_path, type_hiwi: bool):
