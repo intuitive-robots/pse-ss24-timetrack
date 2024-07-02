@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import Logo from "../../assets/images/logo.svg";
 import RightArrow from "../../assets/images/arrow_right.svg";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +35,9 @@ const ProfileBar: React.FC = (): React.ReactElement => {
     }
   };
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
   return (
     <div className="bg-white flex items-center py-5 px-10 gap-5 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold text-nowrap transition-all duration-300 ease-in-out ">
         <div className="flex items-center space-x-4">
@@ -52,23 +55,42 @@ const ProfileBar: React.FC = (): React.ReactElement => {
               </button>
           </div>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto relative">
             {user && (
-                <UserInfo
-                    name={user.personalInfo.firstName}
-                    lastName={user.personalInfo.lastName}
-                    role={role || "N/A"}
-                    profileImageUrl={user.profileImageUrl || ProfilePicture}
-                />
+                <div className="flex items-center cursor-pointer">
+                    <UserInfo
+                        name={user.personalInfo.firstName}
+                        lastName={user.personalInfo.lastName}
+                        role={role || "N/A"}
+                        profileImageUrl={user.profileImageUrl || ProfilePicture}
+                    />
+                </div>
+            )}
+
+            {isDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-52 bg-white rounded-md shadow-lg py-1 z-500">
+                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">My
+                        Profile
+                    </button>
+                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Change
+                        Password
+                    </button>
+                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Help
+                    </button>
+                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                            onClick={handleLogout}>Sign Out
+                    </button>
+                </div>
             )}
         </div>
 
-      <button
-        className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
-        onClick={handleLogout}
-      >
-        <img src={RightArrow} alt="RightArrow" />
-      </button>
+        <button
+            className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
+            onClick={toggleDropdown}
+        >
+            <img src={RightArrow} alt="RightArrow"/>
+        </button>
+
     </div>
   );
 };
