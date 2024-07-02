@@ -3,22 +3,26 @@ from pymongo import MongoClient
 db = None
 client = None
 
-"""
-Initializes the database connection
-"""
+
 def initialize_db():
+    """
+    Initializes the database connection
+    """
     global db
     global client
     # TODO: Hard coding is usually not a good idea. We could use environment variables instead, when we have time.
     # TODO: For deployment, we should change the IP to localhost
     client = MongoClient('158.180.40.137', 27017, username='admin', password='TimeTracking123!')
     db = client.timetracking_db
+    #TODO: Return Db if not none
     return db
 
 
 """
 Checks the database connection
 """
+
+
 def check_db_connection():
     # Check if the database connection is successful
     if client is None:

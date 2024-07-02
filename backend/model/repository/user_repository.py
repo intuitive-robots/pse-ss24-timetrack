@@ -1,115 +1,132 @@
 from db import initialize_db
-from model.personal_information import PersonalInfo
-from model.role import UserRole
-from model.user import User
+from model.request_result import RequestResult
+from model.user.role import UserRole
+from model.user.user import User
 
 
+# TODO: Repository methods should receive a dict instead of a User object ->
+# This should be the case for all repositories
 class UserRepository:
     """
-    Repository class for managing user data in the database.
+    Repository class for managing user data in the database. It provides functionalities
+    for creating, retrieving, updating, and deleting users, as well as retrieving them by
+    specific criteria such as username or role.
     """
     _instance = None  # Singleton instance of the UserRepository class.
 
-    #TODO: Implement ResultType RequestResult
     @staticmethod
     def get_instance():
         """
-        Singleton instance of the UserRepository class.
-        :return:
+        Retrieves the singleton instance of the UserRepository class.
+
+        :return: Singleton instance of UserRepository, ensuring that only one instance exists globally.
         """
         if UserRepository._instance is None:
             UserRepository._instance = UserRepository()
         return UserRepository._instance
 
     def __init__(self):
+        """
+        Initializes the UserRepository class by establishing a connection to the database.
+        This connection is used for all data operations within this repository.
+        """
         self.db = initialize_db()
 
     def create_user(self, user: User):
         """
-        Creates a new user in the database.
+        Creates a new user in the database. Checks if the user already exists to prevent duplicates.
 
-        :param user: The user object to be created.
-        :return: The ID of the newly created user.
+        :param user: The User object to be created in the database.
+        :return: RequestResult indicating the success or failure of the create operation,
         """
         if user is None:
-            return {"result": "User creation failed"}
+            return RequestResult(False, "User object is None", 400)
+        if self.find_by_username(user.username):
+            return RequestResult(False, "User already exists", 409)
+
         result = self.db.users.insert_one(user.to_dict())
         if result.acknowledged:
-            return {"result": "User created successfully", "id": str(result.inserted_id)}
-        return {"result": "User creation failed"}
+            return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
+        return RequestResult(False, "User creation failed", 500)
 
     def find_by_username(self, username):
         """
-        Finds a user in the database by their username.
+        Retrieves a user's data from the database by their username.
 
         :param username: The username of the user to find.
-        :return: The user object if found, otherwise None.
+        :return: A dictionary with the user's data if found, otherwise None.
         """
         if username is None:
             return None
         user_data = self.db.users.find_one({"username": username})
 
-        if user_data:
-            return User(
-                username=user_data['username'],
-                password_hash=user_data['passwordHash'],
-                personal_info=PersonalInfo(user_data['personalInfo']['firstName'], user_data['personalInfo']['lastName'],
-                                           user_data['personalInfo']['email'], user_data['personalInfo']['personalNumber'],
-                                           user_data['personalInfo']['instituteName']),
-                role=UserRole.get_role_by_value(user_data['role']),
-            )
-        return None
+        return user_data
 
-    def update_user(self, user: User):
+    def update_user(self, user: User) -> RequestResult:
         """
-        Updates a user in the database.
-
-        :param user: The user object to be updated.
-        :return: The ID of the updated user.
+        Updates an existing user in the database based on the provided User object.
+c
+        :param user: The User object containing updated data for the user.
+        :return: RequestResult indicating the success or failure of the update operation.
         """
-
         result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
         if result.matched_count == 0:
-            return {"result": "User not found"}
+            return RequestResult(False, "User not found", 404)
         if result.modified_count == 0:
-            return {"result": "User update failed"}
+            return RequestResult(False, "User update failed", 500)
         if result.acknowledged:
-            return {"result": "User updated successfully"}
-        return {"result": "User update failed"}
+            return RequestResult(True, "User updated successfully", 200)
+        return RequestResult(False, "User update failed", 500)
 
-    def delete_user(self, username):
+    def update_user_by_dict(self, user_data: dict) -> RequestResult:
         """
-        Deletes a user from the database.
+        Updates an existing user in the database based on the provided User object.
 
-        :param username: The username of the user to be deleted.
-        :return: The ID of the deleted user.
+        :param user_data: The User data containing updated data for the user.
+        :return: RequestResult indicating the success or failure of the update operation.
+        """
+        result = self.db.users.update_one({"username": user_data['username']}, {"$set": user_data})
+        if result.matched_count == 0:
+            return RequestResult(False, "User not found", 404)
+        if result.modified_count == 0:
+            return RequestResult(False, "User update failed", 500)
+        if result.acknowledged:
+            return RequestResult(True, "User updated successfully", 200)
+        return RequestResult(False, "User update failed", 500)
+
+    def delete_user(self, username) -> RequestResult:
+        """
+        Deletes a user from the database by their username.
+
+        :param username: The username of the user to delete.
+        :return: RequestResult indicating the success or failure of the deletion process.
         """
         if username is None:
-            return {"result": "Please provide a username to delete the user."}
+            return RequestResult(False, "Please provide a username to delete the user.", 400)
         if self.find_by_username(username) is None:
-            return {"result": "User not found"}
+            return RequestResult(False, "User not found", 404)
         result = self.db.users.delete_one({"username": username})
         if result.deleted_count == 0:
-            return {"result": "User deletion failed"}
+            return RequestResult(False, "User deletion failed", 500)
         if result.acknowledged:
-            return {"result": "User deleted successfully"}
-        return {"result": "User deletion failed"}
+            return RequestResult(True, "User deleted successfully", 200)
+        return RequestResult(False, "User deletion failed", 500)
 
-    def get_users(self):
+    def get_users(self) -> list[dict]:
         """
-        Gets all users from the database.
+        Retrieves all users from the database.
 
-        :return: A list of all users in the database.
+        :return: A list of dictionaries, each containing the data of one user.
         """
-        users = self.db.users.find()
-        return list(users)
+        users_data = self.db.users.find()
+        return list(users_data)
 
-    def get_users_by_role(self, role):
+    def get_users_by_role(self, role: UserRole) -> list[dict]:
         """
-        Gets all users from the database with a specific role.
+        Retrieves all users from the database with a specified role.
 
-        :param role: The role of the users to retrieve.
-        :return: A list of users with the specified role.
+        :param role: The UserRole to filter users by.
+        :return: A list of dictionaries, each containing the data of one user with the specified role.
         """
-        users = self.db.users.find({"employmentDetails.role": role})
-        return list(users)
+        users_data = self.db.users.find({"role": role.value})
+        return list(users_data)

@@ -1,15 +1,29 @@
-from flask import Flask, jsonify, request
-from model.personal_information import PersonalInfo
-from model.repository.user_repository import UserRepository
-from model.role import UserRole
-from model.user import User
-from db import initialize_db, check_db_connection
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
-from datetime import timedelta
-from auth import init_auth_routes, check_access
+""" This is the main python module where we call the run method of the flask app."""
+
 import secrets
+from datetime import timedelta, datetime
+
+from flask import Flask, jsonify
 from flask_cors import CORS
-from auth import hash_password
+from flask_jwt_extended import JWTManager, jwt_required
+
+from auth import init_auth_routes
+from controller.document_controller import DocumentController, document_blueprint
+from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
+from controller.timesheet_controller import TimesheetController, timesheet_blueprint
+from controller.user_controller import UserController, user_blueprint
+from db import initialize_db, check_db_connection
+from gridfs import GridFS
+from model.repository.time_entry_repository import TimeEntryRepository
+from model.repository.timesheet_repository import TimesheetRepository
+from model.repository.user_repository import UserRepository
+from model.timesheet import Timesheet
+from model.user.personal_information import PersonalInfo
+from model.user.role import UserRole
+from model.user.user import User
+from model.work_entry import WorkEntry
+from utils.security_utils import SecurityUtils
+from service.timesheet_service import TimesheetService
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -22,29 +36,71 @@ jwt = JWTManager(app)
 init_auth_routes(app)
 
 
+# Registering the user routes
+user_view = UserController.as_view('user')
+user_blueprint.add_url_rule('/createUser', view_func=user_view, endpoint='create_user')
+user_blueprint.add_url_rule('/login', view_func=user_view, methods=['POST'], endpoint='login')
+user_blueprint.add_url_rule('/logout', view_func=user_view, methods=['POST'], endpoint='logout')
+user_blueprint.add_url_rule('/verifyToken', view_func=user_view, methods=['POST'], endpoint='verify_token')
+user_blueprint.add_url_rule('/resetPassword', view_func=user_view, methods=['POST'], endpoint='reset_password')
+user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['POST'], endpoint='update_user')
+user_blueprint.add_url_rule('/getProfile', view_func=user_view, methods=['GET'], endpoint='get_profile')
+user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['DELETE'], endpoint='delete_user')
+user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
+user_blueprint.add_url_rule('/getUsersByRole', view_func=user_view, methods=['GET'], endpoint='get_users_by_role')
+user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['POST'], endpoint='upload_user_file')
+user_blueprint.add_url_rule('/getFile', view_func=user_view, methods=['GET'], endpoint='get_user_file')
+user_blueprint.add_url_rule('/deleteFile', view_func=user_view, methods=['DELETE'], endpoint='delete_user_file')
+user_blueprint.add_url_rule('/getHiwis', view_func=user_view, methods=['GET'], endpoint='get_hiwis')
+
+app.register_blueprint(user_blueprint, url_prefix='/user')
+
+time_entry_view = TimeEntryController.as_view('time_entry')
+time_entry_blueprint.add_url_rule('/createWorkEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/createVacationEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/updateTimeEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/deleteTimeEntry', view_func=time_entry_view, methods=['POST'])
+time_entry_blueprint.add_url_rule('/getEntriesByTimesheetId', view_func=time_entry_view, methods=['GET'])
+
+app.register_blueprint(time_entry_blueprint, url_prefix='/timeEntry')
+
+
+timesheet_view = TimesheetController.as_view('timesheet')
+timesheet_blueprint.add_url_rule('/sign', view_func=timesheet_view, methods=['PATCH'], endpoint='sign_timesheet')
+timesheet_blueprint.add_url_rule('/approve', view_func=timesheet_view, methods=['PATCH'], endpoint='approve_timesheet')
+timesheet_blueprint.add_url_rule('/requestChange', view_func=timesheet_view, methods=['PATCH'],
+                                 endpoint='request_change')
+timesheet_blueprint.add_url_rule('/get', view_func=timesheet_view, methods=['GET'], endpoint='get_timesheets')
+timesheet_blueprint.add_url_rule('/getByUsernameStatus', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_timesheets_by_username_status')
+
+timesheet_blueprint.add_url_rule('/ensureExists', view_func=timesheet_view, methods=['POST'],
+                                 endpoint='ensure_timesheet_exists')
+
+timesheet_blueprint.add_url_rule('/getCurrentTimesheet', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_current_timesheet')
+timesheet_blueprint.add_url_rule('/getByMonthYear', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_timesheets_by_month_year')
+
+app.register_blueprint(timesheet_blueprint, url_prefix='/timesheet')
+
+
+document_view = DocumentController.as_view('document')
+document_blueprint.add_url_rule('/generateDocument', view_func=document_view, methods=['GET'])
+document_blueprint.add_url_rule('/generateMultipleDocuments', view_func=document_view, methods=['GET'])
+app.register_blueprint(document_blueprint, url_prefix='/document')
+
+
 @app.route('/')
 def home():
     return "Flask Backend"
 
-def user_to_dict(user):
-    user['_id'] = str(user['_id'])  # Convert ObjectId to string
-    return user
-
-@app.route('/deleteUser', methods=['DELETE'])
-@jwt_required()
-@check_access(roles=[UserRole.ADMIN])
-def delete_user():
-    username = request.json.get('username', None)
-    if username is None:
-        return {"msg": "Username is required"}, 400
-    user_repo = UserRepository.get_instance()
-    user = user_repo.find_by_username(username)
-    if user is None:
-        return {"msg": "User not found"}, 404
-    result = user_repo.delete_user(username)
-    if result["result"] == "User deleted successfully":
-        return {"msg": "User deleted successfully"}, 200
-    return {"msg": "User deletion failed"}, 500
+def timesheet_to_dict(timesheet):
+    timesheet['_id'] = str(timesheet['_id'])  # Convert ObjectId to string
+    return timesheet
+def work_entry_to_dict(work_entry):
+    work_entry['_id'] = str(work_entry['_id'])  # Convert ObjectId to string
+    return work_entry
 
 @app.route('/createTestUser')
 @jwt_required()
@@ -52,10 +108,12 @@ def create_user():
     """
     Creates a test user in the database
     TODO: This is a hardcoded user, replace this with a React form
-    :return: A string indicating that the user was created
+    
+    Returns:
+        A string indicating that the user was created
     """
     password = "test_password"
-    hashed_password = hash_password(password)
+    hashed_password = SecurityUtils.hash_password(password)
 
     user = User(
         username="test123",
@@ -69,27 +127,85 @@ def create_user():
         role=UserRole.ADMIN
     )
     user_repo = UserRepository.get_instance()
-    return user_repo.create_user(user)
+    result = user_repo.create_user(user)
 
-@app.route('/readUsers')
+    return result.to_dict(), result.status_code
+
+@app.route('/test1')
+def test1():
+    time_entry_repository = TimeEntryRepository.get_instance()
+    time_entry = time_entry_repository.get_time_entry_by_id("666611873270f3785020e764")
+    return work_entry_to_dict(time_entry), 200
+
+#TODO: This is a hardcoded time entry!
+@app.route('/createTestTimeEntry')
 @jwt_required()
-@check_access(roles=[UserRole.ADMIN])
-def read_users():
+def create_time_entry():
     """
-    Reads all users from the database
-    Is only accessible to users with the role ADMIN
-    :return: A JSON string containing all users
+    Creates a test time entry in the database
     """
-    user_repo = UserRepository.get_instance()
-    users = user_repo.get_users()
-    return jsonify([user_to_dict(user) for user in users])
+    work_entry = WorkEntry(
+        timesheet_id="6669af45e93d71a91f35c79b",
+        start_time=datetime(year=2022, month=3, day=1, hour=8, minute=0),
+        end_time=datetime(year=2022, month=3, day=1, hour=10, minute=0),
+        break_time=15.0,
+        activity="Test Activity",
+        project_name="Test Project"
+    )
+    entry_repo = TimeEntryRepository.get_instance()
+    result = entry_repo.create_time_entry(work_entry)
+    return result.to_dict(), result.status_code
 
+#TODO: This works only for work entries, not vacation entries!
+@app.route('/readTimeEntries')
+@jwt_required()
+def read_time_entries():
+    """
+    Reads all time entries from the database
+    
+    :return: A JSON string containing all time entries
+    """
+    entry_repo = TimeEntryRepository.get_instance()
+    time_entries = entry_repo.get_time_entries()
+    return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
+@app.route('/readTimesheets')
+@jwt_required()
+def read_timesheets():
+    """
+    Reads all timesheets from the database
+    
+    :return: A JSON string containing all timesheets
+    """
+    timesheet_repo = TimesheetRepository.get_instance()
+    timesheets = timesheet_repo.get_timesheets()
+    return jsonify([timesheet_to_dict(timesheet) for timesheet in timesheets])
+
+#TODO: This is a hardcoded timesheet!
+@app.route('/createTimesheet')
+@jwt_required()
+def create_timesheet():
+    """
+    Creates a test timesheet in the database
+    """
+    timesheet = Timesheet(
+        username="test123",
+        month=6,
+        year=2022,
+    )
+    timesheet_repo = TimesheetRepository.get_instance()
+    result = timesheet_repo.create_timesheet(timesheet)
+
+    timesheet_service = TimesheetService()
+    timesheet_id = timesheet_service.get_timesheet(timesheet.username, timesheet.month, timesheet.year).data.timesheet_id
+    timesheet_service.add_time_entry(timesheet_id, "6668bdd0c1c2ec60ed516ceb")
+    return result.to_dict(), result.status_code
 
 @app.route('/checkMongoDBConnection')
 def check_mongodb_connection():
     """
     Check the connection to the MongoDB database
+    
     :return: A string indicating the connection status
     """
     return check_db_connection()
