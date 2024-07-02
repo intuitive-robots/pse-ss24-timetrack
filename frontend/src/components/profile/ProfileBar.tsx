@@ -1,11 +1,17 @@
 import React, {useState} from "react";
 import Logo from "../../assets/images/logo.svg";
 import RightArrow from "../../assets/images/arrow_right.svg";
+import UserIcon from "../../assets/images/dropdown/user_icon.svg";
+import ChangePasswordIcon from "../../assets/images/dropdown/change_password.svg";
+import LogoutIcon from "../../assets/images/dropdown/logout.svg";
+import HelpIcon from "../../assets/images/dropdown/help.svg";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import UserInfo from "../UserInfo";
 import ProfilePicture from "../../assets/images/profile_placeholder.svg"
 import SearchInput from "./SearchInput";
+import DropdownMenuButton from "../dropdown/DropdownMenuButton";
+import HorizontalSeparator from "../../shared/HorizontalSeparator";
 
 /**
  * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,
@@ -68,18 +74,20 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             )}
 
             {isDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-52 bg-white rounded-md shadow-lg py-1 z-500">
-                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">My
-                        Profile
-                    </button>
-                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Change
-                        Password
-                    </button>
-                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Help
-                    </button>
-                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                            onClick={handleLogout}>Sign Out
-                    </button>
+                <div className="absolute left-0 mt-1.5 w-56 bg-white rounded-lg shadow-lg px-4 py-1 z-500">
+                    <div className="h-1"/>
+                    <HorizontalSeparator/>
+                    <div className="h-1"/>
+                    <DropdownMenuButton icon={UserIcon} label="My Profile" onClick={() => {
+                    }}/>
+                    <DropdownMenuButton icon={ChangePasswordIcon} label="Change Password" onClick={() => {
+                    }}/>
+                    <DropdownMenuButton icon={HelpIcon} label="Help" onClick={() => {
+                    }}/>
+                    <div className="h-1"/>
+                    <HorizontalSeparator/>
+                    <div className="h-1"/>
+                    <DropdownMenuButton icon={LogoutIcon} label="Sign Out" onClick={handleLogout}/>
                 </div>
             )}
         </div>
@@ -88,7 +96,9 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
             onClick={toggleDropdown}
         >
-            <img src={RightArrow} alt="RightArrow"/>
+            <div className={`transform transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
+                <img src={RightArrow} alt="RightArrow"/>
+            </div>
         </button>
 
     </div>
