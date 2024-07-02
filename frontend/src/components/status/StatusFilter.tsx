@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getStatusType, StatusType } from "../interfaces/StatusType";
+import {getStatusType, StatusType} from "../../interfaces/StatusType";
 
 interface StatusFilterProps {
     setFilter: (status: StatusType | null) => void;
@@ -13,6 +13,8 @@ interface StatusFilterProps {
  * @returns {React.ReactElement} A React Element that renders the status filter bar with the correct activated status.
  */
 
+// TODO: implement slide animation
+/*
 const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
     const statuses = ['View all', StatusType.Pending, StatusType.Waiting];
 
@@ -62,8 +64,8 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
 }
 
 export default StatusFilter;
+*/
 
-/*
 
 const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
   const statuses = ['View all', StatusType.Pending, StatusType.Waiting];
@@ -107,4 +109,3 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
 
 export default StatusFilter;
 
-*/

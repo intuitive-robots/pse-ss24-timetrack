@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import LayoutWrapper from "../../components/LayoutWrapper";
+import LayoutWrapper from "../../components/layout/LayoutWrapper";
 import UserCard from "../../components/UserCard";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg"
 import {getUsers} from "../../services/AuthService";

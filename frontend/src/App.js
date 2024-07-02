@@ -2,7 +2,7 @@ import React from 'react';
 import {Routes, Route, Navigate} from 'react-router-dom';
 import LoginForm from "./pages/LoginPage";
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import LayoutWrapper from "./components/LayoutWrapper";
+import LayoutWrapper from "./components/layout/LayoutWrapper";
 
 function App() {
   return (

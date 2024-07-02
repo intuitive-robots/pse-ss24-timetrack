@@ -36,30 +36,33 @@ const ProfileBar: React.FC = (): React.ReactElement => {
   };
 
   return (
-    <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold">
-      <div className="flex items-center space-x-4 mr-auto">
+    <div className="bg-white flex items-center py-5 px-10 gap-5 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold text-nowrap transition-all duration-300 ease-in-out ">
+        <div className="flex items-center space-x-4">
           <img src={Logo} alt="Clockwise" />
-          <div className="w-32" />
-          <SearchInput placeholder="Search" />
+          <div className="transition-all duration-400 ease-in-out md:w-12 lg:w-32" />
+            <SearchInput placeholder="Search" />
+
           <div className="flex gap-3">
               <button
-                  className="btn border hover:bg-gray-200 text-sm text-light-navGray h-full py-2 px-6 rounded-lg">This
+                  className="btn border hover:bg-gray-200 text-sm text-light-navGray h-full py-2 px-6 rounded-lg hidden md:flex">This
                   month
               </button>
-              <button className="btn border hover:bg-gray-200 text-sm text-light-navGray h-full py-2 px-6 rounded-lg">By
+              <button className="btn border hover:bg-gray-200 text-sm text-light-navGray h-full py-2 px-6 rounded-lg hidden lg:flex">By
                   Project
               </button>
           </div>
-      </div>
+        </div>
+        <div className="ml-auto">
+            {user && (
+                <UserInfo
+                    name={user.personalInfo.firstName}
+                    lastName={user.personalInfo.lastName}
+                    role={role || "N/A"}
+                    profileImageUrl={user.profileImageUrl || ProfilePicture}
+                />
+            )}
+        </div>
 
-        {user && (
-            <UserInfo
-                name={user.personalInfo.firstName}
-                lastName={user.personalInfo.lastName}
-                role={role || "N/A"}
-                profileImageUrl={user.profileImageUrl || ProfilePicture}
-            />
-      )}
       <button
         className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
         onClick={handleLogout}

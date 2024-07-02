@@ -1,5 +1,5 @@
 import React from 'react';
-import {StatusType} from "../interfaces/StatusType";
+import {StatusType} from "../../interfaces/StatusType";
 
 
 interface StatusProps {

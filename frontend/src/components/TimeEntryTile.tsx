@@ -19,7 +19,7 @@ interface TimeEntryTileProps {
 
 const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectName, workTime, breakTime, period, onEdit, onDelete}) => {
   return (
-      <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between">
+      <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
           <div className="flex gap-5 ">
               <CalendarDay dayTime={date} />
               <div className="flex flex-col w-60 mt-1.5 gap-0.5">

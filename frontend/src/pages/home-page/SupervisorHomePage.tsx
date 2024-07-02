@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import HiwiCard from "../../components/HiwiCard";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
-import StatusFilter from "../../components/StatusFilter";
+import StatusFilter from "../../components/status/StatusFilter";
 import {getStatusType, getSupervisorStatusType, StatusType} from "../../interfaces/StatusType";
 import {Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
@@ -167,9 +167,7 @@ const SupervisorHomePage = (): React.ReactElement => {
                 )}
             </div>
         </div>
-
     );
-
 };
 
 export default SupervisorHomePage;

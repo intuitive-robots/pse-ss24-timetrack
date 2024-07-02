@@ -1,8 +1,10 @@
 import React from 'react';
-import TimeEntryTile from "../TimeEntryTile";
 import {Timesheet} from "../../interfaces/Timesheet";
 import TimesheetTile from "../TimesheetTile";
-import {getStatusType, StatusType} from "../../interfaces/StatusType";
+import {StatusType} from "../../interfaces/StatusType";
+import {useAuth} from "../../context/AuthContext";
+import {isValidTimesheetStatus, statusMapping} from "../status/StatusMapping";
+import {isValidRole} from "../auth/roles";
 
 interface TimesheetListProps {
     sheets: Timesheet[];
@@ -10,6 +12,7 @@ interface TimesheetListProps {
 
 
 const TimesheetListView: React.FC<TimesheetListProps> = ({ sheets }) => {
+    const {role} = useAuth();
 
 
     return (
@@ -23,7 +26,7 @@ const TimesheetListView: React.FC<TimesheetListProps> = ({ sheets }) => {
                     overtime={sheet.overtime}
                     projectName={"Project Alpha"}
                     vacationDays={0}
-                    status={getStatusType(sheet.status) ?? StatusType.Pending}
+                    status={(role && isValidRole(role) && sheet.status && isValidTimesheetStatus(sheet.status)) ? statusMapping[role][sheet.status]: StatusType.Pending}
                     description={sheet.lastSignatureChange}
                     onDownload={() => console.log('Download Timesheet', sheet._id)}
                 />
