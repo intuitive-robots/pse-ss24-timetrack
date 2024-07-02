@@ -1,7 +1,5 @@
 import unittest
 
-from flask_jwt_extended import get_jwt_identity
-
 from app import app
 from model.repository.user_repository import UserRepository
 from model.user.user import User

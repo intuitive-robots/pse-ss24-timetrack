@@ -6,6 +6,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 from auth import init_auth_routes
+
 from controller.document_controller import DocumentController, document_blueprint
 from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
