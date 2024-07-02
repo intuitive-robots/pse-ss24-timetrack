@@ -28,7 +28,7 @@ export const statusMapping: RoleStatusMaps = {
     },
     Supervisor: {
         [TimesheetStatus.NotSubmitted]: 'Waiting',
-        [TimesheetStatus.Revision]: 'Waiting',
+        [TimesheetStatus.Revision]: 'Revision',
         [TimesheetStatus.WaitingForApproval]: 'Pending',
         [TimesheetStatus.Complete]: 'Complete'
     },

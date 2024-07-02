@@ -41,11 +41,10 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries }) => {
   const confirmDelete = async (entryId: string) => {
     try {
       await deleteTimeEntry(entryId);
-      closePopup(); // Schließt das Popup nach erfolgreicher Aktion
-      // Hier könnten Sie auch die Liste aktualisieren oder eine Benachrichtigung anzeigen
+      closePopup();
     } catch (error) {
       console.error('Failed to delete time entry:', error);
-      closePopup(); // Schließt das Popup im Fehlerfall
+      closePopup();
     }
   };
 
