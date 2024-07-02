@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback} from 'react';
 import { useDropzone } from 'react-dropzone';
 import UploadIcon from "../../assets/images/upload_icon.svg"
-import {FileData, getUserFile, uploadFile} from "../../services/FileService";
+import {uploadFile} from "../../services/FileService";
 import {useAuth} from "../../context/AuthContext";
 import SignatureDisplay from "./SignatureDisplay";
 
@@ -12,8 +12,8 @@ const SignatureUpload = () => {
         const file = acceptedFiles[0];
 
         try {
-          const response = await uploadFile(file, 'Signature');
-          alert('File uploaded successfully: ' + response.message);
+          await uploadFile(file, 'Signature');
+          window.location.reload();
         } catch (error: any) {
           alert('Error uploading file: ' + error.message);
         }
@@ -22,7 +22,7 @@ const SignatureUpload = () => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
     const containerClasses = `py-9 border-dashed border-2 border-[#BFC5EA] rounded-lg text-center cursor-pointer ${
-        isDragActive ? 'bg-green-200' : 'bg-[#F8F8FF]'
+        isDragActive ? 'bg-purple-200' : 'bg-[#F8F8FF]'
     }`;
 
   return (
@@ -33,7 +33,7 @@ const SignatureUpload = () => {
                   <img src={UploadIcon} alt="Upload Icon"/>}
           </div>
           <div className="text-sm text-gray-600">
-              {isDragActive ? <p>Drop the files here ...</p> :
+              {isDragActive ? <p className="text-purple-500">Drop the files here ...</p> :
                   <>Drag & drop a signature or <button className="text-purple-500 underline">Browse</button></>
               }
           </div>
