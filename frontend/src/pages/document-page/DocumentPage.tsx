@@ -35,21 +35,21 @@ const DocumentPage: React.FC = () => {
                     <p className="text-lg font-semibold text-subtitle">This Year,</p>
                     <YearTimespan year={2024}/>
                 </div>
-                <div className="flex gap-4">
-                    <ListIconCardButton
-                        iconSrc={LeftNavbarIcon}
-                        label={"Before"}
-                        onClick={() => {
-                        }}
-                    />
-                    <ListIconCardButton
-                        iconSrc={RightNavbarIcon}
-                        label={"Next"}
-                        orientation={"right"}
-                        onClick={() => {
-                        }}
-                    />
-                </div>
+                {/*<div className="flex gap-4">*/}
+                {/*    <ListIconCardButton*/}
+                {/*        iconSrc={LeftNavbarIcon}*/}
+                {/*        label={"Before"}*/}
+                {/*        onClick={() => {*/}
+                {/*        }}*/}
+                {/*    />*/}
+                {/*    <ListIconCardButton*/}
+                {/*        iconSrc={RightNavbarIcon}*/}
+                {/*        label={"Next"}*/}
+                {/*        orientation={"right"}*/}
+                {/*        onClick={() => {*/}
+                {/*        }}*/}
+                {/*    />*/}
+                {/*</div>*/}
             </div>
 
             <h1 className="text-3xl font-bold text-headline mt-4">Your monthly documents</h1>
