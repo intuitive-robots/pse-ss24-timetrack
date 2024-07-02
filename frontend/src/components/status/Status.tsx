@@ -14,7 +14,7 @@ const StatusLabel: React.FC<StatusProps> = ({ status }) => {
     [StatusType.Revision]: { bgColor: "bg-revision-bg", textColor: "text-revision-fg" },
   };
 
-  const { bgColor, textColor } = statusStyles[status];
+  const { bgColor, textColor } = statusStyles[status] || { bgColor: "bg-white", textColor: "text-black" };
 
   return (
     <div className={`flex items-center justify-center w-28 px-6 py-0.5 rounded-lg ${bgColor}`}>
