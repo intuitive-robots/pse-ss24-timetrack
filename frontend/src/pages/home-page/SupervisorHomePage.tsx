@@ -86,6 +86,9 @@ const SupervisorHomePage = (): React.ReactElement => {
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
 
+    // const hiwisLength = hiwis ? hiwis.length : 0;
+
+
     // TODO: duplicate code with HiwiHomepage.tsx
     const handleMonthChange = (direction: string) => {
         if (direction === 'next') {
