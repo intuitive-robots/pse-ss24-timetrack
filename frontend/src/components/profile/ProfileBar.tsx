@@ -77,8 +77,8 @@ const ProfileBar: React.FC = (): React.ReactElement => {
                 </div>
             )}
 
-            {isDropdownOpen && (
-                <div className="absolute left-0 top-0 pt-14 w-64 bg-white rounded-xl shadow-profile-popup-shadow px-4 py-2 z-0- ">
+            {/*{isDropdownOpen && (*/}
+                <div className={`absolute left-0 top-0 pt-14 w-64 bg-white rounded-xl shadow-profile-popup-shadow px-4 py-2 z-0 transform transition-all duration-100 ${isDropdownOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} origin-top`}>
                     <div className="h-1"/>
                     <HorizontalSeparator paddingY="my-1" height="h-[1px]" color="bg-[#F6F6F6]"/>
                     <div className="h-1"/>
@@ -92,7 +92,7 @@ const ProfileBar: React.FC = (): React.ReactElement => {
                     <div className="h-1"/>
                     <DropdownMenuButton icon={LogoutIcon} label="Sign Out" onClick={handleLogout}/>
                 </div>
-            )}
+            {/*)}*/}
 
         </div>
 
@@ -100,7 +100,7 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200 z-50"
             onClick={toggleDropdown}
         >
-            <div className={`transform transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
+            <div className={`transform transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
                 <img src={RightArrow} alt="RightArrow"/>
             </div>
         </button>
