@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+
+from bson import ObjectId
+
 from model.time_entry_type import TimeEntryType
 
 
@@ -20,7 +23,7 @@ class TimeEntry(ABC):
     """
 
     def __init__(self, timesheet_id: str, start_time: datetime, end_time: datetime, entry_type: TimeEntryType,
-                 time_entry_id = None):
+                 time_entry_id=None):
         """
         Initializes a new instance of the TimeEntry class with specified values.
 
@@ -41,7 +44,7 @@ class TimeEntry(ABC):
         self.end_time = end_time
         self.entry_type = entry_type
 
-    def set_id(self, time_entry_id):
+    def set_id(self, time_entry_id: ObjectId):
         """
         Sets or updates the identifier for this time entry.
 

@@ -31,7 +31,7 @@ class TimesheetController(MethodView):
             '/get': self.get_timesheets,
             '/getByUsernameStatus': self.get_timesheets_by_username_status,
             '/getCurrentTimesheet': self.get_current_timesheet,
-            '/getByMonthYear': self.get_timesheets_by_month_year
+            '/getByMonthYear': self.get_timesheet_by_month_year
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -89,7 +89,7 @@ class TimesheetController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
-        timesheet_id = request_data['timesheetId']
+        timesheet_id = request_data['_id']
         if timesheet_id is None:
             return jsonify({'error': 'No timesheet ID provided'}), 400
         result = self.timesheet_service.sign_timesheet(timesheet_id)
@@ -106,7 +106,9 @@ class TimesheetController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
-        timesheet_id = request_data['timesheetId']
+        timesheet_id = request_data['_id']
+        if timesheet_id is None:
+            return jsonify({'error': 'No timesheet ID provided'}), 400
         result = self.timesheet_service.approve_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -121,7 +123,9 @@ class TimesheetController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
-        timesheet_id = request_data['timesheetId']
+        timesheet_id = request_data['_id']
+        if timesheet_id is None:
+            return jsonify({'error': 'No timesheet ID provided'}), 400
         result = self.timesheet_service.request_change(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -143,7 +147,7 @@ class TimesheetController(MethodView):
         return jsonify([timesheet.to_str_dict() for timesheet in result.data]), result.status_code
 
     @jwt_required()
-    def get_timesheets_by_month_year(self):
+    def get_timesheet_by_month_year(self):
         """
         Retrieves timesheets for the current user by month and year.
 
@@ -191,7 +195,8 @@ class TimesheetController(MethodView):
         status = request_data.get('status')
         if username is None or status is None:
             return jsonify({'error': 'Missing required fields'}), 400
-        timesheets = self.timesheet_service.get_timesheets_by_username_status(username, status)
+        #TODO: changes status in timesheet service to string and convert there
+        timesheets = self.timesheet_service.get_timesheets_by_username_status(username, status).data
         if timesheets is None or len(timesheets) == 0:
             return jsonify({'error': 'No timesheets found'}), 404
         return jsonify([timesheet.to_str_dict() for timesheet in timesheets]), 200

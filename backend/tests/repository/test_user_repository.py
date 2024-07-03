@@ -125,3 +125,5 @@ class TestUserRepository(unittest.TestCase):
         self.user_repository.delete_user("testDeleteUser")
         self.assertIsNone(self.user_repository.find_by_username("testDeleteUser"))
 
+    if __name__ == '__main__':
+        unittest.main()

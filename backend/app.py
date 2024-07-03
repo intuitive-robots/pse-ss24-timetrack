@@ -167,7 +167,6 @@ def read_time_entries():
     time_entries = entry_repo.get_time_entries()
     return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
-
 #TODO: This is a hardcoded timesheet!
 @app.route('/createTimesheet')
 @jwt_required()
