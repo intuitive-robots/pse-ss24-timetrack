@@ -99,3 +99,6 @@ class TestFileRepository(unittest.TestCase):
         metadata = self.file_repository.get_image_metadata(test_username, FileType.PROFILE_PICTURE)
         self.assertIsNotNone(metadata)
         self.file_repository.delete_image(metadata["gridfsId"])
+
+    if __name__ == '__main__':
+        unittest.main()

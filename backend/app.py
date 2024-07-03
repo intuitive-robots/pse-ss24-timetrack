@@ -169,18 +169,6 @@ def read_time_entries():
     time_entries = entry_repo.get_time_entries()
     return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
-@app.route('/readTimesheets')
-@jwt_required()
-def read_timesheets():
-    """
-    Reads all timesheets from the database
-    
-    :return: A JSON string containing all timesheets
-    """
-    timesheet_repo = TimesheetRepository.get_instance()
-    timesheets = timesheet_repo.get_timesheets()
-    return jsonify([timesheet_to_dict(timesheet) for timesheet in timesheets])
-
 #TODO: This is a hardcoded timesheet!
 @app.route('/createTimesheet')
 @jwt_required()

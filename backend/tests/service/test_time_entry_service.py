@@ -117,3 +117,6 @@ class TestTimeEntryService(unittest.TestCase):
         self.assertEqual(test_time_entry1, result.data[0].time_entry_id)
         self.assertEqual(test_time_entry2, result.data[1].time_entry_id)
         self.assertEqual(test_time_entry3, result.data[2].time_entry_id)
+
+    if __name__ == '__main__':
+        unittest.main()

@@ -197,3 +197,5 @@ class TestTimesheetService(unittest.TestCase):
         result = self.timesheet_service.get_timesheet(test_nonexistent_username, test_month, test_year)
         self.assertFalse(result.is_successful)
 
+    if __name__ == '__main__':
+        unittest.main()

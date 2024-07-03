@@ -169,7 +169,7 @@ class TimeEntryService:
         entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
 
         if not entries_data:
-            return []
+            RequestResult(is_successful=False, message="No entries found", status_code=404)
         time_entries = []
         for entry_data in entries_data:
             entry_type = TimeEntryType.get_type_by_value(entry_data['entryType'])
