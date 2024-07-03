@@ -150,7 +150,7 @@ class UserController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
-    @check_access(roles=[UserRole.ADMIN])
+
     def reset_password(self):
         """
         Resets the password for a user based on the provided JSON data.

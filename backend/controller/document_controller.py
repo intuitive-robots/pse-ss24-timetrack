@@ -41,7 +41,6 @@ class DocumentController(MethodView):
         Generates a new document
 
         """
-
         request_data = request.args
         month = int(request_data.get('month'))
         year = int(request_data.get('year'))

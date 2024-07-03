@@ -115,8 +115,7 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         """
         personal_info = document_data.personal_info
         contract_info = document_data.contract_info
-
-        #TODO: Ggf. auslagern
+        #TODO: Calc Urlaub anteilig
         data_dict = {
             "Personalnummer": personal_info.personal_number,
             "abc": document_data.month,
