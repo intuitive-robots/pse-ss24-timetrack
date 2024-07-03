@@ -5,9 +5,15 @@ module.exports = {
   ],
   theme: {
     extend: {
-      plugins: [
-
-      ],
+      keyframes: {
+        slideIn: {
+          '0%': { transform: 'scaleX(0)' },
+          '100%': { transform: 'scaleX(1)' },
+        },
+      },
+      animation: {
+        slideIn: 'fadeIn 2s ease-in-out forwards',
+      },
       colors: {
         light: {  // Light Theme
           background: '#ffffff',
@@ -53,8 +59,8 @@ module.exports = {
         lg: ['1.125rem', { lineHeight: '1.75rem' }], // Large
         xl: ['1.25rem', { lineHeight: '1.75rem' }], // Extra Large
         '2xl': ['1.5rem', { lineHeight: '2rem' }], // 2X Large
-      }
+      },
     },
   },
   plugins: [],
-}
+};

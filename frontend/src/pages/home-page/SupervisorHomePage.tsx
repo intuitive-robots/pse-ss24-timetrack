@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import HiwiCard from "../../components/HiwiCard";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import StatusFilter from "../../components/status/StatusFilter";
-import {getStatusType, getSupervisorStatusType, StatusType} from "../../interfaces/StatusType";
+import {StatusType} from "../../interfaces/StatusType";
 import {Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
@@ -12,6 +12,9 @@ import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
+import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
+import {isValidRole, Roles} from "../../components/auth/roles";
+import {useNavigate} from "react-router-dom";
 
 
 /**
@@ -23,7 +26,7 @@ const SupervisorHomePage = (): React.ReactElement => {
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[] | null>(null);
     const [timesheets, setTimesheets] = useState<(Timesheet | null)[]>([]);
-    const { user } = useAuth();
+    const { user, role} = useAuth();
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
@@ -31,19 +34,7 @@ const SupervisorHomePage = (): React.ReactElement => {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
-    /* TODO entfernen
-    const employees = [
-        { name: 'Nico', lastName: 'Revision', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Revision },
-        { name: 'Tom', lastName: 'Revision', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Revision },
-        { name: 'Nico', lastName: 'Waiting', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Waiting },
-        { name: 'Tom', lastName: 'Pending', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Pending },
-        { name: 'Nico', lastName: 'Pending', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Pending },
-        { name: 'Tom', lastName: 'Complete', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Complete },
-        { name: 'Nico', lastName: 'Complete', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Complete },
-        { name: 'Tom', lastName: 'Complete', role: 'Hilfswissenschaftler', profileImageUrl: ProfilePlaceholder, status: StatusType.Complete },
-    ];
-    */
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (user && user.username) {
@@ -69,16 +60,18 @@ const SupervisorHomePage = (): React.ReactElement => {
                 const validTimesheets = fetchedTimesheets
                     .map(timesheet => {
                         if (!timesheet) return null;
+                        const timesheetStatus = timesheet.status;
+                        if (!isValidTimesheetStatus(timesheetStatus) || !isValidRole(role)) return null;
                         return {
                             ...timesheet,
-                            status: getSupervisorStatusType(timesheet.status)
+                            status: statusMapping[Roles.Supervisor][timesheetStatus],
                         } as Timesheet;
                     });
                 setTimesheets(validTimesheets);
                 console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
             });
         }
-    }, [hiwis, timesheets]);
+    }, [hiwis, timesheets, month, year, role]);
 
 
 
@@ -107,6 +100,14 @@ const SupervisorHomePage = (): React.ReactElement => {
             }
         }
     };
+
+    const handleCheckTimesheet = (hiwi: User, month: number, year: number) => {
+        console.log("check timesheet");
+        const path = `/app/timesheet/${hiwi.username.replace(/\s+/g, '-')}/${month}/${year}`;
+        navigate(path);
+
+    };
+
 
     return (
         <div className="px-6 py-6">
@@ -146,6 +147,7 @@ const SupervisorHomePage = (): React.ReactElement => {
                         {filteredTimesheets.map((timesheet, index) => {
                             if (!timesheet) return null;
                             const hiwi = hiwis.find(h => h.username === timesheet.username);
+                            if (!hiwi) return null;
                             return hiwi ? (
                                 <HiwiCard
                                     key={index}
@@ -154,8 +156,7 @@ const SupervisorHomePage = (): React.ReactElement => {
                                     role={hiwi.role}
                                     profileImageUrl={ProfilePlaceholder} // TODO: hiwi.profileImageUrl
                                     status={timesheet.status}
-                                    onCheck={() => {
-                                    }}
+                                    onCheck={() => handleCheckTimesheet(hiwi, month, year)} // TODO
                                 />
                             ) : null;
                         })}

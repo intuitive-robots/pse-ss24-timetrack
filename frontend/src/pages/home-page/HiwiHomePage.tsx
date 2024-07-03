@@ -19,6 +19,7 @@ import {isValidRole} from "../../components/auth/roles";
 import {roles} from "aria-query";
 import DocumentPage from "../document-page/DocumentPage";
 import DocumentStatus from "../../components/status/DocumentStatus";
+import {User} from "../../interfaces/Hiwi";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -34,6 +35,7 @@ const HiwiHomePage = (): React.ReactElement => {
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
+
 
     useEffect(() => {
         if (user && user.username) {

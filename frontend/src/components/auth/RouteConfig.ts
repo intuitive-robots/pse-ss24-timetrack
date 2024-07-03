@@ -14,6 +14,8 @@ import SecretaryDocumentPage from "../../pages/document-page/SecretaryDocumentPa
 import SupervisorEmployeesPage from "../../pages/employees/SupervisorEmployeesPage";
 import SecretaryEmployeesPage from "../../pages/employees/SecretaryEmployeesPage";
 import AdminAnalysisPage from "../../pages/analysis-page/AdminAnalysisPage";
+import TimesheetViewer from "../timesheet/TimesheetViewer";
+import TimesheetPage from "../../pages/TimesheetPage";
 
 const commonRoutes = {
     "/guidelines": GuidelinePage,
@@ -36,6 +38,7 @@ export const routesConfig: RoutesConfig  = {
   Supervisor: {
     ...commonRoutes,
     "/home": SupervisorHomePage,
+    "/timesheet/*": TimesheetPage,
     "/analysis": SupervisorAnalysisPage,
     "/employees": SupervisorEmployeesPage,
     "/projects": ProjectsPage,
