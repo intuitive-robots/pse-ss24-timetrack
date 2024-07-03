@@ -2,18 +2,16 @@
 
 import secrets
 from datetime import timedelta, datetime
-
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
-
 from auth import init_auth_routes
+
 from controller.document_controller import DocumentController, document_blueprint
 from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
 from db import initialize_db, check_db_connection
-from gridfs import GridFS
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
@@ -168,18 +166,6 @@ def read_time_entries():
     entry_repo = TimeEntryRepository.get_instance()
     time_entries = entry_repo.get_time_entries()
     return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
-
-@app.route('/readTimesheets')
-@jwt_required()
-def read_timesheets():
-    """
-    Reads all timesheets from the database
-    
-    :return: A JSON string containing all timesheets
-    """
-    timesheet_repo = TimesheetRepository.get_instance()
-    timesheets = timesheet_repo.get_timesheets()
-    return jsonify([timesheet_to_dict(timesheet) for timesheet in timesheets])
 
 #TODO: This is a hardcoded timesheet!
 @app.route('/createTimesheet')

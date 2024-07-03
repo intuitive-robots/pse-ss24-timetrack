@@ -1,11 +1,11 @@
+import datetime
+
 from db import initialize_db
 from model.request_result import RequestResult
 from model.user.role import UserRole
 from model.user.user import User
 
 
-# TODO: Repository methods should receive a dict instead of a User object ->
-# This should be the case for all repositories
 class UserRepository:
     """
     Repository class for managing user data in the database. It provides functionalities
@@ -49,6 +49,23 @@ class UserRepository:
             return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
         return RequestResult(False, "User creation failed", 500)
 
+    def set_last_login(self, username, last_login: datetime.datetime):
+        """
+        Sets the last login time for a user in the database.
+
+        :param username: The username of the user to update.
+        :param last_login: The last login time to set for the user.
+        :return: RequestResult indicating the success or failure of the update operation.
+        """
+        result = self.db.users.update_one({"username": username}, {"$set": {"lastLogin": last_login}})
+        if result.matched_count == 0:
+            return RequestResult(False, "User not found", 404)
+        if result.modified_count == 0:
+            return RequestResult(False, "Last login update failed", 500)
+        if result.acknowledged:
+            return RequestResult(True, "Last login updated successfully", 200)
+        return RequestResult(False, "Last login update failed", 500)
+
     def find_by_username(self, username):
         """
         Retrieves a user's data from the database by their username.
@@ -70,22 +87,6 @@ c
         :return: RequestResult indicating the success or failure of the update operation.
         """
         result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
-        if result.matched_count == 0:
-            return RequestResult(False, "User not found", 404)
-        if result.modified_count == 0:
-            return RequestResult(False, "User update failed", 500)
-        if result.acknowledged:
-            return RequestResult(True, "User updated successfully", 200)
-        return RequestResult(False, "User update failed", 500)
-
-    def update_user_by_dict(self, user_data: dict) -> RequestResult:
-        """
-        Updates an existing user in the database based on the provided User object.
-
-        :param user_data: The User data containing updated data for the user.
-        :return: RequestResult indicating the success or failure of the update operation.
-        """
-        result = self.db.users.update_one({"username": user_data['username']}, {"$set": user_data})
         if result.matched_count == 0:
             return RequestResult(False, "User not found", 404)
         if result.modified_count == 0:

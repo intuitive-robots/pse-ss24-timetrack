@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from service.time_entry_service import TimeEntryService
 from service.timesheet_service import TimesheetService
@@ -10,7 +10,7 @@ time_entry_blueprint = Blueprint('time_entry', __name__)
 
 class TimeEntryController(MethodView):
     """
-    Controller for handling requests related to time entries, providing methods for POST and GET requests.
+    controller for handling requests related to time entries, providing methods for POST and GET requests.
     """
 
     def __init__(self):
@@ -66,8 +66,11 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_data = request.get_json()
-        result = self.time_entry_service.create_work_entry(time_entry_data)
+        username = get_jwt_identity()
+        result = self.time_entry_service.create_work_entry(time_entry_data, username)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
@@ -77,8 +80,11 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         vacation_data = request.get_json()
-        result = self.time_entry_service.add_vacation_entry(vacation_data)
+        username = get_jwt_identity()
+        result = self.time_entry_service.create_vacation_entry(vacation_data, username)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
@@ -88,9 +94,11 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_data = request.get_json()
-        time_entry_id = time_entry_data.get('timeEntryId')
-        time_entry_data.pop('timeEntryId')
+        time_entry_id = time_entry_data.get('_id')
+        time_entry_data.pop('_id')
         result = self.time_entry_service.update_time_entry(time_entry_id, time_entry_data)
         return jsonify(result.message), result.status_code
 
@@ -101,6 +109,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_id = request.get_json().get('timeEntryId')
         result = self.time_entry_service.delete_time_entry(time_entry_id)
         return jsonify(result.message), result.status_code
@@ -116,5 +126,5 @@ class TimeEntryController(MethodView):
         if timesheet_id is None:
             return jsonify('No timesheet ID provided'), 400
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet_id)
-        time_entries_data = [entry.to_str_dict() for entry in time_entries]
+        time_entries_data = [entry.to_str_dict() for entry in time_entries.data]
         return jsonify(time_entries_data), 200

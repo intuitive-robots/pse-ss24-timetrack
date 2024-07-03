@@ -1,7 +1,11 @@
+from bson import ObjectId
+
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
+from service.user_service import UserService
+
 
 #TODO: Calculate proper overtime - take a look at the documentData class
 class TimesheetService:
@@ -13,6 +17,7 @@ class TimesheetService:
 
     def __init__(self):
         self.timesheet_repository = TimesheetRepository.get_instance()
+        self.user_service = UserService()
 
     def ensure_timesheet_exists(self, username: str, month: int, year: int):
         """
@@ -31,12 +36,14 @@ class TimesheetService:
         timesheet = self.timesheet_repository.get_timesheet(username, month, year)
         if timesheet is not None:
             return RequestResult(True, "Timesheet already exists", 200)
-        creation_result = self.timesheet_repository.create_timesheet(Timesheet(username, month, year))
+        creation_result = self._create_timesheet(username, month, year)
         if creation_result.status_code == 201:
+
             return RequestResult(True, "Timesheet created", 201)
         return RequestResult(False, "Failed to create timesheet", 500)
 
     def sign_timesheet(self, timesheet_id: str):
+        #TODO: first check if Hiwi has already uploaded signature
         """
         Method used by the Hiwi to sign his timesheet.
 
@@ -51,7 +58,7 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         if timesheet_data['status'] in (TimesheetStatus.WAITING_FOR_APPROVAL.value, TimesheetStatus.COMPLETE.value):
             return RequestResult(False, "Timesheet already signed", 409)
-        return self.set_timesheet_status(timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
+        return self._set_timesheet_status(timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
 
     def approve_timesheet(self, timesheet_id: str):
         """
@@ -70,7 +77,7 @@ class TimesheetService:
             return RequestResult(False, "Timesheet already approved", 409)
         if timesheet['status'] != 'Waiting for Approval':
             return RequestResult(False, "Timesheet cannot be approved", 400)
-        return self.set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
+        return self._set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
 
     def request_change(self, timesheet_id: str):
         """
@@ -89,9 +96,9 @@ class TimesheetService:
             return RequestResult(False, "Timesheet already approved", 409)
         if timesheet['status'] != 'Waiting for Approval':
             return RequestResult(False, "HiWi didn't submitted the timesheet", 400)
-        return self.set_timesheet_status(timesheet_id, TimesheetStatus.REVISION)
+        return self._set_timesheet_status(timesheet_id, TimesheetStatus.REVISION)
 
-    def set_timesheet_status(self, timesheet_id: str, status: TimesheetStatus):
+    def _set_timesheet_status(self, timesheet_id: str, status: TimesheetStatus):
         """
         Sets the status of a timesheet.
         
@@ -101,7 +108,7 @@ class TimesheetService:
         """
         return self.timesheet_repository.set_timesheet_status(timesheet_id, status)
 
-    def create_timesheet(self, username: str, month: int, year: int):
+    def _create_timesheet(self, username: str, month: int, year: int):
         """
         Creates a new timesheet.
         
@@ -110,14 +117,44 @@ class TimesheetService:
         :param year: The year of the timesheet
         :return: The result of the create operation
         """
-        return self.timesheet_repository.create_timesheet(Timesheet(username, month, year))
+        result = self.timesheet_repository.create_timesheet(Timesheet(username, month, year))
+        if result.is_successful:
+            hiwi = self.user_service.get_profile(username)
+            hiwi.add_timesheet(result.data["_id"])
+            update_result = self.user_service.update_user(hiwi.to_dict())
+            if not update_result.is_successful:
+                self.timesheet_repository.delete_timesheet(result.data["_id"])
+                return update_result
+
+            return RequestResult(True, "Timesheet created", 201, {"_id": result.data["_id"]})
+
+        return RequestResult(False, "Failed to create timesheet", 500)
+
+    def delete_timesheet_by_id(self, timesheet_id: str):
+        """
+        Deletes a timesheet by its ID.
+
+        :param timesheet_id: The ID of the timesheet
+        :return: The result of the delete operation
+        """
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
+            return RequestResult(False, "Timesheet not found", 404)
+        result = self.timesheet_repository.delete_timesheet(timesheet_id)
+        if result.is_successful:
+            hiwi = self.user_service.get_profile(timesheet_data["username"])
+            hiwi.remove_timesheet(ObjectId(timesheet_id))
+            update_result = self.user_service.update_user(hiwi.to_dict())
+            if not update_result.is_successful:
+                return update_result
+        return result
 
     def get_timesheet_by_id(self, timesheet_id: str):
         """
         Retrieves a timesheet by its ID.
         
         :param timesheet_id: The ID of the timesheet
-        :return: The timesheet object
+        :return: A RequestResult object with the timesheet object in the data field if it was found.
         """
         timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet_data is None:
@@ -132,9 +169,12 @@ class TimesheetService:
         :return: A list of timesheet objects
         """
         timesheets_data = self.timesheet_repository.get_timesheets_by_username(username)
+
         if timesheets_data is None or len(timesheets_data) == 0:
             return RequestResult(False, "No timesheets found", 404)
-        return RequestResult(True, "", 200, list(map(Timesheet.from_dict, timesheets_data)))
+        timesheets = list(map(Timesheet.from_dict, timesheets_data))
+        sorted_timesheets = sorted(timesheets, key=lambda x: (x.year, x.month), reverse=True)
+        return RequestResult(True, "", 200, sorted_timesheets )
 
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
@@ -145,7 +185,9 @@ class TimesheetService:
         :return: A list of timesheet objects
         """
         timesheets_data = self.timesheet_repository.get_timesheets_by_username_status(username, status)
-        return list(map(Timesheet.from_dict, timesheets_data))
+        if timesheets_data is None or len(timesheets_data) == 0:
+            return RequestResult(False, "No timesheets found", 404)
+        return RequestResult(True, "", 200, list(map(Timesheet.from_dict, timesheets_data)))
 
     def get_timesheet_id(self, username: str, month: int, year: int):
         """
@@ -156,38 +198,11 @@ class TimesheetService:
         :param year: The year of the timesheet
         :return: The ID of the timesheet
         """
-        return self.timesheet_repository.get_timesheet_id(username, month, year)
-
-    def add_time_entry_to_timesheet(self, timesheet_id: str, time_entry_id: str):
-        """
-        Adds a time entry to a timesheet_data.
-        
-        :param timesheet_id: The ID of the timesheet_data
-        :param time_entry_id: The ID of the time entry
-        :return: The result of the add operation
-        """
-        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-
-        if timesheet_data is None:
+        timesheet_id = self.timesheet_repository.get_timesheet_id(username, month, year)
+        if timesheet_id is None:
             return RequestResult(False, "Timesheet not found", 404)
-        timesheet = Timesheet.from_dict(timesheet_data)
-        timesheet.add_time_entry(time_entry_id)
-        return self.timesheet_repository.update_timesheet(timesheet)
+        return RequestResult(True, "", 200, timesheet_id)
 
-    def delete_time_entry_from_timesheet(self, timesheet_id: str, time_entry_id: str):
-        """
-        Removes a time entry from a timesheet.
-        
-        :param timesheet_id: The ID of the timesheet
-        :param time_entry_id: The ID of the time entry
-        :return: The result of the remove operation
-        """
-        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-        if timesheet_data is None:
-            return RequestResult(False, "Timesheet not found", 404)
-        timesheet = Timesheet.from_dict(timesheet_data)
-        timesheet.remove_time_entry(time_entry_id)
-        return self.timesheet_repository.update_timesheet(timesheet)
 
     def get_current_timesheet(self, username: str):
         """

@@ -39,7 +39,7 @@ class TimeEntryDataValidator(InputValidator):
         :return: ValidationResult: An object indicating whether the time entry data is valid, including
                               a message and status code.
         """
-        time_entry_data = ObjectUtils.convert_objectids_to_strings(time_entry_data)
+        #time_entry_data = ObjectUtils.convert_objectids_to_strings(time_entry_data)
 
         if 'entryType' not in time_entry_data or not TimeEntryType.get_type_by_value(time_entry_data['entryType']):
             return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified entry type.")
@@ -52,8 +52,8 @@ class TimeEntryDataValidator(InputValidator):
         required_keys.remove('_id')
 
         missing_keys = [key for key in required_keys if key not in time_entry_data]
-        #removed _id as required field, since otherwise it wouldn't validate to create a time entry without an _id
-        missing_keys = [key for key in missing_keys if key != '_id']
+        # #removed _id as required field, since otherwise it wouldn't validate to create a time entry without an _id
+        # missing_keys = [key for key in missing_keys if key != '_id']
         if missing_keys:
             return ValidationResult(ValidationStatus.FAILURE, f"Missing required fields: {', '.join(missing_keys)}")
 
