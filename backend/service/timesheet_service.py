@@ -169,9 +169,12 @@ class TimesheetService:
         :return: A list of timesheet objects
         """
         timesheets_data = self.timesheet_repository.get_timesheets_by_username(username)
+
         if timesheets_data is None or len(timesheets_data) == 0:
             return RequestResult(False, "No timesheets found", 404)
-        return RequestResult(True, "", 200, list(map(Timesheet.from_dict, timesheets_data)))
+        timesheets = list(map(Timesheet.from_dict, timesheets_data))
+        sorted_timesheets = sorted(timesheets, key=lambda x: (x.year, x.month), reverse=True)
+        return RequestResult(True, "", 200, sorted_timesheets )
 
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """

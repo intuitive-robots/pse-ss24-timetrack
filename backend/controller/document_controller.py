@@ -12,7 +12,7 @@ document_blueprint = Blueprint('document', __name__)
 
 class DocumentController(MethodView):
     """
-    Controller class for handling document-related requests.
+    controller class for handling document-related requests.
 
     """
 
@@ -22,7 +22,7 @@ class DocumentController(MethodView):
 
         """
         self.document_service = DocumentService()
-        pass
+
 
     def get(self):
         """
@@ -41,7 +41,6 @@ class DocumentController(MethodView):
         Generates a new document
 
         """
-
         request_data = request.args
         month = int(request_data.get('month'))
         year = int(request_data.get('year'))
@@ -60,6 +59,7 @@ class DocumentController(MethodView):
             def delete_file(response):
                 os.remove(file_path)
                 return response
+
 
             return send_file(file_path, as_attachment=True)
         return jsonify({'error': 'Failed to generate document'}), 500

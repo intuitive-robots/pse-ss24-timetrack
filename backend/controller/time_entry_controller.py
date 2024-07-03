@@ -10,7 +10,7 @@ time_entry_blueprint = Blueprint('time_entry', __name__)
 
 class TimeEntryController(MethodView):
     """
-    Controller for handling requests related to time entries, providing methods for POST and GET requests.
+    controller for handling requests related to time entries, providing methods for POST and GET requests.
     """
 
     def __init__(self):
@@ -66,6 +66,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_data = request.get_json()
         username = get_jwt_identity()
         result = self.time_entry_service.create_work_entry(time_entry_data, username)
@@ -78,6 +80,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         vacation_data = request.get_json()
         username = get_jwt_identity()
         result = self.time_entry_service.create_vacation_entry(vacation_data, username)
@@ -90,6 +94,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_data = request.get_json()
         time_entry_id = time_entry_data.get('_id')
         time_entry_data.pop('_id')
@@ -103,6 +109,8 @@ class TimeEntryController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
         time_entry_id = request.get_json().get('timeEntryId')
         result = self.time_entry_service.delete_time_entry(time_entry_id)
         return jsonify(result.message), result.status_code

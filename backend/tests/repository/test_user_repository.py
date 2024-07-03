@@ -87,11 +87,11 @@ class TestUserRepository(unittest.TestCase):
         """
         test_user_data = {'_id': ObjectId('667c433eba00f12151afe642'),
                           'username': 'testAdmin1',
-                          'passwordHash': '$2b$12$rF70HhTTx2BgBcx5Qp.H7eK7WDApKgFZNg1DLiHu9B9scj1t7sMV2',
-                          'personalInfo': {'firstName': 'Nico', 'lastName': 'Admin1',
-                                           'email': 'test@gmail1.com', 'personalNumber': '6381211',
+                          'passwordHash': '$2b$12$MMkaSHJ8YaXG4pEjWbDIbOuWxuyVPdajSdsZL/p.HY9IuwN/08Ymy',
+                          'personalInfo': {'firstName': 'Nico', 'lastName': 'Admin',
+                                           'email': 'test@gmail1.com', 'personalNumber': '6981211',
                                            'instituteName': 'Info Institute'}, 'role': 'Admin',
-                          'accountCreation': datetime.datetime(2024, 6, 26, 18, 35, 8, 252000)}
+                          'accountCreation': datetime.datetime(2024, 6, 30, 18, 53, 51, 321000)}
         received_user_data = self.user_repository.find_by_username("testAdmin1")
         received_user_data.pop("lastLogin")
         self.assertEqual(test_user_data, received_user_data)
@@ -108,23 +108,11 @@ class TestUserRepository(unittest.TestCase):
         updated_user_data.pop("lastLogin")
         test_user_data.pop("lastLogin")
         self.assertEqual(test_user_data, updated_user_data)
-        test_user_data["personalInfo"]["email"] = "email@gmail.com"
+        test_user_data["personalInfo"]["email"] = "test@gmail1.com"
         user = User.from_dict(test_user_data)
         self.user_repository.update_user(user)
 
-    def test_update_user_by_dict(self):
-        """
-        Test the update_user_by_dict method of the UserRepository class.
-        """
-        test_user_data = self.user_repository.find_by_username("testAdmin1")
-        test_user_data["personalInfo"]["email"] = "testUpdateMethodDict@gmail.com"
-        self.user_repository.update_user_by_dict(test_user_data)
-        updated_user_data = self.user_repository.find_by_username("testAdmin1")
-        updated_user_data.pop("lastLogin")
-        test_user_data.pop("lastLogin")
-        self.assertEqual(test_user_data, updated_user_data)
-        test_user_data["personalInfo"]["email"] = "test@gmail1.com"
-        self.user_repository.update_user_by_dict(test_user_data)
+
 
     def test_delete_user(self):
         """

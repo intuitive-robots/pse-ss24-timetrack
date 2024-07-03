@@ -177,4 +177,7 @@ class TimeEntryService:
                 time_entries.append(WorkEntry.from_dict(entry_data))
             elif entry_type == TimeEntryType.VACATION_ENTRY:
                 time_entries.append(VacationEntry.from_dict(entry_data))
-        return RequestResult(is_successful=True, message="", status_code=200, data=time_entries)
+
+        sorted_time_entries = sorted(time_entries, key=lambda entry: entry.start_time, reverse=True)
+        return RequestResult(is_successful=True, message="", status_code=200, data=sorted_time_entries)
+

@@ -2,18 +2,16 @@
 
 import secrets
 from datetime import timedelta, datetime
-
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
-
 from auth import init_auth_routes
+
 from controller.document_controller import DocumentController, document_blueprint
 from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
 from db import initialize_db, check_db_connection
-from gridfs import GridFS
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository

@@ -11,7 +11,7 @@ timesheet_blueprint = Blueprint('timesheet', __name__)
 
 class TimesheetController(MethodView):
     """
-    Controller for managing timesheet-related operations such as retrieval, creation, modification,
+    controller for managing timesheet-related operations such as retrieval, creation, modification,
     and deletion of timesheet entries.
     """
 
@@ -86,7 +86,6 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
-        #TODO: Add this for every Post / Patch Endpoint
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         request_data = request.get_json()
