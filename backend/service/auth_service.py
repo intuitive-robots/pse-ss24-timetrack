@@ -2,7 +2,8 @@ import datetime
 from functools import wraps
 
 from flask import jsonify
-from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jwt_cookies, create_access_token
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, unset_jwt_cookies, create_access_token, \
+    jwt_required
 from flask_jwt_extended.exceptions import NoAuthorizationError
 
 from controller.factory.user_factory import UserFactory
@@ -45,6 +46,7 @@ class AuthenticationService:
         :return: A User object if the token is valid, otherwise None.
         :rtype: User or None
         """
+        verify_jwt_in_request()
         username = get_jwt_identity()
         if not username:
             return None
