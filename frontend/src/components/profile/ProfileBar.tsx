@@ -45,7 +45,7 @@ const ProfileBar: React.FC = (): React.ReactElement => {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
-    <div className="bg-white flex items-center py-5 px-10 gap-5 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold text-nowrap transition-all duration-300 ease-in-out ">
+    <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold text-nowrap transition-all duration-300 ease-in-out ">
         <div className="flex items-center space-x-4">
           <img src={Logo} alt="Clockwise" />
           <div className="transition-all duration-400 ease-in-out md:w-12 lg:w-32" />
@@ -61,9 +61,9 @@ const ProfileBar: React.FC = (): React.ReactElement => {
               </button>
           </div>
         </div>
-        <div className="ml-auto relative">
+        <div className="relative ml-auto">
             {user && (
-                <div className="flex items-center cursor-pointer">
+                <div className="flex px-4 items-center cursor-pointer z-50">
                     <UserInfo
                         name={user.personalInfo.firstName}
                         lastName={user.personalInfo.lastName}
@@ -74,9 +74,9 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             )}
 
             {isDropdownOpen && (
-                <div className="absolute left-0 mt-1.5 w-56 bg-white rounded-lg shadow-lg px-4 py-1 z-500">
+                <div className="absolute left-0 top-0 pt-14 w-64 bg-white rounded-xl shadow-lg px-4 py-2 z-0- ">
                     <div className="h-1"/>
-                    <HorizontalSeparator/>
+                    <HorizontalSeparator paddingY="my-1" height="h-[1px]" color="bg-[#F6F6F6]"/>
                     <div className="h-1"/>
                     <DropdownMenuButton icon={UserIcon} label="My Profile" onClick={() => {
                     }}/>
@@ -85,15 +85,16 @@ const ProfileBar: React.FC = (): React.ReactElement => {
                     <DropdownMenuButton icon={HelpIcon} label="Help" onClick={() => {
                     }}/>
                     <div className="h-1"/>
-                    <HorizontalSeparator/>
+                    <HorizontalSeparator paddingY="" height="h-[1px]" color="bg-[#F6F6F6]"/>
                     <div className="h-1"/>
                     <DropdownMenuButton icon={LogoutIcon} label="Sign Out" onClick={handleLogout}/>
                 </div>
             )}
+
         </div>
 
         <button
-            className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
+            className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200 z-50"
             onClick={toggleDropdown}
         >
             <div className={`transform transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>

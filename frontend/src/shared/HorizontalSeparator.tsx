@@ -1,8 +1,20 @@
 import React from 'react';
 
-const HorizontalSeparator = () => {
+interface HorizontalSeparatorProps {
+  paddingY?: string;
+  color?: string;
+  width?: string;
+  height?: string;
+}
+
+const HorizontalSeparator: React.FC<HorizontalSeparatorProps> = ({
+  paddingY = "px-0",
+  color = "bg-gray-100",
+  width = "w-full",
+    height = "h-0.5"
+}) => {
   return (
-    <div className="h-0.5 bg-gray-100"></div>
+    <div className={`${paddingY} ${width} ${height} ${color} rounded`}></div>
   );
 }
 
