@@ -12,6 +12,8 @@ import ProfilePicture from "../../assets/images/profile_placeholder.svg"
 import SearchInput from "./SearchInput";
 import DropdownMenuButton from "../dropdown/DropdownMenuButton";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
+import {usePopup} from "../popup/PopupContext";
+import PasswordResetPopup from "../popup/PasswordResetPopup";
 
 /**
  * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,
@@ -31,6 +33,8 @@ import HorizontalSeparator from "../../shared/HorizontalSeparator";
 const ProfileBar: React.FC = (): React.ReactElement => {
   const navigate = useNavigate();
   const { role, user, logout } = useAuth();
+
+  const {openPopup} = usePopup();
 
   const handleLogout = async () => {
     try {
@@ -74,14 +78,13 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             )}
 
             {isDropdownOpen && (
-                <div className="absolute left-0 top-0 pt-14 w-64 bg-white rounded-xl shadow-lg px-4 py-2 z-0- ">
+                <div className="absolute left-0 top-0 pt-14 w-64 bg-white rounded-xl shadow-profile-popup-shadow px-4 py-2 z-0- ">
                     <div className="h-1"/>
                     <HorizontalSeparator paddingY="my-1" height="h-[1px]" color="bg-[#F6F6F6]"/>
                     <div className="h-1"/>
                     <DropdownMenuButton icon={UserIcon} label="My Profile" onClick={() => {
                     }}/>
-                    <DropdownMenuButton icon={ChangePasswordIcon} label="Change Password" onClick={() => {
-                    }}/>
+                    <DropdownMenuButton icon={ChangePasswordIcon} label="Change Password" onClick={() => openPopup(<PasswordResetPopup/>)}/>
                     <DropdownMenuButton icon={HelpIcon} label="Help" onClick={() => {
                     }}/>
                     <div className="h-1"/>
