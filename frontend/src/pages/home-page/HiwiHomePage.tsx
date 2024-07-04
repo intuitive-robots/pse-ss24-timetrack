@@ -4,7 +4,6 @@ import {getTimesheetByMonthYear, signTimesheet} from "../../services/TimesheetSe
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
-import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
 import QuickActionButton from "../../components/input/QuickActionButton";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
@@ -25,22 +24,33 @@ const HiwiHomePage = (): React.ReactElement => {
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
     const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
     const { user, role} = useAuth();
-    const [month, setMonth] = useState(new Date().getMonth() + 1);
-    const [year, setYear] = useState(new Date().getFullYear());
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
+    const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const [year, setYear] = useState(new Date().getFullYear());
+
+
 
     const interactableStatuses = ['Not Submitted', 'Revision'];
 
     useEffect(() => {
-        if (user && user.username) {
-            getTimesheetByMonthYear(user.username, month, year)
-                .then(fetchedTimesheet => {
-                    setTimesheet(fetchedTimesheet);
-                })
-                .catch(error => console.error('Failed to fetch timesheet for given month and year:', error));
-        }
+      const storedMonth = localStorage.getItem('selectedMonth');
+      const storedYear = localStorage.getItem('selectedYear');
+      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
+      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
+
+      setMonth(newMonth);
+      setYear(newYear);
+
+      if (user && user.username) {
+        getTimesheetByMonthYear(user.username, newMonth, newYear)
+          .then(fetchedTimesheet => {
+            console.log('Fetched timesheet:', fetchedTimesheet);
+            setTimesheet(fetchedTimesheet);
+          })
+          .catch(error => console.error('Failed to fetch timesheet for given month and year:', error));
+      }
     }, [user, month, year]);
 
     useEffect(() => {
@@ -56,16 +66,6 @@ const HiwiHomePage = (): React.ReactElement => {
                 .catch(error => console.error('Failed to fetch entries for timesheet:', error));
         }
     }, [timesheet]);
-
-    useEffect(() => {
-        const storedMonth = localStorage.getItem('selectedMonth');
-        const storedYear = localStorage.getItem('selectedYear');
-
-        if (storedMonth && storedYear) {
-            setMonth(parseInt(storedMonth));
-            setYear(parseInt(storedYear));
-        }
-    }, []);
 
     const handleMonthChange = (direction: string) => {
         let newMonth = month;
