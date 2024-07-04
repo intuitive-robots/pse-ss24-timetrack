@@ -76,11 +76,17 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                 <div
                     className={`flex px-2 mt-8 flex-col gap-2 ${interactable ? 'items-center' : 'items-end'}`}>
                     <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                    <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5] gap-12">
-                        <p>Work</p>
-                        <p>Breaks</p>
-                        <p>Period</p>
+                    <div className="flex flex-row">
+                        <div className="w-24"/>
+                        <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
+                            <p>Work</p>
+                            <div className="w-8"/>
+                            <p>Breaks</p>
+                            <div className="w-12"/>
+                            <p>Period</p>
+                        </div>
                     </div>
+
                 </div>
 
             </div>
