@@ -6,6 +6,7 @@ import IconButton from "./navbar/IconButton";
 import CalendarDay from "./calendar/CalendarDay";
 import ListTileInfo from "./list/ListTileInfo";
 
+
 interface TimeEntryTileProps {
   date: string;
   entryName: string;
@@ -13,41 +14,56 @@ interface TimeEntryTileProps {
   workTime: string;
   breakTime: string;
   period: string;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void; // Mach diese Funktion optional
+  onDelete?: () => void; // Mach diese Funktion optional
 }
 
-const TimeEntryTile: React.FC<TimeEntryTileProps> = ({date, entryName, projectName, workTime, breakTime, period, onEdit, onDelete}) => {
-  return (
-      <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
-          <div className="flex gap-5 ">
-              <CalendarDay dayTime={date} />
-              <div className="flex flex-col w-60 mt-1.5 gap-0.5">
-                  <p className="text-md font-semibold">{entryName}</p>
-                  <p className="text-sm font-semibold text-[#9F9F9F]">{projectName}</p>
-              </div>
-          </div>
+const TimeEntryTile: React.FC<TimeEntryTileProps> = ({
+  date, entryName, projectName, workTime, breakTime, period, onEdit, onDelete
+}) => {
 
-          <ListTileInfo items={
-              [workTime, breakTime, period]
-          }/>
+    const interactable = onEdit || onDelete;
+    const rightPadding = interactable ? "pr-6" : "pr-14";
 
-          <div className="flex gap-5 ">
-              <ListIconCardButton
-                  iconSrc={EditDocumentIcon}
-                  label="Edit"
-                  onClick={() => onEdit()}
-              />
-              <IconButton
-                  icon={RemoveIcon}
-                  onClick={() => onDelete()}
-                  bgColor="bg-purple-100"
-                  hover="hover:bg-purple-200"
-              />
-          </div>
+    return (
+        <div
+            className={`flex items-center pl-4 py-2 gap-6 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap ${rightPadding}`}>
+            <div className="flex gap-5 ">
+                <CalendarDay dayTime={date}/>
+                <div className="flex flex-col w-32  mt-1.5 gap-0.5">
+                    <p className="text-md font-semibold truncate overflow-hidden">{entryName}</p>
+                    <p className="text-sm font-semibold text-[#9F9F9F]">{projectName}</p>
+                </div>
+            </div>
 
-      </div>
-  );
+            <div className="flex flex-row">
+                <p className="text-md font-semibold text-[#3B3B3B]">{workTime}</p>
+                <div className="w-[50px]"/>
+                <p className="text-md font-semibold text-[#3B3B3B]">{breakTime}</p>
+                <div className="w-[33px]"/>
+                <p className="text-md font-semibold text-[#3B3B3B]">{period}</p>
+            </div>
+
+            <div className={`gap-4 ${!interactable ? "hidden" : "flex"}`}>
+                {onEdit && (
+                    <ListIconCardButton
+                        iconSrc={EditDocumentIcon}
+                        label="Edit"
+                        onClick={onEdit}
+                    />
+                )}
+                {onDelete && (
+                    <IconButton
+                        icon={RemoveIcon}
+                        onClick={onDelete}
+                        bgColor="bg-purple-100"
+                        hover="hover:bg-purple-200"
+                    />
+                )}
+            </div>
+
+        </div>
+    );
 };
 
 export default TimeEntryTile;

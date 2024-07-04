@@ -27,7 +27,7 @@ const ListIconCardButton: React.FC<ListIconCardButtonProps> = ({
 
   return (
     <button
-      className="flex items-center px-4 py-1 border-1.7 rounded-lg text-gray-500 hover:bg-gray-100"
+      className="flex items-center px-4 py-1 min-w-20 border-1.7 rounded-lg text-gray-500 hover:bg-gray-100"
       onClick={onClick}
       disabled={disabled}
     >
