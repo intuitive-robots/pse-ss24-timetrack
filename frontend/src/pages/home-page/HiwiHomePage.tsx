@@ -30,8 +30,6 @@ const HiwiHomePage = (): React.ReactElement => {
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
 
-
-
     const interactableStatuses = ['Not Submitted', 'Revision'];
 
     useEffect(() => {
@@ -163,23 +161,6 @@ const HiwiHomePage = (): React.ReactElement => {
 
             <h1 className="text-3xl font-bold text-headline mt-4">Hello {user ? user.personalInfo.firstName: ""},</h1>
 
-            {/*<div className="flex flex-row mt-8 gap-12">*/}
-            {/*    <img src={VerticalTimeLine} alt="Vertical Time Line"/>*/}
-
-            {/*    <div className="flex flex-col w-full h-full justify-between">*/}
-            {/*        <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>*/}
-            {/*        <TimeEntryListView entries={timeEntries ?? []} interactable={isStatusInteractable()} />*/}
-
-            {/*        <div className="flex mt-8 flex-col gap-2 items-center">*/}
-            {/*            <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>*/}
-            {/*            <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">*/}
-            {/*                <p>Work</p>*/}
-            {/*                <p>Breaks</p>*/}
-            {/*                <p>Period</p>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
             <TimeEntryListView entries={timeEntries ?? []} interactable={isStatusInteractable()} />
 
             <div className="w-fit ml-auto absolute right-14 bottom-10">
