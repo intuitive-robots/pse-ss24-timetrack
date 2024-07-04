@@ -14,6 +14,8 @@ import SecretaryDocumentPage from "../../pages/document-page/SecretaryDocumentPa
 import SupervisorEmployeesPage from "../../pages/employees/SupervisorEmployeesPage";
 import SecretaryEmployeesPage from "../../pages/employees/SecretaryEmployeesPage";
 import AdminAnalysisPage from "../../pages/analysis-page/AdminAnalysisPage";
+import SecretaryHomePage from "../../pages/home-page/SecretaryHomePage";
+import SecretaryAnalysisPage from "../../pages/analysis-page/SecretaryAnalysisPage";
 
 const commonRoutes = {
     "/guidelines": GuidelinePage,
@@ -42,8 +44,8 @@ export const routesConfig: RoutesConfig  = {
   },
   Secretary: {
     ...commonRoutes,
-    "/home": SupervisorHomePage,
-    "/analysis": SupervisorAnalysisPage,
+    "/home": SecretaryHomePage,
+    "/analysis": SecretaryAnalysisPage,
     "/documents": SecretaryDocumentPage,
     "/employees": SecretaryEmployeesPage,
   },
