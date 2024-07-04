@@ -23,9 +23,11 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({
 }) => {
 
     const alignment = (!onEdit && !onDelete) ? "justify-end" : "justify-between";
+    const interactable = onEdit || onDelete;
+    const rightPadding = interactable ? "pr-6" : "pr-14";
 
     return (
-      <div className="flex items-center pl-4 pr-14 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
+      <div className={`flex items-center pl-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap ${rightPadding}`}>
           <div className="flex gap-5 ">
               <CalendarDay dayTime={date} />
               <div className="flex flex-col w-60 mt-1.5 gap-0.5">
@@ -36,7 +38,7 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({
 
           <ListTileInfo items={[workTime, breakTime, period]} />
 
-          <div className={`flex gap-5 ${!onEdit && !onDelete ? "hidden": "flex"}`}>
+          <div className={`ml-4 gap-4 ${!interactable ? "hidden": "flex"}`}>
             {onEdit && (
               <ListIconCardButton
                 iconSrc={EditDocumentIcon}
