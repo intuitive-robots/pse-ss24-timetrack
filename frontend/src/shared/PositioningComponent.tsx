@@ -21,8 +21,6 @@ const PositioningComponent: React.FC<PositioningComponentProps> = ({ children, t
             }
         };
 
-        const handleUpdate = () => requestAnimationFrame(updatePosition);
-
         window.addEventListener('resize', updatePosition);
         window.addEventListener('scroll', updatePosition);
         updatePosition();

@@ -5,7 +5,6 @@ import {deleteTimeEntry} from "../../services/TimeEntryService";
 import ConfirmationPopup from "../popup/ConfirmationPopup";
 import {usePopup} from "../popup/PopupContext";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
-import PositioningComponent from "../../shared/PositioningComponent";
 
 interface TimeEntryListProps {
     entries: TimeEntry[];
@@ -73,16 +72,6 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                         />
                     ))}
                 </div>
-                {/*<PositioningComponent*/}
-                {/*    targetClass="listTileInformation"*/}
-                {/*    children={*/}
-                {/*        <div className="flex text-sm font-semibold text-[#B5B5B5]">*/}
-                {/*            <p>Work</p>*/}
-                {/*            <p className="ml-9">Breaks</p>*/}
-                {/*            <p className="ml-14">Period</p>*/}
-                {/*        </div>*/}
-                {/*    }*/}
-                {/*/>*/}
 
                 <div
                     className={`flex px-2 mt-8 flex-col gap-2 ${interactable ? 'items-center' : 'items-end'}`}>

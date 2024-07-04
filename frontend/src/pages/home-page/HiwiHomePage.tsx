@@ -141,7 +141,7 @@ const HiwiHomePage = (): React.ReactElement => {
         <div className="px-6 py-6">
 
             <div className="flex flex-row gap-8 items-center">
-                <div className="flex flex-row gap-4">
+                <div className="flex flex-row gap-4 text-nowrap">
                     <p className="text-lg font-semibold text-subtitle">This Month,</p>
                     <MonthTimespan month={month} year={year}/>
                 </div>
