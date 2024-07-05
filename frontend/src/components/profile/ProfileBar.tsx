@@ -1,11 +1,19 @@
-import React from "react";
+import React, {useState} from "react";
 import Logo from "../../assets/images/logo.svg";
 import RightArrow from "../../assets/images/arrow_right.svg";
+import UserIcon from "../../assets/images/dropdown/user_icon.svg";
+import ChangePasswordIcon from "../../assets/images/dropdown/change_password.svg";
+import LogoutIcon from "../../assets/images/dropdown/logout.svg";
+import HelpIcon from "../../assets/images/dropdown/help.svg";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import UserInfo from "../UserInfo";
 import ProfilePicture from "../../assets/images/profile_placeholder.svg"
 import SearchInput from "./SearchInput";
+import DropdownMenuButton from "../dropdown/DropdownMenuButton";
+import HorizontalSeparator from "../../shared/HorizontalSeparator";
+import {usePopup} from "../popup/PopupContext";
+import PasswordResetPopup from "../popup/PasswordResetPopup";
 
 /**
  * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,
@@ -26,6 +34,8 @@ const ProfileBar: React.FC = (): React.ReactElement => {
   const navigate = useNavigate();
   const { role, user, logout } = useAuth();
 
+  const {openPopup} = usePopup();
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -35,8 +45,11 @@ const ProfileBar: React.FC = (): React.ReactElement => {
     }
   };
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
   return (
-    <div className="bg-white flex items-center py-5 px-10 gap-5 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold text-nowrap transition-all duration-300 ease-in-out ">
+    <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold text-nowrap transition-all duration-300 ease-in-out ">
         <div className="flex items-center space-x-4">
           <img src={Logo} alt="Clockwise" />
           <div className="transition-all duration-400 ease-in-out md:w-12 lg:w-32" />
@@ -52,23 +65,46 @@ const ProfileBar: React.FC = (): React.ReactElement => {
               </button>
           </div>
         </div>
-        <div className="ml-auto">
+        <div className="relative ml-auto">
             {user && (
-                <UserInfo
-                    name={user.personalInfo.firstName}
-                    lastName={user.personalInfo.lastName}
-                    role={role || "N/A"}
-                    profileImageUrl={user.profileImageUrl || ProfilePicture}
-                />
+                <div className="flex px-4 items-center cursor-pointer z-50">
+                    <UserInfo
+                        name={user.personalInfo.firstName}
+                        lastName={user.personalInfo.lastName}
+                        role={role || "N/A"}
+                        profileImageUrl={user.profileImageUrl || ProfilePicture}
+                    />
+                </div>
             )}
+
+            {/*{isDropdownOpen && (*/}
+                <div className={`absolute left-0 top-0 pt-14 w-64 bg-white rounded-xl shadow-profile-popup-shadow px-4 py-2 z-0 transform transition-all duration-100 ${isDropdownOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} origin-top`}>
+                    <div className="h-1"/>
+                    <HorizontalSeparator paddingY="my-1" height="h-[1px]" color="bg-[#F6F6F6]"/>
+                    <div className="h-1"/>
+                    <DropdownMenuButton icon={UserIcon} label="My Profile" onClick={() => {
+                    }}/>
+                    <DropdownMenuButton icon={ChangePasswordIcon} label="Change Password" onClick={() => openPopup(<PasswordResetPopup/>)}/>
+                    <DropdownMenuButton icon={HelpIcon} label="Help" onClick={() => {
+                    }}/>
+                    <div className="h-1"/>
+                    <HorizontalSeparator paddingY="" height="h-[1px]" color="bg-[#F6F6F6]"/>
+                    <div className="h-1"/>
+                    <DropdownMenuButton icon={LogoutIcon} label="Sign Out" onClick={handleLogout}/>
+                </div>
+            {/*)}*/}
+
         </div>
 
-      <button
-        className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200"
-        onClick={handleLogout}
-      >
-        <img src={RightArrow} alt="RightArrow" />
-      </button>
+        <button
+            className="p-1.5 mr-8 rounded-md bg-neutral-100 border-[1.4px] border-[#eee] hover:bg-neutral-200 z-50"
+            onClick={toggleDropdown}
+        >
+            <div className={`transform transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
+                <img src={RightArrow} alt="RightArrow"/>
+            </div>
+        </button>
+
     </div>
   );
 };

@@ -17,7 +17,7 @@ interface UserInfoProps {
  */
 const UserInfo: React.FC<UserInfoProps> = ({ name, lastName, role, profileImageUrl}: UserInfoProps): React.ReactElement => {
   return (
-    <div className="flex items-center space-x-3 mr-8">
+    <div className="flex items-center space-x-3 mr-8 z-50">
       <img src={profileImageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>
       <div className="flex flex-col items-start">
         <p className="text-card-title text-md font-semibold">{`${name} ${lastName}`}</p>

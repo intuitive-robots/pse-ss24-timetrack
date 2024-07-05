@@ -7,12 +7,12 @@ import axios from "axios";
  * @returns The response data from the timesheet sign request.
  * @throws An error if the request fails.
  */
-const signTimesheet = async () => {
+const signTimesheet = async (timesheetId: string) => {
   try {
-    const response = await axiosInstance.post('/timesheet/signTimesheet');
+    const response = await axiosInstance.patch('/timesheet/sign', { timesheetId });
     return response.data;
   } catch (error) {
-    console.error('Signing timesheet failed');
+    console.error('Signing timesheet failed', error);
     throw error;
   }
 };
@@ -24,7 +24,7 @@ const signTimesheet = async () => {
  */
 const approveTimesheet = async () => {
   try {
-    const response = await axiosInstance.post('/timesheet/approveTimesheet');
+    const response = await axiosInstance.patch('/timesheet/approveTimesheet');
     return response.data;
   } catch (error) {
     console.error('Approving timesheet failed');

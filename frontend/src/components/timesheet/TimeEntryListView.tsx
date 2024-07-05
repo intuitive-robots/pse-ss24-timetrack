@@ -4,9 +4,11 @@ import TimeEntryTile from "../TimeEntryTile";
 import {deleteTimeEntry} from "../../services/TimeEntryService";
 import ConfirmationPopup from "../popup/ConfirmationPopup";
 import {usePopup} from "../popup/PopupContext";
+import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 
 interface TimeEntryListProps {
     entries: TimeEntry[];
+    interactable?: boolean;
 }
 
 const formatTime = (dateString: string) => {
@@ -14,7 +16,7 @@ const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('de-DE', options);
 };
 
-const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries }) => {
+const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable = true}) => {
 
     const calculateWorkTime = (startTime: string, endTime: string) => {
         const start = new Date(startTime);
@@ -50,20 +52,44 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries }) => {
 
 
     return (
-        <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
-            {entries.map((entry, index) => (
-                <TimeEntryTile
-                    key={entry._id}
-                    entryName={entry.activity}
-                    projectName={entry.projectName}
-                    workTime={calculateWorkTime(entry.startTime, entry.endTime)}
-                    breakTime={entry.breakTime.toString() + "m"}
-                    period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
-                    date={entry.startTime}
-                    onDelete={() => handleDelete(entry._id)}
-                    onEdit={() => console.log('Edit Entry', entry._id)}
-                />
-            ))}
+        <div className="flex flex-row mt-8 gap-12">
+            <img src={VerticalTimeLine} alt="Vertical Time Line"/>
+
+            <div className="flex flex-col w-full h-full justify-between">
+                <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
+                    {entries.map((entry) => (
+                        <TimeEntryTile
+                            key={entry._id}
+                            entryName={entry.activity}
+                            projectName={entry.projectName}
+                            workTime={calculateWorkTime(entry.startTime, entry.endTime)}
+                            breakTime={entry.breakTime.toString() + "m"}
+                            period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
+                            date={entry.startTime}
+                            onDelete={interactable ? () => handleDelete(entry._id) : undefined}
+                            onEdit={interactable ? () => console.log('Edit Entry', entry._id) : undefined}
+                        />
+                    ))}
+                </div>
+
+                <div
+                    className={`flex px-2 mt-8 flex-col gap-2 ${interactable ? 'items-center' : 'items-end'}`}>
+                    <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                    <div className="flex flex-row">
+                        <div className="w-24"/>
+                        <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
+                            <p>Work</p>
+                            <div className="w-8"/>
+                            <p>Breaks</p>
+                            <div className="w-12"/>
+                            <p>Period</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     );
 };
