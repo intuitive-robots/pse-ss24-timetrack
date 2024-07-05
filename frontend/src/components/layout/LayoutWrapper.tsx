@@ -30,14 +30,7 @@ const LayoutWrapper = (): React.ReactElement => {
             <NavigationBar/>
             {/* Main content area that takes remaining space */}
             <div className="flex-1 overflow-clip p-4 items-start justify-start">
-              {/*{pageContent}*/}
                 <LayoutContentWithPopup currentRoutes={currentRoutes}/>
-                <Routes>
-                    {/*{Object.entries(currentRoutes).map(([path, Component]) => (*/}
-                    {/*    <Route key={path} path={path} element={<Component />} />*/}
-                    {/*  ))}*/}
-
-                </Routes>
             </div>
           </div>
         </div>

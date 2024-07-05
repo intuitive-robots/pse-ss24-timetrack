@@ -37,12 +37,13 @@ const AdminHomePage = (): React.ReactElement => {
     }, []);
 
     return (
-        <div className="px-6 py-6">
-            <p className="text-lg font-medium text-subtitle">{user ? user.personalInfo.instituteName : "Institute of Intuitive Robotic"}</p>
-            <h1 className="text-3xl font-bold text-gray-800 mt-5">Hello {user ? user.personalInfo.firstName : ""},</h1>
-            <h2 className="text-md font-medium text-subtitle mt-1">There are {users.length} employees, including {hiwiCount} HiWis
-                and {supervisorCount} supervisors</h2>
-            <div className="flex-grow py-6 overflow-y-auto mb-60">
+        <div className="flex flex-col h-full px-6 mt-6">
+            <div className="mb-4">
+                <p className="text-lg font-medium text-subtitle">{user ? user.personalInfo.instituteName : "Institute Name"}</p>
+                <h1 className="text-3xl font-bold text-gray-800 mt-3.5">Hello {user ? user.personalInfo.firstName : "User"}</h1>
+                <h2 className="text-md font-medium text-subtitle mt-1">There are {users.length} employees, including {hiwiCount} HiWis and {supervisorCount} supervisors</h2>
+            </div>
+            <div className="flex flex-col overflow-y-auto mb-6 mt-2 flex-grow">
                 {users.map(user => (
                     <UserCard
                         key={user.username}
@@ -50,12 +51,9 @@ const AdminHomePage = (): React.ReactElement => {
                         lastName={user.personalInfo.lastName}
                         role={user.role}
                         profileImageUrl={ProfilePlaceholder}
-                        onView={() => {
-                        }}
-                        onEdit={() => {
-                        }}
-                        onDelete={() => {
-                        }}
+                        onView={() => {}}
+                        onEdit={() => {}}
+                        onDelete={() => {}}
                     />
                 ))}
             </div>

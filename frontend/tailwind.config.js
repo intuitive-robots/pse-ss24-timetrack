@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      maxHeight: {
+        'screen-custom': 'calc(100vh)',
+      },
       plugins: [
 
       ],
