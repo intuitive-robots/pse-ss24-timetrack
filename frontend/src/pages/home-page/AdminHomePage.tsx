@@ -4,6 +4,10 @@ import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg"
 import {getUsers} from "../../services/AuthService";
 import {User} from "../../interfaces/User";
 import {useAuth} from "../../context/AuthContext";
+import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
+import {deleteTimeEntry} from "../../services/TimeEntryService";
+import {usePopup} from "../../components/popup/PopupContext";
+import {deleteUser} from "../../services/UserService";
 
 /**
  * AdminHomePage component serves as the main landing page for the application.
@@ -16,6 +20,27 @@ const AdminHomePage = (): React.ReactElement => {
 
     const [hiwiCount, setHiwiCount] = useState(0);
     const [supervisorCount, setSupervisorCount] = useState(0);
+
+    const { openPopup, closePopup } = usePopup();
+
+     const handleDeleteUser = (username: string) => {
+        openPopup(
+          <ConfirmationPopup
+            onConfirm={() => confirmDeleteUser(username)}
+            onCancel={closePopup}
+          />
+        );
+     };
+
+     const confirmDeleteUser = async (username: string) => {
+        try {
+            await deleteUser(username);
+            closePopup();
+        } catch (error) {
+            console.error('Failed to delete user:', error);
+            closePopup();
+        }
+     };
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -53,7 +78,7 @@ const AdminHomePage = (): React.ReactElement => {
                         profileImageUrl={ProfilePlaceholder}
                         onView={() => {}}
                         onEdit={() => {}}
-                        onDelete={() => {}}
+                        onDelete={() => {handleDeleteUser(user.username)}}
                     />
                 ))}
             </div>

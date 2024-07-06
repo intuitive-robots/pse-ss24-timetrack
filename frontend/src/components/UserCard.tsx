@@ -29,16 +29,16 @@ const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastNa
               <ListIconCardButton
               iconSrc={ViewUserIcon}
               label="View"
-              onClick={() => {}}
+              onClick={() => onEdit()}
           />
           <ListIconCardButton
               iconSrc={EditUserIcon}
               label="Edit"
-              onClick={() => {}}
+              onClick={() => onView()}
           />
           <IconButton
               icon={RemoveIcon}
-              onClick={() => {}}
+              onClick={() => onDelete()}
               bgColor="bg-purple-100"
               hover="hover:bg-purple-200"
           />
