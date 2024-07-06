@@ -236,6 +236,9 @@ class UserController(MethodView):
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
 
+        if file_type == FileType.SIGNATURE and username != get_jwt_identity():
+            return jsonify({'error': 'You are not authorized to access this file'}), 403
+
         if not username:
             return jsonify({'error': 'Username is required'}), 400
 
