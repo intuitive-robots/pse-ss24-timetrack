@@ -150,7 +150,6 @@ class UserController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
-
     def reset_password(self):
         """
         Resets the password for a user based on the provided JSON data.
@@ -160,7 +159,7 @@ class UserController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         credentials = request.get_json()
-        result = self.auth_service.reset_password(credentials['username'], credentials['password'])
+        result = self.auth_service.reset_password(get_jwt_identity(), credentials['username'], credentials['password'])
         return jsonify(result.message), result.status_code
 
     @jwt_required()

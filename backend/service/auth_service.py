@@ -92,10 +92,12 @@ class AuthenticationService:
             return RequestResult(True, "Authentication successful", data={'accessToken': access_token}, status_code=200)
         return RequestResult(False, "Invalid username or password", status_code=401)
 
-    def reset_password(self, username, new_password):
+    def reset_password(self, current_username, username, new_password):
         """
         Resets the password for a given username.
 
+        :param current_username: The username of the current user.
+        :type username: str
         :param username: The username for which to reset the password.
         :type username: str
         :param new_password: The new password.
@@ -107,8 +109,12 @@ class AuthenticationService:
             return RequestResult(False, "Username and new password must be provided", status_code=400)
 
         user_data = self.user_repository.find_by_username(username)
-        if not user_data:
+        current_user_data = self.user_repository.find_by_username(current_username)
+        if not user_data or not current_user_data:
             return RequestResult(False, "User not found", status_code=404)
+
+        if current_user_data['role'] != UserRole.ADMIN.value and username != current_username:
+            return RequestResult(False, "Password reset authorization denied", status_code=401)
 
         user = UserFactory.create_user_if_factory_exists(user_data)
         if not user:
