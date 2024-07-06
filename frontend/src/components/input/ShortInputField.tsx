@@ -8,6 +8,7 @@ interface ShortInputFieldProps {
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  size?: string;
 }
 
 const ShortInputField: React.FC<ShortInputFieldProps> = ({
@@ -17,12 +18,22 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
   suffix,
   placeholder,
   value,
-  onChange
+  onChange, size
 }) => {
+  const getWidthClass = (size: string | undefined) => {
+    if (!size) return 'w-fit';
+    switch (size) {
+      case 'small': return 'w-44';
+      case 'medium': return 'w-56';
+      case 'large': return 'w-96';
+      default: return 'w-fit';
+    }
+  };
+
   return (
     <div className="input-container">
       {title && <h2 className="text-md font-semibold mb-1.5">{title}</h2>}
-      <div className="input-wrapper flex w-fit items-center border border-gray-300 rounded-md overflow-hidden px-4 gap-1">
+      <div className={`input-wrapper flex items-center border border-gray-300 rounded-md overflow-hidden px-4 gap-1 ${getWidthClass(size)}`}>
         <img src={icon} alt="Icon" className=""/>
         <input
           type={type}
