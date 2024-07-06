@@ -122,10 +122,7 @@ const HiwiHomePage = (): React.ReactElement => {
             <QuickActionButton
                 icon={SignSheetIcon}
                 label="Sign Sheet"
-                onClick={handleSignTimesheet}
-                bgColor="bg-purple-600"
-                hover="hover:bg-purple-700"
-            />
+                onClick={handleSignTimesheet}/>
         ) : (
             <DocumentStatus status={timesheetStatus} />
         );

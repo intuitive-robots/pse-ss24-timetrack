@@ -5,7 +5,7 @@ import {Route, Routes} from "react-router-dom";
 const TimesheetPage = () => {
     return (
         <Routes>
-            <Route path="/:username/:month/:year" element={ <TimesheetViewer />} />
+            <Route path="/:username/:monthString/:yearString" element={ <TimesheetViewer />} />
         </Routes>
 
     );

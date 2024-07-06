@@ -7,22 +7,29 @@ import ListIconCardButton from "../input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg";
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg";
 import {useAuth} from "../../context/AuthContext";
-import {getTimesheetByMonthYear} from "../../services/TimesheetService";
+import {approveTimesheet, getTimesheetByMonthYear, requestChange, signTimesheet} from "../../services/TimesheetService";
 import {isValidTimesheetStatus, statusMapping} from "../status/StatusMapping";
 import {isValidRole} from "../auth/roles";
 import QuickActionButton from "../input/QuickActionButton";
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
 import DocumentStatus from "../status/DocumentStatus";
-import {useParams} from "react-router";
-import {useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import PopupActionButton from "../input/PopupActionButton";
+import AddUserIcon from "images/add_user_icon.svg";
+import TrackTimePopup from "../popup/TrackTimePopup";
+import RequestChangePopup from "../popup/RequestChangePopup";
+import {usePopup} from "../popup/PopupContext";
 
 const TimesheetViewer = () => {
 
     const navigate = useNavigate();
+    const {openPopup} = usePopup();
 
     const {username, monthString, yearString} = useParams();
-    const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
 
+
+
+    const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
     const { role} = useAuth();
 
     const currentMonth = new Date().getMonth() + 1;
@@ -48,14 +55,17 @@ const TimesheetViewer = () => {
     const [year, setYear] = useState(validateYear(yearString));
 
     useEffect(() => {
+        console.log(monthString, yearString);
         setMonth(validateMonth(monthString));
         setYear(validateYear(yearString));
-        console.log(month, year)
+        // console.log(month, year)
+    }, [monthString, yearString]);
+
+    useEffect(() => {
         if (username) {
             console.log(username);
             getTimesheetByMonthYear(username, month, year)
                 .then(fetchedTimesheet => {
-                    console.log(fetchedTimesheet)
                     setTimesheet(fetchedTimesheet);
                 })
                 .catch(error => console.error('Failed to fetch timesheet for given month and year:', error));
@@ -64,19 +74,49 @@ const TimesheetViewer = () => {
 
 
     const handleMonthChange = (direction: string) => {
+        let newMonth = month;
+        let newYear = year;
+
         if (direction === 'next') {
-            if (month === 12) {
-                setMonth(1);
-                setYear(prevYear => prevYear + 1);
-            } else {
-                setMonth(prevMonth => prevMonth + 1);
-            }
+          if (month === 12) {
+            newMonth = 1;
+            newYear += 1;
+          } else {
+            newMonth += 1;
+          }
         } else if (direction === 'prev') {
-            if (month === 1) {
-                setMonth(12);
-                setYear(prevYear => prevYear - 1);
-            } else {
-                setMonth(prevMonth => prevMonth - 1);
+          if (month === 1) {
+            newMonth = 12;
+            newYear -= 1;
+          } else {
+            newMonth -= 1;
+          }
+        }
+        setMonth(newMonth);
+        setYear(newYear);
+        navigate(`/app/timesheet/${username}/${newMonth}/${newYear}`);
+    };
+
+    const handleApproveTimesheet = async () => {
+        if (timesheet) {
+            try {
+                const result = await approveTimesheet(timesheet._id);
+                window.location.reload();
+            } catch (error) {
+                console.error('Error approving timesheet:', error);
+                alert('Failed to approve the timesheet');
+            }
+        }
+    };
+
+    const handleRequestChangeTimesheet = async () => {
+        if (timesheet) {
+            try {
+                const result = await requestChange(timesheet._id);
+                window.location.reload();
+            } catch (error) {
+                console.error('Error requesting change for timesheet:', error);
+                alert('Failed to request change for the timesheet');
             }
         }
     };
@@ -89,14 +129,22 @@ const TimesheetViewer = () => {
         const mappedStatus = statusMapping[role][timesheetStatus];
 
         return ["Waiting for Approval"].includes(timesheetStatus) ? (
-            <QuickActionButton
-                icon={SignSheetIcon}
-                label="Sign Sheet"
-                onClick={() => {/* TODO: Signature Logic of Supervisor*/}}
-                bgColor="bg-purple-600"
-                hover="hover:bg-purple-700"
-            />
-
+            <div className="flex flex-row gap-6 justify-end">
+                <QuickActionButton
+                    label="Request Change"
+                    onClick={() => {
+                        openPopup(<RequestChangePopup username={username} timesheet={timesheet}/>);
+                        // handleRequestChangeTimesheet();
+                    }}
+                    textColor="text-purple-600"
+                    bgColor="bg-white"
+                    hover="hover:bg-purple-200"
+                    border="border-2 border-purple-600"/>
+                <QuickActionButton
+                    icon={SignSheetIcon}
+                    label="Sign Sheet"
+                    onClick={handleApproveTimesheet}/>
+            </div>
         ) : (
             <DocumentStatus status={mappedStatus} />
         );
@@ -128,11 +176,11 @@ const TimesheetViewer = () => {
             </div>
 
             <h1 className="text-3xl font-bold text-headline mt-4">Hello Nico,</h1>
-
+            <h2 className="text-md font-medium text-subtitle mt-1">This is {username}'s timesheet</h2>
 
             <TimesheetEntryView timesheet={timesheet}/>
 
-            <div className="w-fit ml-auto absolute right-14 bottom-10">
+            <div className="absolute right-14 bottom-10">
                 {getStatusOrButtons()}
             </div>
         </div>

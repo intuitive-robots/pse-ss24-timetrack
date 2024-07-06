@@ -71,7 +71,7 @@ const SupervisorHomePage = (): React.ReactElement => {
                 console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
             });
         }
-    }, [hiwis, timesheets, month, year, role]);
+    }, [hiwis, month, year]);
 
 
 
@@ -102,7 +102,13 @@ const SupervisorHomePage = (): React.ReactElement => {
     };
 
     const handleCheckTimesheet = (hiwi: User, month: number, year: number) => {
-        console.log("check timesheet");
+        // console.log("check timesheet");
+        // console.log("Params on call:", { month, year });
+
+        let monthString = month.toString();
+        let yearString = year.toString();
+
+
         const path = `/app/timesheet/${hiwi.username.replace(/\s+/g, '-')}/${month}/${year}`;
         navigate(path);
 
