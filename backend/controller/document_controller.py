@@ -8,8 +8,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from service.document.document_service import DocumentService
 from service.user_service import UserService
 
-from model.user.role import UserRole
-
 document_blueprint = Blueprint('document', __name__)
 
 
