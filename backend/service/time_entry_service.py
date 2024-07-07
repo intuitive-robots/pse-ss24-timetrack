@@ -1,3 +1,5 @@
+import datetime
+
 from bson import ObjectId
 from flask_jwt_extended import get_jwt_identity
 
@@ -48,6 +50,12 @@ class TimeEntryService:
         :rtype: RequestResult
         """
         entry_data['entryType'] = entry_type.value
+        if entry_data.get('timesheetId') is None:
+            start_date = datetime.datetime.fromisoformat(entry_data['startTime'])
+            self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
+            timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
+            entry_data['timesheetId'] = str(timesheet_id)
+                        
         validation_result = self.entry_validator.is_valid(entry_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
