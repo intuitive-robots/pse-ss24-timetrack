@@ -146,6 +146,7 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         """
         with open(path, "wb") as file:
             file.write(signature_stream.read())
+            file.close()
 
     def _cleanup_temp_files(self, files):
         for file_path in files:

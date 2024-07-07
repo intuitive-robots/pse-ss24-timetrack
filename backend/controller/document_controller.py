@@ -1,4 +1,5 @@
-import os.path
+import os
+import tempfile
 from datetime import datetime
 
 from flask import request, jsonify, Blueprint, send_file, after_this_request
@@ -62,7 +63,11 @@ class DocumentController(MethodView):
                 os.remove(file_path)
                 return response
 
-            return send_file(file_path, as_attachment=True)
+            with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+                print(file_path)
+                temp_file.write(open(file_path, 'rb').read())
+                return send_file(temp_file.name, as_attachment=True)
+            # return send_file(file_path, as_attachment=True)
         return jsonify({'error': 'Failed to generate document'}), 500
 
     @jwt_required()
