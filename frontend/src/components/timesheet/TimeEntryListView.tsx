@@ -34,8 +34,13 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
   const handleDelete = (entryId: string) => {
     openPopup(
       <ConfirmationPopup
-        onConfirm={() => confirmDelete(entryId)}
-        onCancel={closePopup}
+          title="Delete Time Entry"
+          description="Are you sure you want to delete this time entry?"
+          onConfirm={async () => {
+              await confirmDelete(entryId);
+              window.location.reload();
+          }}
+          onCancel={closePopup}
       />
     );
   };

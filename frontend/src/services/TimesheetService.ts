@@ -9,7 +9,8 @@ import axios from "axios";
  */
 const signTimesheet = async (timesheetId: string) => {
   try {
-    const response = await axiosInstance.patch('/timesheet/sign', { "_id": timesheetId });
+    const response = await axiosInstance.patch('/timesheet/sign',
+        {"_id": timesheetId });
     return response.data;
   } catch (error) {
     console.error('Signing timesheet failed', error);
