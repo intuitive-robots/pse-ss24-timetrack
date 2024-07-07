@@ -171,7 +171,7 @@ class DocumentService:
         if supervisor.role != UserRole.SUPERVISOR:
             return None
         timesheet = result.data
-        time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet.timesheet_id)
+        time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet.timesheet_id).data
         signature_stream = self.file_service.get_image(username, FileType.SIGNATURE)
         supervisor_signature_stream = self.file_service.get_image(supervisor.username, FileType.SIGNATURE)
         if signature_stream is None:
