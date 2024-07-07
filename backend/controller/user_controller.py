@@ -52,7 +52,8 @@ class UserController(MethodView):
             '/getUsers': self.get_users,
             '/getUsersByRole': self.get_users_by_role,
             '/getFile': self.get_user_file,
-            '/getHiwis': self.get_hiwis
+            '/getHiwis': self.get_hiwis,
+            '/getSupervisor': self.get_supervisor
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -265,6 +266,17 @@ class UserController(MethodView):
         hiwis_data = [hiwi.to_dict() for hiwi in result.data]
         return jsonify(hiwis_data), result.status_code
 
+    @jwt_required()
+    @check_access(roles=[UserRole.HIWI])
+    def get_supervisor(self):
+        """
+        Retrieves important information of the supervisor of the currently authenticated Hiwi.
+
+        :return: A JSON response with the supervisor data and an appropriate HTTP status code.
+        """
+        username = get_jwt_identity()
+        result = self.user_service.get_supervisor(username)
+        return jsonify(result.data), result.status_code
 
     @jwt_required()
     def delete_user_file(self):
