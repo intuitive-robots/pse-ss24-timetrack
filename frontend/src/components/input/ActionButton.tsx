@@ -3,9 +3,11 @@ import React from 'react';
 interface ActionButtonProps {
   label: string;
   onClick: () => void;
+  textColor?: string;
   bgColor?: string;
   hover?: string;
-  icon: string;
+  border?: string;
+  icon?: string;
   primary?: boolean;
   secondary?: boolean;
 }
@@ -20,7 +22,7 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = ({
   icon,
   label,
-  onClick, bgColor, hover,
+  onClick, textColor = 'text-white', bgColor, hover, border = 'none',
   primary = false,
   secondary = false
 }: ActionButtonProps): React.ReactElement => {
@@ -30,15 +32,24 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   const buttonClass = primary ? primaryClass : secondary ? secondaryClass : defaultClass;
 
-  return (
-    <button
-      className={`flex items-center gap-3 w-full py-3 px-5 ${buttonClass} ${bgColor} text-white rounded-md shadow mt-4 ${hover} transition-colors`}
-      onClick={onClick}
-    >
-      <img src={icon} alt="" className=""/>
-      <p className="text-white font-semibold text-nowrap">{label}</p>
-    </button>
+  return icon ? (
+      <button
+          className={`flex items-center gap-3 w-full py-3 px-5 ${buttonClass} ${bgColor} ${textColor} rounded-md shadow mt-4 ${hover} transition-colors ${border}`}
+          onClick={onClick}
+      >
+        <img src={icon} alt="" className=""/>
+        <p className={`${textColor} font-semibold text-nowrap`}>{label}</p>
+      </button>
+
+  ) : (
+      <button
+          className={`flex items-center gap-3 py-3 px-5 ${buttonClass} ${bgColor} ${textColor} rounded-md shadow mt-4 ${hover} transition-colors ${border}`}
+          onClick={onClick}
+      >
+        <p className={`${textColor} font-semibold text-nowrap`}>{label}</p>
+      </button>
   );
 };
+
 
 export default ActionButton;

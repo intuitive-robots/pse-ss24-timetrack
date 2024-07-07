@@ -5,9 +5,11 @@ import ActionButton from './ActionButton';
 interface PopupActionButtonProps {
   label: string;
   popupComponent: ReactNode;
+  textColor?: string;
   bgColor?: string;
   hover?: string;
-  icon: string;
+  icon?: string;
+  border?: string;
   primary?: boolean;
   secondary?: boolean;
 }
@@ -22,9 +24,9 @@ interface PopupActionButtonProps {
 const PopupActionButton: React.FC<PopupActionButtonProps> = ({
   icon,
   label,
-  popupComponent,
+  popupComponent, textColor,
   bgColor,
-  hover,
+  hover, border = 'none',
   primary = false,
   secondary = false
 }: PopupActionButtonProps): React.ReactElement => {
@@ -34,17 +36,32 @@ const PopupActionButton: React.FC<PopupActionButtonProps> = ({
     openPopup(popupComponent);
   };
 
-  return (
-    <ActionButton
+  return icon ? (
+      <ActionButton
       icon={icon}
       label={label}
       onClick={handleOpenPopup}
+      textColor={textColor}
       bgColor={bgColor}
       hover={hover}
+      border={border}
+      primary={primary}
+      secondary={secondary}
+    />
+
+  ) : (
+      <ActionButton
+      label={label}
+      onClick={handleOpenPopup}
+      textColor={textColor}
+      bgColor={bgColor}
+      hover={hover}
+      border={border}
       primary={primary}
       secondary={secondary}
     />
   );
 };
+
 
 export default PopupActionButton;

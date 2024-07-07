@@ -14,6 +14,7 @@ import {Timesheet} from "../../interfaces/Timesheet";
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {isValidRole} from "../../components/auth/roles";
 import DocumentStatus from "../../components/status/DocumentStatus";
+import {User} from "../../interfaces/Hiwi";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -31,6 +32,7 @@ const HiwiHomePage = (): React.ReactElement => {
     const [year, setYear] = useState(new Date().getFullYear());
 
     const interactableStatuses = ['Not Submitted', 'Revision'];
+
 
     useEffect(() => {
       const storedMonth = localStorage.getItem('selectedMonth');
@@ -120,10 +122,7 @@ const HiwiHomePage = (): React.ReactElement => {
             <QuickActionButton
                 icon={SignSheetIcon}
                 label="Sign Sheet"
-                onClick={handleSignTimesheet}
-                bgColor="bg-purple-600"
-                hover="hover:bg-purple-700"
-            />
+                onClick={handleSignTimesheet}/>
         ) : (
             <DocumentStatus status={timesheetStatus} />
         );

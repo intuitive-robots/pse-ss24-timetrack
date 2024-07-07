@@ -4,6 +4,7 @@ import ListIconCardButton from "./input/ListIconCardButton";
 import CheckTimesheetIcon from "../assets/images/check_timesheet_icon.svg"
 import StatusLabel from "./status/Status";
 import {StatusType} from "../interfaces/StatusType";
+import {User} from "../interfaces/Hiwi";
 
 
 interface HiwiCardProps {
@@ -28,8 +29,7 @@ const HiwiCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastNa
               <ListIconCardButton
                   iconSrc={CheckTimesheetIcon}
                   label="Check"
-                  onClick={() => {
-                  }}
+                  onClick={onCheck}
               />
               <div className="pr-6 items-center justify-center">
                   <StatusLabel status={status} />

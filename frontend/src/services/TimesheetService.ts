@@ -23,9 +23,9 @@ const signTimesheet = async (timesheetId: string) => {
  * @returns The response data from the timesheet approve request.
  * @throws An error if the request fails.
  */
-const approveTimesheet = async () => {
+const approveTimesheet = async (timesheetId: string) => {
   try {
-    const response = await axiosInstance.patch('/timesheet/approveTimesheet');
+    const response = await axiosInstance.patch('/timesheet/approve', {"_id": timesheetId});
     return response.data;
   } catch (error) {
     console.error('Approving timesheet failed');
@@ -38,9 +38,9 @@ const approveTimesheet = async () => {
  * @returns The response data from the timesheet change request.
  * @throws An error if the request fails.
  */
-const requestChange = async () => {
+const requestChange = async (timesheetId: string) => {
   try {
-    const response = await axiosInstance.post('/timesheet/requestChange');
+    const response = await axiosInstance.patch('/timesheet/requestChange', {"_id": timesheetId});
     return response.data;
   } catch (error) {
     console.error('Requesting timesheet change failed');
