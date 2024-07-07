@@ -13,8 +13,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
 
     """
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    TEMPLATE_PATH = os.path.join(BASE_DIR, "..\\resources\\timesheet_template.pdf")
-    TEMP_DIR = os.path.join(BASE_DIR, "..\\resources\\temp\\")
+    TEMPLATE_PATH = os.path.join(BASE_DIR, "..", "resources", "timesheet_template.pdf")
+    TEMP_DIR = os.path.join(BASE_DIR, "..", "resources", "temp")
     SIGNATURE_WIDTH = 300
     SIGNATURE_HEIGHT = 30
     SIGNATURE_X_POS = 18

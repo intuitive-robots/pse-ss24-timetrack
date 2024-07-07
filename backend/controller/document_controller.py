@@ -66,6 +66,7 @@ class DocumentController(MethodView):
             response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(file_path)}'
             # Step 4: Delete the file
             os.remove(file_path)
+            os.removedirs(os.path.dirname(file_path))
             # Step 5: Return the response object
             return response
         return jsonify({'error': 'Failed to generate document'}), 500
