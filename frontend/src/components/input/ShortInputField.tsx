@@ -6,7 +6,7 @@ interface ShortInputFieldProps {
   title?: string;
   suffix?: string;
   placeholder?: string;
-  value: string;
+  value: string | number;
   onChange: (value: string) => void;
   size?: string;
 }

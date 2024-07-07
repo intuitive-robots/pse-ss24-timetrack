@@ -1,4 +1,5 @@
 import axiosInstance from "./AxiosInstance";
+import {User} from "../interfaces/User";
 
 const getHiwis = async (username: string) => {
   try {
@@ -19,7 +20,7 @@ const getHiwis = async (username: string) => {
  */
 const deleteUser = async (username: string) => {
   try {
-    const response = await axiosInstance.delete('/user/delete', {
+    const response = await axiosInstance.delete('/user/deleteUser', {
       data: { username }
     });
     return response.data;
@@ -29,4 +30,19 @@ const deleteUser = async (username: string) => {
   }
 };
 
-export { getHiwis, deleteUser };
+/**
+ * Creates a new user with provided user details.
+ * @param userData The data of the user to be created.
+ * @returns The response data from the backend.
+ */
+const createUser = async (userData: User): Promise<any> => {
+    try {
+        const response = await axiosInstance.post('/user/createUser', userData);
+        return response.data;
+    } catch (error) {
+        console.error('Creating user failed', error);
+        throw error;
+    }
+};
+
+export { getHiwis, deleteUser, createUser };

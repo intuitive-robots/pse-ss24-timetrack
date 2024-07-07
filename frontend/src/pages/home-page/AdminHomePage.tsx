@@ -26,6 +26,8 @@ const AdminHomePage = (): React.ReactElement => {
      const handleDeleteUser = (username: string) => {
         openPopup(
           <ConfirmationPopup
+              title={"Delete User"}
+                description={"Are you sure you want to delete this user?"}
             onConfirm={() => confirmDeleteUser(username)}
             onCancel={closePopup}
           />
@@ -36,6 +38,7 @@ const AdminHomePage = (): React.ReactElement => {
         try {
             await deleteUser(username);
             closePopup();
+            window.location.reload();
         } catch (error) {
             console.error('Failed to delete user:', error);
             closePopup();
