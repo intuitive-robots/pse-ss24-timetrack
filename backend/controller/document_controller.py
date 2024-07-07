@@ -2,7 +2,7 @@ import os
 import tempfile
 from datetime import datetime
 
-from flask import request, jsonify, Blueprint, send_file, after_this_request
+from flask import request, jsonify, Blueprint, send_file, after_this_request, Response
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -58,16 +58,16 @@ class DocumentController(MethodView):
         if not file_path:
             return jsonify({'error': 'Failed to generate document'}), 500
         if os.path.isfile(file_path):
-            @after_this_request
-            def delete_file(response):
-                os.remove(file_path)
-                return response
-
-            with tempfile.NamedTemporaryFile(delete=True) as temp_file:
-                print(file_path)
-                temp_file.write(open(file_path, 'rb').read())
-                return send_file(temp_file.name, as_attachment=True)
-            # return send_file(file_path, as_attachment=True)
+            with open(file_path, 'rb') as file:
+                file_content = file.read()
+            # Step 2 & 3: Create a response object and set headers for download
+            response = Response(file_content)
+            response.headers['Content-Type'] = 'application/pdf'
+            response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(file_path)}'
+            # Step 4: Delete the file
+            os.remove(file_path)
+            # Step 5: Return the response object
+            return response
         return jsonify({'error': 'Failed to generate document'}), 500
 
     @jwt_required()

@@ -33,6 +33,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         if document_data is None:
             return RequestResult(False, "No data provided", 400)
 
+        if not os.path.exists(self.TEMP_DIR):
+            os.makedirs(self.TEMP_DIR)
         data_dict = self._prepare_data_dict(document_data)
         for i in range(len(document_data.time_entries)):
             time_entry = document_data.time_entries[i]
@@ -68,8 +70,10 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         :param type_hiwi: The type of the signature (Hiwi or supervisor).
         """
         signature_x_pos = self.SIGNATURE_X_POS if type_hiwi else self.SUPERVISOR_SIGNATURE_X_POS
+
         fillpdfs.place_image(signature_path, signature_x_pos, self.SIGNATURE_Y_POS, pdf_path, output_path, 1,
                              width=self.SIGNATURE_WIDTH, height=self.SIGNATURE_HEIGHT)
+
 
     def _get_output_path(self, document_data, suffix):
         """
