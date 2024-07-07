@@ -32,7 +32,7 @@ class DocumentService:
         self.timesheet_service = TimesheetService()
         self.file_service = FileService()
 
-    def generate_multiple_documents(self, usernames: list[str], month: int, year: int):
+    def generate_multiple_documents(self, usernames: list[str], month: int, year: int, requesting_username: str):
         """
         Generates a zip file containing PDF documents for a specified list of users, month, and year.
         Each document is gathered and generated based on user-specific data for the given time period.
@@ -45,6 +45,8 @@ class DocumentService:
         """
         documents = []
         for username in usernames:
+            if not self._check_if_authorized(requesting_username, username):
+                return RequestResult(False, "Unauthorized to generate document", status_code=403)
             document = self.gather_document_data(month, year, username)
             if document is None:
                 return RequestResult(False, "Failed to gather document data.", status_code=400)
@@ -55,7 +57,7 @@ class DocumentService:
         stream = self._create_zip_from_directory(output_dir)
         return RequestResult(True, "Documents generated successfully.", 200, stream)
 
-    def generate_document(self, month: int, year: int, username: str):
+    def generate_document(self, month: int, year: int, username: str, requesting_username: str):
         """
         Generates a document for the given month and year.
 
@@ -65,13 +67,14 @@ class DocumentService:
 
         :return: The generated document.
         """
-
+        if not self._check_if_authorized(requesting_username, username):
+            return RequestResult(False, "Unauthorized to generate document", status_code=403)
         document_data = self.gather_document_data(month, year, username)
         if document_data is None:
             return RequestResult(False, "Failed to gather document data.", status_code=400)
         return self.pdf_generator_strategy.generate_document(document_data)
 
-    def generate_multiple_documents_by_id(self, timesheet_ids: list[str]):
+    def generate_multiple_documents_by_id(self, timesheet_ids: list[str], requesting_username: str):
         """
         Generates a zip file containing PDF documents for a specified list of timesheet IDs.
 
@@ -84,6 +87,8 @@ class DocumentService:
             timesheet = self.timesheet_service.get_timesheet_by_id(timesheet_id).data
             if timesheet is None:
                 return RequestResult(False, "Failed to gather document data.", status_code=400)
+            if not self._check_if_authorized(requesting_username, timesheet.username):
+                return RequestResult(False, "Unauthorized to generate document", status_code=403)
             document = self.gather_document_data(timesheet.month, timesheet.year, timesheet.username)
             if document is None:
                 return RequestResult(False, "Failed to gather document data.", status_code=400)
@@ -110,7 +115,7 @@ class DocumentService:
         stream.seek(0)
         return stream
 
-    def generate_document_in_date_range(self, start_date: datetime, end_date: datetime, username: str):
+    def generate_document_in_date_range(self, start_date: datetime, end_date: datetime, username: str, requesting_username: str):
         """
         Generates a document for the given date range.
 
@@ -120,6 +125,8 @@ class DocumentService:
 
         :return: The generated document.
         """
+        if not self._check_if_authorized(requesting_username, username):
+            return RequestResult(False, "Unauthorized to generate document", status_code=403)
         documents = []
         while start_date <= end_date:
             document = self.gather_document_data(start_date.month, start_date.year, username)
@@ -171,3 +178,22 @@ class DocumentService:
             return None
         return DocumentData(month, year, user.personal_info, user.contract_info, 0.0, signature_stream,
                             supervisor_signature_stream, time_entries)
+
+    def _check_if_authorized(self, requesting_username: str, username: str):
+        """
+        Checks if the requesting user is authorized to access the data of the specified user.
+
+        :param requesting_username: The username of the requesting user.
+        :param username: The username of the user whose data is being accessed.
+
+        :return: True if the requesting user is authorized, False otherwise.
+        """
+        if requesting_username == username:
+            return True
+        requesting_user = self.user_service.get_profile(requesting_username)
+        if requesting_user.role == UserRole.ADMIN or requesting_user.role == UserRole.SECRETARY:
+            return True
+        if requesting_user.role == UserRole.SUPERVISOR and username in requesting_user.hiwis:
+            return True
+        else:
+            return False
