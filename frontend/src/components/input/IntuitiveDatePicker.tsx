@@ -43,15 +43,33 @@ const IntuitiveDatePicker: React.FC<{ onDateSelect: (date: Date) => void }> = ({
             {visible && (
                 <div className="absolute z-50 mt-1 bg-white p-4 rounded-lg shadow-lg">
                     <div className="flex items-center justify-between mb-4">
-                        <button onClick={() => setCurrentMonth(current => current > 0 ? current - 1 : 11)} className="text-gray-600 hover:text-gray-800">{'<'}</button>
+                        <button
+                            onClick={(event) => {
+                                event.preventDefault();
+                                setCurrentMonth(current => current > 0 ? current - 1 : 11);
+                                if (currentMonth === 0) setCurrentYear(current => current - 1);
+                            }}
+                            className="text-gray-600 hover:text-gray-800"
+                        >
+                            {'<'}
+                        </button>
                         <span className="text-lg text-gray-800">{months[currentMonth]} {currentYear}</span>
-                        <button onClick={() => setCurrentMonth(current => current < 11 ? current + 1 : 0)} className="text-gray-600 hover:text-gray-800">{'>'}</button>
+                        <button
+                            onClick={(event) => {
+                                event.preventDefault();
+                                setCurrentMonth(current => current < 11 ? current + 1 : 0);
+                                if (currentMonth === 11) setCurrentYear(current => current + 1);
+                            }}
+                            className="text-gray-600 hover:text-gray-800"
+                        >
+                            {'>'}
+                        </button>
                     </div>
                     <div className="grid grid-cols-7 gap-1">
                         {daysOfWeek.map(day => <div key={day} className="text-center text-sm font-semibold text-gray-800">{day}</div>)}
                         {Array.from({ length: new Date(currentYear, currentMonth, 1).getDay() }).map((_, i) => <div key={i} />)}
                         {Array.from({ length: new Date(currentYear, currentMonth + 1, 0).getDate() }).map((_, i) => (
-                            <div key={i} className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${i + 1 === selectedDate.getDate() && currentMonth === selectedDate.getMonth() ? 'bg-blue-500 text-white' : 'text-gray-700'}`} onClick={() => selectDate(i + 1)}>
+                            <div key={i} className={`w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-400 hover:text-white cursor-pointer ${i + 1 === selectedDate.getDate() && currentMonth === selectedDate.getMonth() ? 'bg-purple-500 text-white' : 'text-gray-700'}`} onClick={() => selectDate(i + 1)}>
                                 {i + 1}
                             </div>
                         ))}

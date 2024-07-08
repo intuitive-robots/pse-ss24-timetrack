@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
+import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -101,7 +102,6 @@ const TrackTimePopup: React.FC = () => {
                             value={startTime}
                             onChange={setStartTime}
                         />
-
                         <ShortInputField
                             icon={TimeIcon}
                             type="time"
