@@ -13,8 +13,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
 
     """
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    TEMPLATE_PATH = os.path.join(BASE_DIR, "../resources/timesheet_template.pdf")
-    TEMP_DIR = os.path.join(BASE_DIR, "../resources/temp/")
+    TEMPLATE_PATH = os.path.join(BASE_DIR, "..", "resources", "timesheet_template.pdf")
+    TEMP_DIR = os.path.join(BASE_DIR, "..", "resources", "temp")
     SIGNATURE_WIDTH = 300
     SIGNATURE_HEIGHT = 30
     SIGNATURE_X_POS = 18
@@ -33,6 +33,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         if document_data is None:
             return RequestResult(False, "No data provided", 400)
 
+        if not os.path.exists(self.TEMP_DIR):
+            os.makedirs(self.TEMP_DIR)
         data_dict = self._prepare_data_dict(document_data)
         for i in range(len(document_data.time_entries)):
             time_entry = document_data.time_entries[i]
@@ -68,8 +70,10 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         :param type_hiwi: The type of the signature (Hiwi or supervisor).
         """
         signature_x_pos = self.SIGNATURE_X_POS if type_hiwi else self.SUPERVISOR_SIGNATURE_X_POS
+
         fillpdfs.place_image(signature_path, signature_x_pos, self.SIGNATURE_Y_POS, pdf_path, output_path, 1,
                              width=self.SIGNATURE_WIDTH, height=self.SIGNATURE_HEIGHT)
+
 
     def _get_output_path(self, document_data, suffix):
         """
@@ -146,6 +150,7 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         """
         with open(path, "wb") as file:
             file.write(signature_stream.read())
+            file.close()
 
     def _cleanup_temp_files(self, files):
         for file_path in files:

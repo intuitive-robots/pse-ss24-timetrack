@@ -1,11 +1,13 @@
-import os.path
+import os
+import tempfile
 from datetime import datetime
 
-from flask import request, jsonify, Blueprint, send_file, after_this_request
+from flask import request, jsonify, Blueprint, send_file, after_this_request, Response
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from service.document.document_service import DocumentService
+from service.user_service import UserService
 
 document_blueprint = Blueprint('document', __name__)
 
@@ -22,6 +24,7 @@ class DocumentController(MethodView):
 
         """
         self.document_service = DocumentService()
+        self.user_service = UserService()
 
 
     def get(self):
@@ -48,20 +51,24 @@ class DocumentController(MethodView):
         if not month or not year or not username:
             return jsonify({'error': 'Missing required fields'}), 400
 
-        result = self.document_service.generate_document(month, year, username)
+        result = self.document_service.generate_document(month, year, username, get_jwt_identity())
         if result.status_code != 200:
             return jsonify({'error': result.message}), result.status_code
         file_path = result.data
         if not file_path:
             return jsonify({'error': 'Failed to generate document'}), 500
         if os.path.isfile(file_path):
-            @after_this_request
-            def delete_file(response):
-                os.remove(file_path)
-                return response
-
-
-            return send_file(file_path, as_attachment=True)
+            with open(file_path, 'rb') as file:
+                file_content = file.read()
+            # Step 2 & 3: Create a response object and set headers for download
+            response = Response(file_content)
+            response.headers['Content-Type'] = 'application/pdf'
+            response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(file_path)}'
+            # Step 4: Delete the file
+            os.remove(file_path)
+            os.removedirs(os.path.dirname(file_path))
+            # Step 5: Return the response object
+            return response
         return jsonify({'error': 'Failed to generate document'}), 500
 
     @jwt_required()
@@ -80,14 +87,14 @@ class DocumentController(MethodView):
         end_date_str = request_data.get('endDate')
         username = request_data.get('username')
         if usernames and month and year:
-            result = self.document_service.generate_multiple_documents(usernames, month, year)
+            result = self.document_service.generate_multiple_documents(usernames, month, year, get_jwt_identity())
         elif timesheet_ids:
-            result = self.document_service.generate_multiple_documents_by_id(timesheet_ids)
+            result = self.document_service.generate_multiple_documents_by_id(timesheet_ids, get_jwt_identity())
         elif start_date_str and end_date_str and username:
             start_date = datetime.strptime(start_date_str, '%d-%m-%y')
             end_date = datetime.strptime(end_date_str, '%d-%m-%y')
 
-            result = self.document_service.generate_document_in_date_range(start_date, end_date, username)
+            result = self.document_service.generate_document_in_date_range(start_date, end_date, username, get_jwt_identity())
         else:
             return jsonify({'error': 'Missing required fields'}), 400
 
@@ -109,3 +116,4 @@ class DocumentController(MethodView):
             if request_path.endswith(path):
                 return func()
         return jsonify({'error': 'Endpoint not found'}), 404
+
