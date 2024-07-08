@@ -87,17 +87,17 @@ class TestTimesheetRepository(unittest.TestCase):
         """
         Test the get_timesheet_by_status method of the TimesheetRepository class.
         """
-        test_timesheet_data = [{'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
-                                'username': 'testHiwi1',
-                                'month': 5,
-                                'year': 2024,
-                                'status': 'Not Submitted',
-                                'totalTime': 0.0,
-                                'overtime': 0.0,
-                                'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}]
+        test_timesheet_data = {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                               'username': 'testHiwi1',
+                               'month': 5,
+                               'year': 2024,
+                               'status': 'Not Submitted',
+                               'totalTime': 0.0,
+                               'overtime': 0.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)}
 
         self.assertEqual(test_timesheet_data,
-                         self.timesheet_repository.get_timesheets_by_status(TimesheetStatus.NOT_SUBMITTED))
+                         self.timesheet_repository.get_timesheets_by_status(TimesheetStatus.NOT_SUBMITTED)[0])
 
     def test_get_timesheet_id(self):
         """
