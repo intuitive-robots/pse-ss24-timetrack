@@ -196,7 +196,7 @@ class UserService:
             return RequestResult(False, "No Hiwis found", status_code=404)
         return RequestResult(True, "", status_code=200, data=hiwis_data)
 
-    def get_supervisor(self, username: str):
+    def get_supervisor(self, username: str, only_name: bool = False):
         """
         Retrieves information about the supervisor of a Hiwi.
 
@@ -210,6 +210,10 @@ class UserService:
         supervisor_data = self.user_repository.find_by_username(hiwi_data['supervisor'])
         if not supervisor_data:
             return RequestResult(False, "Supervisor not found", status_code=404)
+        if only_name:
+            relevant_supervisor_data = {'firstName': supervisor_data['personalInfo']['firstName'],
+                                        'lastName': supervisor_data['personalInfo']['lastName']}
+            return RequestResult(True, "", status_code=200, data=relevant_supervisor_data)
         relevant_supervisor_data = supervisor_data['personalInfo']
         relevant_supervisor_data.pop('personalNumber', None)
         relevant_supervisor_data['role'] = supervisor_data['role']
