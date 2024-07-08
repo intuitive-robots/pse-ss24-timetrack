@@ -12,6 +12,7 @@ const StatusLabel: React.FC<StatusProps> = ({ status }) => {
     [StatusType.Pending]: { bgColor: "bg-pending-bg", textColor: "text-pending-fg", iconColor: "fill-pending-fg"},
     [StatusType.Waiting]: { bgColor: "bg-waiting-bg", textColor: "text-waiting-fg", iconColor: "fill-waiting-fg"},
     [StatusType.Revision]: { bgColor: "bg-revision-bg", textColor: "text-revision-fg", iconColor: "fill-revision-fg"},
+    [StatusType.NoTimesheet]: { bgColor: "bg-white", textColor: "text-black", iconColor: "fill-waiting-fg"},
   };
 
   const { bgColor, textColor, iconColor} = statusStyles[status];

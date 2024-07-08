@@ -16,7 +16,7 @@ interface HiwiCardProps {
   onCheck: () => void;
 }
 
-const HiwiCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastName, status, onCheck}) => {
+const HiwiTimesheetCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastName, status, onCheck}) => {
   return (
       <div className="flex items-center p-4 bg-white shadow rounded-lg mb-4">
           <UserInfo
@@ -41,4 +41,4 @@ const HiwiCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastNa
   );
 };
 
-export default HiwiCard;
+export default HiwiTimesheetCard;

@@ -1,6 +1,4 @@
 import axiosInstance from "./AxiosInstance";
-import { User } from "../interfaces/User";
-import axios from "axios";
 
 const getHiwis = async (username: string) => {
   try {
@@ -12,5 +10,18 @@ const getHiwis = async (username: string) => {
     throw error;
   }
 };
+const getUsersByRole = async (role: string) => {
+  try {
+    const response = await axiosInstance.get('/user/getUsersByRole', {
+      params: { role } });
+    return response.data;
+  } catch (error) {
+    console.error('Fetching users by role failed');
+    throw error;
+  }
+};
 
-export { getHiwis };
+export {
+  getHiwis,
+  getUsersByRole
+};

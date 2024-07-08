@@ -186,7 +186,7 @@ class UserController(MethodView):
         return jsonify(user_dict_list), 200
 
     @jwt_required()
-    @check_access(roles=[UserRole.ADMIN])
+    @check_access(roles=[UserRole.ADMIN, UserRole.SECRETARY])
     def get_users_by_role(self):
         """
         Retrieves a list of users filtered by a specific role provided via query parameters.
@@ -197,9 +197,10 @@ class UserController(MethodView):
         if 'role' not in args:
             return jsonify({'error': 'Role parameter is required'}), 400
         role = args['role']
-        users_data = self.user_service.get_users_by_role(role)
-        result = [user.to_dict() for user in users_data]
-        return jsonify(result), 200
+        result = self.user_service.get_users_by_role(role)
+        users_data = [user.to_dict() for user in result.data]
+        return jsonify(users_data), result.status_code
+
 
     @jwt_required()
     def upload_user_file(self):

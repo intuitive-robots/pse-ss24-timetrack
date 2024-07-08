@@ -2,7 +2,8 @@ export enum StatusType {
     Complete = "Complete",
     Pending = "Pending",
     Waiting = "Waiting",
-    Revision = "Revision"
+    Revision = "Revision",
+    NoTimesheet = "No Timesheet"
 }
 
 

@@ -165,7 +165,7 @@ class UserService:
         users_data = self.user_repository.get_users_by_role(parsedRole)
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
 
-        return users
+        return RequestResult(True, "", status_code=200, data=users)
 
     def get_profile(self, username: str) -> User:
         """
