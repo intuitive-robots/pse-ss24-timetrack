@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {usePopup} from "./PopupContext";
 import ShortInputField from "../input/ShortInputField";
+import TrackTimeIcon from "../../assets/images/add_track_time.svg";
 import ActivityIcon from "../../assets/images/activity_icon.svg";
 import BreakIcon from "../../assets/images/coffee_icon.svg";
 import TimeIcon from "../../assets/images/time_icon.svg";
@@ -60,8 +61,8 @@ const TrackTimePopup: React.FC = () => {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-4">
-                <RoundedIconBox iconSrc={ActivityIcon}/>
-                <div className="flex flex-col gap-1">
+                <RoundedIconBox iconSrc={TrackTimeIcon} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
+                <div className="flex flex-col gap-[1px]">
                     <h2 className="text-2xl font-bold">Create Time Entry</h2>
                     <p className="text-lg font-medium text-[#707070]">Fill in the fields below to add a Working
                         Day</p>
