@@ -154,18 +154,6 @@ def create_time_entry():
     result = entry_repo.create_time_entry(work_entry)
     return result.to_dict(), result.status_code
 
-#TODO: This works only for work entries, not vacation entries!
-@app.route('/readTimeEntries')
-@jwt_required()
-def read_time_entries():
-    """
-    Reads all time entries from the database
-    
-    :return: A JSON string containing all time entries
-    """
-    entry_repo = TimeEntryRepository.get_instance()
-    time_entries = entry_repo.get_time_entries()
-    return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
 #TODO: This is a hardcoded timesheet!
 @app.route('/createTimesheet')

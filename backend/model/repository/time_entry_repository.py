@@ -7,6 +7,8 @@ from db import initialize_db
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
 from model.time_entry import TimeEntry
+from pymongo.errors import PyMongoError
+
 
 
 class TimeEntryRepository:
@@ -45,10 +47,13 @@ class TimeEntryRepository:
         """
         if time_entry_id is None:
             return None
-        time_entry_data = self.db.timeEntries.find_one({"_id": ObjectId(time_entry_id)})
-        if not time_entry_data:
+        try:
+            time_entry_data = self.db.timeEntries.find_one({"_id": ObjectId(time_entry_id)})
+            if not time_entry_data:
+                return None
+            return time_entry_data
+        except PyMongoError as e:
             return None
-        return time_entry_data
 
     def get_time_entries_by_date(self, date, username):
         """
@@ -63,22 +68,13 @@ class TimeEntryRepository:
             return None
         start_date = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
         end_date = datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
-        timesheet_id = self.timesheet_repository.get_timesheet_id(username, date.month, date.year)
-        time_entries = self.db.timeEntries.find({"startTime": {"$gte": start_date, "$lt": end_date},
-                                                 "timesheetId": str(timesheet_id)})
-        return list(time_entries)
-
-
-
-    #TODO: This method is only used for testing and shouldn't be required
-    def get_time_entries(self):
-        """
-        Retrieves all TimeEntry objects from the database
-
-        :return: A list of all TimeEntry objects
-        """
-        time_entries = self.db.timeEntries.find()
-        return list(time_entries)
+        try:
+            timesheet_id = self.timesheet_repository.get_timesheet_id(username, date.month, date.year)
+            time_entries = self.db.timeEntries.find({"startTime": {"$gte": start_date, "$lt": end_date},
+                                                     "timesheetId": str(timesheet_id)})
+            return list(time_entries)
+        except PyMongoError as e:
+            return None
 
     def get_time_entries_by_timesheet_id(self, timesheet_id: str):
         """
@@ -90,9 +86,12 @@ class TimeEntryRepository:
         """
         if not timesheet_id:
             return []
-        cursor = self.db.timeEntries.find({"timesheetId": str(timesheet_id)})
-        time_entries = [entry for entry in cursor]
-        return list(time_entries)
+        try:
+            cursor = self.db.timeEntries.find({"timesheetId": str(timesheet_id)})
+            time_entries = [entry for entry in cursor]
+            return list(time_entries)
+        except PyMongoError as e:
+            return []
 
     def update_time_entry(self, time_entry: TimeEntry) -> RequestResult:
         """
@@ -104,15 +103,17 @@ class TimeEntryRepository:
         """
         if time_entry is None:
             return RequestResult(False, "Time entry object is None", 400)
-        result = self.db.timeEntries.update_one({"_id": time_entry.time_entry_id},
-                                                {"$set": time_entry.to_dict()})
-
-        if result.matched_count == 0:
-            return RequestResult(False, "Entry not found", 404)
-        if result.modified_count == 0:
-            return RequestResult(False, "Entry update failed (Not Modified)", 500)
-        if result.acknowledged:
-            return RequestResult(True, "Entry updated successfully", 200)
+        try:
+            result = self.db.timeEntries.update_one({"_id": time_entry.time_entry_id},
+                                                    {"$set": time_entry.to_dict()})
+            if result.matched_count == 0:
+                return RequestResult(False, "Entry not found", 404)
+            if result.modified_count == 0:
+                return RequestResult(False, "Entry update failed (Not Modified)", 500)
+            if result.acknowledged:
+                return RequestResult(True, "Entry updated successfully", 200)
+        except PyMongoError as e:
+            return RequestResult(False, f"Entry update failed: {str(e)}", 500)
         return RequestResult(False, "Entry update failed", 500)
 
     def create_time_entry(self, time_entry: TimeEntry):
@@ -124,22 +125,23 @@ class TimeEntryRepository:
         """
         if time_entry is None:
             return RequestResult(False, "Time entry object is None", 400)
+        try:
+            if self.get_time_entry_by_id(time_entry.time_entry_id):
+                return RequestResult(False, "Time entry already exists", 409)
+            if not self.timesheet_repository.get_timesheet_by_id(time_entry.timesheet_id):
+                return RequestResult(False, "Timesheet not found", 404)
 
-        if self.get_time_entry_by_id(time_entry.time_entry_id):
-            return RequestResult(False, "Time entry already exists", 409)
+            time_entry_dict = time_entry.to_dict()
+            if '_id' in time_entry_dict:
+                del time_entry_dict['_id']
 
-        if not self.timesheet_repository.get_timesheet_by_id(time_entry.timesheet_id):
-            return RequestResult(False, "Timesheet not found", 404)
+            result = self.db.timeEntries.insert_one(time_entry_dict)
 
-        time_entry_dict = time_entry.to_dict()
-        if '_id' in time_entry_dict:
-            del time_entry_dict['_id']
-
-        result = self.db.timeEntries.insert_one(time_entry_dict)
-
-        if result.acknowledged:
-            return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201,
-                                 data={"_id": ObjectId(result.inserted_id)})
+            if result.acknowledged:
+                return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201,
+                                     data={"_id": ObjectId(result.inserted_id)})
+        except PyMongoError as e:
+            return RequestResult(False, f"Time entry creation failed: {str(e)}", 500)
         return RequestResult(False, "Time entry creation failed", 500)
 
     def delete_time_entry(self, entry_id: str):
@@ -152,18 +154,20 @@ class TimeEntryRepository:
         """
         if entry_id is None:
             return RequestResult(False, "Entry ID is None", 400)
+        try:
+            time_entry_data = self.get_time_entry_by_id(entry_id)
+            if not time_entry_data:
+                return RequestResult(False, "Time Entry not found", 404)
 
-        time_entry_data = self.get_time_entry_by_id(entry_id)
-        if not time_entry_data:
-            return RequestResult(False, "Time Entry not found", 404)
+            timesheet_id = time_entry_data.get("timesheetId")
 
-        timesheet_id = time_entry_data.get("timesheetId")
+            result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
+            if result.deleted_count == 0:
+                return RequestResult(False, "Entry not found", 404)
 
-        result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
-        if result.deleted_count == 0:
-            return RequestResult(False, "Entry not found", 404)
-
-        if result.acknowledged:
-            return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
+            if result.acknowledged:
+                return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
+        except PyMongoError as e:
+            return RequestResult(False, f"Entry deletion failed: {str(e)}", 500)
         return RequestResult(False, "Entry deletion failed", 500)
 

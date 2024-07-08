@@ -108,9 +108,9 @@ class TestTimeEntryService(unittest.TestCase):
         Test the get_entries_of_timesheet method of the TimeEntryService class.
         """
         test_timesheet_id = "6679ca2935df0d8f7202c5fa"
-        test_time_entry1 = ObjectId("666c020f7a409003113fedf9")
+        test_time_entry1 = ObjectId("6679ce1b327b11ba6160cc1a")
         test_time_entry2 = ObjectId("666c9d6d6796c3856a1c5bdd")
-        test_time_entry3 = ObjectId("6679ce1b327b11ba6160cc1a")
+        test_time_entry3 = ObjectId("666c020f7a409003113fedf9")
         result = self.time_entry_service.get_entries_of_timesheet(test_timesheet_id)
         self.assertTrue(result.is_successful)
         self.assertEqual(3, len(result.data))
