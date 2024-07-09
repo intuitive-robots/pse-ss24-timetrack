@@ -22,7 +22,9 @@ const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, 
 
     const totalTimeString = totalTime.toString() + "h";
     const vacationDaysString = vacationDays.toString() + " days";
-    const overtimeString = overtime.toString() + "h";
+    const overtimeString = overtime.toString() + "h"
+
+    console.log("TimesheetTile: ", month, year, projectName, description, totalTime, vacationDays, overtime, status, onDownload)
 
     return (
         <div

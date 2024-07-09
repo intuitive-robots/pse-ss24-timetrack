@@ -20,6 +20,7 @@ const DocumentPage: React.FC = () => {
       getTimesheets(user.username)
         .then(sheets => {
           setTimesheets(sheets);
+          console.log('Loaded timesheets:', sheets);
         })
         .catch(error => {
           console.error('Failed to load timesheets:', error);
