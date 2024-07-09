@@ -257,3 +257,15 @@ class TestUserController(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         received_file = self.client.get('/user/getFile?username=testHiwi1&fileType=Signature', headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(received_file.status_code, 404)
+
+    def test_get_supervisors(self):
+        """
+        Test the get_supervisors method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+        response = self.client.get('/user/getSupervisors', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.json)
+        self.assertIsInstance(response.json, list)
+        self.assertGreaterEqual(len(response.json), 1)
+

@@ -52,7 +52,8 @@ class UserController(MethodView):
             '/getUsers': self.get_users,
             '/getUsersByRole': self.get_users_by_role,
             '/getFile': self.get_user_file,
-            '/getHiwis': self.get_hiwis
+            '/getHiwis': self.get_hiwis,
+            '/getSupervisors': self.get_supervisors
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -266,6 +267,20 @@ class UserController(MethodView):
         result = self.user_service.get_hiwis(username)
         hiwis_data = [hiwi.to_dict() for hiwi in result.data]
         return jsonify(hiwis_data), result.status_code
+
+    @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
+    def get_supervisors(self):
+        """
+        Retrieves all Supervisors in the system.
+
+        :return: A JSON response with the list of Supervisors and an appropriate HTTP status code.
+        """
+        result = self.user_service.get_supervisors()
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
+        supervisors_data = [supervisor.to_name_dict() for supervisor in result.data]
+        return jsonify(supervisors_data), result.status_code
 
 
     @jwt_required()
