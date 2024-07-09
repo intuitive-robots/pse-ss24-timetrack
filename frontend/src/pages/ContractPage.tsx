@@ -1,5 +1,5 @@
 import React from "react";
-import UserInfo from "../components/UserInfo";
+import UserInfoSupervisorView from "../components/UserInfoSupervisorView";
 import ProfilePicture from "../assets/images/profile_placeholder.png"
 import ContactButton from "../components/input/ContactButton";
 import MailIcon from "../assets/images/contact_mail.svg"
@@ -20,7 +20,7 @@ const ContractPage = (): React.ReactElement => {
                 <div className="">
                     <h2 className="font-bold text-md text-[#B5B5B5] mb-3">Your Supervisor</h2>
                     {/*<div className="flex flex-row justify-between">*/}
-                    {/*    <UserInfo name="Max" lastName="Muster" role="Supervisor" profileImageUrl={ProfilePicture}/>*/}
+                    {/*    <UserInfoSupervisorView name="Max" lastName="Muster" role="Supervisor" profileImageUrl={ProfilePicture}/>*/}
                     {/*    <div className="flex flex-row gap-3">*/}
                     {/*        <ContactButton icon={MailIcon} onClick={() => {}}/>*/}
                     {/*        <ContactButton icon={SlackIcon} onClick={() => {}}/>*/}

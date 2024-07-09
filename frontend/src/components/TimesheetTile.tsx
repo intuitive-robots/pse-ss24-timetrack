@@ -5,39 +5,68 @@ import ListTileInfo from "./list/ListTileInfo";
 import CalendarMonth from "./calendar/CalendarMonth";
 import StatusLabel from "./status/Status";
 import {StatusType} from "../interfaces/StatusType";
+import UserInfoSecretaryView from "./UserInfoSecretaryView";
+import {Roles} from "./auth/roles";
 
 interface TimesheetTileProps {
   key: string;
-  month: number;
-  year: number;
+  role: string;
   totalTime: number;
+  vacationDays: number;
   overtime: number;
   status: StatusType;
   onDownload: () => void;
   projectName?: string; // Optional für Hiwi
   description?: string; // Optional für Hiwi
+  month?: number; // Optional für Hiwi
+  year?: number; // Optional für Hiwi
   name?: string; // Optional für Secretary
   lastName?: string; // Optional für Secretary
   supervisor?: string; // Optional für Secretary
   profileImageUrl?: string; // Optional für Secretary
-  vacationDays: number;
 }
 
-const TimesheetHiwiTile: React.FC<TimesheetTileProps> = ({month, year, projectName, description, totalTime, vacationDays, overtime, status, onDownload}) => {
-
+const TimesheetTile: React.FC<TimesheetTileProps> = ({   role,
+                                                         totalTime,
+                                                         overtime,
+                                                         status,
+                                                         onDownload,
+                                                         projectName,
+                                                         description,
+                                                         month,
+                                                         year,
+                                                         name,
+                                                         lastName,
+                                                         supervisor,
+                                                         profileImageUrl,
+                                                         vacationDays
+}) => {
     const totalTimeString = totalTime.toString() + "h";
     const vacationDaysString = vacationDays.toString() + " days";
     const overtimeString = overtime.toString() + "h";
 
     return (
       <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-center">
-          <div className="flex gap-5">
-              <CalendarMonth month={month} year={year}/>
-              <div className="flex flex-col w-60 mt-1.5 gap-0.5">
-                  <p className="text-md font-semibold">{projectName}</p>
-                  <p className="text-sm font-semibold text-[#9F9F9F]">{description}</p>
+
+          {(role === Roles.Hiwi && month && year && projectName && description) && (
+              <div className="flex gap-5">
+                  <CalendarMonth month={month} year={year}/>
+                  <div className="flex flex-col w-60 mt-1.5 gap-0.5">
+                      <p className="text-md font-semibold">{projectName}</p>
+                      <p className="text-sm font-semibold text-[#9F9F9F]">{description}</p>
+                  </div>
               </div>
-          </div>
+          )}
+          {(role === Roles.Secretary && name && lastName && supervisor && profileImageUrl) && (
+              <div className="flex gap-5">
+                  <UserInfoSecretaryView
+                      name={name}
+                      lastName={lastName}
+                      supervisor={supervisor}
+                      profileImageUrl={profileImageUrl}
+                  />
+              </div>
+          )}
 
           <ListTileInfo items={
               [totalTimeString, vacationDaysString, overtimeString]
@@ -58,4 +87,4 @@ const TimesheetHiwiTile: React.FC<TimesheetTileProps> = ({month, year, projectNa
   );
 };
 
-export default TimesheetHiwiTile;
+export default TimesheetTile;

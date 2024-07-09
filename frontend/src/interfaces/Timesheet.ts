@@ -9,4 +9,7 @@ export interface Timesheet {
     totalTime: number;
     overtime: number;
     lastSignatureChange: string;
+    projectName: string;
 }
+// projectName,
+// getHiwiByUsername: first name, last name, supervisor, profilePicture of hiwi

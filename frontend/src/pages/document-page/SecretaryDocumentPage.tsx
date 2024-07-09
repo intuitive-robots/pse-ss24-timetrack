@@ -9,7 +9,7 @@ import {getUsersByRole} from "../../services/UserService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
-import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
+import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
@@ -37,10 +37,11 @@ const SecretaryDocumentPage: React.FC = () => {
         username: 'default_user',
         month: 1,
         year: new Date().getFullYear(),
-        status: StatusType.NoTimesheet,
+        status: statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet],
         totalTime: 0,
         overtime: 0,
         lastSignatureChange: new Date().toISOString(),
+        projectName: 'default project',
     };
 
     useEffect(() => {
@@ -54,26 +55,28 @@ const SecretaryDocumentPage: React.FC = () => {
 
     useEffect(() => {
         if (hiwis && hiwis.length > 0) {
-            Promise.all(hiwis.map(hiwi =>
-                getTimesheetByMonthYear(hiwi.username, month, year)
-                    .then(timesheet => timesheet)
-                    .catch(error => {
-                        console.error(`Failed to fetch timesheet for ${hiwi.username}:`, error);
-                        return null;
-                    })
-            )).then(fetchedTimesheets => {
-                const validTimesheets: Timesheet[] = fetchedTimesheets
+            Promise.all(hiwis.map(async (hiwi) => {
+                try {
+                    const timesheet = await getTimesheetByMonthYear(hiwi.username, month, year);
+                    return timesheet || defaultTimesheet;
+                } catch (error) {
+                    console.error(`Failed to fetch timesheet for ${hiwi.username}:`, error);
+                    return null;
+                }
+            })).then(fetchedTimesheets => {
+                const validTimesheets = fetchedTimesheets
+                .filter((timesheet): timesheet is Timesheet => timesheet !== null)
                     .map(timesheet => {
-                        if (!timesheet) return defaultTimesheet;
-                        const timesheetStatus = timesheet.status;
-                        if (!isValidTimesheetStatus(timesheetStatus)) return null;
+                        if (!isValidTimesheetStatus(timesheet.status)) {
+                            return {
+                              ...timesheet,
+                                status: StatusType.Error,
+                            } as Timesheet;
+                        }
                         return {
-                            ...timesheet,
-                            status: statusMapping[Roles.Secretary][timesheetStatus],
-                        } as Timesheet;
-                    })
-                    .filter((timesheet): timesheet is Timesheet => timesheet !== null);
-
+                            ...timesheet
+                        }
+                      });
                 setTimesheets(validTimesheets);
                 console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
             }).catch(error => {
@@ -83,13 +86,9 @@ const SecretaryDocumentPage: React.FC = () => {
         }
     }, [hiwis, month, year]);
 
-
-
-    const filteredTimesheets = timesheets
+  const filteredTimesheets = timesheets
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
-
-
 
     // TODO: duplicate code with HiwiHomepage.tsx
     const handleMonthChange = (direction: string) => {
@@ -123,7 +122,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
     };
 
-
+    console.log('All timesheets:', filteredTimesheets);
     return (
         <div className="px-6 py-6">
             <div className="flex flex-row gap-8 items-center">
@@ -162,7 +161,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
                         <div className="flex flex-col w-full h-full justify-between">
                             <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                            <TimesheetListView sheets={filteredTimesheets}/>
+                            <TimesheetListView sheets={filteredTimesheets} />
                             <div className="flex mt-8 flex-col gap-2 items-center">
                                 <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                                 <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">

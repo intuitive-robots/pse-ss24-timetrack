@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from "../../context/AuthContext";
-import UserInfo from "../UserInfo";
+import UserInfoSupervisorView from "../UserInfoSupervisorView";
 import MailIcon from "../../assets/images/contact_mail.svg";
 import SlackIcon from "../../assets/images/contact_slack.svg";
 import ProfilePicture from "../../assets/images/profile_placeholder.svg";
@@ -19,7 +19,7 @@ const UserContactInfo: React.FC<UserContactInfoProps> = ({ username }) => {
 
   return (
     <div className="flex flex-row justify-between">
-      <UserInfo
+      <UserInfoSupervisorView
         name={user.personalInfo.firstName}
         lastName={user.personalInfo.lastName}
         role={user.role || "N/A"}

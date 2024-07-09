@@ -1,11 +1,13 @@
 import {Roles} from "../auth/roles";
+import {StatusType} from "../../interfaces/StatusType";
 
 export enum TimesheetStatus {
     NotSubmitted = 'Not Submitted',
     Revision = 'Revision',
     WaitingForApproval = 'Waiting for Approval',
     Complete = 'Complete',
-    NoTimesheet = 'No Timesheet'
+    NoTimesheet = 'No Timesheet',
+    Error = 'Error'
 }
 
 export function isValidTimesheetStatus(status: any): status is TimesheetStatus {
@@ -13,7 +15,7 @@ export function isValidTimesheetStatus(status: any): status is TimesheetStatus {
 }
 
 type StatusMap = {
-    [key in TimesheetStatus]: string;
+    [key in TimesheetStatus]: StatusType;
 };
 
 type RoleStatusMaps = {
@@ -22,33 +24,35 @@ type RoleStatusMaps = {
 
 export const statusMapping: RoleStatusMaps = {
     Hiwi: {
-        [TimesheetStatus.NotSubmitted]: 'Pending',
-        [TimesheetStatus.Revision]: 'Pending',
-        [TimesheetStatus.WaitingForApproval]: 'Waiting',
-        [TimesheetStatus.Complete]: 'Complete',
-        [TimesheetStatus.NoTimesheet]: 'No Timesheet'
+        [TimesheetStatus.NotSubmitted]: StatusType.Pending,
+        [TimesheetStatus.Revision]: StatusType.Pending,
+        [TimesheetStatus.WaitingForApproval]: StatusType.Waiting,
+        [TimesheetStatus.Complete]: StatusType.Complete,
+        [TimesheetStatus.NoTimesheet]: StatusType.NoTimesheet,
+        [TimesheetStatus.Error]: StatusType.Error
     },
     Supervisor: {
-        [TimesheetStatus.NotSubmitted]: 'Waiting',
-        [TimesheetStatus.Revision]: 'Revision',
-        [TimesheetStatus.WaitingForApproval]: 'Pending',
-        [TimesheetStatus.Complete]: 'Complete',
-        [TimesheetStatus.NoTimesheet]: 'No Timesheet'
-
+        [TimesheetStatus.NotSubmitted]: StatusType.Waiting,
+        [TimesheetStatus.Revision]: StatusType.Revision,
+        [TimesheetStatus.WaitingForApproval]: StatusType.Pending,
+        [TimesheetStatus.Complete]: StatusType.Complete,
+        [TimesheetStatus.NoTimesheet]: StatusType.NoTimesheet,
+        [TimesheetStatus.Error]: StatusType.Error
     },
     Secretary: {
-        [TimesheetStatus.NotSubmitted]: 'Waiting',
-        [TimesheetStatus.Revision]: 'Waiting',
-        [TimesheetStatus.WaitingForApproval]: 'Waiting',
-        [TimesheetStatus.Complete]: 'Complete',
-        [TimesheetStatus.NoTimesheet]: 'No Timesheet'
-
+        [TimesheetStatus.NotSubmitted]: StatusType.Waiting,
+        [TimesheetStatus.Revision]: StatusType.Waiting,
+        [TimesheetStatus.WaitingForApproval]: StatusType.Waiting,
+        [TimesheetStatus.Complete]: StatusType.Complete,
+        [TimesheetStatus.NoTimesheet]: StatusType.NoTimesheet,
+        [TimesheetStatus.Error]: StatusType.Error
     },
     Admin: { // Admins can't submit timesheets
-        [TimesheetStatus.NotSubmitted]: 'Waiting',
-        [TimesheetStatus.Revision]: 'Waiting',
-        [TimesheetStatus.WaitingForApproval]: 'Waiting',
-        [TimesheetStatus.Complete]: 'Complete',
-        [TimesheetStatus.NoTimesheet]: 'No Timesheet'
+        [TimesheetStatus.NotSubmitted]: StatusType.Waiting,
+        [TimesheetStatus.Revision]: StatusType.Waiting,
+        [TimesheetStatus.WaitingForApproval]: StatusType.Waiting,
+        [TimesheetStatus.Complete]: StatusType.Complete,
+        [TimesheetStatus.NoTimesheet]: StatusType.NoTimesheet,
+        [TimesheetStatus.Error]: StatusType.Error
     }
 };

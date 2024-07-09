@@ -1,5 +1,5 @@
 import React from 'react';
-import UserInfo from "./UserInfo";
+import UserInfoSupervisorView from "./UserInfoSupervisorView";
 import ListIconCardButton from "./input/ListIconCardButton";
 import CheckTimesheetIcon from "../assets/images/check_timesheet_icon.svg"
 import StatusLabel from "./status/Status";
@@ -19,7 +19,7 @@ interface HiwiCardProps {
 const HiwiTimesheetCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastName, status, onCheck}) => {
   return (
       <div className="flex items-center p-4 bg-white shadow rounded-lg mb-4">
-          <UserInfo
+          <UserInfoSupervisorView
               name={name}
               lastName={lastName}
               role={role}

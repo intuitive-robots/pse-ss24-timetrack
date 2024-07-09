@@ -3,7 +3,8 @@ export enum StatusType {
     Pending = "Pending",
     Waiting = "Waiting",
     Revision = "Revision",
-    NoTimesheet = "No Timesheet"
+    NoTimesheet = "No Timesheet",
+    Error = "Error"
 }
 
 
