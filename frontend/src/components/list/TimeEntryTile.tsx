@@ -1,10 +1,9 @@
 import React from 'react';
-import ListIconCardButton from "./input/ListIconCardButton";
-import EditDocumentIcon from "../assets/images/edit_document.svg"
-import RemoveIcon from "../assets/images/remove_icon.svg"
-import IconButton from "./navbar/IconButton";
-import CalendarDay from "./calendar/CalendarDay";
-import ListTileInfo from "./list/ListTileInfo";
+import ListIconCardButton from "../input/ListIconCardButton";
+import EditDocumentIcon from "../../assets/images/edit_document.svg"
+import RemoveIcon from "../../assets/images/remove_icon.svg"
+import IconButton from "../navbar/IconButton";
+import CalendarDay from "../calendar/CalendarDay";
 
 
 interface TimeEntryTileProps {
@@ -14,8 +13,8 @@ interface TimeEntryTileProps {
   workTime: string;
   breakTime: string;
   period: string;
-  onEdit?: () => void; // Mach diese Funktion optional
-  onDelete?: () => void; // Mach diese Funktion optional
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const TimeEntryTile: React.FC<TimeEntryTileProps> = ({
@@ -27,7 +26,7 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({
 
     return (
         <div
-            className={`flex items-center pl-4 py-2 gap-6 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap ${rightPadding}`}>
+            className={`flex items-center pl-4 py-2.5 gap-6 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap ${rightPadding}`}>
             <div className="flex gap-5 ">
                 <CalendarDay dayTime={date}/>
                 <div className="flex flex-col w-32  mt-1.5 gap-0.5">

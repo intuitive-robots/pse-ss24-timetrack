@@ -158,9 +158,27 @@ const HiwiHomePage = (): React.ReactElement => {
                 </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-headline mt-4">Hello {user ? user.personalInfo.firstName: ""},</h1>
+            {/*<div className="flex flex-row items-center justify-center">*/}
+            {/*    <div className="flex gap-8">*/}
+            {/*        <ListIconCardButton*/}
+            {/*            iconSrc={LeftNavbarIcon}*/}
+            {/*            label={"Before"}*/}
+            {/*            onClick={() => handleMonthChange('prev')}*/}
+            {/*        />*/}
+            {/*        <MonthTimespan month={month} year={year}/>*/}
+            {/*        <ListIconCardButton*/}
+            {/*            iconSrc={RightNavbarIcon}*/}
+            {/*            label={"Next"}*/}
+            {/*            orientation={"right"}*/}
+            {/*            onClick={() => handleMonthChange('next')}*/}
+            {/*            disabled={month === currentMonth && year === currentYear}*/}
+            {/*        />*/}
+            {/*    </div>*/}
+            {/*</div>*/}
 
-            <TimeEntryListView entries={timeEntries ?? []} interactable={isStatusInteractable()} />
+            <h1 className="text-3xl font-bold text-headline mt-4">Hello {user ? user.personalInfo.firstName : ""},</h1>
+
+            <TimeEntryListView entries={timeEntries ?? []} interactable={isStatusInteractable()}/>
 
             <div className="w-fit ml-auto absolute right-14 bottom-10">
                 {getStatusOrButton()}

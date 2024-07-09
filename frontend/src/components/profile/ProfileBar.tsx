@@ -67,7 +67,7 @@ const ProfileBar: React.FC = (): React.ReactElement => {
         </div>
         <div className="relative ml-auto">
             {user && (
-                <div className="flex px-4 items-center cursor-pointer z-50">
+                <div className="flex px-4 items-center z-50">
                     <UserInfo
                         name={user.personalInfo.firstName}
                         lastName={user.personalInfo.lastName}
