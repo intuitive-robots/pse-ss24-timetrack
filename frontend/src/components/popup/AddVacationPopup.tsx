@@ -61,12 +61,14 @@ const AddVacationPopup: React.FC = () => {
 
             <form className="space-y-6">
                 <div className="flex flex-col gap-5">
-                    <h2 className="text-md font-semibold mb-1.5">{"Vacation Date"}</h2>
-                    <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
-
-                    <h2 className="text-md font-semibold mb-1.5">Vacation Duration (HH:MM)</h2>
-                    <IntuitiveTimePicker value={duration} onChange={setDuration}/>
-
+                    <div>
+                        <h2 className="text-md font-semibold mb-1.5">{"Vacation Date"}</h2>
+                        <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
+                    </div>
+                    <div>
+                        <h2 className="text-md font-semibold mb-1.5">Vacation Duration</h2>
+                        <IntuitiveTimePicker value={duration} onChange={setDuration}/>
+                    </div>
                 </div>
 
                 <div className="flex flex-row gap-3 justify-end">

@@ -4,7 +4,6 @@ import ShortInputField from "../input/ShortInputField";
 import TrackTimeIcon from "../../assets/images/add_track_time.svg";
 import ActivityIcon from "../../assets/images/activity_icon.svg";
 import BreakIcon from "../../assets/images/coffee_icon.svg";
-import TimeIcon from "../../assets/images/time_icon.svg";
 import DialogButton from "../input/DialogButton";
 import {createWorkEntry} from "../../services/TimeEntryService";
 import "react-datepicker/dist/react-datepicker.css";
