@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
 import { usePopup } from "./PopupContext";
-import ShortInputField from "../input/ShortInputField";
 import VacationIcon from "../../assets/images/vacation_icon.svg";
-import TimeIcon from "../../assets/images/time_icon.svg";
 import DialogButton from "../input/DialogButton";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import {createVacationEntry} from "../../services/TimeEntryService";
-import {VacationEntry} from "../../interfaces/TimeEntry";
+import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 
 const AddVacationPopup: React.FC = () => {
     const { closePopup } = usePopup();
 
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
+    const [duration, setDuration] = useState('');
 
     const handleSubmit = async () => {
-        if (!selectedDate || !startTime || !endTime) {
+        if (!selectedDate || duration === '') {
             alert("Please fill all the fields correctly.");
             return;
         }
 
+        const hours = parseInt(duration.split(':')[0]);
+        const minutes = parseInt(duration.split(':')[1]);
+
         const startDate = new Date(selectedDate);
-        startDate.setHours(parseInt(startTime.split(':')[0]), parseInt(startTime.split(':')[1]));
-        const endDate = new Date(selectedDate);
-        endDate.setHours(parseInt(endTime.split(':')[0]), parseInt(endTime.split(':')[1]));
+        startDate.setHours(8, 0);  // Start time is always 08:00 AM
+        const endDate = new Date(startDate);
+        endDate.setHours(startDate.getHours() + hours, startDate.getMinutes() + minutes);
 
         const formattedStartTime = startDate.toISOString();
         const formattedEndTime = endDate.toISOString();
@@ -60,25 +60,13 @@ const AddVacationPopup: React.FC = () => {
             <HorizontalSeparator />
 
             <form className="space-y-6">
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-5">
                     <h2 className="text-md font-semibold mb-1.5">{"Vacation Date"}</h2>
-                    <IntuitiveDatePicker onDateSelect={setSelectedDate} />
-                    <div className="flex gap-10">
-                        <ShortInputField
-                            icon={TimeIcon}
-                            type="time"
-                            placeholder="08:00 AM"
-                            value={startTime}
-                            onChange={setStartTime}
-                        />
-                        <ShortInputField
-                            icon={TimeIcon}
-                            type="time"
-                            placeholder="05:00 PM"
-                            value={endTime}
-                            onChange={setEndTime}
-                        />
-                    </div>
+                    <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
+
+                    <h2 className="text-md font-semibold mb-1.5">Vacation Duration (HH:MM)</h2>
+                    <IntuitiveTimePicker value={duration} onChange={setDuration}/>
+
                 </div>
 
                 <div className="flex flex-row gap-3 justify-end">

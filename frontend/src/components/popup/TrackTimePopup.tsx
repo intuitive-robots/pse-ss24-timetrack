@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
+import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -93,21 +94,24 @@ const TrackTimePopup: React.FC = () => {
                 <div className="flex flex-col gap-1.5">
                     <h2 className="text-md font-semibold">{"Working Time"}</h2>
                     <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
-                    <div className="flex gap-10 mt-2">
-                        <ShortInputField
-                            icon={TimeIcon}
-                            type="time"
-                            placeholder="08:00 AM"
-                            value={startTime}
-                            onChange={setStartTime}
-                        />
-                        <ShortInputField
-                            icon={TimeIcon}
-                            type="time"
-                            placeholder="12:00 AM"
-                            value={endTime}
-                            onChange={setEndTime}
-                        />
+                    <div className="flex flex-row mt-2 justify-between w-7/12 items-center">
+                        {/*<ShortInputField*/}
+                        {/*    icon={TimeIcon}*/}
+                        {/*    type="time"*/}
+                        {/*    placeholder="08:00 AM"*/}
+                        {/*    value={startTime}*/}
+                        {/*    onChange={setStartTime}*/}
+                        {/*/>*/}
+                        {/*<ShortInputField*/}
+                        {/*    icon={TimeIcon}*/}
+                        {/*    type="time"*/}
+                        {/*    placeholder="12:00 AM"*/}
+                        {/*    value={endTime}*/}
+                        {/*    onChange={setEndTime}*/}
+                        {/*/>*/}
+                        <IntuitiveTimePicker value={startTime} onChange={setStartTime}/>
+                        <p className="text-center items-center justify-center text-gray-700 font-extrabold">—</p>
+                        <IntuitiveTimePicker value={endTime} onChange={setEndTime}/>
                     </div>
 
                 </div>

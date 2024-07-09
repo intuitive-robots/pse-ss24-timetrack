@@ -36,7 +36,7 @@ const IntuitiveDatePicker: React.FC<{ onDateSelect: (date: Date) => void }> = ({
             <input
                 type="text"
                 readOnly
-                className="form-input block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
+                className="form-input block w-7/12 px-4 py-2 font-medium text-[#6B6B6B] bg-white border border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
                 value={`${selectedDate.getDate()} ${months[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`}
                 onClick={() => setVisible(!visible)}
             />
