@@ -7,18 +7,23 @@ import StatusLabel from "./status/Status";
 import {StatusType} from "../interfaces/StatusType";
 
 interface TimesheetTileProps {
+  key: string;
   month: number;
   year: number;
-  projectName: string;
-  description: string;
   totalTime: number;
-  vacationDays: number;
   overtime: number;
   status: StatusType;
   onDownload: () => void;
+  projectName?: string; // Optional für Hiwi
+  description?: string; // Optional für Hiwi
+  name?: string; // Optional für Secretary
+  lastName?: string; // Optional für Secretary
+  supervisor?: string; // Optional für Secretary
+  profileImageUrl?: string; // Optional für Secretary
+  vacationDays: number;
 }
 
-const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, description, totalTime, vacationDays, overtime, status, onDownload}) => {
+const TimesheetHiwiTile: React.FC<TimesheetTileProps> = ({month, year, projectName, description, totalTime, vacationDays, overtime, status, onDownload}) => {
 
     const totalTimeString = totalTime.toString() + "h";
     const vacationDaysString = vacationDays.toString() + " days";
@@ -53,4 +58,4 @@ const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, 
   );
 };
 
-export default TimesheetTile;
+export default TimesheetHiwiTile;
