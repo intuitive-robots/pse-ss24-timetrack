@@ -203,6 +203,17 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         return RequestResult(True, "", 200, timesheet_id)
 
+    def get_timesheet_status(self, timesheet_id: str):
+        """
+        Retrieves the status of a timesheet.
+
+        :param timesheet_id: The ID of the timesheet
+        :return: The status of the timesheet
+        """
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
+            return RequestResult(False, "Timesheet not found", 404)
+        return RequestResult(True, "", 200, TimesheetStatus(timesheet_data["status"]))
 
     def get_current_timesheet(self, username: str):
         """

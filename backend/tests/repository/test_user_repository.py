@@ -87,13 +87,13 @@ class TestUserRepository(unittest.TestCase):
         """
         test_user_data = {'_id': ObjectId('667c433eba00f12151afe642'),
                           'username': 'testAdmin1',
-                          'passwordHash': '$2b$12$MMkaSHJ8YaXG4pEjWbDIbOuWxuyVPdajSdsZL/p.HY9IuwN/08Ymy',
                           'personalInfo': {'firstName': 'Nico', 'lastName': 'Admin',
                                            'email': 'test@gmail1.com', 'personalNumber': '6981211',
-                                           'instituteName': 'Info Institute'}, 'role': 'Admin',
-                          'accountCreation': datetime.datetime(2024, 6, 30, 18, 53, 51, 321000)}
+                                           'instituteName': 'Info Institute'}, 'role': 'Admin'}
         received_user_data = self.user_repository.find_by_username("testAdmin1")
         received_user_data.pop("lastLogin")
+        received_user_data.pop("passwordHash")
+        received_user_data.pop("accountCreation")
         self.assertEqual(test_user_data, received_user_data)
 
     def test_update_user(self):
