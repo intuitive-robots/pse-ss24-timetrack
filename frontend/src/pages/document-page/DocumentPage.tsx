@@ -61,15 +61,30 @@ const DocumentPage: React.FC = () => {
                 <div className="flex flex-col w-full h-full justify-between">
                     <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
                     <TimesheetListView sheets={timesheets}/>
-                    <div className="flex mt-8 flex-col gap-2 items-center">
+                    {/*<div className="flex mt-8 flex-col gap-2 items-center">*/}
+                    {/*    <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>*/}
+                    {/*    <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">*/}
+                    {/*        <p>Work</p>*/}
+                    {/*        <p>Vacation days</p>*/}
+                    {/*        <p>Overtime</p>*/}
+                    {/*        <p>Status</p>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
+                    <div
+                        className={`flex mt-8 flex-col gap-2 items-center`}>
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                        <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
-                            <p>Work</p>
-                            <p>Vacation days</p>
-                            <p>Overtime</p>
-                            <p>Status</p>
+                        <div className="flex flex-row ml-9">
+                            <div className="w-24"/>
+                            <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
+                                <p>Work</p>
+                                <div className="w-12"/>
+                                <p>Vacation days</p>
+                                <div className="w-8"/>
+                                <p>Overtime</p>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 

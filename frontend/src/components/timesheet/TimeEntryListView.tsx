@@ -64,7 +64,8 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
 
             <div className="flex flex-col w-full h-full justify-between">
                 <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
+                <div className="flex flex-col overflow-y-auto gap-3 max-h-96 flex-grow">
+                    {/*flex flex-col gap-4 overflow-y-auto max-h-[28rem]*/}
                     {entries.map((entry) => {
                         if (entry.entryType === TimeEntryTypes.WORKING_ENTRY) {
                             return <TimeEntryTile
@@ -105,7 +106,6 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                             <p>Period</p>
                         </div>
                     </div>
-
                 </div>
 
             </div>

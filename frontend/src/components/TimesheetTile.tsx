@@ -25,32 +25,42 @@ const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, 
     const overtimeString = overtime.toString() + "h";
 
     return (
-      <div className="flex items-center px-4 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-center">
-          <div className="flex gap-5">
-              <CalendarMonth month={month} year={year}/>
-              <div className="flex flex-col w-60 mt-1.5 gap-0.5">
-                  <p className="text-md font-semibold">{projectName}</p>
-                  <p className="text-sm font-semibold text-[#9F9F9F]">{description}</p>
-              </div>
-          </div>
+        <div
+            className="flex items-center px-4 gap-6 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
+            <div className="flex gap-5">
+                <CalendarMonth month={month} year={year}/>
+                <div className="flex flex-col w-40 mt-1.5 gap-0.5">
+                    <p className="text-md font-semibold">{projectName}</p>
+                    <p className="text-sm font-semibold text-[#9F9F9F]">{description}</p>
+                </div>
+            </div>
 
-          <ListTileInfo items={
-              [totalTimeString, vacationDaysString, overtimeString]
-          }/>
+            {/*<div className="flex flex-row">*/}
+            {/*    <p className="text-md font-semibold text-[#3B3B3B]">{totalTimeString}</p>*/}
+            {/*    <div className="w-[50px]"/>*/}
+            {/*    <p className="text-md font-semibold text-[#3B3B3B]">{vacationDaysString}</p>*/}
+            {/*    <div className="w-[33px]"/>*/}
+            {/*    <p className="text-md font-semibold text-[#3B3B3B]">{overtimeString}</p>*/}
+            {/*</div>*/}
 
-          <div className="flex flex-row gap-5 ml-auto">
-              <StatusLabel status={status}/>
-              <IconButton
-                  icon={DownloadIcon}
-                  onClick={() => onDownload()}
-                  bgColor= {`border-1.7 border-[#E0E0E0] ${status === StatusType.Complete ? "bg-white" : "bg-gray-100 opacity-70 cursor-auto"}`}
-                  size={"px-5 py-2.5"}
-                  hover={status === StatusType.Complete ? 'hover:bg-gray-200' : ''}
-              />
-          </div>
+            <ListTileInfo
+                items={[totalTimeString, vacationDaysString, overtimeString]}
+                gap={"lg:gap-20 gap-8 transition-all"}
+            />
 
-      </div>
-  );
+            <div className="flex flex-row gap-5">
+                <StatusLabel status={status}/>
+                <IconButton
+                    icon={DownloadIcon}
+                    onClick={() => onDownload()}
+                    bgColor={`border-1.7 border-[#E0E0E0] ${status === StatusType.Complete ? "bg-white" : "bg-gray-100 opacity-70 cursor-auto"}`}
+                    size={"px-5 py-2.5"}
+                    hover={status === StatusType.Complete ? 'hover:bg-gray-200' : ''}
+                />
+            </div>
+
+        </div>
+    );
 };
 
 export default TimesheetTile;
