@@ -57,6 +57,7 @@ const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, 
                     onClick={() => onDownload()}
                     bgColor={`border-1.7 border-[#E0E0E0] ${status === StatusType.Complete ? "bg-white" : "bg-gray-100 opacity-70 cursor-auto"}`}
                     size={"px-5 py-2.5"}
+                    disabled={status !== StatusType.Complete}
                     hover={status === StatusType.Complete ? 'hover:bg-gray-200' : ''}
                 />
             </div>

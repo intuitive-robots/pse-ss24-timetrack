@@ -36,21 +36,6 @@ const DocumentPage: React.FC = () => {
                     <p className="text-lg font-semibold text-subtitle">This Year,</p>
                     <YearTimespan year={2024}/>
                 </div>
-                {/*<div className="flex gap-4">*/}
-                {/*    <ListIconCardButton*/}
-                {/*        iconSrc={LeftNavbarIcon}*/}
-                {/*        label={"Before"}*/}
-                {/*        onClick={() => {*/}
-                {/*        }}*/}
-                {/*    />*/}
-                {/*    <ListIconCardButton*/}
-                {/*        iconSrc={RightNavbarIcon}*/}
-                {/*        label={"Next"}*/}
-                {/*        orientation={"right"}*/}
-                {/*        onClick={() => {*/}
-                {/*        }}*/}
-                {/*    />*/}
-                {/*</div>*/}
             </div>
 
             <h1 className="text-3xl font-bold text-headline mt-4">Your monthly documents</h1>
@@ -62,15 +47,6 @@ const DocumentPage: React.FC = () => {
                 <div className="flex flex-col w-full h-full justify-between">
                     <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
                     <TimesheetListView sheets={timesheets}/>
-                    {/*<div className="flex mt-8 flex-col gap-2 items-center">*/}
-                    {/*    <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>*/}
-                    {/*    <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">*/}
-                    {/*        <p>Work</p>*/}
-                    {/*        <p>Vacation days</p>*/}
-                    {/*        <p>Overtime</p>*/}
-                    {/*        <p>Status</p>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
                     <div
                         className={`flex mt-8 flex-col gap-2 items-center`}>
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>

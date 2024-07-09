@@ -19,13 +19,12 @@ export interface DocumentRequestParams {
  */
 async function generateDocument(params: DocumentRequestParams): Promise<string> {
   try {
-    const response = await axiosInstance.get('/generateDocument', {
+    const response = await axiosInstance.get('document/generateDocument', {
       params,
       responseType: 'blob' // Expecting a binary file (PDF) in response
     });
 
     if (response.status === 200 && response.data) {
-      // Create a URL for the blob object
       return window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
     }
     throw new Error('Failed to generate document');

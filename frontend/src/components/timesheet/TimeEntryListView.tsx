@@ -82,6 +82,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                         }
                         if (entry.entryType === TimeEntryTypes.VACATION_ENTRY) {
                             return <VacationEntryTile
+                                key={entry._id}
                                 startDate={entry.startTime}
                                 endDate={entry.endTime}
                                 onDelete={interactable ? () => handleDelete(entry._id) : undefined}
