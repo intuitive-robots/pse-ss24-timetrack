@@ -5,14 +5,12 @@ import TrackTimeIcon from "../../assets/images/add_track_time.svg";
 import ActivityIcon from "../../assets/images/activity_icon.svg";
 import BreakIcon from "../../assets/images/coffee_icon.svg";
 import TimeIcon from "../../assets/images/time_icon.svg";
-import CalendarIcon from "../../assets/images/calendar_day.svg";
 import DialogButton from "../input/DialogButton";
 import {createWorkEntry} from "../../services/TimeEntryService";
 import "react-datepicker/dist/react-datepicker.css";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
-import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -92,10 +90,10 @@ const TrackTimePopup: React.FC = () => {
                     />
                 </div>
 
-                <div className="flex flex-col gap-3">
-                    <h2 className="text-md font-semibold mb-1.5">{"Working Time"}</h2>
+                <div className="flex flex-col gap-1.5">
+                    <h2 className="text-md font-semibold">{"Working Time"}</h2>
                     <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
-                    <div className="flex gap-10">
+                    <div className="flex gap-10 mt-2">
                         <ShortInputField
                             icon={TimeIcon}
                             type="time"
