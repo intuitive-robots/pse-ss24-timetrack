@@ -78,7 +78,7 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             )}
 
             {/*{isDropdownOpen && (*/}
-                <div className={`absolute left-0 top-0 pt-14 w-64 bg-white rounded-xl shadow-profile-popup-shadow px-4 py-2 z-0 transform transition-all duration-100 ${isDropdownOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 hidden'} origin-top`}>
+                <div className={`absolute left-0 z-10 top-0 pt-14 w-64 bg-white rounded-xl shadow-profile-popup-shadow px-4 py-2 z-0 transform transition-all duration-100 ${isDropdownOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 hidden'} origin-top`}>
                     <div className="h-1"/>
                     <HorizontalSeparator paddingY="my-1" height="h-[1px]" color="bg-[#F6F6F6]"/>
                     <div className="h-1"/>
