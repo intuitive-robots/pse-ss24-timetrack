@@ -45,4 +45,20 @@ const createUser = async (userData: User): Promise<any> => {
     }
 };
 
-export { getHiwis, deleteUser, createUser };
+/**
+ * Fetches supervisor details for the currently authenticated user.
+ * Handles different logic based on the user role (HIWI or SECRETARY).
+ *
+ * @returns {Promise<any>} The response data from the backend containing supervisor details or an error message.
+ */
+const getSupervisor = async (): Promise<any> => {
+    try {
+        const response = await axiosInstance.get('user/getSupervisor');
+        return response.data;
+    } catch (error) {
+        console.error('Fetching supervisor failed', error);
+        throw error;
+    }
+};
+
+export { getHiwis, deleteUser, createUser, getSupervisor};

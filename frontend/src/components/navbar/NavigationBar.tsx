@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import navigationIcons from "./NavigationIcons";
 import {isValidRole} from "../auth/roles";
 import {buttonConfigurations} from "./ActionButtonsConfig";
@@ -17,13 +17,22 @@ interface MenuItems {
  * @returns {React.ReactElement} A React Element that renders the navigation bar.
  */
 const NavigationBar: React.FC = (): React.ReactElement => {
-  const [activeItem, setActiveItem] = useState<string>("Home");
   const { role } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const getCurrentActiveItem = (): string => {
+    // Extracts the last segment from the pathname, e.g., 'analysis' from '/app/analysis'
+    const pathSegments = location.pathname.split('/');
+    const activePath = pathSegments[pathSegments.length - 1];
+    const items = Object.values(getMenuItemsByRole(role)).flat();
+    const active = items.find(item => item.toLowerCase() === activePath.toLowerCase());
+    return active || "Home";
+  };
+
+  const [activeItem, setActiveItem] = useState<string>(getCurrentActiveItem());
 
   const menuItems = getMenuItemsByRole(role);
-
-
 
   function getMenuItemsByRole(role: string | null): MenuItems {
     switch (role) {
@@ -95,12 +104,6 @@ const NavigationBar: React.FC = (): React.ReactElement => {
         ))}
         <div className="mt-auto">
           {buttons.length > 0 && (
-              // <ActionButton
-              //     icon={buttons[0].icon}
-              //     label={buttons[0].label}
-              //     onClick={buttons[0].action}
-              //     primary={true}
-              // />
               <PopupActionButton
                   icon={buttons[0].icon}
                   label={buttons[0].label}

@@ -7,7 +7,7 @@ import SlackIcon from "../assets/images/contact_slack.svg"
 import HorizontalSeparator from "../shared/HorizontalSeparator";
 import ContractDetails from "../components/contract/ContractDetails";
 import SignatureUpload from "../components/contract/SignatureUpload";
-import UserContactInfo from "../components/contract/UserContactInfo";
+import SupervisorContactInfo from "../components/contract/SupervisorContactInfo";
 import {useAuth} from "../context/AuthContext";
 
 const ContractPage = (): React.ReactElement => {
@@ -26,7 +26,7 @@ const ContractPage = (): React.ReactElement => {
                     {/*        <ContactButton icon={SlackIcon} onClick={() => {}}/>*/}
                     {/*    </div>*/}
                     {/*</div>*/}
-                    {user ? <UserContactInfo username={user.username}/> : <div/>}
+                    <SupervisorContactInfo/>
 
                 </div>
                 <HorizontalSeparator/>

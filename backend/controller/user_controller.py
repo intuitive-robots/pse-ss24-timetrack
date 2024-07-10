@@ -53,7 +53,7 @@ class UserController(MethodView):
             '/getUsersByRole': self.get_users_by_role,
             '/getFile': self.get_user_file,
             '/getHiwis': self.get_hiwis,
-            '/getSupervisor': self.get_supervisor
+            '/getSupervisor': self.get_supervisor,
             '/getSupervisors': self.get_supervisors
         }
         return self._dispatch_request(endpoint_mapping)
