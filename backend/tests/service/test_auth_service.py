@@ -48,7 +48,7 @@ class TestAuthService(unittest.TestCase):
 
     def test_reset_password(self):
         with self.app.app_context():
-            response = self.auth_service.reset_password("testAdmin1", "test_password")
+            response = self.auth_service.reset_password("testAdmin1", "testAdmin1", "test_password")
             self.assertIsNotNone(response)
             self.assertEqual(response.status_code, 200)
 

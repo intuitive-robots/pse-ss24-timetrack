@@ -18,7 +18,7 @@ interface UserCardProps {
 
 const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastName, onView, onEdit, onDelete }) => {
   return (
-      <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
+      <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg">
           <UserInfo
               name={name}
               lastName={lastName}
@@ -29,16 +29,16 @@ const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastNa
               <ListIconCardButton
               iconSrc={ViewUserIcon}
               label="View"
-              onClick={() => {}}
+              onClick={() => onEdit()}
           />
           <ListIconCardButton
               iconSrc={EditUserIcon}
               label="Edit"
-              onClick={() => {}}
+              onClick={() => onView()}
           />
           <IconButton
               icon={RemoveIcon}
-              onClick={() => {}}
+              onClick={() => onDelete()}
               bgColor="bg-purple-100"
               hover="hover:bg-purple-200"
           />

@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {jwtDecode} from 'jwt-decode';
 import { getProfile, login as loginService, logout as logoutService } from '../services/AuthService';
+import {User} from "../interfaces/User";
 
 interface AuthState {
   token: string | null;
   role: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  user: any | null;
+  user: User | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }

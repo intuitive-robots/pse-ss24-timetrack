@@ -1,5 +1,5 @@
 import axiosInstance from "./AxiosInstance";
-import { TimeEntry } from "../interfaces/TimeEntry";
+import {TimeEntry, VacationEntry} from "../interfaces/TimeEntry";
 import axios from "axios";
 
 /**
@@ -26,9 +26,11 @@ const createWorkEntry = async (entryData: Record<string, any>) => {
  * @returns The created vacation entry.
  * @throws An error if the request fails.
  */
-const createVacationEntry = async (entryData: TimeEntry) => {
+const createVacationEntry = async (entryData: Record<string, any>) => {
   try {
-    const response = await axiosInstance.post('/timeEntry/createVacationEntry', entryData);
+    const response = await axiosInstance.post('/timeEntry/createVacationEntry', {
+        ...entryData
+    });
     return response.data;
   } catch (error) {
     console.error('Creating vacation entry failed');

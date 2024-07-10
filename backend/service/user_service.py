@@ -221,3 +221,17 @@ class UserService:
 
 
 
+    def get_supervisors(self):
+        """
+        Retrieves a list of all Supervisors in the system.
+
+
+        :return: A list of Supervisor model instances representing all Supervisors in the system.
+        :rtype: list[Supervisor]
+        """
+        supervisors_data = self.user_repository.get_users_by_role(UserRole.SUPERVISOR)
+        supervisors = list(filter(None, map(UserFactory.create_user_if_factory_exists, supervisors_data)))
+        if not supervisors:
+            return RequestResult(False, "No Supervisors found", status_code=404)
+        sorted_supervisors = sorted(supervisors, key=lambda x: x.personal_info.last_name)
+        return RequestResult(True, "", status_code=200, data=sorted_supervisors)
