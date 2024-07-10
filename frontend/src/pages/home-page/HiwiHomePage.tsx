@@ -15,7 +15,8 @@ import {isValidTimesheetStatus, statusMapping} from "../../components/status/Sta
 import {isValidRole} from "../../components/auth/roles";
 import DocumentStatus from "../../components/status/DocumentStatus";
 import {User} from "../../interfaces/Hiwi";
-import WorkingHoursProgress from "../../components/charts/WorkingHoursProgress";
+import WorkingHoursProgress from "../../components/charts/ProgressCard";
+import ProgressCard from "../../components/charts/ProgressCard";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -139,7 +140,7 @@ const HiwiHomePage = (): React.ReactElement => {
         <div className="px-6 py-6">
 
             <div className="absolute right-10">
-                <WorkingHoursProgress totalHours={timesheet?.totalTime ?? 0} goalHours={user?.contractInfo?.workingHours ?? 0}/>
+                <ProgressCard currentValue={timesheet?.totalTime ?? 0} targetValue={user?.contractInfo?.workingHours ?? 0} label={"Total hours working"}/>
             </div>
 
             <div className="flex flex-row gap-8 items-center">
