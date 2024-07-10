@@ -53,6 +53,7 @@ class UserController(MethodView):
             '/getUsersByRole': self.get_users_by_role,
             '/getFile': self.get_user_file,
             '/getHiwis': self.get_hiwis,
+            '/getSupervisor': self.get_supervisor
             '/getSupervisors': self.get_supervisors
         }
         return self._dispatch_request(endpoint_mapping)
@@ -269,6 +270,31 @@ class UserController(MethodView):
         return jsonify(hiwis_data), result.status_code
 
     @jwt_required()
+
+    @check_access(roles=[UserRole.HIWI, UserRole.SECRETARY])
+    def get_supervisor(self):
+        """
+        Retrieves important information of the supervisor of the currently authenticated Hiwi.
+
+        :return: A JSON response with the supervisor data and an appropriate HTTP status code.
+        """
+        username = get_jwt_identity()
+        user = self.user_service.get_profile(username)
+        request_args = request.args
+
+        if len(request_args) > 0 and user.role == UserRole.HIWI:
+            return jsonify({'error': 'Invalid Arguments.'}), 400
+        if user.role == UserRole.SECRETARY and 'username' in request_args:
+            username = request_args['username']
+            result = self.user_service.get_supervisor(username, True)
+            if not result.is_successful:
+                return jsonify(result.message), result.status_code
+            return jsonify(result.data), result.status_code
+        result = self.user_service.get_supervisor(username)
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
+        return jsonify(result.data), result.status_code
+
     @check_access(roles=[UserRole.ADMIN])
     def get_supervisors(self):
         """
@@ -281,6 +307,7 @@ class UserController(MethodView):
             return jsonify(result.message), result.status_code
         supervisors_data = [supervisor.to_name_dict() for supervisor in result.data]
         return jsonify(supervisors_data), result.status_code
+
 
 
     @jwt_required()
