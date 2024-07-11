@@ -7,7 +7,6 @@ export interface User {
   role: string;
   profileImageUrl?: string;
   personalInfo: PersonalInfo;
-  timesheets?: string[];
   contractInfo?: ContractInfo;
   accountCreation?: string;
   lastLogin?: string;
