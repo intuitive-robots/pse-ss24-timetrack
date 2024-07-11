@@ -229,6 +229,24 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         return RequestResult(True, "", 200, Timesheet.from_dict(current_timesheet_data))
 
+    def get_highest_priority_timesheet(self, username: str):
+        """
+        Retrieves the highest priority timesheet for a given username.
+
+        :param username: The username of the Hiwi
+        :return: The timesheet object
+        """
+        if username is None:
+            return RequestResult(False, "Please provide a username to retrieve the timesheet", 400)
+        not_complete_timesheet_data = self.timesheet_repository.get_timesheets_by_username_status(username, TimesheetStatus.REVISION)
+        not_complete_timesheet_data += self.timesheet_repository.get_timesheets_by_username_status(username, TimesheetStatus.WAITING_FOR_APPROVAL)
+        not_complete_timesheet_data += self.timesheet_repository.get_timesheets_by_username_status(username, TimesheetStatus.NOT_SUBMITTED)
+        timesheets = (Timesheet.from_dict(timesheet_data) for timesheet_data in not_complete_timesheet_data)
+        sorted_timesheets = sorted(timesheets, key=lambda timesheet: (timesheet.year, timesheet.month))
+        if sorted_timesheets is None or len(sorted_timesheets) == 0:
+            return RequestResult(False, "No timesheets found", 404)
+        return RequestResult(True, "", 200, sorted_timesheets[0])
+
     def get_timesheet(self, username: str, month: int, year: int):
         """
         Retrieves a timesheet by username, month, and year.
