@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from controller.factory.user_factory import UserFactory
 from controller.input_validator.user_data_validator import UserDataValidator
 from controller.input_validator.validation_status import ValidationStatus
@@ -66,16 +68,18 @@ class UserService:
 
         #TODO: AccountCreation and LastLogin are also required fields, which should not be the case.
         for key in User.dict_keys():
-            if key not in user_data.keys():
+            if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin']:
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
         self.user_validator.is_valid(user_data)  # check if field format is valid
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
             return RequestResult(False, "Invalid user role specified", status_code=400)
         user = user_factory.create_user(user_data)
+
         if not user:
             return RequestResult(False, "User creation failed", status_code=500)
         if user.role == UserRole.HIWI:
+            user.contract_info.vacation_hours = self._calculate_vacation_hours(user.contract_info.working_hours)
             if 'supervisor' not in user_data:
                 return RequestResult(False, "Supervisor is required for Hiwi creation", status_code=400)
             supervisor_data = self.user_repository.find_by_username(user_data['supervisor'])
@@ -94,6 +98,16 @@ class UserService:
             return RequestResult(True, "HiWi created successfully", status_code=201)
 
         return self.user_repository.create_user(user)
+
+    def _calculate_vacation_hours(self, monthly_working_hours: int):
+        """
+        Calculates the number of vacation hours based on the monthly working hours.
+
+        :param monthly_working_hours: The number of monthly working hours.
+        :return: The number of vacation hours.
+        """
+
+        return round(((monthly_working_hours * 20 * 3.95) / (85 * 12) * 2), 0) / 2
 
     def update_user(self, user_data: dict):
         """
@@ -218,8 +232,6 @@ class UserService:
         relevant_supervisor_data.pop('personalNumber', None)
         relevant_supervisor_data['role'] = supervisor_data['role']
         return RequestResult(True, "", status_code=200, data=relevant_supervisor_data)
-
-
 
     def get_supervisors(self):
         """
