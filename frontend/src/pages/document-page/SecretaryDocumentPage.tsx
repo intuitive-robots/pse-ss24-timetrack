@@ -15,6 +15,7 @@ import {useNavigate} from "react-router-dom";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import TimesheetListView from "../../components/timesheet/TimesheetListView";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
+import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
 
 
 const SecretaryDocumentPage: React.FC = () => {
@@ -162,30 +163,25 @@ const SecretaryDocumentPage: React.FC = () => {
             <div className="h-5"/>
             <div className="px-4">
                 <StatusFilter setFilter={setFilter}/>
-                {hiwis ? (
-                    <div className="flex flex-row mt-8 gap-12">
 
-                        <img src={VerticalTimeLine} alt="Vertical Time Line"/>
+                <div className="flex flex-row mt-8 gap-12">
 
-                        <div className="flex flex-col w-full h-full justify-between">
-                            <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                            <TimesheetListView sheets={filteredTimesheets} />
-                            <div className="flex mt-8 flex-col gap-2 items-center">
-                                <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                                <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
-                                    <p>Work</p>
-                                    <p>Vacation days</p>
-                                    <p>Overtime</p>
-                                    <p>Status</p>
-                                </div>
+                    <img src={VerticalTimeLine} alt="Vertical Time Line"/>
+
+                    <div className="flex flex-col w-full h-full justify-between">
+                        <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                        <SecretaryDocumentListView sheets={filteredTimesheets} />
+                        <div className="flex mt-8 flex-col gap-2 items-center">
+                            <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                            <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
+                                <p>Work</p>
+                                <p>Vacation days</p>
+                                <p>Overtime</p>
+                                <p>Status</p>
                             </div>
                         </div>
                     </div>
-                ) : (
-                    <div className="p-4 bg-red-100 text-red-700 rounded shadow">
-                        Keine HiWis gefunden.
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     );
