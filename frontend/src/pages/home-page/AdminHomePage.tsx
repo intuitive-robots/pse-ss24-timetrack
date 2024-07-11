@@ -1,77 +1,110 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import UserCard from "../../components/UserCard";
-import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg"
-import {getUsers} from "../../services/AuthService";
-import {User} from "../../interfaces/User";
-import {useAuth} from "../../context/AuthContext";
+import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
+import { getUsers } from "../../services/AuthService";
+import { User } from "../../interfaces/User";
+import { useAuth } from "../../context/AuthContext";
 import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
-import {usePopup} from "../../components/popup/PopupContext";
-import {deleteUser} from "../../services/UserService";
+import { usePopup } from "../../components/popup/PopupContext";
+import { deleteUser } from "../../services/UserService";
+import RoleFilter from "../../components/filter/RoleFilter";
+import {Roles} from "../../components/auth/roles";
+import {getPluralForm} from "../../utils/TextUtils";
 
-/**
- * AdminHomePage component serves as the main landing page for the application.
- *
- * @returns {React.ReactElement} A React Element that renders the main homepage of the application.
- */
+interface RoleCounts {
+    Hiwi: number;
+    Supervisor: number;
+    Secretary: number;
+    Admin: number;
+}
+
 const AdminHomePage = (): React.ReactElement => {
-    const {user} = useAuth();
+    const { user } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
-
-    const [hiwiCount, setHiwiCount] = useState(0);
-    const [supervisorCount, setSupervisorCount] = useState(0);
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);  // Zustand für gefilterte Nutzer
+    const [activeRole, setActiveRole] = useState<string>("View all");
 
     const { openPopup, closePopup } = usePopup();
 
-     const handleDeleteUser = (username: string) => {
+    const handleDeleteUser = (username: string) => {
         openPopup(
-          <ConfirmationPopup
-              title={"Delete User"}
+            <ConfirmationPopup
+                title={"Delete User"}
                 description={"Are you sure you want to delete this user?"}
-            onConfirm={() => confirmDeleteUser(username)}
-            onCancel={closePopup}
-          />
+                onConfirm={() => confirmDeleteUser(username)}
+                onCancel={closePopup}
+            />
         );
-     };
+    };
 
-     const confirmDeleteUser = async (username: string) => {
+    const confirmDeleteUser = async (username: string) => {
         try {
             await deleteUser(username);
             closePopup();
-            window.location.reload();
+            // Aktualisiere Nutzerliste nach dem Löschen
+            setUsers(prev => prev.filter(u => u.username !== username));
         } catch (error) {
             console.error('Failed to delete user:', error);
             closePopup();
         }
-     };
+    };
 
     useEffect(() => {
         const fetchUsers = async () => {
-          try {
-            const fetchedUsers: User[] = await getUsers();
-            setUsers(fetchedUsers);
-
-            const hiwiCount = fetchedUsers.filter(user => user.role === "Hiwi").length;
-            const supervisorCount = fetchedUsers.filter(user => user.role === "Supervisor").length;
-
-            setHiwiCount(hiwiCount);
-            setSupervisorCount(supervisorCount);
-          } catch (error) {
-            console.log('Failed to fetch users');
-          }
+            try {
+                const fetchedUsers = await getUsers();
+                setUsers(fetchedUsers);
+                setFilteredUsers(fetchedUsers);
+            } catch (error) {
+                console.log('Failed to fetch users', error);
+            }
         };
 
         fetchUsers();
     }, []);
+
+    useEffect(() => {
+        if (activeRole === "View all") {
+            setFilteredUsers(users);
+        } else {
+            setFilteredUsers(users.filter(user => user.role === activeRole));
+        }
+    }, [activeRole, users]);
+
+    const generateHeader = () => {
+        if (activeRole === "View all") {
+            const initialCounts: RoleCounts = { Hiwi: 0, Supervisor: 0, Secretary: 0, Admin: 0 };
+            const roleCounts = users.reduce((acc, user) => {
+                if (user.role in acc) {
+                    acc[user.role as keyof RoleCounts]++;
+                }
+                return acc;
+            }, initialCounts);
+
+            const totalEmployees = filteredUsers.length;
+            const employeeNoun = getPluralForm(totalEmployees, 'employee', 'employees');
+            const verb = totalEmployees === 1 ? 'is' : 'are';
+
+            return `There ${verb} ${totalEmployees} ${employeeNoun}, including ${roleCounts.Hiwi} HiWi${roleCounts.Hiwi === 1 ? '' : 's'}, ${roleCounts.Supervisor} Supervisor${roleCounts.Supervisor === 1 ? '' : 's'}, ${roleCounts.Secretary} Secretary${roleCounts.Secretary === 1 ? '' : 's'}, and ${roleCounts.Admin} Admin${roleCounts.Admin === 1 ? '' : 's'}.`;
+        } else {
+            const count = filteredUsers.length;
+            const roleNoun = getPluralForm(count, activeRole, activeRole + 's');
+            const verb = count === 1 ? 'is' : 'are';
+
+            return `There ${verb} ${count} ${roleNoun}.`;
+        }
+    };
 
     return (
         <div className="flex flex-col h-full px-6 mt-6">
             <div className="mb-4">
                 <p className="text-lg font-medium text-subtitle">{user ? user.personalInfo.instituteName : "Institute Name"}</p>
                 <h1 className="text-3xl font-bold text-gray-800 mt-3.5">Hello {user ? user.personalInfo.firstName : "User"}</h1>
-                <h2 className="text-md font-medium text-subtitle mt-1">There are {users.length} employees, including {hiwiCount} HiWis and {supervisorCount} supervisors</h2>
+                <h2 className="text-md font-medium text-subtitle mt-1">{generateHeader()}</h2>
+                <RoleFilter onRoleChange={setActiveRole} />
             </div>
             <div className="flex flex-col overflow-y-auto gap-3 mb-6 mt-2 flex-grow">
-                {users.map(user => (
+                {filteredUsers.map((user) => (
                     <UserCard
                         key={user.username}
                         name={user.personalInfo.firstName}
@@ -80,7 +113,7 @@ const AdminHomePage = (): React.ReactElement => {
                         profileImageUrl={ProfilePlaceholder}
                         onView={() => {}}
                         onEdit={() => {}}
-                        onDelete={() => {handleDeleteUser(user.username)}}
+                        onDelete={() => handleDeleteUser(user.username)}
                     />
                 ))}
             </div>
