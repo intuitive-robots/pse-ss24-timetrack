@@ -79,7 +79,6 @@ class UserService:
         if not user:
             return RequestResult(False, "User creation failed", status_code=500)
         if user.role == UserRole.HIWI:
-            user.contract_info.vacation_hours = self._calculate_vacation_hours(user.contract_info.working_hours)
             if 'supervisor' not in user_data:
                 return RequestResult(False, "Supervisor is required for Hiwi creation", status_code=400)
             supervisor_data = self.user_repository.find_by_username(user_data['supervisor'])
@@ -99,15 +98,7 @@ class UserService:
 
         return self.user_repository.create_user(user)
 
-    def _calculate_vacation_hours(self, monthly_working_hours: int):
-        """
-        Calculates the number of vacation hours based on the monthly working hours.
 
-        :param monthly_working_hours: The number of monthly working hours.
-        :return: The number of vacation hours.
-        """
-
-        return round(((monthly_working_hours * 20 * 3.95) / (85 * 12) * 2), 0) / 2
 
     def update_user(self, user_data: dict):
         """
