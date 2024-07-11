@@ -9,6 +9,7 @@ from model.repository.time_entry_repository import TimeEntryRepository
 from model.time_entry import TimeEntry
 from model.request_result import RequestResult
 from model.time_entry_type import TimeEntryType
+from model.timesheet_status import TimesheetStatus
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
 from service.timesheet_service import TimesheetService
@@ -55,6 +56,10 @@ class TimeEntryService:
             self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
             timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
             entry_data['timesheetId'] = str(timesheet_id)
+
+        timesheet_status = self.timesheet_service.get_timesheet_status(entry_data['timesheetId']).data
+        if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
+            return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=400)
                         
         validation_result = self.entry_validator.is_valid(entry_data)
         if validation_result.status == ValidationStatus.FAILURE:
@@ -126,6 +131,10 @@ class TimeEntryService:
         if not existing_entry_data:
             return RequestResult(False, "Time entry not found", status_code=404)
 
+        timesheet_status = self.timesheet_service.get_timesheet_status(existing_entry_data['timesheetId']).data
+        if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
+            return RequestResult(False, "Cannot update time entry of a submitted timesheet", status_code=400)
+
         updated_entry_data = existing_entry_data.copy()
         updated_entry_data.update(update_data)
 
@@ -158,6 +167,13 @@ class TimeEntryService:
         """
         if not entry_id:
             return RequestResult(False, "Entry ID is None", status_code=400)
+
+        time_entry = self.time_entry_repository.get_time_entry_by_id(entry_id)
+        if not time_entry:
+            return RequestResult(False, "Time entry not found", status_code=404)
+        timesheet_status = self.timesheet_service.get_timesheet_status(time_entry['timesheetId']).data
+        if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
+            return RequestResult(False, "Cannot delete time entry of a submitted timesheet", status_code=400)
 
         delete_result = self.time_entry_repository.delete_time_entry(entry_id)
 
