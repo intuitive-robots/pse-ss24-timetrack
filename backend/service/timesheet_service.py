@@ -1,7 +1,11 @@
+import math
+
 from bson import ObjectId
 
+from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
+from model.time_entry import TimeEntry
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
 from service.user_service import UserService
@@ -18,6 +22,7 @@ class TimesheetService:
     def __init__(self):
         self.timesheet_repository = TimesheetRepository.get_instance()
         self.user_service = UserService()
+        self.time_entry_repository = TimeEntryRepository.get_instance()
 
     def ensure_timesheet_exists(self, username: str, month: int, year: int):
         """
@@ -41,6 +46,25 @@ class TimesheetService:
 
             return RequestResult(True, "Timesheet created", 201)
         return RequestResult(False, "Failed to create timesheet", 500)
+
+    def set_total_hours(self, timesheet_id: str):
+        """
+        Updates the total hours of a timesheet based on the sum of all its time entries.
+
+        :param timesheet_id: The ID of the timesheet to update.
+        :type timesheet_id: str
+        """
+        time_entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+        time_entries = [TimeEntry.from_dict(entry_data) for entry_data in time_entries_data]
+        total_hours = sum([entry.get_duration() for entry in time_entries])
+        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        timesheet['totalTime'] = total_hours
+        result = self.timesheet_repository.update_timesheet_by_dict(timesheet)
+        if result.is_successful:
+            return RequestResult(True, "Total hours updated", 200)
+        return RequestResult(False, "Failed to update total hours", 500)
+
+
 
     def sign_timesheet(self, timesheet_id: str):
         #TODO: first check if Hiwi has already uploaded signature

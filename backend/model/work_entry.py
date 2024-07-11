@@ -156,32 +156,7 @@ class WorkEntry(TimeEntry):
         duration = end_datetime - start_datetime
         # Subtract the break time
         duration -= timedelta(minutes=self.break_time)
-        # Return the duration in hours
-        return duration.total_seconds() / 3600
+        # Return the duration in minutes
+        return math.ceil(duration.total_seconds() / 60)
 
-    def get_duration(self):
-        """
-        Calculates the duration of the work entry.
-        :return: The duration of the work entry in "hh:mm" format.
-        """
-        start_datetime = self.start_time
-        end_datetime = self.end_time
-        # Calculate the duration
-        duration = end_datetime - start_datetime
-        # Subtract the break time
-        duration -= timedelta(minutes=self.break_time)
-        # Get the duration in hours as a float
-        duration_in_hours = duration.total_seconds() / 3600
-        # Get the hours and remaining minutes
-        hours, remainder = divmod(duration_in_hours, 1)
-
-        # This fixes the floating point issue with the remainder
-        if duration.total_seconds() % 60 >= 1:
-            minutes = math.ceil(remainder * 60)
-        else:
-            minutes = math.floor(remainder * 60)
-        # Format the hours and minutes into a string in "hh:mm" format
-        duration = float(f"{hours:.0f}.{minutes:.0f}")
-
-        return duration
 
