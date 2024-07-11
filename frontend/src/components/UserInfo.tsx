@@ -9,10 +9,10 @@ interface UserInfoProps {
 }
 
 /**
- * UserInfo component to display user profile information.
+ * UserInfoSupervisorView component to display user profile information.
  *
  * @component
- * @param {UserInfoProps} props - The props passed to the UserInfo component.
+ * @param {UserInfoProps} props - The props passed to the UserInfoSupervisorView component.
  * @returns {React.ReactElement} A React Element that renders the user's profile information.
  */
 const UserInfo: React.FC<UserInfoProps> = ({ name, lastName, role, profileImageUrl}: UserInfoProps): React.ReactElement => {

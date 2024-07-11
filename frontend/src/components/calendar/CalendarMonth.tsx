@@ -1,12 +1,13 @@
 import React from 'react';
 
 interface CalendarMonthProps {
-    month: number;
+    month: number; // Month should be 1-based in props (1 = January, 2 = February, ..., 12 = December)
     year: number;
 }
 
 const CalendarMonth: React.FC<CalendarMonthProps> = ({ month, year }) => {
-    const monthName = new Date(year, month).toLocaleString('en-US', { month: 'short' });
+    // Adjust the month index for zero-based Date indexing
+    const monthName = new Date(year, month - 1).toLocaleString('en-US', { month: 'short' });
 
     return (
         <div className="bg-[#F4F4F4] rounded-md shadow-inside-card-shadow px-3.5 py-2.5 flex flex-col items-center justify-center">

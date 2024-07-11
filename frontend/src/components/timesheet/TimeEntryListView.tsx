@@ -1,10 +1,12 @@
 import React from 'react';
 import {TimeEntry} from "../../interfaces/TimeEntry";
-import TimeEntryTile from "../TimeEntryTile";
+import TimeEntryTile from "../list/TimeEntryTile";
 import {deleteTimeEntry} from "../../services/TimeEntryService";
 import ConfirmationPopup from "../popup/ConfirmationPopup";
 import {usePopup} from "../popup/PopupContext";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
+import {TimeEntryTypes} from "../../interfaces/TimeEntryTypes";
+import VacationEntryTile from "../list/VacationEntryTile";
 
 interface TimeEntryListProps {
     entries: TimeEntry[];
@@ -62,20 +64,34 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
 
             <div className="flex flex-col w-full h-full justify-between">
                 <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
-                    {entries.map((entry) => (
-                        <TimeEntryTile
-                            key={entry._id}
-                            entryName={entry.activity}
-                            projectName={entry.projectName}
-                            workTime={calculateWorkTime(entry.startTime, entry.endTime)}
-                            breakTime={entry.breakTime.toString() + "m"}
-                            period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
-                            date={entry.startTime}
-                            onDelete={interactable ? () => handleDelete(entry._id) : undefined}
-                            onEdit={interactable ? () => console.log('Edit Entry', entry._id) : undefined}
-                        />
-                    ))}
+                <div className="flex flex-col overflow-y-auto gap-3 max-h-[31rem] flex-grow">
+                    {/*flex flex-col gap-4 overflow-y-auto max-h-[28rem]*/}
+                    {entries.map((entry) => {
+                        if (entry.entryType === TimeEntryTypes.WORKING_ENTRY) {
+                            return <TimeEntryTile
+                                key={entry._id}
+                                entryName={entry.activity}
+                                projectName={entry.projectName}
+                                workTime={calculateWorkTime(entry.startTime, entry.endTime)}
+                                breakTime={entry.breakTime.toString() + "m"}
+                                period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
+                                date={entry.startTime}
+                                onDelete={interactable ? () => handleDelete(entry._id) : undefined}
+                                onEdit={interactable ? () => console.log('Edit Entry', entry._id) : undefined}
+                            />;
+                        }
+                        if (entry.entryType === TimeEntryTypes.VACATION_ENTRY) {
+                            return <VacationEntryTile
+                                key={entry._id}
+                                startDate={entry.startTime}
+                                endDate={entry.endTime}
+                                onDelete={interactable ? () => handleDelete(entry._id) : undefined}
+                                onEdit={interactable ? () => console.log('Edit Entry', entry._id) : undefined}
+                            />
+                        }
+
+                        return <div>Invalid Entry Type</div>;
+                })}
                 </div>
 
                 <div
@@ -91,7 +107,6 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                             <p>Period</p>
                         </div>
                     </div>
-
                 </div>
 
             </div>

@@ -52,7 +52,9 @@ class UserController(MethodView):
             '/getUsers': self.get_users,
             '/getUsersByRole': self.get_users_by_role,
             '/getFile': self.get_user_file,
-            '/getHiwis': self.get_hiwis
+            '/getHiwis': self.get_hiwis,
+            '/getSupervisor': self.get_supervisor,
+            '/getSupervisors': self.get_supervisors
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -150,7 +152,6 @@ class UserController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
-
     def reset_password(self):
         """
         Resets the password for a user based on the provided JSON data.
@@ -160,7 +161,7 @@ class UserController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         credentials = request.get_json()
-        result = self.auth_service.reset_password(credentials['username'], credentials['password'])
+        result = self.auth_service.reset_password(get_jwt_identity(), credentials['username'], credentials['password'])
         return jsonify(result.message), result.status_code
 
     @jwt_required()
@@ -186,7 +187,7 @@ class UserController(MethodView):
         return jsonify(user_dict_list), 200
 
     @jwt_required()
-    @check_access(roles=[UserRole.ADMIN])
+    @check_access(roles=[UserRole.ADMIN, UserRole.SECRETARY])
     def get_users_by_role(self):
         """
         Retrieves a list of users filtered by a specific role provided via query parameters.
@@ -197,9 +198,10 @@ class UserController(MethodView):
         if 'role' not in args:
             return jsonify({'error': 'Role parameter is required'}), 400
         role = args['role']
-        users_data = self.user_service.get_users_by_role(role)
-        result = [user.to_dict() for user in users_data]
-        return jsonify(result), 200
+        result = self.user_service.get_users_by_role(role)
+        users_data = [user.to_dict() for user in result.data]
+        return jsonify(users_data), result.status_code
+
 
     @jwt_required()
     def upload_user_file(self):
@@ -236,6 +238,9 @@ class UserController(MethodView):
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
 
+        if file_type == FileType.SIGNATURE and username != get_jwt_identity():
+            return jsonify({'error': 'You are not authorized to access this file'}), 403
+
         if not username:
             return jsonify({'error': 'Username is required'}), 400
 
@@ -264,6 +269,46 @@ class UserController(MethodView):
         result = self.user_service.get_hiwis(username)
         hiwis_data = [hiwi.to_dict() for hiwi in result.data]
         return jsonify(hiwis_data), result.status_code
+
+    @jwt_required()
+
+    @check_access(roles=[UserRole.HIWI, UserRole.SECRETARY])
+    def get_supervisor(self):
+        """
+        Retrieves important information of the supervisor of the currently authenticated Hiwi.
+
+        :return: A JSON response with the supervisor data and an appropriate HTTP status code.
+        """
+        username = get_jwt_identity()
+        user = self.user_service.get_profile(username)
+        request_args = request.args
+
+        if len(request_args) > 0 and user.role == UserRole.HIWI:
+            return jsonify({'error': 'Invalid Arguments.'}), 400
+        if user.role == UserRole.SECRETARY and 'username' in request_args:
+            username = request_args['username']
+            result = self.user_service.get_supervisor(username, True)
+            if not result.is_successful:
+                return jsonify(result.message), result.status_code
+            return jsonify(result.data), result.status_code
+        result = self.user_service.get_supervisor(username)
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
+        return jsonify(result.data), result.status_code
+
+    @check_access(roles=[UserRole.ADMIN])
+    def get_supervisors(self):
+        """
+        Retrieves all Supervisors in the system.
+
+        :return: A JSON response with the list of Supervisors and an appropriate HTTP status code.
+        """
+        result = self.user_service.get_supervisors()
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
+        supervisors_data = [supervisor.to_name_dict() for supervisor in result.data]
+        return jsonify(supervisors_data), result.status_code
+
 
 
     @jwt_required()

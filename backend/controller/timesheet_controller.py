@@ -1,9 +1,11 @@
 from flask import jsonify, request, Blueprint
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from model.file.FileType import FileType
 from model.user.role import UserRole
 from service.auth_service import check_access
+from service.file_service import FileService
 from service.timesheet_service import TimesheetService
 
 timesheet_blueprint = Blueprint('timesheet', __name__)
@@ -20,6 +22,7 @@ class TimesheetController(MethodView):
         Initializes TimesheetController with an instance of TimesheetService.
         """
         self.timesheet_service = TimesheetService()
+        self.file_service = FileService()
 
     def get(self):
         """
@@ -92,6 +95,8 @@ class TimesheetController(MethodView):
         timesheet_id = request_data['_id']
         if timesheet_id is None:
             return jsonify({'error': 'No timesheet ID provided'}), 400
+        if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
+            return jsonify({'error': 'No signature has been uploaded.'}), 400
         result = self.timesheet_service.sign_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -109,6 +114,8 @@ class TimesheetController(MethodView):
         timesheet_id = request_data['_id']
         if timesheet_id is None:
             return jsonify({'error': 'No timesheet ID provided'}), 400
+        if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
+            return jsonify({'error': 'No signature has been uploaded.'}), 400
         result = self.timesheet_service.approve_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -126,6 +133,8 @@ class TimesheetController(MethodView):
         timesheet_id = request_data['_id']
         if timesheet_id is None:
             return jsonify({'error': 'No timesheet ID provided'}), 400
+        if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
+            return jsonify({'error': 'No signature has been uploaded.'}), 400
         result = self.timesheet_service.request_change(timesheet_id)
         return jsonify(result.message), result.status_code
 

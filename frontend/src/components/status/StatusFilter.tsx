@@ -67,7 +67,7 @@ export default StatusFilter;
 */
 
 
-const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}) => {
+const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}: StatusFilterProps): React.ReactElement => {
   const statuses = ['View all', StatusType.Pending, StatusType.Waiting];
 
   const [activeStatus, setActiveStatus] = useState<string>(statuses[0]);

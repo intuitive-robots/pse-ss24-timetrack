@@ -7,8 +7,9 @@ const ContractDetails = () => {
     const team = user?.personalInfo?.instituteName || "Not Available";
     const startDate = "Feb 5th, 2024"; //TODO: Get from user object
     const workingTime = `${user?.contractInfo?.workingHours || "N/A"}h per Month`;
-    const hourlyWage = `${user?.contractInfo?.hourlyWage || "Not Available"} €`;
-
+    const hourlyWage = user?.contractInfo?.hourlyWage !== undefined
+        ? `${user.contractInfo.hourlyWage.toFixed(2)} €`
+        : "Not Available";
     return (
         <div className="mb-6">
             <h2 className="font-bold text-md text-[#B5B5B5] mb-3">Your Contract</h2>

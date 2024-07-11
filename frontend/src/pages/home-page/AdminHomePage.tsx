@@ -5,7 +5,6 @@ import {getUsers} from "../../services/AuthService";
 import {User} from "../../interfaces/User";
 import {useAuth} from "../../context/AuthContext";
 import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
-import {deleteTimeEntry} from "../../services/TimeEntryService";
 import {usePopup} from "../../components/popup/PopupContext";
 import {deleteUser} from "../../services/UserService";
 
@@ -71,7 +70,7 @@ const AdminHomePage = (): React.ReactElement => {
                 <h1 className="text-3xl font-bold text-gray-800 mt-3.5">Hello {user ? user.personalInfo.firstName : "User"}</h1>
                 <h2 className="text-md font-medium text-subtitle mt-1">There are {users.length} employees, including {hiwiCount} HiWis and {supervisorCount} supervisors</h2>
             </div>
-            <div className="flex flex-col overflow-y-auto mb-6 mt-2 flex-grow">
+            <div className="flex flex-col overflow-y-auto gap-3 mb-6 mt-2 flex-grow">
                 {users.map(user => (
                     <UserCard
                         key={user.username}

@@ -92,8 +92,9 @@ class TestUserRepository(unittest.TestCase):
                                            'instituteName': 'Info Institute'}, 'role': 'Admin'}
         received_user_data = self.user_repository.find_by_username("testAdmin1")
         received_user_data.pop("lastLogin")
-        received_user_data.pop("passwordHash")
         received_user_data.pop("accountCreation")
+        received_user_data.pop("passwordHash")
+
         self.assertEqual(test_user_data, received_user_data)
 
     def test_update_user(self):

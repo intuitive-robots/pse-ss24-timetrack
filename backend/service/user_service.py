@@ -165,7 +165,7 @@ class UserService:
         users_data = self.user_repository.get_users_by_role(parsedRole)
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
 
-        return users
+        return RequestResult(True, "", status_code=200, data=users)
 
     def get_profile(self, username: str) -> User:
         """
@@ -196,4 +196,42 @@ class UserService:
             return RequestResult(False, "No Hiwis found", status_code=404)
         return RequestResult(True, "", status_code=200, data=hiwis_data)
 
+    def get_supervisor(self, username: str, only_name: bool = False):
+        """
+        Retrieves information about the supervisor of a Hiwi.
 
+        Returns: A RequestResult object containing the result of the operation.
+        """
+        hiwi_data = self.user_repository.find_by_username(username)
+        if not hiwi_data:
+            return RequestResult(False, "Hiwi not found", status_code=404)
+        if hiwi_data['role'] != 'Hiwi':
+            return RequestResult(False, "User is not a Hiwi", status_code=400)
+        supervisor_data = self.user_repository.find_by_username(hiwi_data['supervisor'])
+        if not supervisor_data:
+            return RequestResult(False, "Supervisor not found", status_code=404)
+        if only_name:
+            relevant_supervisor_data = {'firstName': supervisor_data['personalInfo']['firstName'],
+                                        'lastName': supervisor_data['personalInfo']['lastName']}
+            return RequestResult(True, "", status_code=200, data=relevant_supervisor_data)
+        relevant_supervisor_data = supervisor_data['personalInfo']
+        relevant_supervisor_data.pop('personalNumber', None)
+        relevant_supervisor_data['role'] = supervisor_data['role']
+        return RequestResult(True, "", status_code=200, data=relevant_supervisor_data)
+
+
+
+    def get_supervisors(self):
+        """
+        Retrieves a list of all Supervisors in the system.
+
+
+        :return: A list of Supervisor model instances representing all Supervisors in the system.
+        :rtype: list[Supervisor]
+        """
+        supervisors_data = self.user_repository.get_users_by_role(UserRole.SUPERVISOR)
+        supervisors = list(filter(None, map(UserFactory.create_user_if_factory_exists, supervisors_data)))
+        if not supervisors:
+            return RequestResult(False, "No Supervisors found", status_code=404)
+        sorted_supervisors = sorted(supervisors, key=lambda x: x.personal_info.last_name)
+        return RequestResult(True, "", status_code=200, data=sorted_supervisors)

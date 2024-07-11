@@ -61,3 +61,16 @@ class Supervisor(User):
             "hiwis": [hiwi for hiwi in self.hiwis],
         })
         return user_dict
+
+    def to_name_dict(self):
+        """
+        Converts the Supervisor object to a dictionary with only the name and id.
+
+        :return: A dictionary containing the name and id of the Supervisor object.
+        """
+        personal_info = self.personal_info
+        return {
+            "username": self.username,
+            "firstName": personal_info.first_name,
+            "lastName": personal_info.last_name,
+        }

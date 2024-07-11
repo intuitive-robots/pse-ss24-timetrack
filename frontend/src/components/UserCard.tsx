@@ -1,5 +1,5 @@
 import React from 'react';
-import UserInfo from "./UserInfo";
+import UserInfoSupervisorView from "./UserInfo";
 import ListIconCardButton from "./input/ListIconCardButton";
 import EditUserIcon from "../assets/images/edit_user_icon.svg"
 import ViewUserIcon from "../assets/images/view_icon.svg"
@@ -19,7 +19,7 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastName, onView, onEdit, onDelete }) => {
   return (
       <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
-          <UserInfo
+          <UserInfoSupervisorView
               name={name}
               lastName={lastName}
               role={role}

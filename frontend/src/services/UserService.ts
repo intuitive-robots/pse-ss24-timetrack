@@ -1,5 +1,5 @@
 import axiosInstance from "./AxiosInstance";
-import {User} from "../interfaces/User";
+import { User } from "../interfaces/User";
 
 const getHiwis = async (username: string) => {
   try {
@@ -8,6 +8,16 @@ const getHiwis = async (username: string) => {
     return response.data;
   } catch (error) {
     console.error('Fetching hiwis by username failed');
+    throw error;
+  }
+};
+const getUsersByRole = async (role: string) => {
+  try {
+    const response = await axiosInstance.get('/user/getUsersByRole', {
+      params: { role } });
+    return response.data;
+  } catch (error) {
+    console.error('Fetching users by role failed');
     throw error;
   }
 };
@@ -45,4 +55,20 @@ const createUser = async (userData: User): Promise<any> => {
     }
 };
 
-export { getHiwis, deleteUser, createUser };
+/**
+ * Fetches supervisor details for the currently authenticated user.
+ * Handles different logic based on the user role (HIWI or SECRETARY).
+ *
+ * @returns {Promise<any>} The response data from the backend containing supervisor details or an error message.
+ */
+const getSupervisor = async (): Promise<any> => {
+    try {
+        const response = await axiosInstance.get('user/getSupervisor');
+        return response.data;
+    } catch (error) {
+        console.error('Fetching supervisor failed', error);
+        throw error;
+    }
+};
+
+export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor};

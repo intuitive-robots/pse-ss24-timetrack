@@ -5,6 +5,7 @@ import {StatusType} from "../../interfaces/StatusType";
 import {useAuth} from "../../context/AuthContext";
 import {isValidTimesheetStatus, statusMapping} from "../status/StatusMapping";
 import {isValidRole} from "../auth/roles";
+import {generateDocument} from "../../services/DocumentService";
 
 interface TimesheetListProps {
     sheets: Timesheet[];
@@ -12,7 +13,26 @@ interface TimesheetListProps {
 
 
 const TimesheetListView: React.FC<TimesheetListProps> = ({ sheets }) => {
-    const {role} = useAuth();
+    const {role, user} = useAuth();
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+    };
+
+    const handleDownload = async (month: number, year: number) => {
+        if (!user || !user.username) return;
+        console.log("Downloading document for", user.username, month, year)
+
+        try {
+            const documentUrl = await generateDocument({ username: user.username, month, year });
+            window.open(documentUrl, '_blank');
+        } catch (error) {
+            console.error('Failed to download document:', error);
+            alert('Failed to download document');
+        }
+    };
+
 
 
     return (
@@ -27,8 +47,8 @@ const TimesheetListView: React.FC<TimesheetListProps> = ({ sheets }) => {
                     projectName={"Project Alpha"}
                     vacationDays={0}
                     status={(role && isValidRole(role) && sheet.status && isValidTimesheetStatus(sheet.status)) ? statusMapping[role][sheet.status]: StatusType.Pending}
-                    description={sheet.lastSignatureChange}
-                    onDownload={() => console.log('Download Timesheet', sheet._id)}
+                    description={sheet.lastSignatureChange ? formatDate(sheet.lastSignatureChange) : 'No date'}
+                    onDownload={() => handleDownload(sheet.month, sheet.year)}
                 />
             ))}
         </div>

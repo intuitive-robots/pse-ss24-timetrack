@@ -50,6 +50,9 @@ user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['POST']
 user_blueprint.add_url_rule('/getFile', view_func=user_view, methods=['GET'], endpoint='get_user_file')
 user_blueprint.add_url_rule('/deleteFile', view_func=user_view, methods=['DELETE'], endpoint='delete_user_file')
 user_blueprint.add_url_rule('/getHiwis', view_func=user_view, methods=['GET'], endpoint='get_hiwis')
+user_blueprint.add_url_rule('/getSupervisor', view_func=user_view, methods=['GET'], endpoint='get_supervisor')
+user_blueprint.add_url_rule('/getSupervisors', view_func=user_view, methods=['GET'], endpoint='get_supervisors')
+
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 

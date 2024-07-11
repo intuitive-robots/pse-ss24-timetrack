@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import HiwiCard from "../../components/HiwiCard";
+import HiwiTimesheetCard from "../../components/HiwiTimesheetCard";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import StatusFilter from "../../components/status/StatusFilter";
 import {StatusType} from "../../interfaces/StatusType";
@@ -26,7 +26,7 @@ const SupervisorHomePage = (): React.ReactElement => {
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[] | null>(null);
     const [timesheets, setTimesheets] = useState<(Timesheet | null)[]>([]);
-    const { user, role} = useAuth();
+    const { user} = useAuth();
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
@@ -61,7 +61,7 @@ const SupervisorHomePage = (): React.ReactElement => {
                     .map(timesheet => {
                         if (!timesheet) return null;
                         const timesheetStatus = timesheet.status;
-                        if (!isValidTimesheetStatus(timesheetStatus) || !isValidRole(role)) return null;
+                        if (!isValidTimesheetStatus(timesheetStatus)) return null;
                         return {
                             ...timesheet,
                             status: statusMapping[Roles.Supervisor][timesheetStatus],
@@ -155,7 +155,7 @@ const SupervisorHomePage = (): React.ReactElement => {
                             const hiwi = hiwis.find(h => h.username === timesheet.username);
                             if (!hiwi) return null;
                             return hiwi ? (
-                                <HiwiCard
+                                <HiwiTimesheetCard
                                     key={index}
                                     name={hiwi.personalInfo.firstName}
                                     lastName={hiwi.personalInfo.lastName}

@@ -1,46 +1,39 @@
 import React, {useState} from 'react';
 import {usePopup} from "./PopupContext";
 import ShortInputField from "../input/ShortInputField";
+import TrackTimeIcon from "../../assets/images/add_track_time.svg";
 import ActivityIcon from "../../assets/images/activity_icon.svg";
 import BreakIcon from "../../assets/images/coffee_icon.svg";
-import TimeIcon from "../../assets/images/time_icon.svg";
-import CalendarIcon from "../../assets/images/calendar_day.svg";
 import DialogButton from "../input/DialogButton";
 import {createWorkEntry} from "../../services/TimeEntryService";
+import RoundedIconBox from "../../shared/RoundedIconBox";
+import HorizontalSeparator from "../../shared/HorizontalSeparator";
+import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
+import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
 
     const [activity, setActivity] = useState('');
     const [project, setProject] = useState('');
-    const [date, setDate] = useState('');
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [breakTime, setBreakTime] = useState(0);
 
     const handleSubmit = async () => {
-        if (!activity || !project || !date || !startTime || !endTime || !breakTime) {
+        if (!activity || !project || !selectedDate || !startTime || !endTime || !breakTime) {
             alert("Please fill all the fields correctly.");
             return;
         }
 
-        const dateParts = date.split(".");
-        if (dateParts.length !== 3) {
-            alert("Invalid date format. Please use DD.MM.YYYY format.");
-            return;
-        }
-        const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+        const startDate = new Date(selectedDate);
+        startDate.setHours(parseInt(startTime.split(':')[0]), parseInt(startTime.split(':')[1]));
+        const endDate = new Date(selectedDate);
+        endDate.setHours(parseInt(endTime.split(':')[0]), parseInt(endTime.split(':')[1]));
 
-        const fullStartTime = new Date(`${formattedDate}T${startTime}:00`);
-        const fullEndTime = new Date(`${formattedDate}T${endTime}:00`);
-
-        if (isNaN(fullStartTime.getTime()) || isNaN(fullEndTime.getTime())) {
-            alert("Invalid date or time values.");
-            return;
-        }
-
-        const formattedStartTime = fullStartTime.toISOString();
-        const formattedEndTime = fullEndTime.toISOString();
+        const formattedStartTime = startDate.toISOString();
+        const formattedEndTime = endDate.toISOString();
 
 
         const entryData = {
@@ -50,12 +43,12 @@ const TrackTimePopup: React.FC = () => {
             endTime: `${formattedEndTime}`,
             breakTime: breakTime,
         };
-        console.log(entryData)
 
         try {
             const createdEntry = await createWorkEntry(entryData);
             console.log('Work entry created:', createdEntry);
             closePopup();
+            window.location.reload();
         } catch (error) {
             alert("Failed to create work entry.");
             console.error('Error creating work entry:', error);
@@ -63,11 +56,18 @@ const TrackTimePopup: React.FC = () => {
     };
 
     return (
-        <div className="">
-            <div className="flex flex-col gap-1">
-                <h2 className="text-2xl font-bold">Create Time Entry</h2>
-                <p className="text-lg font-medium text-[#707070] mb-6">Fill in the fields below to add a Working Day</p>
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-4">
+                <RoundedIconBox iconSrc={TrackTimeIcon} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
+                <div className="flex flex-col gap-[1px]">
+                    <h2 className="text-2xl font-bold">Create Time Entry</h2>
+                    <p className="text-lg font-medium text-[#707070]">Fill in the fields below to add a Working
+                        Day</p>
+                </div>
             </div>
+
+            <HorizontalSeparator/>
+
 
             <form className="space-y-6">
                 <div className="flex flex-row gap-4">
@@ -89,37 +89,33 @@ const TrackTimePopup: React.FC = () => {
                     />
                 </div>
 
-                <div className="flex flex-col gap-3">
-                    <ShortInputField
-                            icon={CalendarIcon}
-                            type="text"
-                            title="Working Time"
-                            placeholder="23.04.2024"
-                            value={date}
-                            onChange={setDate}
-                    />
-                    <div className="flex gap-10">
-                        <ShortInputField
-                            icon={TimeIcon}
-                            type="time"
-                            placeholder="08:00 AM"
-                            value={startTime}
-                            onChange={setStartTime}
-                        />
-
-                        <ShortInputField
-                            icon={TimeIcon}
-                            type="time"
-                            placeholder="12:00 AM"
-                            value={endTime}
-                            onChange={setEndTime}
-                        />
+                <div className="flex flex-col gap-1.5">
+                    <h2 className="text-md font-semibold">{"Working Time"}</h2>
+                    <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
+                    <div className="flex flex-row mt-2 justify-between w-7/12 items-center">
+                        {/*<ShortInputField*/}
+                        {/*    icon={TimeIcon}*/}
+                        {/*    type="time"*/}
+                        {/*    placeholder="08:00 AM"*/}
+                        {/*    value={startTime}*/}
+                        {/*    onChange={setStartTime}*/}
+                        {/*/>*/}
+                        {/*<ShortInputField*/}
+                        {/*    icon={TimeIcon}*/}
+                        {/*    type="time"*/}
+                        {/*    placeholder="12:00 AM"*/}
+                        {/*    value={endTime}*/}
+                        {/*    onChange={setEndTime}*/}
+                        {/*/>*/}
+                        <IntuitiveTimePicker value={startTime} onChange={setStartTime}/>
+                        <p className="text-center items-center justify-center text-gray-700 font-extrabold">—</p>
+                        <IntuitiveTimePicker value={endTime} onChange={setEndTime}/>
                     </div>
 
                 </div>
 
                 <ShortInputField
-                        icon={BreakIcon}
+                    icon={BreakIcon}
                         type="number"
                         title={"Break Time"}
                         placeholder="15"
