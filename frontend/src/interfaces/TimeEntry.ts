@@ -8,3 +8,10 @@ export interface TimeEntry {
     projectName: string;
     timesheetId: string;
 }
+
+export interface VacationEntry {
+    _id: string;
+    startTime: string;
+    endTime: string;
+    timesheetId: string;
+}

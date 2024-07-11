@@ -14,6 +14,12 @@ module.exports = {
       animation: {
         slideIn: 'fadeIn 2s ease-in-out forwards',
       },
+      maxHeight: {
+        'screen-custom': 'calc(100vh)',
+      },
+      plugins: [
+
+      ],
       colors: {
         light: {  // Light Theme
           background: '#ffffff',

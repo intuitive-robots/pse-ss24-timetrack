@@ -3,6 +3,8 @@ import AddUserIcon from "../../assets/images/add_user_icon.svg";
 import VacationIcon from "../../assets/images/vacation_icon.svg";
 import TrackTimePopup from "../popup/TrackTimePopup";
 import React, {ReactElement} from "react";
+import AddUserPopup from "../popup/AddUserPopup";
+import AddVacationPopup from "../popup/AddVacationPopup";
 
 interface ButtonConfig {
   icon: any;
@@ -22,7 +24,7 @@ export const buttonConfigurations: ButtonConfigurations  = {
       icon: AddUserIcon,
       label: "Add User",
       action: () => console.log("Managing users"),
-      popup: <TrackTimePopup/>
+      popup: <AddUserPopup/>
     },
   ],
   Hiwi: [
@@ -36,7 +38,7 @@ export const buttonConfigurations: ButtonConfigurations  = {
       icon: VacationIcon,
       label: "Add Vacation",
       action: () => console.log("Add Vacation"),
-      popup: <TrackTimePopup/>
+      popup: <AddVacationPopup/>
     }
   ],
   Supervisor: [

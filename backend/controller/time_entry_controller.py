@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from model.user.role import UserRole
+from service.auth_service import check_access
 from service.time_entry_service import TimeEntryService
 from service.timesheet_service import TimesheetService
 
@@ -60,6 +62,7 @@ class TimeEntryController(MethodView):
         return jsonify({'error': 'Endpoint not found'}), 404
 
     @jwt_required()
+    @check_access(roles=[UserRole.HIWI])
     def create_work_entry(self):
         """
         Creates a new time entry with the provided JSON data.
@@ -74,6 +77,7 @@ class TimeEntryController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
+    @check_access(roles=[UserRole.HIWI])
     def create_vacation_entry(self):
         """
         Creates a new vacation time entry with the provided JSON data.
@@ -88,6 +92,7 @@ class TimeEntryController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
+    @check_access(roles=[UserRole.HIWI])
     def update_time_entry(self):
         """
         Updates an existing time entry using the provided JSON data.
@@ -103,6 +108,7 @@ class TimeEntryController(MethodView):
         return jsonify(result.message), result.status_code
 
     @jwt_required()
+    @check_access(roles=[UserRole.HIWI])
     def delete_time_entry(self):
         """
         Deletes a time entry identified by its ID provided in the JSON data.

@@ -1,5 +1,5 @@
 import React from 'react';
-import UserInfoSupervisorView from "./UserInfoSupervisorView";
+import UserInfoSupervisorView from "./UserInfo";
 import ListIconCardButton from "./input/ListIconCardButton";
 import CheckTimesheetIcon from "../assets/images/check_timesheet_icon.svg"
 import StatusLabel from "./status/Status";

@@ -1,7 +1,7 @@
 import React from 'react';
 import {roleColors} from "../utils/RoleMapping";
 
-interface UserInfoSupervisorProps {
+interface UserInfoProps {
   name: string;
   lastName: string;
   role: string;
@@ -12,10 +12,10 @@ interface UserInfoSupervisorProps {
  * UserInfoSupervisorView component to display user profile information.
  *
  * @component
- * @param {UserInfoSupervisorProps} props - The props passed to the UserInfoSupervisorView component.
+ * @param {UserInfoProps} props - The props passed to the UserInfoSupervisorView component.
  * @returns {React.ReactElement} A React Element that renders the user's profile information.
  */
-const UserInfoSupervisorView: React.FC<UserInfoSupervisorProps> = ({ name, lastName, role, profileImageUrl}: UserInfoSupervisorProps): React.ReactElement => {
+const UserInfo: React.FC<UserInfoProps> = ({ name, lastName, role, profileImageUrl}: UserInfoProps): React.ReactElement => {
   return (
     <div className="flex items-center space-x-3 mr-8 z-50">
       <img src={profileImageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>
@@ -27,4 +27,4 @@ const UserInfoSupervisorView: React.FC<UserInfoSupervisorProps> = ({ name, lastN
   );
 };
 
-export default UserInfoSupervisorView;
+export default UserInfo;

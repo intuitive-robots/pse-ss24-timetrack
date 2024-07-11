@@ -4,6 +4,8 @@ from db import initialize_db
 from model.request_result import RequestResult
 from model.user.role import UserRole
 from model.user.user import User
+from pymongo.errors import PyMongoError
+
 
 
 class UserRepository:
@@ -41,12 +43,14 @@ class UserRepository:
         """
         if user is None:
             return RequestResult(False, "User object is None", 400)
-        if self.find_by_username(user.username):
-            return RequestResult(False, "User already exists", 409)
-
-        result = self.db.users.insert_one(user.to_dict())
-        if result.acknowledged:
-            return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
+        try:
+            if self.find_by_username(user.username):
+                return RequestResult(False, "User already exists", 409)
+            result = self.db.users.insert_one(user.to_dict())
+            if result.acknowledged:
+                return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
+        except PyMongoError as e:
+            return RequestResult(False, f"User creation failed: {str(e)}", 500)
         return RequestResult(False, "User creation failed", 500)
 
     def set_last_login(self, username, last_login: datetime.datetime):
@@ -57,13 +61,16 @@ class UserRepository:
         :param last_login: The last login time to set for the user.
         :return: RequestResult indicating the success or failure of the update operation.
         """
-        result = self.db.users.update_one({"username": username}, {"$set": {"lastLogin": last_login}})
-        if result.matched_count == 0:
-            return RequestResult(False, "User not found", 404)
-        if result.modified_count == 0:
-            return RequestResult(False, "Last login update failed", 500)
-        if result.acknowledged:
-            return RequestResult(True, "Last login updated successfully", 200)
+        try:
+            result = self.db.users.update_one({"username": username}, {"$set": {"lastLogin": last_login}})
+            if result.matched_count == 0:
+                return RequestResult(False, "User not found", 404)
+            if result.modified_count == 0:
+                return RequestResult(False, "Last login update failed", 500)
+            if result.acknowledged:
+                return RequestResult(True, "Last login updated successfully", 200)
+        except PyMongoError as e:
+            return RequestResult(False, f"Last login update failed: {str(e)}", 500)
         return RequestResult(False, "Last login update failed", 500)
 
     def find_by_username(self, username):
@@ -75,8 +82,10 @@ class UserRepository:
         """
         if username is None:
             return None
-        user_data = self.db.users.find_one({"username": username})
-
+        try:
+            user_data = self.db.users.find_one({"username": username})
+        except PyMongoError as e:
+            return None
         return user_data
 
     def update_user(self, user: User) -> RequestResult:
@@ -86,13 +95,16 @@ c
         :param user: The User object containing updated data for the user.
         :return: RequestResult indicating the success or failure of the update operation.
         """
-        result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
-        if result.matched_count == 0:
-            return RequestResult(False, "User not found", 404)
-        if result.modified_count == 0:
-            return RequestResult(False, "User update failed", 500)
-        if result.acknowledged:
-            return RequestResult(True, "User updated successfully", 200)
+        try:
+            result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
+            if result.matched_count == 0:
+                return RequestResult(False, "User not found", 404)
+            if result.modified_count == 0:
+                return RequestResult(False, "User update failed", 500)
+            if result.acknowledged:
+                return RequestResult(True, "User updated successfully", 200)
+        except PyMongoError as e:
+            return RequestResult(False, f"User update failed: {str(e)}", 500)
         return RequestResult(False, "User update failed", 500)
 
     def delete_user(self, username) -> RequestResult:
@@ -104,13 +116,16 @@ c
         """
         if username is None:
             return RequestResult(False, "Please provide a username to delete the user.", 400)
-        if self.find_by_username(username) is None:
-            return RequestResult(False, "User not found", 404)
-        result = self.db.users.delete_one({"username": username})
-        if result.deleted_count == 0:
-            return RequestResult(False, "User deletion failed", 500)
-        if result.acknowledged:
-            return RequestResult(True, "User deleted successfully", 200)
+        try:
+            if self.find_by_username(username) is None:
+                return RequestResult(False, "User not found", 404)
+            result = self.db.users.delete_one({"username": username})
+            if result.deleted_count == 0:
+                return RequestResult(False, "User deletion failed", 500)
+            if result.acknowledged:
+                return RequestResult(True, "User deleted successfully", 200)
+        except PyMongoError as e:
+            return RequestResult(False, f"User deletion failed: {str(e)}", 500)
         return RequestResult(False, "User deletion failed", 500)
 
     def get_users(self) -> list[dict]:
@@ -119,7 +134,10 @@ c
 
         :return: A list of dictionaries, each containing the data of one user.
         """
-        users_data = self.db.users.find()
+        try:
+            users_data = self.db.users.find()
+        except PyMongoError as e:
+            return []
         return list(users_data)
 
     def get_users_by_role(self, role: UserRole) -> list[dict]:
@@ -129,5 +147,8 @@ c
         :param role: The UserRole to filter users by.
         :return: A list of dictionaries, each containing the data of one user with the specified role.
         """
-        users_data = self.db.users.find({"role": role.value})
+        try:
+            users_data = self.db.users.find({"role": role.value})
+        except PyMongoError as e:
+            return []
         return list(users_data)

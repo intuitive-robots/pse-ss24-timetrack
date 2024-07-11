@@ -1,5 +1,5 @@
 import React from 'react';
-import UserInfoSupervisorView from "./UserInfoSupervisorView";
+import UserInfoSupervisorView from "./UserInfo";
 import ListIconCardButton from "./input/ListIconCardButton";
 import EditUserIcon from "../assets/images/edit_user_icon.svg"
 import ViewUserIcon from "../assets/images/view_icon.svg"
@@ -29,16 +29,16 @@ const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastNa
               <ListIconCardButton
               iconSrc={ViewUserIcon}
               label="View"
-              onClick={() => {}}
+              onClick={() => onEdit()}
           />
           <ListIconCardButton
               iconSrc={EditUserIcon}
               label="Edit"
-              onClick={() => {}}
+              onClick={() => onView()}
           />
           <IconButton
               icon={RemoveIcon}
-              onClick={() => {}}
+              onClick={() => onDelete()}
               bgColor="bg-purple-100"
               hover="hover:bg-purple-200"
           />

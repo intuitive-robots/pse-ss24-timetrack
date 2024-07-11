@@ -11,7 +11,7 @@ const LayoutContentWithPopup: FC<ContentWithPopupProps> = ({ currentRoutes }) =>
 
   return (
     <>
-      <div className={`flex-1 overflow-auto p-4 ${popupContent ? "opacity-50" : ""}`}>
+      <div className={`h-full w-full  ${popupContent ? "opacity-50" : ""}`}>
         <Routes>
           {Object.entries(currentRoutes).map(([path, Component]) => (
             <Route key={path} path={path} element={<Component />} />

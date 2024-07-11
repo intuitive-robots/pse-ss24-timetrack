@@ -50,6 +50,9 @@ user_blueprint.add_url_rule('/uploadFile', view_func=user_view, methods=['POST']
 user_blueprint.add_url_rule('/getFile', view_func=user_view, methods=['GET'], endpoint='get_user_file')
 user_blueprint.add_url_rule('/deleteFile', view_func=user_view, methods=['DELETE'], endpoint='delete_user_file')
 user_blueprint.add_url_rule('/getHiwis', view_func=user_view, methods=['GET'], endpoint='get_hiwis')
+user_blueprint.add_url_rule('/getSupervisor', view_func=user_view, methods=['GET'], endpoint='get_supervisor')
+user_blueprint.add_url_rule('/getSupervisors', view_func=user_view, methods=['GET'], endpoint='get_supervisors')
+
 
 app.register_blueprint(user_blueprint, url_prefix='/user')
 
@@ -154,18 +157,6 @@ def create_time_entry():
     result = entry_repo.create_time_entry(work_entry)
     return result.to_dict(), result.status_code
 
-#TODO: This works only for work entries, not vacation entries!
-@app.route('/readTimeEntries')
-@jwt_required()
-def read_time_entries():
-    """
-    Reads all time entries from the database
-    
-    :return: A JSON string containing all time entries
-    """
-    entry_repo = TimeEntryRepository.get_instance()
-    time_entries = entry_repo.get_time_entries()
-    return jsonify([work_entry_to_dict(time_entry) for time_entry in time_entries])
 
 #TODO: This is a hardcoded timesheet!
 @app.route('/createTimesheet')

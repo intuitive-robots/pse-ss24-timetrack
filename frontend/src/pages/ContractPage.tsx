@@ -1,5 +1,5 @@
 import React from "react";
-import UserInfoSupervisorView from "../components/UserInfoSupervisorView";
+import UserInfoSupervisorView from "../components/UserInfo";
 import ProfilePicture from "../assets/images/profile_placeholder.png"
 import ContactButton from "../components/input/ContactButton";
 import MailIcon from "../assets/images/contact_mail.svg"
@@ -7,7 +7,7 @@ import SlackIcon from "../assets/images/contact_slack.svg"
 import HorizontalSeparator from "../shared/HorizontalSeparator";
 import ContractDetails from "../components/contract/ContractDetails";
 import SignatureUpload from "../components/contract/SignatureUpload";
-import UserContactInfo from "../components/contract/UserContactInfo";
+import SupervisorContactInfo from "../components/contract/SupervisorContactInfo";
 import {useAuth} from "../context/AuthContext";
 
 const ContractPage = (): React.ReactElement => {
@@ -26,7 +26,7 @@ const ContractPage = (): React.ReactElement => {
                     {/*        <ContactButton icon={SlackIcon} onClick={() => {}}/>*/}
                     {/*    </div>*/}
                     {/*</div>*/}
-                    {user ? <UserContactInfo username={user.username}/> : <div/>}
+                    <SupervisorContactInfo/>
 
                 </div>
                 <HorizontalSeparator/>
