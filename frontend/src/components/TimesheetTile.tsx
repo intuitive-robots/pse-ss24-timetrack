@@ -16,14 +16,14 @@ interface TimesheetTileProps {
   overtime: number;
   status: StatusType;
   onDownload: () => void;
-  projectName?: string; // Optional für Hiwi
-  description?: string; // Optional für Hiwi
-  month?: number; // Optional für Hiwi
-  year?: number; // Optional für Hiwi
-  name?: string; // Optional für Secretary
-  lastName?: string; // Optional für Secretary
-  supervisor?: string; // Optional für Secretary
-  profileImageUrl?: string; // Optional für Secretary
+  projectName?: string;
+  description?: string;
+  month?: number;
+  year?: number;
+  name?: string;
+  lastName?: string;
+  supervisor?: string;
+  profileImageUrl?: string;
 }
 
 const TimesheetTile: React.FC<TimesheetTileProps> = ({   role,

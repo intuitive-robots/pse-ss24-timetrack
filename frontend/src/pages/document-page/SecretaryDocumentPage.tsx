@@ -10,7 +10,7 @@ import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
-import {Roles} from "../../components/auth/roles";
+import {getRole, isValidRole, Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import TimesheetListView from "../../components/timesheet/TimesheetListView";
@@ -31,17 +31,23 @@ const SecretaryDocumentPage: React.FC = () => {
     const currentYear = new Date().getFullYear();
 
     const navigate = useNavigate();
-
-    const defaultTimesheet: Timesheet = {
-        _id: 'default_id',
-        username: 'default_user',
-        month: 1,
-        year: new Date().getFullYear(),
-        status: statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet],
-        totalTime: 0,
-        overtime: 0,
-        lastSignatureChange: new Date().toISOString(),
-        projectName: 'default project',
+    const defaultTimesheet = (
+        id: string,
+        username: string,
+        month: number,
+        year: number
+    ): Timesheet => {
+        return {
+            _id: id,
+            username: username,
+            month: month,
+            year: year,
+            status: statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet],
+            totalTime: 0,
+            overtime: 0,
+            lastSignatureChange: new Date().toISOString(),
+            projectName: 'default project',
+      };
     };
 
     useEffect(() => {
@@ -58,7 +64,7 @@ const SecretaryDocumentPage: React.FC = () => {
             Promise.all(hiwis.map(async (hiwi) => {
                 try {
                     const timesheet = await getTimesheetByMonthYear(hiwi.username, month, year);
-                    return timesheet || defaultTimesheet;
+                    return timesheet || defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 } catch (error) {
                     console.error(`Failed to fetch timesheet for ${hiwi.username}:`, error);
                     return null;
@@ -74,8 +80,9 @@ const SecretaryDocumentPage: React.FC = () => {
                             } as Timesheet;
                         }
                         return {
-                            ...timesheet
-                        }
+                            ...timesheet,
+                            status: statusMapping[Roles.Secretary][timesheet.status]
+                        } as Timesheet;
                       });
                 setTimesheets(validTimesheets);
                 console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
@@ -89,6 +96,7 @@ const SecretaryDocumentPage: React.FC = () => {
   const filteredTimesheets = timesheets
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
+
 
     // TODO: duplicate code with HiwiHomepage.tsx
     const handleMonthChange = (direction: string) => {
