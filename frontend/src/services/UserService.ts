@@ -1,5 +1,5 @@
 import axiosInstance from "./AxiosInstance";
-import {User} from "../interfaces/User";
+import { User } from "../interfaces/User";
 
 const getHiwis = async (username: string) => {
   try {
@@ -8,6 +8,16 @@ const getHiwis = async (username: string) => {
     return response.data;
   } catch (error) {
     console.error('Fetching hiwis by username failed');
+    throw error;
+  }
+};
+const getUsersByRole = async (role: string) => {
+  try {
+    const response = await axiosInstance.get('/user/getUsersByRole', {
+      params: { role } });
+    return response.data;
+  } catch (error) {
+    console.error('Fetching users by role failed');
     throw error;
   }
 };
@@ -61,4 +71,4 @@ const getSupervisor = async (): Promise<any> => {
     }
 };
 
-export { getHiwis, deleteUser, createUser, getSupervisor};
+export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor};

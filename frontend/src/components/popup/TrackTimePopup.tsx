@@ -6,7 +6,6 @@ import ActivityIcon from "../../assets/images/activity_icon.svg";
 import BreakIcon from "../../assets/images/coffee_icon.svg";
 import DialogButton from "../input/DialogButton";
 import {createWorkEntry} from "../../services/TimeEntryService";
-import "react-datepicker/dist/react-datepicker.css";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";

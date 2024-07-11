@@ -7,7 +7,7 @@ import LogoutIcon from "../../assets/images/dropdown/logout.svg";
 import HelpIcon from "../../assets/images/dropdown/help.svg";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
-import UserInfo from "../UserInfo";
+import UserInfoSupervisorView from "../UserInfo";
 import ProfilePicture from "../../assets/images/profile_placeholder.svg"
 import SearchInput from "./SearchInput";
 import DropdownMenuButton from "../dropdown/DropdownMenuButton";
@@ -67,8 +67,8 @@ const ProfileBar: React.FC = (): React.ReactElement => {
         </div>
         <div className="relative ml-auto">
             {user && (
-                <div className="flex px-4 items-center z-50">
-                    <UserInfo
+                <div className="flex px-4 items-center cursor-pointer z-50">
+                    <UserInfoSupervisorView
                         name={user.personalInfo.firstName}
                         lastName={user.personalInfo.lastName}
                         role={role || "N/A"}
