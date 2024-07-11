@@ -71,4 +71,19 @@ const getSupervisor = async (): Promise<any> => {
     }
 };
 
-export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor};
+/**
+ * Retrieves all supervisors from the backend.
+ *
+ * @returns {Promise<User[]>} A promise that resolves to an array of User objects representing the supervisors.
+ */
+const getSupervisors = async (): Promise<User[]> => {
+    try {
+        const response = await axiosInstance.get('/user/getSupervisors');
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching supervisors:', error.response?.data || error.message);
+        throw new Error(error.response?.data || "Failed to fetch supervisors.");
+    }
+};
+
+export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getSupervisors };

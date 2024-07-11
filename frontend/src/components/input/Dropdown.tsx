@@ -6,11 +6,12 @@ interface DropdownProps {
     onChange: (value: string) => void;
     options: string[];
     icon: string;
+    width?: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ title, value, onChange, options, icon }) => {
+const Dropdown: React.FC<DropdownProps> = ({ title, value, onChange, options, icon, width = "w-40"  }) => {
     return (
-        <div className="flex flex-col mb-4 w-40">
+        <div className={`flex flex-col mb-4 ${width}`}>
             <label className="font-semibold mb-2">{title}</label>
             <div className="relative">
                 <select
@@ -18,8 +19,8 @@ const Dropdown: React.FC<DropdownProps> = ({ title, value, onChange, options, ic
                     value={value}
                     onChange={e => onChange(e.target.value)}
                 >
-                    {options.map(option => (
-                        <option key={option} value={option}>
+                    {options.map((option, index) => (
+                        <option key={option + index} value={option}>
                             {option}
                         </option>
                     ))}

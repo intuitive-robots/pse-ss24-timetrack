@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { usePopup } from "./PopupContext";
 import DialogButton from "../input/DialogButton";
 import ShortInputField from "../input/ShortInputField";
@@ -10,7 +10,7 @@ import StepIndicator from "./StepIndicator";
 import Dropdown from "../input/Dropdown";
 import {Roles} from "../auth/roles";
 import {User} from "../../interfaces/User";
-import {createUser} from "../../services/UserService";
+import {createUser, getSupervisors} from "../../services/UserService";
 
 interface FormData {
     username: string;
@@ -40,6 +40,16 @@ const AddUserPopup: React.FC = () => {
         email: '',
         personalNumber: ''
     });
+
+    const [supervisors, setSupervisors] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchSupervisors = async () => {
+            const fetchedSupervisors = await getSupervisors();
+            setSupervisors(fetchedSupervisors);
+        };
+        fetchSupervisors();
+    }, []);
 
     const creationSteps = ['Personal Information', 'Contact Details'];
     if (formData.role === Roles.Hiwi) {
@@ -140,9 +150,16 @@ const AddUserPopup: React.FC = () => {
                     <>
                         <ShortInputField title="Hourly Wage" type="number" value={formData.hourlyWage}
                                          onChange={handleChange('hourlyWage')} icon={ActivityIcon}/>
-                        <ShortInputField title="Working Time" value={formData.workingTime}
+                        <ShortInputField title="Monthly Working Hours" value={formData.workingTime}
                                          onChange={handleChange('workingTime')} icon={ActivityIcon} type="number" />
-                        <ShortInputField title="Supervisor" value={formData.supervisor} onChange={handleChange('supervisor')} icon={ActivityIcon} type="text" />
+                        <Dropdown
+                            title="Supervisor"
+                            value={formData.supervisor}
+                            onChange={handleChange('supervisor')}
+                            options={supervisors.map(sup => `${sup.firstName} ${sup.lastName}`)}
+                            icon={ActivityIcon}
+                            width={"w-56"}
+                        />
                     </>
                 )}
             </div>
