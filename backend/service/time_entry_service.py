@@ -1,7 +1,7 @@
 import datetime
 
 from bson import ObjectId
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from controller.input_validator.time_entry_data_validator import TimeEntryDataValidator
 from controller.input_validator.validation_status import ValidationStatus
@@ -186,6 +186,7 @@ class TimeEntryService:
                                  status_code=200)
         return repo_result
 
+    @jwt_required()
     def delete_time_entry(self, entry_id: str) -> RequestResult:
         """
         Deletes a time entry from the system identified by its ID.
