@@ -38,7 +38,6 @@ class TimesheetService:
             return RequestResult(True, "Timesheet already exists", 200)
         creation_result = self._create_timesheet(username, month, year)
         if creation_result.status_code == 201:
-
             return RequestResult(True, "Timesheet created", 201)
         return RequestResult(False, "Failed to create timesheet", 500)
 
