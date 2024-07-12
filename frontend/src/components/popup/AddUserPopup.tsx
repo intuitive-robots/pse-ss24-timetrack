@@ -90,7 +90,19 @@ const AddUserPopup: React.FC = () => {
     };
 
     const handleChange = (field: keyof FormData) => (value: string) => {
-        setFormData(prevState => ({ ...prevState, [field]: value }));
+        let formattedValue: any = value;
+
+        if (field === 'hourlyWage' || field === 'workingTime' || field === 'personalNumber') {
+            formattedValue = parseFloat(value);
+            if (isNaN(formattedValue)) {
+                formattedValue = 0;
+            }
+        }
+
+        setFormData(prevState => ({
+            ...prevState,
+            [field]: formattedValue
+        }));
     };
 
     const isValidKey = (key: any): key is keyof FormData => key in formData;
