@@ -38,6 +38,24 @@ class UserDataValidator(InputValidator):
         if 'role' in user_data and not self.validate_role(user_data['role']):
             return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified user role.")
 
+        if 'contractInfo' not in user_data:
+            return ValidationResult(ValidationStatus.FAILURE, "Missing contractInfo.")
+        contract_info = user_data['contractInfo']
+        if 'hourlyWage' not in contract_info or contract_info['hourlyWage'] is None:
+            return ValidationResult(ValidationStatus.FAILURE, "Missing or null hourlyWage in contractInfo.")
+        if not isinstance(contract_info['hourlyWage'], (int, float)) or contract_info['hourlyWage'] <= 0:
+            return ValidationResult(ValidationStatus.FAILURE,
+                                    "Invalid hourlyWage in contractInfo. Must be a positive number.")
+
+        if 'workingHours' not in contract_info:
+            return ValidationResult(ValidationStatus.FAILURE, "Missing workingHours in contractInfo.")
+        if not isinstance(contract_info['workingHours'], (int, float)) or contract_info['workingHours'] <= 0:
+            return ValidationResult(ValidationStatus.FAILURE,
+                                    "Invalid workingHours in contractInfo. Must be a positive number.")
+
+        for field in self.field_patterns.keys():
+            if field in user_data and not user_data[field].strip():
+                return ValidationResult(ValidationStatus.FAILURE, f"{field} cannot be empty.")
         # Validate fields with regex patterns
         for field, pattern in self.field_patterns.items():
             if field in user_data and not re.match(pattern, user_data[field]):

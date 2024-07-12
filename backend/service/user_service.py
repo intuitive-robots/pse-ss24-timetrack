@@ -59,7 +59,7 @@ class UserService:
         :param user_data: A dictionary containing user attributes necessary for creating a new user.
         :return: A RequestResult object containing the result of the create operation.
         """
-        if 'password' not in user_data:  # plain password is required on creation
+        if 'password' not in user_data or user_data['password'] == "":  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
@@ -68,7 +68,9 @@ class UserService:
         for key in User.dict_keys():
             if key not in user_data.keys():
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
-        self.user_validator.is_valid(user_data)  # check if field format is valid
+        result = self.user_validator.is_valid(user_data)  # check if field format is valid
+        if result.status == ValidationStatus.FAILURE:
+            return RequestResult(False, result.message, status_code=400)
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
             return RequestResult(False, "Invalid user role specified", status_code=400)
