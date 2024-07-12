@@ -179,6 +179,18 @@ class TestTimesheetService(unittest.TestCase):
         fail_result = self.timesheet_service.get_current_timesheet(test_fail_username)
         self.assertFalse(fail_result.is_successful)
 
+    def test_get_highest_priority_timesheet(self):
+        """
+        Test the get_highest_priority_timesheet method of the TimesheetService class.
+        """
+        # Test getting the current timesheet for a user
+        test_username = "testHiwi1"
+        test_timesheet_id = ObjectId("6679ca2935df0d8f7202c5fa")
+        result = self.timesheet_service.get_highest_priority_timesheet(test_username)
+        self.assertTrue(result.is_successful)
+        self.assertIsNotNone(result.data)
+        self.assertEqual(result.data.timesheet_id, test_timesheet_id)
+
     def test_get_timesheet(self):
         """
         Test the get_timesheet method of the TimesheetService class.

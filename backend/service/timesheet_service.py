@@ -38,7 +38,6 @@ class TimesheetService:
             return RequestResult(True, "Timesheet already exists", 200)
         creation_result = self._create_timesheet(username, month, year)
         if creation_result.status_code == 201:
-
             return RequestResult(True, "Timesheet created", 201)
         return RequestResult(False, "Failed to create timesheet", 500)
 
@@ -174,7 +173,7 @@ class TimesheetService:
             return RequestResult(False, "No timesheets found", 404)
         timesheets = list(map(Timesheet.from_dict, timesheets_data))
         sorted_timesheets = sorted(timesheets, key=lambda x: (x.year, x.month), reverse=True)
-        return RequestResult(True, "", 200, sorted_timesheets )
+        return RequestResult(True, "", 200, sorted_timesheets)
 
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
@@ -238,14 +237,24 @@ class TimesheetService:
         """
         if username is None:
             return RequestResult(False, "Please provide a username to retrieve the timesheet", 400)
-        not_complete_timesheet_data = self.timesheet_repository.get_timesheets_by_username_status(username, TimesheetStatus.REVISION)
-        not_complete_timesheet_data += self.timesheet_repository.get_timesheets_by_username_status(username, TimesheetStatus.WAITING_FOR_APPROVAL)
-        not_complete_timesheet_data += self.timesheet_repository.get_timesheets_by_username_status(username, TimesheetStatus.NOT_SUBMITTED)
-        timesheets = (Timesheet.from_dict(timesheet_data) for timesheet_data in not_complete_timesheet_data)
-        sorted_timesheets = sorted(timesheets, key=lambda timesheet: (timesheet.year, timesheet.month))
+        timesheet_data = self.timesheet_repository.get_timesheets_by_username(username)
+        timesheets = (Timesheet.from_dict(timesheet_data) for timesheet_data in timesheet_data)
+        sorted_timesheets = sorted(timesheets, key=lambda timesheet: (
+            self._get_status_priority(timesheet.status), timesheet.year, timesheet.month))
         if sorted_timesheets is None or len(sorted_timesheets) == 0:
             return RequestResult(False, "No timesheets found", 404)
         return RequestResult(True, "", 200, sorted_timesheets[0])
+
+    def _get_status_priority(self, status: TimesheetStatus):
+        if status == TimesheetStatus.REVISION:
+            return 1
+        elif status == TimesheetStatus.NOT_SUBMITTED:
+            return 2
+        elif status == TimesheetStatus.WAITING_FOR_APPROVAL:
+            return 3
+        elif status == TimesheetStatus.COMPLETE:
+            return 4
+
 
     def get_timesheet(self, username: str, month: int, year: int):
         """
