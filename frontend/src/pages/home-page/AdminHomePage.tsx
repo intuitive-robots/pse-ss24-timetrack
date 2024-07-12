@@ -11,6 +11,7 @@ import RoleFilter from "../../components/filter/RoleFilter";
 import {Roles} from "../../components/auth/roles";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
+import ViewUserPopup from "../../components/popup/ViewUserPopup";
 
 interface RoleCounts {
     Hiwi: number;
@@ -116,7 +117,7 @@ const AdminHomePage = (): React.ReactElement => {
                         lastName={user.personalInfo.lastName}
                         role={user.role}
                         profileImageUrl={ProfilePlaceholder}
-                        onView={() => {}}
+                        onView={() => {openPopup(<ViewUserPopup userData={user}/>)}}
                         onEdit={() => {handleOnChange(user)}}
                         onDelete={() => handleDeleteUser(user.username)}
                     />

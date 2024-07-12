@@ -4,13 +4,13 @@ import DialogButton from "../input/DialogButton";
 import ShortInputField from "../input/ShortInputField";
 import ActivityIcon from "../../assets/images/activity_icon.svg";
 import NameIcon from "../../assets/images/name_icon.svg";
-import UserIcon from "../../assets/images/username_icon.svg";
 import StepIndicator from "./StepIndicator";
 import Dropdown from "../input/Dropdown";
 import { Roles } from "../auth/roles";
 import {User} from "../../interfaces/User";
 import {getSupervisors, updateUser} from "../../services/UserService";
 import DisplayField from "../display/DisplayField";
+import {UserIcon} from "../../assets/iconComponents/UserIcon";
 
 interface EditFormData {
     username: string;
@@ -130,6 +130,7 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     return (
         <div className="px-4">
             <h1 className="text-2xl font-bold">Edit User</h1>
+            <h2 className="text-lg font-medium text-gray-400 mb-4">Change the fields below to edit an existing user</h2>
             <StepIndicator steps={creationSteps} currentStep={step} />
             <div className="space-y-4">
                 {step === 1 && (
@@ -137,12 +138,12 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
                         <DisplayField
                             label="Username"
                             value={formData.username}
-                            icon={UserIcon}
+                            icon={<UserIcon/>}
                           />
                         <DisplayField
                             label="Role"
                             value={formData.role}
-                            icon={ActivityIcon}
+                            icon={<UserIcon/>}
                         />
                     </>
                 )}

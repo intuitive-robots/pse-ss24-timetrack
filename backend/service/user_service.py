@@ -191,6 +191,9 @@ class UserService:
             return RequestResult(False, "Supervisor not found", status_code=404)
         if supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
+        for hiwi_username in supervisor_data['hiwis']:
+            print(self.get_profile(hiwi_username))
+
         hiwis_data = list(self.get_profile(hiwi_username) for hiwi_username in supervisor_data['hiwis'])
         if not hiwis_data:
             return RequestResult(False, "No Hiwis found", status_code=404)
