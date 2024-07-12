@@ -137,6 +137,16 @@ class TestTimesheetController(unittest.TestCase):
         timesheet = response.json
         self.assertEqual("6679ca2935df0d8f7202c5fa", timesheet["_id"])
 
+    def test_get_highest_priority_timesheet(self):
+        """
+        Test the get_highest_priority_timesheet method of the TimesheetController class.
+        """
+        access_token = self.authenticate('testHiwi1', 'test_password')
+        response = self.client.get('/timesheet/getHighestPriorityTimesheet', query_string={"username": "testHiwi1"}, headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(200, response.status_code)
+        timesheet = response.json
+        self.assertEqual("6679ca2935df0d8f7202c5fa", timesheet["_id"])
+
     def test_get_timesheets_by_username_status(self):
         """
         Test the get_timesheets_by_username_status method of the TimesheetController class.

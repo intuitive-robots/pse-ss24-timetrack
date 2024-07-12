@@ -231,7 +231,7 @@ class TimesheetService:
             return RequestResult(False, "No timesheets found", 404)
         timesheets = list(map(Timesheet.from_dict, timesheets_data))
         sorted_timesheets = sorted(timesheets, key=lambda x: (x.year, x.month), reverse=True)
-        return RequestResult(True, "", 200, sorted_timesheets )
+        return RequestResult(True, "", 200, sorted_timesheets)
 
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
@@ -285,6 +285,34 @@ class TimesheetService:
         if current_timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
         return RequestResult(True, "", 200, Timesheet.from_dict(current_timesheet_data))
+
+    def get_highest_priority_timesheet(self, username: str):
+        """
+        Retrieves the highest priority timesheet for a given username.
+
+        :param username: The username of the Hiwi
+        :return: The timesheet object
+        """
+        if username is None:
+            return RequestResult(False, "Please provide a username to retrieve the timesheet", 400)
+        timesheet_data = self.timesheet_repository.get_timesheets_by_username(username)
+        timesheets = (Timesheet.from_dict(timesheet_data) for timesheet_data in timesheet_data)
+        sorted_timesheets = sorted(timesheets, key=lambda timesheet: (
+            self._get_status_priority(timesheet.status), timesheet.year, timesheet.month))
+        if sorted_timesheets is None or len(sorted_timesheets) == 0:
+            return RequestResult(False, "No timesheets found", 404)
+        return RequestResult(True, "", 200, sorted_timesheets[0])
+
+    def _get_status_priority(self, status: TimesheetStatus):
+        if status == TimesheetStatus.REVISION:
+            return 1
+        elif status == TimesheetStatus.NOT_SUBMITTED:
+            return 2
+        elif status == TimesheetStatus.WAITING_FOR_APPROVAL:
+            return 3
+        elif status == TimesheetStatus.COMPLETE:
+            return 4
+
 
     def get_timesheet(self, username: str, month: int, year: int):
         """
