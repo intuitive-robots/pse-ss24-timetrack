@@ -20,15 +20,14 @@ const formatTime = (dateString: string) => {
 
 const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable = true}) => {
 
-    const calculateWorkTime = (startTime: string, endTime: string) => {
+    const calculateWorkTime = (startTime: string, endTime: string, breakTime: number) => {
         const start = new Date(startTime);
         const end = new Date(endTime);
         let diff = (end.getTime() - start.getTime()) / 1000;
-        diff /= 60;
-        const hours = Math.floor(diff / 60);
-        const minutes = diff % 60;
-        const decimalHours = (minutes / 60).toFixed(1);
-        return `${hours + parseFloat(decimalHours)}h`;
+        diff -= breakTime * 60;
+        const hours = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        return `${hours}h ${minutes}m`;
     };
 
     const { openPopup, closePopup } = usePopup();
@@ -72,7 +71,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                                 key={entry._id}
                                 entryName={entry.activity}
                                 projectName={entry.projectName}
-                                workTime={calculateWorkTime(entry.startTime, entry.endTime)}
+                                workTime={calculateWorkTime(entry.startTime, entry.endTime, entry.breakTime)}
                                 breakTime={entry.breakTime.toString() + "m"}
                                 period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
                                 date={entry.startTime}

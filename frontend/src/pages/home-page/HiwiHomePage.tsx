@@ -69,6 +69,12 @@ const HiwiHomePage = (): React.ReactElement => {
         }
     }, [timesheet]);
 
+    const totalHoursInDecimal = () => {
+        const minutes = timesheet?.totalTime ?? 0;
+        return Number((minutes / 60).toFixed(2));
+    };
+
+
     const handleMonthChange = (direction: string) => {
         let newMonth = month;
         let newYear = year;
@@ -140,7 +146,7 @@ const HiwiHomePage = (): React.ReactElement => {
         <div className="px-6 py-6">
 
             <div className="absolute right-10">
-                <ProgressCard currentValue={timesheet?.totalTime ?? 0} targetValue={user?.contractInfo?.workingHours ?? 0} label={"Total hours working"}/>
+                <ProgressCard currentValue={totalHoursInDecimal()} targetValue={user?.contractInfo?.workingHours ?? 0} label={"Total hours working"}/>
             </div>
 
             <div className="flex flex-row gap-8 items-center">

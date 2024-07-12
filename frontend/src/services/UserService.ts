@@ -1,5 +1,6 @@
 import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
+import axios from "axios";
 
 const getHiwis = async (username: string) => {
   try {
@@ -51,9 +52,26 @@ const createUser = async (userData: User): Promise<any> => {
         return response.data;
     } catch (error) {
         console.error('Creating user failed', error);
-        throw error;
+        handleAxiosError(error);
     }
 };
+
+/**
+ * Updates an existing user with provided user details.
+ * @param userData The data of the user to be updated.
+ * @returns The response data from the backend.
+ */
+const updateUser = async (userData: User): Promise<any> => {
+    try {
+        console.log(userData);
+        const response = await axiosInstance.post(`/user/updateUser`, userData);
+        return response.data;
+    } catch (error) {
+        console.error('Updating user failed', error);
+        handleAxiosError(error);
+    }
+};
+
 
 /**
  * Fetches supervisor details for the currently authenticated user.
@@ -63,7 +81,7 @@ const createUser = async (userData: User): Promise<any> => {
  */
 const getSupervisor = async (): Promise<any> => {
     try {
-        const response = await axiosInstance.get('user/getSupervisor');
+        const response = await axiosInstance.get('/user/getSupervisor');
         return response.data;
     } catch (error) {
         console.error('Fetching supervisor failed', error);
@@ -71,4 +89,35 @@ const getSupervisor = async (): Promise<any> => {
     }
 };
 
-export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor};
+/**
+ * Retrieves all supervisors from the backend.
+ *
+ * @returns {Promise<User[]>} A promise that resolves to an array of User objects representing the supervisors.
+ */
+const getSupervisors = async (): Promise<User[]> => {
+    try {
+        const response = await axiosInstance.get('/user/getSupervisors');
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching supervisors:', error.response?.data || error.message);
+        throw new Error(error.response?.data || "Failed to fetch supervisors.");
+    }
+};
+
+const handleAxiosError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data) {
+            const errorMessage = typeof error.response.data === 'string' ?
+                error.response.data :
+                error.response.data.message || 'An unknown server error occurred';
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('No response from server');
+        }
+    } else {
+        throw new Error('An unexpected error occurred');
+    }
+};
+
+
+export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getSupervisors, updateUser };

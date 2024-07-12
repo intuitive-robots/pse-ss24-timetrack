@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import Logo from "../../assets/images/logo.svg";
 import RightArrow from "../../assets/images/arrow_right.svg";
 import UserIcon from "../../assets/images/dropdown/user_icon.svg";
 import ChangePasswordIcon from "../../assets/images/dropdown/change_password.svg";
@@ -14,6 +13,7 @@ import DropdownMenuButton from "../dropdown/DropdownMenuButton";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import {usePopup} from "../popup/PopupContext";
 import PasswordResetPopup from "../popup/PasswordResetPopup";
+import {ClockwiseIcon} from "../../assets/iconComponents/ClockwiseIcon";
 
 /**
  * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,
@@ -51,7 +51,7 @@ const ProfileBar: React.FC = (): React.ReactElement => {
   return (
     <div className="bg-white flex items-center py-5 px-10 shadow-profilebar-shadow border-b-2.7 border-border-gray font-semibold text-nowrap transition-all duration-300 ease-in-out ">
         <div className="flex items-center space-x-4">
-          <img src={Logo} alt="Clockwise" />
+            <ClockwiseIcon/>
           <div className="transition-all duration-400 ease-in-out md:w-12 lg:w-32" />
             <SearchInput placeholder="Search" />
 
