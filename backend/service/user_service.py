@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from controller.factory.user_factory import UserFactory
 from controller.input_validator.user_data_validator import UserDataValidator
 from controller.input_validator.validation_status import ValidationStatus
@@ -66,7 +68,7 @@ class UserService:
 
         #TODO: AccountCreation and LastLogin are also required fields, which should not be the case.
         for key in User.dict_keys():
-            if key not in user_data.keys():
+            if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin']:
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
         result = self.user_validator.is_valid(user_data)  # check if field format is valid
         if result.status == ValidationStatus.FAILURE:
@@ -75,6 +77,7 @@ class UserService:
         if not user_factory:
             return RequestResult(False, "Invalid user role specified", status_code=400)
         user = user_factory.create_user(user_data)
+
         if not user:
             return RequestResult(False, "User creation failed", status_code=500)
         if user.role == UserRole.HIWI:
@@ -306,8 +309,6 @@ class UserService:
         relevant_supervisor_data.pop('personalNumber', None)
         relevant_supervisor_data['role'] = supervisor_data['role']
         return RequestResult(True, "", status_code=200, data=relevant_supervisor_data)
-
-
 
     def get_supervisors(self):
         """
