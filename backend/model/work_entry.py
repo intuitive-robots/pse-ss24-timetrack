@@ -136,14 +136,13 @@ class WorkEntry(TimeEntry):
         dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, 0, "", "")
         return list(dummy_entry.to_dict().keys())
 
-
     def get_duration(self):
 
         """
         Calculates and returns the total duration of the work entry, minus break time, expressed in hours.
 
         :return: The total number of hours worked, excluding break time.
-        :rtype: float
+        :rtype: int
 
         Example:
             - If the start_time is at 9 AM, end_time at 5 PM, and break_time is 60 minutes,
@@ -158,5 +157,4 @@ class WorkEntry(TimeEntry):
         duration -= timedelta(minutes=self.break_time)
         # Return the duration in minutes
         return math.ceil(duration.total_seconds() / 60)
-
 

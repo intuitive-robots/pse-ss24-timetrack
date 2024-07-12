@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta
 
 import math
@@ -99,7 +100,7 @@ class VacationEntry(TimeEntry):
          Calculates and returns the total duration of the vacation entry, expressed in hours.
 
         :return: The total number of hours between the start and end times of the vacation entry.
-        :rtype: float
+        :rtype: int
 
         Example:
             - If the start_time is at 10 AM and the end_time is at 2 PM on the same day,

@@ -13,6 +13,7 @@ from model.timesheet_status import TimesheetStatus
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
 from service.timesheet_service import TimesheetService
+from service.user_service import UserService
 
 
 class TimeEntryService:
@@ -33,6 +34,7 @@ class TimeEntryService:
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.timesheet_service = TimesheetService()
         self.entry_validator = TimeEntryDataValidator()
+        self.user_service = UserService()
 
 
         self.entry_type_mapping = {
@@ -54,7 +56,7 @@ class TimeEntryService:
         entry_data['entryType'] = entry_type.value
         if entry_data.get('timesheetId') is None:
             start_date = datetime.datetime.fromisoformat(entry_data['startTime'])
-            self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
+            result = self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
             timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
             entry_data['timesheetId'] = str(timesheet_id)
 
@@ -77,11 +79,13 @@ class TimeEntryService:
         if not entry_creation_result.is_successful:
             return entry_creation_result
 
-        # Ensure the timesheet exists before adding a new entry
         timesheet_exists_result = self.timesheet_service.ensure_timesheet_exists(
             username, time_entry.start_time.month, time_entry.start_time.year)
         if not timesheet_exists_result.is_successful:
             return timesheet_exists_result
+        if entry_type == TimeEntryType.VACATION_ENTRY:
+            self.user_service.remove_vacation_minutes(username, time_entry.get_duration())
+        self.user_service.add_overtime_minutes(username, time_entry.get_duration())
 
         result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
         if not result.is_successful:
@@ -89,7 +93,7 @@ class TimeEntryService:
         if validation_result.status == ValidationStatus.WARNING:
             return RequestResult(True, f"{entry_type.name} entry added with warnings ´{validation_result.message}´",
                                  status_code=200, data={"_id": entry_creation_result.data["_id"]})
-
+        self.timesheet_service.calculate_overtime(entry_data['timesheetId'])
         return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200,
                              data={"_id": entry_creation_result.data["_id"]})
 
@@ -136,6 +140,7 @@ class TimeEntryService:
         :rtype: RequestResult
         """
         existing_entry_data = self.time_entry_repository.get_time_entry_by_id(entry_id)
+
         if not existing_entry_data:
             return RequestResult(False, "Time entry not found", status_code=404)
 
@@ -157,6 +162,20 @@ class TimeEntryService:
 
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
         if not repo_result.is_successful:
+            self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
+            if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
+                existing_entry = VacationEntry.from_dict(existing_entry_data)
+                update_entry = VacationEntry.from_dict(update_data)
+                if update_entry.get_duration() < existing_entry.get_duration():
+                    self.user_service.add_vacation_minutes(get_jwt_identity(), existing_entry.get_duration() - update_entry.get_duration())
+                elif update_entry.get_duration() > existing_entry.get_duration():
+                    self.user_service.remove_vacation_minutes(get_jwt_identity(), update_entry.get_duration() - existing_entry.get_duration())
+            existing_entry = TimeEntry.from_dict(existing_entry_data)
+            update_entry = TimeEntry.from_dict(update_data)
+            if update_entry.get_duration() < existing_entry.get_duration():
+                self.user_service.add_overtime_minutes(get_jwt_identity(), existing_entry.get_duration() - update_entry.get_duration())
+            elif update_entry.get_duration() > existing_entry.get_duration():
+                self.user_service.remove_overtime_minutes(get_jwt_identity(), update_entry.get_duration() - existing_entry.get_duration())
             return repo_result
         result = self.timesheet_service.set_total_time(updated_time_entry.timesheet_id)
         if not result.is_successful:
@@ -178,18 +197,27 @@ class TimeEntryService:
         if not entry_id:
             return RequestResult(False, "Entry ID is None", status_code=400)
 
-        time_entry = self.time_entry_repository.get_time_entry_by_id(entry_id)
-        if not time_entry:
+        time_entry_data = self.time_entry_repository.get_time_entry_by_id(entry_id)
+        if not time_entry_data:
             return RequestResult(False, "Time entry not found", status_code=404)
-        timesheet_status = self.timesheet_service.get_timesheet_status(time_entry['timesheetId']).data
+        timesheet_status = self.timesheet_service.get_timesheet_status(time_entry_data['timesheetId']).data
         if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
             return RequestResult(False, "Cannot delete time entry of a submitted timesheet", status_code=400)
 
         delete_result = self.time_entry_repository.delete_time_entry(entry_id)
+
+        if time_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
+            time_entry_data = VacationEntry.from_dict(time_entry_data)
+            self.user_service.add_vacation_minutes(get_jwt_identity(), time_entry_data.get_duration())
+        time_entry = TimeEntry.from_dict(time_entry_data)
+        self.user_service.remove_overtime_minutes(get_jwt_identity(), time_entry.get_duration())
+        self.timesheet_service.calculate_overtime(time_entry_data['timesheetId'])
+
         result = self.timesheet_service.set_total_time(time_entry['timesheetId'])
         if not result.is_successful and delete_result.is_successful:
             result.message = "Time entry deleted, but total hours could not be updated."
             return result
+
         return delete_result
 
     def get_entries_of_timesheet(self, timesheet_id: str):

@@ -120,6 +120,6 @@ class TimeEntry(ABC):
         Abstract method that calculates the duration of the time entry, which must be implemented by subclasses.
 
         :return: The duration of the time entry, typically in hours or minutes.
-        :rtype: float
+        :rtype: int
         """
         pass
