@@ -1,13 +1,14 @@
 import React from 'react';
-import UserInfoSupervisorView from "./UserInfo";
 import ListIconCardButton from "./input/ListIconCardButton";
 import EditUserIcon from "../assets/images/edit_user_icon.svg"
 import ViewUserIcon from "../assets/images/view_icon.svg"
 import RemoveIcon from "../assets/images/remove_icon.svg"
 import IconButton from "./navbar/IconButton";
+import UserInfo from "./UserInfo";
 
 interface UserCardProps {
   name: string;
+  username?: string;
   lastName: string;
   role: string;
   profileImageUrl: string;
@@ -16,10 +17,10 @@ interface UserCardProps {
   onDelete: () => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastName, onView, onEdit, onDelete }) => {
+const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, lastName, onView, onEdit, onDelete }) => {
   return (
       <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
-          <UserInfoSupervisorView
+          <UserInfo
               name={name}
               lastName={lastName}
               role={role}
@@ -29,12 +30,12 @@ const UserCard: React.FC<UserCardProps> = ({ name, role, profileImageUrl, lastNa
               <ListIconCardButton
               iconSrc={ViewUserIcon}
               label="View"
-              onClick={() => onEdit()}
+              onClick={() => onView()}
           />
           <ListIconCardButton
               iconSrc={EditUserIcon}
               label="Edit"
-              onClick={() => onView()}
+              onClick={() => onEdit()}
           />
           <IconButton
               icon={RemoveIcon}

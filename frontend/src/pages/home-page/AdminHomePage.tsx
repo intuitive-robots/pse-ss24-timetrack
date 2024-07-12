@@ -10,6 +10,7 @@ import { deleteUser } from "../../services/UserService";
 import RoleFilter from "../../components/filter/RoleFilter";
 import {Roles} from "../../components/auth/roles";
 import {getPluralForm} from "../../utils/TextUtils";
+import EditUserPopup from "../../components/popup/EditUserPopup";
 
 interface RoleCounts {
     Hiwi: number;
@@ -21,7 +22,7 @@ interface RoleCounts {
 const AdminHomePage = (): React.ReactElement => {
     const { user } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
-    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);  // Zustand für gefilterte Nutzer
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [activeRole, setActiveRole] = useState<string>("View all");
 
     const { openPopup, closePopup } = usePopup();
@@ -41,7 +42,6 @@ const AdminHomePage = (): React.ReactElement => {
         try {
             await deleteUser(username);
             closePopup();
-            // Aktualisiere Nutzerliste nach dem Löschen
             setUsers(prev => prev.filter(u => u.username !== username));
         } catch (error) {
             console.error('Failed to delete user:', error);
@@ -65,11 +65,15 @@ const AdminHomePage = (): React.ReactElement => {
 
     useEffect(() => {
         if (activeRole === "View all") {
-            setFilteredUsers(users);
+        setFilteredUsers(users.filter(user => !user.username.startsWith('test')));
         } else {
-            setFilteredUsers(users.filter(user => user.role === activeRole));
+            setFilteredUsers(users.filter(user => user.role === activeRole && !user.username.startsWith('test')));
         }
     }, [activeRole, users]);
+
+    const handleOnChange = (user: User) => {
+        openPopup(<EditUserPopup userData={user}/>)
+    }
 
     const generateHeader = () => {
         if (activeRole === "View all") {
@@ -103,16 +107,17 @@ const AdminHomePage = (): React.ReactElement => {
                 <h2 className="text-md font-medium text-subtitle mt-1">{generateHeader()}</h2>
                 <RoleFilter onRoleChange={setActiveRole} />
             </div>
-            <div className="flex flex-col overflow-y-auto gap-3 mb-6 mt-2 flex-grow">
+            <div className="flex flex-col overflow-y-auto gap-0 mb-6 mt-2 flex-grow">
                 {filteredUsers.map((user) => (
                     <UserCard
                         key={user.username}
+                        username={user.username}
                         name={user.personalInfo.firstName}
                         lastName={user.personalInfo.lastName}
                         role={user.role}
                         profileImageUrl={ProfilePlaceholder}
                         onView={() => {}}
-                        onEdit={() => {}}
+                        onEdit={() => {handleOnChange(user)}}
                         onDelete={() => handleDeleteUser(user.username)}
                     />
                 ))}

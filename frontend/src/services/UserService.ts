@@ -52,21 +52,26 @@ const createUser = async (userData: User): Promise<any> => {
         return response.data;
     } catch (error) {
         console.error('Creating user failed', error);
-
-        if (axios.isAxiosError(error)) {
-            if (error.response && error.response.data) {
-                const errorMessage = typeof error.response.data === 'string' ?
-                    error.response.data :
-                    error.response.data.message || 'An unknown server error occurred';
-                throw new Error(errorMessage);
-            } else {
-                throw new Error('No response from server');
-            }
-        } else {
-            throw new Error('An unexpected error occurred');
-        }
+        handleAxiosError(error);
     }
 };
+
+/**
+ * Updates an existing user with provided user details.
+ * @param userData The data of the user to be updated.
+ * @returns The response data from the backend.
+ */
+const updateUser = async (userData: User): Promise<any> => {
+    try {
+        console.log(userData);
+        const response = await axiosInstance.post(`/user/updateUser`, userData);
+        return response.data;
+    } catch (error) {
+        console.error('Updating user failed', error);
+        handleAxiosError(error);
+    }
+};
+
 
 /**
  * Fetches supervisor details for the currently authenticated user.
@@ -99,4 +104,20 @@ const getSupervisors = async (): Promise<User[]> => {
     }
 };
 
-export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getSupervisors };
+const handleAxiosError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data) {
+            const errorMessage = typeof error.response.data === 'string' ?
+                error.response.data :
+                error.response.data.message || 'An unknown server error occurred';
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('No response from server');
+        }
+    } else {
+        throw new Error('An unexpected error occurred');
+    }
+};
+
+
+export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getSupervisors, updateUser };
