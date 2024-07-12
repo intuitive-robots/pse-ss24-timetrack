@@ -42,14 +42,24 @@ const AddUserPopup: React.FC = () => {
     });
 
     const [supervisors, setSupervisors] = useState<any[]>([]);
+    const roleOptions = Object.values(Roles).map(role => ({
+        label: role,
+        value: role
+    }));
+
 
     useEffect(() => {
-        const fetchSupervisors = async () => {
-            const fetchedSupervisors = await getSupervisors();
-            setSupervisors(fetchedSupervisors);
-        };
-        fetchSupervisors();
-    }, []);
+    const fetchSupervisors = async () => {
+        const fetchedSupervisors: any[] = await getSupervisors();
+        const supervisorOptions = fetchedSupervisors.map(sup => ({
+            label: `${sup.firstName} ${sup.lastName}`,
+            value: sup.username
+        }));
+        setSupervisors(supervisorOptions);
+    };
+    fetchSupervisors();
+}, []);
+
 
     const creationSteps = ['Personal Information', 'Contact Details'];
     if (formData.role === Roles.Hiwi) {
@@ -83,37 +93,58 @@ const AddUserPopup: React.FC = () => {
         setFormData(prevState => ({ ...prevState, [field]: value }));
     };
 
+    const isValidKey = (key: any): key is keyof FormData => key in formData;
+
     const handleSubmit = async () => {
-    try {
-        const newUser: User = {
-            _id: '',
-            username: formData.username,
-            role: formData.role,
-            personalInfo: {
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                email: formData.email,
-                personalNumber: formData.personalNumber,
-                instituteName: 'Institute of Intuitive Robotics'
-            },
-            contractInfo: {
-                hourlyWage: formData.hourlyWage,
-                workingHours: formData.workingTime,
-                vacationHours: 0
-            },
-            supervisor: formData.supervisor,
-            accountCreation: new Date().toISOString(),
-            lastLogin: new Date().toISOString()
+        const canSubmit = () => {
+            for (const key of Object.keys(formData)) {
+                if (isValidKey(key)) {
+                    const value = formData[key];
+                    if (value === '' || value === 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         };
 
-        const result = await createUser(newUser);
-        console.log('User created successfully:', result);
-        closePopup();
-        window.location.reload();
-    } catch (error) {
-        console.error('Error creating user:', error);
-    }
-};
+        if (!canSubmit()) {
+            alert("Please fill all the fields.");
+            return;
+        }
+
+        try {
+            const newUser: User = {
+                _id: '',
+                username: formData.username,
+                password: formData.password,
+                role: formData.role,
+                personalInfo: {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    personalNumber: formData.personalNumber,
+                    instituteName: 'Institute of Intuitive Robotics'
+                },
+                contractInfo: {
+                    hourlyWage: formData.hourlyWage,
+                    workingHours: formData.workingTime,
+                    vacationHours: 0
+                },
+                supervisor: formData.supervisor,
+                accountCreation: new Date().toISOString(),
+                lastLogin: new Date().toISOString()
+            };
+
+            console.log(newUser);
+            const result = await createUser(newUser);
+            console.log('User created successfully:', result);
+            closePopup();
+            window.location.reload();
+        } catch (error) {
+            alert(`Failed to create user ${error}`);
+        }
+    };
 
      return (
         <div className="px-4">
@@ -128,7 +159,7 @@ const AddUserPopup: React.FC = () => {
                             <ShortInputField title="Password" type="text" value={formData.password} onChange={handleChange('password')} icon={PasswordIcon} size="medium"/>
                             <button onClick={generateRandomPassword} className="px-4 py-2 mt-8 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Generate</button>
                         </div>
-                        <Dropdown title="Role" value={formData.role} onChange={handleChange('role')} icon={ActivityIcon} options={Object.values(Roles)} />
+                        <Dropdown title="Role" value={formData.role} onChange={handleChange('role')} icon={ActivityIcon} options={roleOptions} />
                     </>
                 )}
                 {step === 2 && (
@@ -155,7 +186,7 @@ const AddUserPopup: React.FC = () => {
                             title="Supervisor"
                             value={formData.supervisor}
                             onChange={handleChange('supervisor')}
-                            options={supervisors.map(sup => `${sup.firstName} ${sup.lastName}`)}
+                            options={supervisors}
                             icon={ActivityIcon}
                             width={"w-56"}
                         />

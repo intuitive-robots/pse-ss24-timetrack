@@ -1,5 +1,6 @@
 import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
+import axios from "axios";
 
 const getHiwis = async (username: string) => {
   try {
@@ -51,7 +52,19 @@ const createUser = async (userData: User): Promise<any> => {
         return response.data;
     } catch (error) {
         console.error('Creating user failed', error);
-        throw error;
+
+        if (axios.isAxiosError(error)) {
+            if (error.response && error.response.data) {
+                const errorMessage = typeof error.response.data === 'string' ?
+                    error.response.data :
+                    error.response.data.message || 'An unknown server error occurred';
+                throw new Error(errorMessage);
+            } else {
+                throw new Error('No response from server');
+            }
+        } else {
+            throw new Error('An unexpected error occurred');
+        }
     }
 };
 
@@ -63,7 +76,7 @@ const createUser = async (userData: User): Promise<any> => {
  */
 const getSupervisor = async (): Promise<any> => {
     try {
-        const response = await axiosInstance.get('user/getSupervisor');
+        const response = await axiosInstance.get('/user/getSupervisor');
         return response.data;
     } catch (error) {
         console.error('Fetching supervisor failed', error);
