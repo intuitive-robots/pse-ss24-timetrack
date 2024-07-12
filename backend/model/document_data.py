@@ -14,7 +14,7 @@ class DocumentData:
     def __init__(self, month: int, year: int,
                  personal_info: PersonalInfo, contract_info: ContractInfo,
                  overtime_from_previous_month: float, signature, supervisor_signature,
-                 time_entries=[]):
+                 time_entries=[], urlaub_anteilig="00:00"):
         """
         Initializes a new DocumentData object with the given parameters.
         """
@@ -26,6 +26,7 @@ class DocumentData:
         self.time_entries = time_entries
         self.signature = signature
         self.supervisor_signature = supervisor_signature
+        self.urlaub_anteilig = urlaub_anteilig
 
 
     def get_monthly_working_hours(self):
@@ -33,27 +34,30 @@ class DocumentData:
         Calculates the total number of working hours in a month.
         :return: The total number of working hours in a month.
         """
-        return round(sum(entry.get_duration() for entry in self.time_entries), 2)
+        duration_minutes = round(sum(entry.get_duration() for entry in self.time_entries), 2)
+        hours, minutes = divmod(duration_minutes, 60)
+        duration_str = f"{int(hours):02d}:{int(minutes):02d}"
+        return duration_str
 
     def get_overtime(self):
         """
         Calculates the total number of overtime hours in a month.
         :return: The total number of overtime hours in a month.
         """
-        actual_working_hours = self.get_monthly_working_hours()
+        """actual_working_hours = self.get_monthly_working_hours()
         weeks_in_month = len(calendar.monthcalendar(self.year, self.month))
         contract_hours_per_month = self.contract_info.working_hours * weeks_in_month
         overtime = actual_working_hours - contract_hours_per_month + self.overtime_from_previous_month
         return overtime
+        """
+        return ""
 
     def get_contract_hours_per_month(self):
         """
-        Calculates the total contractual working hours for a month based on the defined weekly working hours
-        and the number of weeks in the specified month. This accounts for months with varying numbers of work weeks.
+        Returns the total number of working hours in a month.
         :return: The total number of working hours in a month.
         """
-        weeks_in_month = len(calendar.monthcalendar(self.year, self.month))
-        return float(self.contract_info.working_hours * weeks_in_month)
+        return self.contract_info.working_hours
 
     #TODO: Useless because month and year are seperated in the timesheet pdf
     def get_formatted_time_string(self):

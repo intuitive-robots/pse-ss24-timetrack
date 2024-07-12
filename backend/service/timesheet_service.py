@@ -101,6 +101,7 @@ class TimesheetService:
             return RequestResult(False, "Timesheet already approved", 409)
         if timesheet['status'] != 'Waiting for Approval':
             return RequestResult(False, "Timesheet cannot be approved", 400)
+
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
 
     def request_change(self, timesheet_id: str):
