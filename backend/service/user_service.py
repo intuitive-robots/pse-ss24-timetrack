@@ -95,6 +95,94 @@ class UserService:
 
         return self.user_repository.create_user(user)
 
+    def _calculate_vacation_minutes(self, monthly_working_hours: int):
+        """
+        Calculates the number of vacation hours based on the monthly working hours.
+
+        :param monthly_working_hours: The number of monthly working hours.
+        :return: The number of vacation hours.
+        """
+
+        return round(((monthly_working_hours * 20 * 3.95) / (85 * 12) * 2), 0) / 2
+
+    def add_overtime_minutes(self, username: str, minutes: int):
+        """
+        Adds overtime hours to a user identified by their username.
+
+        :param username: The username of the user to add overtime hours to.
+        :param minutes: The number of minutes to add to the user's overtime balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        user_data['contractInfo']['overtimeMinutes'] += minutes
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
+
+    def remove_overtime_minutes(self, username: str, minutes: int):
+        """
+        Removes overtime hours from a user identified by their username.
+
+        :param username: The username of the user to remove overtime hours from.
+        :param minutes: The number of minutes to remove from the user's overtime balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        user_data['contractInfo']['overtimeMinutes'] -= minutes
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
+
+    def add_vacation_minutes(self, username: str, minutes: int = None):
+        """
+        Adds vacation hours to a user identified by their username.
+
+        :param username: The username of the user to add vacation hours to.
+        :param minutes: The number of minutes to add to the user's vacation balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        if minutes is not None:
+            user_data['contractInfo']['vacationMinutes'] += minutes
+        else:
+            monthly_working_hours = user_data['contractInfo']['workingHours']
+            monthly_vacation_hours = self._calculate_vacation_minutes(monthly_working_hours)
+            user_data['contractInfo']['vacationMinutes'] += monthly_vacation_hours * 60
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
+
+    def remove_vacation_minutes(self, username: str, minutes: int = None):
+        """
+        Removes vacation hours from a user identified by their username.
+
+        :param username: The username of the user to remove vacation hours from.
+        :param minutes: The number of minutes to remove from the user's vacation balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        if minutes is not None:
+            user_data['contractInfo']['vacationMinutes'] -= minutes
+        else:
+            monthly_working_hours = user_data['contractInfo']['workingHours']
+            monthly_vacation_hours = self._calculate_vacation_minutes(monthly_working_hours)
+            user_data['contractInfo']['vacationMinutes'] -= monthly_vacation_hours
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
+
     def update_user(self, user_data: dict):
         """
         Updates an existing user in the system with the provided user data.

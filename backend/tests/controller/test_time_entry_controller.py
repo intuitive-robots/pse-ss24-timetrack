@@ -49,14 +49,14 @@ class TestTimeEntryController(unittest.TestCase):
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
         test_time_entry_data = {
-            'timesheetId': '6679ca2935df0d8f7202c5fa',
-            'startTime': '2024-05-22T09:20:30.656Z',
+
+            'startTime': '2024-05-22T08:20:30.656Z',
             'endTime': '2024-05-22T12:00:00Z'
         }
         response = self.client.post('/timeEntry/createVacationEntry', json=test_time_entry_data,
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 200)
-        vacation_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 5, 22), 'testHiwi1', )[0]
+        vacation_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 5, 22), 'testHiwi1')[0]
         self.assertIsNotNone(vacation_entry)
         # Reset database to original state
         self.time_entry_service.delete_time_entry(vacation_entry['_id'])

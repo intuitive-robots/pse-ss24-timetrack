@@ -1,7 +1,9 @@
 from bson import ObjectId
 
+from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
+from model.time_entry import TimeEntry
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
 from service.user_service import UserService
@@ -17,6 +19,7 @@ class TimesheetService:
 
     def __init__(self):
         self.timesheet_repository = TimesheetRepository.get_instance()
+        self.time_entry_repository = TimeEntryRepository.get_instance()
         self.user_service = UserService()
 
     def ensure_timesheet_exists(self, username: str, month: int, year: int):
@@ -117,11 +120,15 @@ class TimesheetService:
         :param year: The year of the timesheet
         :return: The result of the create operation
         """
+        self.user_service.add_vacation_minutes(username)
+
         result = self.timesheet_repository.create_timesheet(Timesheet(username, month, year))
         if result.is_successful:
             hiwi = self.user_service.get_profile(username)
             hiwi.add_timesheet(result.data["_id"])
             update_result = self.user_service.update_user(hiwi.to_dict())
+            monthly_working_hours = hiwi.contract_info.working_hours
+            self.user_service.remove_overtime_minutes(username, monthly_working_hours * 60)
             if not update_result.is_successful:
                 self.timesheet_repository.delete_timesheet(result.data["_id"])
                 return update_result
@@ -130,6 +137,31 @@ class TimesheetService:
 
         return RequestResult(False, "Failed to create timesheet", 500)
 
+    def calculate_overtime(self, timesheet_id):
+        """
+        Calculates the overtime for a timesheet.
+
+        :param timesheet_id: The ID of the timesheet
+        :return: The result of the overtime calculation
+        """
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
+            return RequestResult(False, "Timesheet not found", 404)
+        timee_entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+        if timee_entries_data is None:
+            return RequestResult(False, "No time entries found", 404)
+        total_minutes = 0
+        for entry in timee_entries_data:
+            time_entry = TimeEntry.from_dict(entry)
+            total_minutes += time_entry.get_duration()
+        hiwi = self.user_service.get_profile(timesheet_data["username"])
+        monthly_working_hours = hiwi.contract_info.working_hours
+        overtime_minutes = total_minutes - (monthly_working_hours * 60)
+        timesheet_data["overtime"] = overtime_minutes
+        self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
+
+
+
     def delete_timesheet_by_id(self, timesheet_id: str):
         """
         Deletes a timesheet by its ID.
@@ -137,13 +169,17 @@ class TimesheetService:
         :param timesheet_id: The ID of the timesheet
         :return: The result of the delete operation
         """
+
         timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
+        self.user_service.remove_vacation_minutes(timesheet_data["username"])
         result = self.timesheet_repository.delete_timesheet(timesheet_id)
         if result.is_successful:
             hiwi = self.user_service.get_profile(timesheet_data["username"])
             hiwi.remove_timesheet(ObjectId(timesheet_id))
+            monthly_working_hours = hiwi.contract_info.working_hours
+            self.user_service.add_overtime_minutes(timesheet_data["username"], monthly_working_hours * 60)
             update_result = self.user_service.update_user(hiwi.to_dict())
             if not update_result.is_successful:
                 return update_result

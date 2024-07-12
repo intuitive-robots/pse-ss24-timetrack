@@ -1,28 +1,30 @@
 class ContractInfo:
-    def __init__(self, hourly_wage: float, working_hours: int, vacation_hours: int):
+    def __init__(self, hourly_wage: float, working_hours: int, vacation_minutes: int, overtime_minutes: int = 0):
         """
         Initializes a new instance of ContractInfo.
 
         :param hourly_wage: The hourly wage of the employee.
         :param working_hours: Total number of working hours per week.
-        :param vacation_hours: Remaining vacation hours.
+        :param vacation_minutes: Remaining vacation hours.
         """
         self.hourly_wage = hourly_wage
         self.working_hours = working_hours
-        self.vacation_hours = vacation_hours
+        self.vacation_minutes = vacation_minutes
+        self.overtime_minutes = overtime_minutes
 
     @staticmethod
     def from_dict(data: dict):
         """
         Creates a ContractInfo instance from a dictionary.
 
-        :param dict data: A dictionary containing the keys hourly_wage, working_hours, and vacation_hours.
+        :param dict data: A dictionary containing the keys hourly_wage, working_hours, and vacation_minutes.
         :return: A new instance of ContractInfo.
         """
         hourly_wage = data.get('hourlyWage', 0)
         working_hours = data.get('workingHours', 0)
-        vacation_hours = data.get('vacationHours', 0)
-        return ContractInfo(hourly_wage, working_hours, vacation_hours)
+        vacation_minutes = data.get('vacationMinutes', 0)
+        overtime_minutes = data.get('overtimeMinutes', 0)
+        return ContractInfo(hourly_wage, working_hours, vacation_minutes, overtime_minutes)
 
     def update_hourly_wage(self, new_wage: float):
         """
@@ -40,13 +42,13 @@ class ContractInfo:
         """
         self.working_hours = new_hours
 
-    def update_vacation_hours(self, new_vacation_hours: int):
+    def update_vacation_minutes(self, new_vacation_minutes: int):
         """
         Updates the remaining vacation hours.
 
-        :param new_vacation_hours: The new number of remaining vacation hours.
+        :param new_vacation_minutes: The new number of remaining vacation hours.
         """
-        self.vacation_hours = new_vacation_hours
+        self.vacation_minutes = new_vacation_minutes
 
     def to_dict(self):
         """
@@ -57,7 +59,8 @@ class ContractInfo:
         return {
             "hourlyWage": self.hourly_wage,
             "workingHours": self.working_hours,
-            "vacationHours": self.vacation_hours
+            "vacationMinutes": self.vacation_minutes,
+            "overtimeMinutes": self.overtime_minutes
         }
 
     def __str__(self):
@@ -66,4 +69,4 @@ class ContractInfo:
 
         :return: A string representation of the contract details.
         """
-        return f"Hourly Wage: {self.hourly_wage}, Working Hours: {self.working_hours}, Vacation Hours: {self.vacation_hours}"
+        return f"Hourly Wage: {self.hourly_wage}, Working Hours: {self.working_hours}, Vacation Minutes: {self.vacation_minutes}"
