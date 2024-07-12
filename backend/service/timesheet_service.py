@@ -47,7 +47,7 @@ class TimesheetService:
             return RequestResult(True, "Timesheet created", 201)
         return RequestResult(False, "Failed to create timesheet", 500)
 
-    def set_total_hours(self, timesheet_id: str):
+    def set_total_time(self, timesheet_id: str):
         """
         Updates the total hours of a timesheet based on the sum of all its time entries.
 
@@ -56,13 +56,13 @@ class TimesheetService:
         """
         time_entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
         time_entries = [TimeEntry.from_dict(entry_data) for entry_data in time_entries_data]
-        total_hours = sum([entry.get_duration() for entry in time_entries])
+        total_time = sum([entry.get_duration() for entry in time_entries])
         timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-        timesheet['totalTime'] = total_hours
+        timesheet['totalTime'] = total_time
         result = self.timesheet_repository.update_timesheet_by_dict(timesheet)
         if result.is_successful:
-            return RequestResult(True, "Total hours updated", 200)
-        return RequestResult(False, "Failed to update total hours", 500)
+            return RequestResult(True, "Total time updated", 200)
+        return RequestResult(False, "Failed to update total time", 500)
 
 
 

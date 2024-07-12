@@ -83,7 +83,7 @@ class TimeEntryService:
         if not timesheet_exists_result.is_successful:
             return timesheet_exists_result
 
-        result = self.timesheet_service.set_total_hours(time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
         if not result.is_successful:
             return result
         if validation_result.status == ValidationStatus.WARNING:
@@ -158,7 +158,7 @@ class TimeEntryService:
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
         if not repo_result.is_successful:
             return repo_result
-        result = self.timesheet_service.set_total_hours(updated_time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_time(updated_time_entry.timesheet_id)
         if not result.is_successful:
             return result
         if validation_result.status == ValidationStatus.WARNING:
@@ -186,7 +186,7 @@ class TimeEntryService:
             return RequestResult(False, "Cannot delete time entry of a submitted timesheet", status_code=400)
 
         delete_result = self.time_entry_repository.delete_time_entry(entry_id)
-        result = self.timesheet_service.set_total_hours(time_entry['timesheetId'])
+        result = self.timesheet_service.set_total_time(time_entry['timesheetId'])
         if not result.is_successful and delete_result.is_successful:
             result.message = "Time entry deleted, but total hours could not be updated."
             return result
