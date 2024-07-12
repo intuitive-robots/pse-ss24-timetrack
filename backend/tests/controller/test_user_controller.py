@@ -49,9 +49,8 @@ class TestUserController(unittest.TestCase):
                 "email": "test@gmail.com",
                 "personalNumber": "6981211",
                 "instituteName": "Info Institute"
-            },
-            "accountCreation": None,
-            "lastLogin": None
+            }
+
         }
         access_token = self.authenticate("testAdmin1", "test_password")
         response = self.client.post('/user/createUser', json=user, headers={"Authorization": f"Bearer {access_token}"})
