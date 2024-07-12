@@ -163,6 +163,7 @@ class TimeEntryService:
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
         if not repo_result.is_successful:
             self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
+
             if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
                 existing_entry = VacationEntry.from_dict(existing_entry_data)
                 update_entry = VacationEntry.from_dict(update_data)
@@ -205,15 +206,14 @@ class TimeEntryService:
             return RequestResult(False, "Cannot delete time entry of a submitted timesheet", status_code=400)
 
         delete_result = self.time_entry_repository.delete_time_entry(entry_id)
-
-        if time_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
-            time_entry_data = VacationEntry.from_dict(time_entry_data)
-            self.user_service.add_vacation_minutes(get_jwt_identity(), time_entry_data.get_duration())
         time_entry = TimeEntry.from_dict(time_entry_data)
+        if time_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
+            self.user_service.add_vacation_minutes(get_jwt_identity(), time_entry.get_duration())
+
         self.user_service.remove_overtime_minutes(get_jwt_identity(), time_entry.get_duration())
         self.timesheet_service.calculate_overtime(time_entry_data['timesheetId'])
 
-        result = self.timesheet_service.set_total_time(time_entry['timesheetId'])
+        result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
         if not result.is_successful and delete_result.is_successful:
             result.message = "Time entry deleted, but total hours could not be updated."
             return result

@@ -6,6 +6,8 @@ from app import app
 class TestDocumentController(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
+        self.app = app
+
 
     def authenticate(self, username, password):
         """
