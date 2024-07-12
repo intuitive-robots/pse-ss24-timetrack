@@ -70,7 +70,7 @@ class TestUserService(unittest.TestCase):
             "contractInfo": {
                 "hourlyWage": 12.40,
                 "workingHours": 18,
-                "vacationHours": 19
+                "vacationMinutes": 19
             },
             "supervisor": "testSupervisor1",
             "accountCreation": None,
@@ -88,7 +88,7 @@ class TestUserService(unittest.TestCase):
                            'timesheets': [],
                            'contractInfo': {'hourlyWage': 12.4,
                                             'workingHours': 18,
-                                            'vacationHours': 19}}
+                                            'vacationMinutes': 19}}
 
         result = self.user_service.create_user(test_user_data)
         self.assertEqual(result.status_code, 201)
