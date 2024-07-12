@@ -157,3 +157,4 @@ class WorkEntry(TimeEntry):
         duration -= timedelta(minutes=self.break_time)
         # Return the duration in minutes
         return math.ceil(duration.total_seconds() / 60)
+

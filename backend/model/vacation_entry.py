@@ -1,6 +1,7 @@
 import math
 from datetime import datetime, timedelta
 
+import math
 from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType
 from model.time_entry_validator.holiday_strategy import HolidayStrategy

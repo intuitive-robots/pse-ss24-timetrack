@@ -59,7 +59,7 @@ class UserService:
         :param user_data: A dictionary containing user attributes necessary for creating a new user.
         :return: A RequestResult object containing the result of the create operation.
         """
-        if 'password' not in user_data:  # plain password is required on creation
+        if 'password' not in user_data or user_data['password'] == "":  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
@@ -68,7 +68,9 @@ class UserService:
         for key in User.dict_keys():
             if key not in user_data.keys():
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
-        self.user_validator.is_valid(user_data)  # check if field format is valid
+        result = self.user_validator.is_valid(user_data)  # check if field format is valid
+        if result.status == ValidationStatus.FAILURE:
+            return RequestResult(False, result.message, status_code=400)
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
             return RequestResult(False, "Invalid user role specified", status_code=400)
@@ -86,11 +88,10 @@ class UserService:
             supervisor_data['hiwis'].append(user_data['username'])
             result_user_creation = self.user_repository.create_user(user)
             if not result_user_creation.is_successful:
-                return RequestResult(False, "Failed to create HiWi", status_code=500)
+                return result_user_creation
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
-                return RequestResult(False, "Failed to update supervisor. HiWi was not created.",
-                                     status_code=500)
+                return result_supervisor_update
             return RequestResult(True, "HiWi created successfully", status_code=201)
 
         return self.user_repository.create_user(user)
@@ -223,8 +224,7 @@ class UserService:
             supervisor_data['hiwis'].remove(user_data['username'])
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
-                return RequestResult(False, "Failed to remove Hiwi from Supervisor. Hiwi was not deleted.",
-                                     status_code=500)
+                return result_supervisor_update
         return self.user_repository.delete_user(username)
 
     def get_users(self) -> list[User]:
