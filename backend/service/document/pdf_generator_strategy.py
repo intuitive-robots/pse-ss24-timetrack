@@ -143,7 +143,7 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
             "monatliche SollArbeitszeit": document_data.get_contract_hours_per_month(),
             "Urlaub anteilig": "",
             "Übertrag vom Vormonat": document_data.overtime_from_previous_month,
-            "Übertrag in den Folgemonat": document_data.get_overtime(),
+            "Übertrag in den Folgemonat": document_data.overtime,
             "Ich bestätige die Richtigkeit der Angaben": datetime.now().strftime("%d.%m.%Y, "),
             "undefined": datetime.now().strftime("%d.%m.%Y, ")
         }

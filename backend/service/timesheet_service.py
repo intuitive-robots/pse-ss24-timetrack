@@ -188,7 +188,7 @@ class TimesheetService:
 
 
 
-    def _get_previous_overtime(self, username: str, current_month: int, current_year: int):
+    def get_previous_overtime(self, username: str, current_month: int, current_year: int):
         """
         Retrieves the overtime from the previous month for a Hiwi.
 

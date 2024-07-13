@@ -13,7 +13,7 @@ class DocumentData:
 
     def __init__(self, month: int, year: int,
                  personal_info: PersonalInfo, contract_info: ContractInfo,
-                 overtime_from_previous_month: float, signature, supervisor_signature,
+                 overtime_from_previous_month, signature, supervisor_signature, overtime,
                  time_entries=[], urlaub_anteilig="00:00"):
         """
         Initializes a new DocumentData object with the given parameters.
@@ -27,6 +27,8 @@ class DocumentData:
         self.signature = signature
         self.supervisor_signature = supervisor_signature
         self.urlaub_anteilig = urlaub_anteilig
+        self.overtime = overtime
+
 
 
     def get_monthly_working_hours(self):
@@ -39,25 +41,14 @@ class DocumentData:
         duration_str = f"{int(hours):02d}:{int(minutes):02d}"
         return duration_str
 
-    def get_overtime(self):
-        """
-        Calculates the total number of overtime hours in a month.
-        :return: The total number of overtime hours in a month.
-        """
-        """actual_working_hours = self.get_monthly_working_hours()
-        weeks_in_month = len(calendar.monthcalendar(self.year, self.month))
-        contract_hours_per_month = self.contract_info.working_hours * weeks_in_month
-        overtime = actual_working_hours - contract_hours_per_month + self.overtime_from_previous_month
-        return overtime
-        """
-        return ""
 
     def get_contract_hours_per_month(self):
         """
         Returns the total number of working hours in a month.
         :return: The total number of working hours in a month.
         """
-        return self.contract_info.working_hours
+        contracted_hours = self.contract_info.working_hours
+        return f"{contracted_hours}:00"
 
     #TODO: Useless because month and year are seperated in the timesheet pdf
     def get_formatted_time_string(self):

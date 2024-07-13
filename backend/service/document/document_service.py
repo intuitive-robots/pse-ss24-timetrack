@@ -174,11 +174,22 @@ class DocumentService:
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet.timesheet_id).data
         signature_stream = self.file_service.get_image(username, FileType.SIGNATURE)
         supervisor_signature_stream = self.file_service.get_image(supervisor.username, FileType.SIGNATURE)
+        previous_overtime = self.timesheet_service.get_previous_overtime(username, month, year)
         if signature_stream is None:
             return None
-        return DocumentData(month, year, user.personal_info, user.contract_info, 0.0, signature_stream,
-                            supervisor_signature_stream, time_entries)
+        return DocumentData(month, year, user.personal_info, user.contract_info, self._time_format(previous_overtime), signature_stream,
+                            supervisor_signature_stream, self._time_format(timesheet.overtime), time_entries)
 
+    def _time_format(self, minutes: int):
+        """
+        Formats the given number of minutes to a time string.
+
+        :param minutes: The number of minutes to format.
+
+        :return: The formatted time string.
+        """
+        hours, minutes = divmod(minutes, 60)
+        return f"{int(hours):02d}:{int(minutes):02d}"
     def _check_if_authorized(self, requesting_username: str, username: str):
         """
         Checks if the requesting user is authorized to access the data of the specified user.
