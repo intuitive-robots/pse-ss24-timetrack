@@ -3,6 +3,7 @@ import { usePopup } from "./PopupContext";
 import ShortInputField from "../input/ShortInputField";
 import DialogButton from "../input/DialogButton";
 import PasswordIcon from "../../assets/images/password_icon.svg";
+import {resetPassword} from "../../services/AuthService";
 
 const PasswordResetPopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -10,14 +11,20 @@ const PasswordResetPopup: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleResetPassword = () => {
+    const handleResetPassword = async () => {
         if (!password || password !== confirmPassword) {
             setError("Passwords do not match or are empty.");
             return;
         }
 
-        console.log("Password has been reset successfully.");
-        closePopup();
+        try {
+            const response = await resetPassword(password);
+            console.log("Password has been reset successfully:", response);
+            closePopup();
+        } catch (error) {
+            console.error('Password reset failed:', error);
+            setError('Failed to reset password. Please try again.');
+        }
     };
 
     return (

@@ -52,7 +52,10 @@ const HiwiHomePage = (): React.ReactElement => {
             console.log('Fetched timesheet:', fetchedTimesheet);
             setTimesheet(fetchedTimesheet);
           })
-          .catch(error => console.error('Failed to fetch timesheet for given month and year:', error));
+          .catch(error => {
+              setTimesheet(null);
+              console.error('Failed to fetch timesheet for given month and year:', error);
+          });
       }
     }, [user, month, year]);
 
