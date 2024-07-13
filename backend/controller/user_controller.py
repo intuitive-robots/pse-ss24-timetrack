@@ -161,7 +161,8 @@ class UserController(MethodView):
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
         credentials = request.get_json()
-        result = self.auth_service.reset_password(get_jwt_identity(), credentials['username'], credentials['password'])
+        username = credentials.get('username', get_jwt_identity())
+        result = self.auth_service.reset_password(get_jwt_identity(), username, credentials['password'])
         return jsonify(result.message), result.status_code
 
     @jwt_required()
