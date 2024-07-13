@@ -11,6 +11,14 @@ const IntuitiveDatePicker: React.FC<{ onDateSelect: (date: Date) => void, extern
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (externalSelectedDate) {
+            setSelectedDate(externalSelectedDate);
+            setCurrentMonth(externalSelectedDate.getMonth());
+            setCurrentYear(externalSelectedDate.getFullYear());
+        }
+    }, [externalSelectedDate]);
+
+    useEffect(() => {
         const checkIfClickedOutside = (event: MouseEvent) => {
             if (visible && ref.current && !ref.current.contains(event.target as Node)) {
                 setVisible(false);
