@@ -205,8 +205,6 @@ class TimesheetRepository:
                                                    {"$set": timesheet_data})
             if result.matched_count == 0:
                 return RequestResult(False, "Timesheet not found", 404)
-            if result.modified_count == 0:
-                return RequestResult(False, "Timesheet update failed", 500)
             if result.acknowledged:
                 return RequestResult(True, "Timesheet updated successfully", 200)
         except PyMongoError as e:

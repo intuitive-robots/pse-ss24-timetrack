@@ -67,7 +67,6 @@ class TimesheetService:
 
 
     def sign_timesheet(self, timesheet_id: str):
-        #TODO: first check if Hiwi has already uploaded signature
         """
         Method used by the Hiwi to sign his timesheet.
 

@@ -66,7 +66,8 @@ class TestUserRepository(unittest.TestCase):
             "contractInfo": {
                 "hourlyWage": 12.40,
                 "workingHours": 18,
-                "vacationMinutes": 19
+                "vacationMinutes": 19,
+                "overtimeMinutes": 0
             },
             "supervisor": "testSupervisor1",
             "lastLogin": None,

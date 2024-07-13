@@ -10,6 +10,7 @@ class TestTimeEntryController(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
         self.time_entry_service = TimeEntryService()
+        self.app = app
         self.time_entry_repository = TimeEntryRepository.get_instance()
 
     def authenticate(self,username, password):
@@ -27,39 +28,42 @@ class TestTimeEntryController(unittest.TestCase):
         """
         Test the create_work_entry method of the TimeEntryController class.
         """
-        access_token = self.authenticate('testHiwi1', 'test_password')
         test_time_entry_data = {
-            'timesheetId': '6679ca2935df0d8f7202c5fa',
             'startTime': '2024-05-22T09:20:30.656Z',
             'endTime': '2024-05-22T12:00:00Z',
             'breakTime': 30,
             'activity': 'testCreateWorkEntry of Hiwi1',
             'projectName': 'timeEntryControllerTesting'
         }
-        response = self.client.post('/timeEntry/createWorkEntry', json=test_time_entry_data, headers={"Authorization": f"Bearer {access_token}"})
-        self.assertEqual(response.status_code, 200)
-        work_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 5,22), 'testHiwi1',)[0]
-        self.assertIsNotNone(work_entry)
-        # Reset database to original state
-        self.time_entry_service.delete_time_entry(work_entry['_id'])
+        with self.app.app_context():
+            access_token = self.authenticate('testHiwi1', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                response = self.client.post('/timeEntry/createWorkEntry', json=test_time_entry_data, headers={"Authorization": f"Bearer {access_token}"})
+                self.assertEqual(response.status_code, 200)
+                work_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 5,22), 'testHiwi1')[0]
+                self.assertIsNotNone(work_entry)
+                # Reset database to original state
+                self.time_entry_service.delete_time_entry(work_entry['_id'])
 
     def test_create_vacation_entry(self):
         """
         Test the create_vacation_entry method of the TimeEntryController class.
         """
-        access_token = self.authenticate('testHiwi1', 'test_password')
         test_time_entry_data = {
 
             'startTime': '2024-05-22T08:20:30.656Z',
             'endTime': '2024-05-22T12:00:00Z'
         }
-        response = self.client.post('/timeEntry/createVacationEntry', json=test_time_entry_data,
-                                    headers={"Authorization": f"Bearer {access_token}"})
-        self.assertEqual(response.status_code, 200)
-        vacation_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 5, 22), 'testHiwi1')[0]
-        self.assertIsNotNone(vacation_entry)
-        # Reset database to original state
-        self.time_entry_service.delete_time_entry(vacation_entry['_id'])
+        with self.app.app_context():
+            access_token = self.authenticate('testHiwi1', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                response = self.client.post('/timeEntry/createVacationEntry', json=test_time_entry_data,
+                                            headers={"Authorization": f"Bearer {access_token}"})
+                self.assertEqual(response.status_code, 200)
+                vacation_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 5, 22), 'testHiwi1')[0]
+                self.assertIsNotNone(vacation_entry)
+                # Reset database to original state
+                self.time_entry_service.delete_time_entry(vacation_entry['_id'])
 
     def test_update_time_entry(self):
         """
