@@ -99,8 +99,6 @@ c
             result = self.db.users.update_one({"username": user.username}, {"$set": user.to_dict()})
             if result.matched_count == 0:
                 return RequestResult(False, "User not found", 404)
-            if result.modified_count == 0:
-                return RequestResult(False, "User update failed", 500)
             if result.acknowledged:
                 return RequestResult(True, "User updated successfully", 200)
         except PyMongoError as e:
