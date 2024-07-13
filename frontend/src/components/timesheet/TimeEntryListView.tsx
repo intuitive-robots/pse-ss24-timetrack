@@ -7,6 +7,7 @@ import {usePopup} from "../popup/PopupContext";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 import {TimeEntryTypes} from "../../interfaces/TimeEntryTypes";
 import VacationEntryTile from "../list/VacationEntryTile";
+import EditTimeEntryPopup from "../popup/EditTimeEntryPopup";
 
 interface TimeEntryListProps {
     entries: TimeEntry[];
@@ -39,7 +40,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
           description="Are you sure you want to delete this time entry?"
           onConfirm={async () => {
               await confirmDelete(entryId);
-              window.location.reload();
+              // window.location.reload();
           }}
           onCancel={closePopup}
       />
@@ -76,7 +77,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                                 period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
                                 date={entry.startTime}
                                 onDelete={interactable ? () => handleDelete(entry._id) : undefined}
-                                onEdit={interactable ? () => console.log('Edit Entry', entry._id) : undefined}
+                                onEdit={interactable ? () => openPopup(<EditTimeEntryPopup entryData={entry}/>) : undefined}
                             />;
                         }
                         if (entry.entryType === TimeEntryTypes.VACATION_ENTRY) {

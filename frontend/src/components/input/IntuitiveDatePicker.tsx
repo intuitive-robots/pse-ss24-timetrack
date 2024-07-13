@@ -3,9 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-const IntuitiveDatePicker: React.FC<{ onDateSelect: (date: Date) => void }> = ({ onDateSelect }) => {
+const IntuitiveDatePicker: React.FC<{ onDateSelect: (date: Date) => void, externalSelectedDate?: Date }> = ({ onDateSelect, externalSelectedDate }) => {
     const [visible, setVisible] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(externalSelectedDate || new Date());
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const ref = useRef<HTMLDivElement>(null);
