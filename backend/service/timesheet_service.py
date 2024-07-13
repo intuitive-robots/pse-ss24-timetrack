@@ -295,7 +295,7 @@ class TimesheetService:
         if username is None:
             return RequestResult(False, "Please provide a username to retrieve the timesheet", 400)
         timesheet_data = self.timesheet_repository.get_timesheets_by_username(username)
-        timesheets = (Timesheet.from_dict(timesheet_data) for timesheet_data in timesheet_data)
+        timesheets = [Timesheet.from_dict(timesheet_data) for timesheet_data in timesheet_data]
         sorted_timesheets = sorted(timesheets, key=lambda timesheet: (
             self._get_status_priority(timesheet.status), timesheet.year, timesheet.month))
         if sorted_timesheets is None or len(sorted_timesheets) == 0:
