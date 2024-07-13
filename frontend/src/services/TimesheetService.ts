@@ -1,6 +1,7 @@
 import axiosInstance from "./AxiosInstance";
 import {Timesheet} from "../interfaces/Timesheet";
 import axios from "axios";
+import {handleAxiosError} from "../utils/AxiosUtils";
 
 /**
  * Signs the current timesheet for the user.
@@ -14,7 +15,7 @@ const signTimesheet = async (timesheetId: string) => {
     return response.data;
   } catch (error) {
     console.error('Signing timesheet failed', error);
-    throw error;
+    handleAxiosError(error);
   }
 };
 
@@ -29,7 +30,7 @@ const approveTimesheet = async (timesheetId: string) => {
     return response.data;
   } catch (error) {
     console.error('Approving timesheet failed');
-    throw error;
+    handleAxiosError(error);
   }
 };
 
@@ -44,7 +45,7 @@ const requestChange = async (timesheetId: string) => {
     return response.data;
   } catch (error) {
     console.error('Requesting timesheet change failed');
-    throw error;
+    handleAxiosError(error);
   }
 };
 
@@ -65,6 +66,7 @@ const getTimesheets = async (username: string): Promise<Timesheet[]> => {
     }
   } catch (error) {
     console.error('Fetching timesheets failed', error);
+    handleAxiosError(error);
     return [];
   }
 };
@@ -76,7 +78,7 @@ const getTimesheets = async (username: string): Promise<Timesheet[]> => {
  * @param year The year of the timesheet.
  * @returns A Promise that resolves to a Timesheet object or null if not found.
  */
-const getTimesheetByMonthYear = async (username: string, month: number, year: number) : Promise<Timesheet | null> => {
+const getTimesheetByMonthYear = async (username: string, month: number, year: number): Promise<Timesheet | null> => {
   try {
     const response = await axiosInstance.get('/timesheet/getByMonthYear', {
       params: {
@@ -85,19 +87,13 @@ const getTimesheetByMonthYear = async (username: string, month: number, year: nu
         year: year
       }
     });
-    if (response.data) {
-      return response.data as Timesheet;
-    } else {
+    if (response.status === 404) {
       return null;
     }
+    return response.data ? (response.data as Timesheet) : null;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
-      // console.log('No timesheet found for the given parameters', error);
-      return null;
-    } else {
-      console.error('Fetching timesheet by month and year failed', error);
-      throw error;
-    }
+    handleAxiosError(error);
+    return null;
   }
 };
 
@@ -134,6 +130,27 @@ const getCurrentTimesheet = async (username: string) => {
   }
 };
 
+/**
+ * Fetches the highest priority timesheet for a user.
+ * @param username The username of the user whose highest priority timesheet is being requested.
+ * @returns A Promise that resolves to a Timesheet object or null if not found.
+ */
+const getHighestPriorityTimesheet = async (username: string): Promise<Timesheet | null> => {
+  try {
+    const response = await axiosInstance.get('/timesheet/getHighestPriorityTimesheet', {
+      params: { username }
+    });
+    return response.data ? (response.data as Timesheet) : null;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+      console.log('No priority timesheet found for the given username', username);
+    } else {
+      handleAxiosError(error);
+    }
+    return null;
+  }
+};
+
 export {
   signTimesheet,
   approveTimesheet,
@@ -141,5 +158,6 @@ export {
   getTimesheets,
   getTimesheetByMonthYear,
   getTimesheetByUsernameStatus,
-  getCurrentTimesheet
+  getCurrentTimesheet,
+    getHighestPriorityTimesheet
 };

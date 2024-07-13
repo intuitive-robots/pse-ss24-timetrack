@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useAuth} from "../../context/AuthContext";
-import {getTimesheetByMonthYear, signTimesheet} from "../../services/TimesheetService";
+import {getHighestPriorityTimesheet, getTimesheetByMonthYear, signTimesheet} from "../../services/TimesheetService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
@@ -18,6 +18,7 @@ import {User} from "../../interfaces/Hiwi";
 import WorkingHoursProgress from "../../components/charts/ProgressCard";
 import ProgressCard from "../../components/charts/ProgressCard";
 import MonthDisplay from "../../components/display/MonthDisplay";
+import YearTimespan from "../../components/timesheet/YearTimespan";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -36,23 +37,40 @@ const HiwiHomePage = (): React.ReactElement => {
 
     const interactableStatuses = ['Not Submitted', 'Revision'];
 
+    useEffect(() => {
+        const initializeMonthAndYear = async () => {
+            if (user && user.username) {
+                const priorityTimesheet = await getHighestPriorityTimesheet(user.username);
+                if (priorityTimesheet) {
+                    setMonth(priorityTimesheet.month);
+                    setYear(priorityTimesheet.year);
+                    setTimesheet(priorityTimesheet);
+                }
+            }
+        };
+
+        initializeMonthAndYear();
+    }, [user]);
 
     useEffect(() => {
-      const storedMonth = localStorage.getItem('selectedMonth');
-      const storedYear = localStorage.getItem('selectedYear');
-      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
-      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
-
-      setMonth(newMonth);
-      setYear(newYear);
+      // const storedMonth = localStorage.getItem('selectedMonth');
+      // const storedYear = localStorage.getItem('selectedYear');
+      // const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
+      // const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
+      //
+      // setMonth(newMonth);
+      // setYear(newYear);
 
       if (user && user.username) {
-        getTimesheetByMonthYear(user.username, newMonth, newYear)
+        getTimesheetByMonthYear(user.username, month, year)
           .then(fetchedTimesheet => {
             console.log('Fetched timesheet:', fetchedTimesheet);
             setTimesheet(fetchedTimesheet);
           })
-          .catch(error => console.error('Failed to fetch timesheet for given month and year:', error));
+          .catch(error => {
+              setTimesheet(null);
+              console.error('Failed to fetch timesheet for given month and year:', error);
+          });
       }
     }, [user, month, year]);
 
@@ -143,11 +161,25 @@ const HiwiHomePage = (): React.ReactElement => {
         return timesheetStatus === "Pending" || interactableStatuses.includes(timesheetStatus);
     }
 
+    const displayStatus = () => {
+        const statusColor = {
+            "Revision": "text-red-400",
+            "Not Submitted": "text-orange-400",
+            "Waiting for Approval": "text-orange-400",
+            "Complete": "text-green-400"
+        };
+        const status = timesheet ? timesheet.status : "";
+        const color = "text-nav-gray";
+
+        return <span className={`${color} font-bold ml-1`}>{status}</span>;
+    };
+
     return (
         <div className="px-6 py-6">
 
             <div className="absolute right-10">
-                <ProgressCard currentValue={totalHoursInDecimal()} targetValue={user?.contractInfo?.workingHours ?? 0} label={"Total hours working"}/>
+                <ProgressCard currentValue={totalHoursInDecimal()} targetValue={user?.contractInfo?.workingHours ?? 0}
+                              label={"Total hours working"}/>
             </div>
 
             {/*<div className="flex flex-row gap-8 items-center">*/}
@@ -171,8 +203,36 @@ const HiwiHomePage = (): React.ReactElement => {
             {/*    </div>*/}
             {/*</div>*/}
 
-            <div className="flex flex-row items-center justify-center">
-                <div className="flex flex-row items-center gap-6 justify-center">
+            {/*<div className="flex flex-row items-center">*/}
+            {/*    <div className="flex flex-row items-center gap-6">*/}
+            {/*        <div className="flex flex-row gap-8 items-center">*/}
+            {/*            <div className="flex flex-row gap-4">*/}
+            {/*                <p className="text-lg font-semibold text-subtitle">*/}
+            {/*                    This Month, {displayStatus()}*/}
+            {/*                </p>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*        <ListIconCardButton*/}
+            {/*            iconSrc={LeftNavbarIcon}*/}
+            {/*            label={"Before"}*/}
+            {/*            onClick={() => handleMonthChange('prev')}*/}
+            {/*        />*/}
+            {/*        <MonthDisplay month={month} year={year}/>*/}
+            {/*        <ListIconCardButton*/}
+            {/*            iconSrc={RightNavbarIcon}*/}
+            {/*            label={"Next"}*/}
+            {/*            orientation={"right"}*/}
+            {/*            onClick={() => handleMonthChange('next')}*/}
+            {/*            disabled={month === currentMonth && year === currentYear}*/}
+            {/*        />*/}
+            {/*    </div>*/}
+            {/*</div>*/}
+
+            <div className="flex justify-between items-center w-full">
+                <div className="text-lg font-semibold text-subtitle">
+                    Sheet Status, {displayStatus()}
+                </div>
+                <div className="flex justify-center items-center gap-6 flex-grow">
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
@@ -186,6 +246,9 @@ const HiwiHomePage = (): React.ReactElement => {
                         onClick={() => handleMonthChange('next')}
                         disabled={month === currentMonth && year === currentYear}
                     />
+                </div>
+                <div className="invisible"> {/* Invisible spacer to balance flex space-between */}
+                    This Month, {displayStatus()}
                 </div>
             </div>
 

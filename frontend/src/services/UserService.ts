@@ -1,6 +1,6 @@
 import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
-import axios from "axios";
+import {handleAxiosError} from "../utils/AxiosUtils";
 
 const getHiwis = async (username: string) => {
   try {
@@ -9,7 +9,7 @@ const getHiwis = async (username: string) => {
     return response.data;
   } catch (error) {
     console.error('Fetching hiwis by username failed');
-    throw error;
+    handleAxiosError(error);
   }
 };
 const getUsersByRole = async (role: string) => {
@@ -19,7 +19,7 @@ const getUsersByRole = async (role: string) => {
     return response.data;
   } catch (error) {
     console.error('Fetching users by role failed');
-    throw error;
+    handleAxiosError(error);
   }
 };
 
@@ -37,7 +37,7 @@ const deleteUser = async (username: string) => {
     return response.data;
   } catch (error) {
     console.error('Deleting user failed', error);
-    throw error;
+    handleAxiosError(error);
   }
 };
 
@@ -101,21 +101,6 @@ const getSupervisors = async (): Promise<User[]> => {
     } catch (error: any) {
         console.error('Error fetching supervisors:', error.response?.data || error.message);
         throw new Error(error.response?.data || "Failed to fetch supervisors.");
-    }
-};
-
-const handleAxiosError = (error: unknown) => {
-    if (axios.isAxiosError(error)) {
-        if (error.response && error.response.data) {
-            const errorMessage = typeof error.response.data === 'string' ?
-                error.response.data :
-                error.response.data.message || 'An unknown server error occurred';
-            throw new Error(errorMessage);
-        } else {
-            throw new Error('No response from server');
-        }
-    } else {
-        throw new Error('An unexpected error occurred');
     }
 };
 
