@@ -8,6 +8,7 @@ import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 import {TimeEntryTypes} from "../../interfaces/TimeEntryTypes";
 import VacationEntryTile from "../list/VacationEntryTile";
 import EditTimeEntryPopup from "../popup/EditTimeEntryPopup";
+import EditVacationEntryPopup from "../popup/EditVacationEntryPopup";
 
 interface TimeEntryListProps {
     entries: TimeEntry[];
@@ -86,7 +87,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                                 startDate={entry.startTime}
                                 endDate={entry.endTime}
                                 onDelete={interactable ? () => handleDelete(entry._id) : undefined}
-                                onEdit={interactable ? () => console.log('Edit Entry', entry._id) : undefined}
+                                onEdit={interactable ? () => openPopup(<EditVacationEntryPopup entryData={entry}/>) : undefined}
                             />
                         }
 

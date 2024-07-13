@@ -3,7 +3,7 @@ import TimeIcon from "../../assets/images/time_icon.svg";
 
 interface IntuitiveTimePickerProps {
   placeholder?: string;
-  value: string; // This should be in "HH:mm" format
+  value: string;
   onChange: (value: string) => void;
 }
 

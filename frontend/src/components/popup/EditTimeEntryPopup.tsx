@@ -10,6 +10,7 @@ import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import {TimeEntry} from "../../interfaces/TimeEntry";
+import {updateTimeEntry} from "../../services/TimeEntryService";
 
 interface EditTimeEntryPopupProps {
     entryData: TimeEntry;
@@ -48,6 +49,8 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
         };
 
         try {
+            console.log(updatedEntryData);
+            await updateTimeEntry(updatedEntryData);
             closePopup();
             window.location.reload();
         } catch (error) {
