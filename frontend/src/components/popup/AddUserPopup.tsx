@@ -140,7 +140,7 @@ const AddUserPopup: React.FC = () => {
                 contractInfo: {
                     hourlyWage: formData.hourlyWage,
                     workingHours: formData.workingTime,
-                    vacationHours: 0
+                    vacationMinutes: 0
                 },
                 supervisor: formData.supervisor,
                 accountCreation: new Date().toISOString(),

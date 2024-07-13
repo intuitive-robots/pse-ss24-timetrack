@@ -45,16 +45,13 @@ const createVacationEntry = async (entryData: Record<string, any>) => {
  * @returns The response data from the update request.
  * @throws An error if the request fails.
  */
-const updateTimeEntry = async (timeEntryId: string, entryData: Partial<TimeEntry>) => {
+const updateTimeEntry = async (entryData: Partial<TimeEntry>) => {
   try {
-    const response = await axiosInstance.post(`/timeEntry/updateTimeEntry`, {
-      timeEntryId,
-      ...entryData
-    });
+    const response = await axiosInstance.post(`/timeEntry/updateTimeEntry`, entryData);
     return response.data;
   } catch (error) {
-    console.error('Updating time entry failed');
-    throw error;
+    console.error('Updating time entry failed', error);
+    handleAxiosError(error);
   }
 };
 
@@ -100,6 +97,19 @@ const getEntriesByTimesheetId = async (timesheetId: string): Promise<TimeEntry[]
       throw error;
     }
   }
+};
+
+const handleAxiosError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+        const errorMessage = error.response && error.response.data
+            ? (typeof error.response.data === 'string'
+                ? error.response.data
+                : error.response.data.message || 'An unknown server error occurred')
+            : 'No response from server';
+        throw new Error(errorMessage);
+    } else {
+        throw new Error('An unexpected error occurred');
+    }
 };
 
 export {
