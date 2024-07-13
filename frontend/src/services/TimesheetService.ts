@@ -130,6 +130,27 @@ const getCurrentTimesheet = async (username: string) => {
   }
 };
 
+/**
+ * Fetches the highest priority timesheet for a user.
+ * @param username The username of the user whose highest priority timesheet is being requested.
+ * @returns A Promise that resolves to a Timesheet object or null if not found.
+ */
+const getHighestPriorityTimesheet = async (username: string): Promise<Timesheet | null> => {
+  try {
+    const response = await axiosInstance.get('/timesheet/getHighestPriorityTimesheet', {
+      params: { username }
+    });
+    return response.data ? (response.data as Timesheet) : null;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+      console.log('No priority timesheet found for the given username', username);
+    } else {
+      handleAxiosError(error);
+    }
+    return null;
+  }
+};
+
 export {
   signTimesheet,
   approveTimesheet,
@@ -137,5 +158,6 @@ export {
   getTimesheets,
   getTimesheetByMonthYear,
   getTimesheetByUsernameStatus,
-  getCurrentTimesheet
+  getCurrentTimesheet,
+    getHighestPriorityTimesheet
 };
