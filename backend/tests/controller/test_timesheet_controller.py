@@ -56,6 +56,10 @@ class TestTimesheetController(unittest.TestCase):
         Test the sign_timesheet method of the TimesheetController class.
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
+        file = open("../resources/testProfilePic.jpg", "rb")
+        response = self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        file.close()
         response = self.client.patch('/timesheet/sign', json={"_id": "6679ca2935df0d8f7202c5fa"},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
@@ -133,6 +137,16 @@ class TestTimesheetController(unittest.TestCase):
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
         response = self.client.get('/timesheet/getCurrentTimesheet', query_string={"username": "testHiwi1"}, headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(200, response.status_code)
+        timesheet = response.json
+        self.assertEqual("6679ca2935df0d8f7202c5fa", timesheet["_id"])
+
+    def test_get_highest_priority_timesheet(self):
+        """
+        Test the get_highest_priority_timesheet method of the TimesheetController class.
+        """
+        access_token = self.authenticate('testHiwi1', 'test_password')
+        response = self.client.get('/timesheet/getHighestPriorityTimesheet', query_string={"username": "testHiwi1"}, headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
         timesheet = response.json
         self.assertEqual("6679ca2935df0d8f7202c5fa", timesheet["_id"])

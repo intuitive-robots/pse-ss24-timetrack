@@ -1,4 +1,5 @@
 import axiosInstance from "./AxiosInstance";
+import {handleAxiosError} from "../utils/AxiosUtils";
 
 /**
  * Attempts to log in a user using the provided username and password.
@@ -18,7 +19,8 @@ const login = async (username: string, password: string) => {
     }
     return response.data;
   } catch (error) {
-    throw new Error('Login failed');
+    console.error('Login failed', error);
+    handleAxiosError(error);
   }
 };
 
@@ -34,7 +36,8 @@ const getProfile = async () => {
     const response = await axiosInstance.get('user/getProfile');
     return response.data;
   } catch (error) {
-    console.error('Profile could not be retrieved');
+    console.error('Profile could not be retrieved', error);
+    handleAxiosError(error);
   }
 };
 
@@ -47,7 +50,8 @@ const logout = async () => {
     await axiosInstance.post('user/logout');
     localStorage.removeItem('token');
   } catch (error) {
-    console.error('Logout failed');
+    console.error('Logout failed', error);
+    handleAxiosError(error);
   }
 };
 
@@ -63,11 +67,28 @@ const getUsers = async () => {
     const response = await axiosInstance.get('user/getUsers');
     return response.data;
   } catch (error) {
-    console.error('Users could not be retrieved');
-    throw error;
+    console.error('Users could not be retrieved', error);
+    handleAxiosError(error);
   }
 };
 
+/**
+ * Resets the password for a specified user.
+ *
+ * @param {string} newPassword - The new password for the user.
+ * @returns {Promise<any>} - The response from the backend after attempting to reset the password.
+ * @throws {Error} - Throws an error if the password reset request fails.
+ */
+const resetPassword = async (newPassword: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.post('/user/resetPassword', {
+      password: newPassword
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Password reset failed:', error);
+    handleAxiosError(error);
+  }
+};
 
-
-export { login, getProfile, logout, getUsers};
+export { login, getProfile, logout, getUsers, resetPassword };

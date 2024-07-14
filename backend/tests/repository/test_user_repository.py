@@ -66,7 +66,8 @@ class TestUserRepository(unittest.TestCase):
             "contractInfo": {
                 "hourlyWage": 12.40,
                 "workingHours": 18,
-                "vacationHours": 19
+                "vacationMinutes": 19,
+                "overtimeMinutes": 0
             },
             "supervisor": "testSupervisor1",
             "lastLogin": None,
@@ -94,6 +95,7 @@ class TestUserRepository(unittest.TestCase):
         received_user_data.pop("lastLogin")
         received_user_data.pop("accountCreation")
         received_user_data.pop("passwordHash")
+
         self.assertEqual(test_user_data, received_user_data)
 
     def test_update_user(self):

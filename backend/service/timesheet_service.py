@@ -1,7 +1,11 @@
+import math
+
 from bson import ObjectId
 
+from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
+from model.time_entry import TimeEntry
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
 from service.user_service import UserService
@@ -17,7 +21,9 @@ class TimesheetService:
 
     def __init__(self):
         self.timesheet_repository = TimesheetRepository.get_instance()
+        self.time_entry_repository = TimeEntryRepository.get_instance()
         self.user_service = UserService()
+        self.time_entry_repository = TimeEntryRepository.get_instance()
 
     def ensure_timesheet_exists(self, username: str, month: int, year: int):
         """
@@ -38,12 +44,29 @@ class TimesheetService:
             return RequestResult(True, "Timesheet already exists", 200)
         creation_result = self._create_timesheet(username, month, year)
         if creation_result.status_code == 201:
-
             return RequestResult(True, "Timesheet created", 201)
         return RequestResult(False, "Failed to create timesheet", 500)
 
+    def set_total_time(self, timesheet_id: str):
+        """
+        Updates the total hours of a timesheet based on the sum of all its time entries.
+
+        :param timesheet_id: The ID of the timesheet to update.
+        :type timesheet_id: str
+        """
+        time_entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+        time_entries = [TimeEntry.from_dict(entry_data) for entry_data in time_entries_data]
+        total_time = sum([entry.get_duration() for entry in time_entries])
+        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        timesheet['totalTime'] = total_time
+        result = self.timesheet_repository.update_timesheet_by_dict(timesheet)
+        if result.is_successful:
+            return RequestResult(True, "Total time updated", 200)
+        return RequestResult(False, "Failed to update total time", 500)
+
+
+
     def sign_timesheet(self, timesheet_id: str):
-        #TODO: first check if Hiwi has already uploaded signature
         """
         Method used by the Hiwi to sign his timesheet.
 
@@ -117,11 +140,15 @@ class TimesheetService:
         :param year: The year of the timesheet
         :return: The result of the create operation
         """
+        self.user_service.add_vacation_minutes(username)
+
         result = self.timesheet_repository.create_timesheet(Timesheet(username, month, year))
         if result.is_successful:
             hiwi = self.user_service.get_profile(username)
             hiwi.add_timesheet(result.data["_id"])
             update_result = self.user_service.update_user(hiwi.to_dict())
+            monthly_working_hours = hiwi.contract_info.working_hours
+            self.user_service.remove_overtime_minutes(username, monthly_working_hours * 60)
             if not update_result.is_successful:
                 self.timesheet_repository.delete_timesheet(result.data["_id"])
                 return update_result
@@ -130,6 +157,31 @@ class TimesheetService:
 
         return RequestResult(False, "Failed to create timesheet", 500)
 
+    def calculate_overtime(self, timesheet_id):
+        """
+        Calculates the overtime for a timesheet.
+
+        :param timesheet_id: The ID of the timesheet
+        :return: The result of the overtime calculation
+        """
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
+            return RequestResult(False, "Timesheet not found", 404)
+        timee_entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+        if timee_entries_data is None:
+            return RequestResult(False, "No time entries found", 404)
+        total_minutes = 0
+        for entry in timee_entries_data:
+            time_entry = TimeEntry.from_dict(entry)
+            total_minutes += time_entry.get_duration()
+        hiwi = self.user_service.get_profile(timesheet_data["username"])
+        monthly_working_hours = hiwi.contract_info.working_hours
+        overtime_minutes = total_minutes - (monthly_working_hours * 60)
+        timesheet_data["overtime"] = overtime_minutes
+        self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
+
+
+
     def delete_timesheet_by_id(self, timesheet_id: str):
         """
         Deletes a timesheet by its ID.
@@ -137,13 +189,17 @@ class TimesheetService:
         :param timesheet_id: The ID of the timesheet
         :return: The result of the delete operation
         """
+
         timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
         if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
+        self.user_service.remove_vacation_minutes(timesheet_data["username"])
         result = self.timesheet_repository.delete_timesheet(timesheet_id)
         if result.is_successful:
             hiwi = self.user_service.get_profile(timesheet_data["username"])
             hiwi.remove_timesheet(ObjectId(timesheet_id))
+            monthly_working_hours = hiwi.contract_info.working_hours
+            self.user_service.add_overtime_minutes(timesheet_data["username"], monthly_working_hours * 60)
             update_result = self.user_service.update_user(hiwi.to_dict())
             if not update_result.is_successful:
                 return update_result
@@ -174,7 +230,7 @@ class TimesheetService:
             return RequestResult(False, "No timesheets found", 404)
         timesheets = list(map(Timesheet.from_dict, timesheets_data))
         sorted_timesheets = sorted(timesheets, key=lambda x: (x.year, x.month), reverse=True)
-        return RequestResult(True, "", 200, sorted_timesheets )
+        return RequestResult(True, "", 200, sorted_timesheets)
 
     def get_timesheets_by_username_status(self, username: str, status: TimesheetStatus):
         """
@@ -203,6 +259,17 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         return RequestResult(True, "", 200, timesheet_id)
 
+    def get_timesheet_status(self, timesheet_id: str):
+        """
+        Retrieves the status of a timesheet.
+
+        :param timesheet_id: The ID of the timesheet
+        :return: The status of the timesheet
+        """
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
+            return RequestResult(False, "Timesheet not found", 404)
+        return RequestResult(True, "", 200, TimesheetStatus(timesheet_data["status"]))
 
     def get_current_timesheet(self, username: str):
         """
@@ -217,6 +284,34 @@ class TimesheetService:
         if current_timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
         return RequestResult(True, "", 200, Timesheet.from_dict(current_timesheet_data))
+
+    def get_highest_priority_timesheet(self, username: str):
+        """
+        Retrieves the highest priority timesheet for a given username.
+
+        :param username: The username of the Hiwi
+        :return: The timesheet object
+        """
+        if username is None:
+            return RequestResult(False, "Please provide a username to retrieve the timesheet", 400)
+        timesheet_data = self.timesheet_repository.get_timesheets_by_username(username)
+        timesheets = [Timesheet.from_dict(timesheet_data) for timesheet_data in timesheet_data]
+        sorted_timesheets = sorted(timesheets, key=lambda timesheet: (
+            self._get_status_priority(timesheet.status), timesheet.year, timesheet.month))
+        if sorted_timesheets is None or len(sorted_timesheets) == 0:
+            return RequestResult(False, "No timesheets found", 404)
+        return RequestResult(True, "", 200, sorted_timesheets[0])
+
+    def _get_status_priority(self, status: TimesheetStatus):
+        if status == TimesheetStatus.REVISION:
+            return 1
+        elif status == TimesheetStatus.NOT_SUBMITTED:
+            return 2
+        elif status == TimesheetStatus.WAITING_FOR_APPROVAL:
+            return 3
+        elif status == TimesheetStatus.COMPLETE:
+            return 4
+
 
     def get_timesheet(self, username: str, month: int, year: int):
         """

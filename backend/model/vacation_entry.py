@@ -1,5 +1,7 @@
+import math
 from datetime import datetime, timedelta
 
+import math
 from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType
 from model.time_entry_validator.holiday_strategy import HolidayStrategy
@@ -98,7 +100,7 @@ class VacationEntry(TimeEntry):
          Calculates and returns the total duration of the vacation entry, expressed in hours.
 
         :return: The total number of hours between the start and end times of the vacation entry.
-        :rtype: float
+        :rtype: int
 
         Example:
             - If the start_time is at 10 AM and the end_time is at 2 PM on the same day,
@@ -106,5 +108,5 @@ class VacationEntry(TimeEntry):
         """
         # Calculate the duration
         duration = self.end_time - self.start_time
-        # Return the duration in hours
-        return duration.total_seconds() / 3600
+        # Return the duration in minutes
+        return math.ceil(duration.total_seconds() / 60)

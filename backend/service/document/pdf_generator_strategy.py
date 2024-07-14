@@ -102,6 +102,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
             hours, minutes = divmod(time_entry.break_time, 60)
             formatted_break_time = f"{int(hours):02d}:{int(minutes):02d}"
             formatted_data[f"hhmmRow{i + 1}_3"] = formatted_break_time
+        else:
+            formatted_data[f"Tätigkeit Stichwort ProjektRow{i + 1}"] = "Urlaub"
 
         formatted_data[f"ttmmjjRow{i + 1}"] = time_entry.start_time.strftime("%d.%m.%y")
         formatted_data[f"hhmmRow{i + 1}"] = time_entry.start_time.strftime("%H:%M")

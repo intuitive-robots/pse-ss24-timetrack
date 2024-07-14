@@ -45,17 +45,15 @@ class TestUserController(unittest.TestCase):
             "role": "Admin",
             "personalInfo": {
                 "firstName": "Nico",
-                "lastName": "Admin10",
+                "lastName": "Admin",
                 "email": "test@gmail.com",
                 "personalNumber": "6981211",
                 "instituteName": "Info Institute"
-            },
-            "accountCreation": None,
-            "lastLogin": None
+            }
         }
         access_token = self.authenticate("testAdmin1", "test_password")
         response = self.client.post('/user/createUser', json=user, headers={"Authorization": f"Bearer {access_token}"})
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(201, response.status_code)
         user_data = self.user_repository.find_by_username("testAdmin10")
         self.assertIsNotNone(user_data)
         self.user_repository.delete_user("testAdmin10")
@@ -94,20 +92,18 @@ class TestUserController(unittest.TestCase):
             "role": "Admin",
             "personalInfo": {
                 "firstName": "Nico",
-                "lastName": "Admin10",
+                "lastName": "Admin",
                 "email": "test@gmail.com",
                 "personalNumber": "6981211",
                 "instituteName": "Info Institute"
-            },
-            "accountCreation": None,
-            "lastLogin": None
+            }
         }
 
         self.user_service.create_user(user_data)
         access_token = self.authenticate("testAdmin1", "test_password")
         response = self.client.delete('/user/deleteUser', json={"username": "testAdmin10"},
                                       headers={"Authorization": f"Bearer {access_token}"})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(200, response.status_code)
         user_data = self.user_repository.find_by_username("testAdmin10")
         self.assertIsNone(user_data)
 

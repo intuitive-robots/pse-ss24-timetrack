@@ -1,6 +1,7 @@
 import datetime
 import unittest
 
+from app import app
 from model.repository.user_repository import UserRepository
 from model.user.hiwi import Hiwi
 from model.user.role import UserRole
@@ -10,8 +11,21 @@ from service.user_service import UserService
 
 class TestUserService(unittest.TestCase):
     def setUp(self):
+        self.app = app
+        self.client = app.test_client()
         self.user_service = UserService()
         self.user_repository = UserRepository.get_instance()
+
+    def authenticate(self, username, password):
+        """
+        Authenticate the user.
+        """
+        user = {
+            "username": username,
+            "password": password
+        }
+        response = self.client.post('/user/login', json=user)
+        return response.json['accessToken']
 
     def test_create_user_admin(self):
         """
@@ -23,7 +37,7 @@ class TestUserService(unittest.TestCase):
             "role": "Admin",
             "personalInfo": {
                 "firstName": "Paul",
-                "lastName": "Admin10",
+                "lastName": "Admin",
                 "email": "test@gmail.com",
                 "personalNumber": "6981211",
                 "instituteName": "Info Institute"
@@ -33,24 +47,26 @@ class TestUserService(unittest.TestCase):
         }
         data_to_compare = {'username': 'testAdmin10',
                            'personalInfo': {'firstName': 'Paul',
-                                            'lastName': 'Admin10',
+                                            'lastName': 'Admin',
                                             'email': 'test@gmail.com',
                                             'personalNumber': '6981211',
                                             'instituteName': 'Info Institute'},
                            'role': 'Admin',
                            'lastLogin': None}
-
-        result = self.user_service.create_user(test_user_data)
-        self.assertEqual(result.status_code, 201)
-        self.assertTrue(result.is_successful)
-        created_user_data = self.user_repository.find_by_username(test_user_data["username"])
-        created_user_data.pop('_id')
-        self.assertIsNotNone(created_user_data['passwordHash'])
-        created_user_data.pop('passwordHash')
-        self.assertIsNotNone(created_user_data['accountCreation'])
-        created_user_data.pop('accountCreation')
-        self.assertEqual(data_to_compare, created_user_data)
-        self.user_repository.delete_user(test_user_data["username"])
+        with self.app.app_context():
+            access_token = self.authenticate('testHiwi1', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                result = self.user_service.create_user(test_user_data)
+                self.assertEqual(result.status_code, 201)
+                self.assertTrue(result.is_successful)
+                created_user_data = self.user_repository.find_by_username(test_user_data["username"])
+                created_user_data.pop('_id')
+                self.assertIsNotNone(created_user_data['passwordHash'])
+                created_user_data.pop('passwordHash')
+                self.assertIsNotNone(created_user_data['accountCreation'])
+                created_user_data.pop('accountCreation')
+                self.assertEqual(data_to_compare, created_user_data)
+                self.user_repository.delete_user(test_user_data["username"])
 
     def test_create_user_hiwi(self):
         """
@@ -70,7 +86,7 @@ class TestUserService(unittest.TestCase):
             "contractInfo": {
                 "hourlyWage": 12.40,
                 "workingHours": 18,
-                "vacationHours": 19
+                "vacationMinutes": 19
             },
             "supervisor": "testSupervisor1",
             "accountCreation": None,
@@ -88,7 +104,8 @@ class TestUserService(unittest.TestCase):
                            'timesheets': [],
                            'contractInfo': {'hourlyWage': 12.4,
                                             'workingHours': 18,
-                                            'vacationHours': 19}}
+                                            'vacationMinutes': 19,
+                                            'overtimeMinutes': 0}}
 
         result = self.user_service.create_user(test_user_data)
         self.assertEqual(result.status_code, 201)
@@ -112,7 +129,7 @@ class TestUserService(unittest.TestCase):
             "password": "test_password",
             "personalInfo": {
                 "firstName": "Test",
-                "lastName": "Supervisor10",
+                "lastName": "Supervisor",
                 "email": "test@gmail.com",
                 "personalNumber": "6381212",
                 "instituteName": "Info Institute"
@@ -126,7 +143,7 @@ class TestUserService(unittest.TestCase):
              'personalInfo': {'email': 'test@gmail.com',
                               'firstName': 'Test',
                               'instituteName': 'Info Institute',
-                              'lastName': 'Supervisor10',
+                              'lastName': 'Supervisor',
                               'personalNumber': '6381212'},
              'role': 'Supervisor',
              'username': 'testSupervisor10'}
@@ -177,7 +194,7 @@ class TestUserService(unittest.TestCase):
             "role": "Admin",
             "personalInfo": {
                 "firstName": "Paul",
-                "lastName": "Admin10",
+                "lastName": "Admin",
                 "email": "test@gmail.com",
                 "personalNumber": "6981211",
                 "instituteName": "Info Institute"
@@ -205,7 +222,7 @@ class TestUserService(unittest.TestCase):
         """
         Test the get_users_by_role method of the UserService class.
         """
-        user_list = self.user_service.get_users_by_role("Hiwi")
+        user_list = self.user_service.get_users_by_role("Hiwi").data
         self.assertIsNotNone(user_list)
         self.assertIsInstance(user_list, list)
         for user in user_list:

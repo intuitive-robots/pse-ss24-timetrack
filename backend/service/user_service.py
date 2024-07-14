@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from controller.factory.user_factory import UserFactory
 from controller.input_validator.user_data_validator import UserDataValidator
 from controller.input_validator.validation_status import ValidationStatus
@@ -59,20 +61,23 @@ class UserService:
         :param user_data: A dictionary containing user attributes necessary for creating a new user.
         :return: A RequestResult object containing the result of the create operation.
         """
-        if 'password' not in user_data:  # plain password is required on creation
+        if 'password' not in user_data or user_data['password'] == "":  # plain password is required on creation
             return RequestResult(False, "Password is required", status_code=400)
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
 
         #TODO: AccountCreation and LastLogin are also required fields, which should not be the case.
         for key in User.dict_keys():
-            if key not in user_data.keys():
+            if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin']:
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
-        self.user_validator.is_valid(user_data)  # check if field format is valid
+        result = self.user_validator.is_valid(user_data)  # check if field format is valid
+        if result.status == ValidationStatus.FAILURE:
+            return RequestResult(False, result.message, status_code=400)
         user_factory = UserFactory.get_factory(user_data['role'])
         if not user_factory:
             return RequestResult(False, "Invalid user role specified", status_code=400)
         user = user_factory.create_user(user_data)
+
         if not user:
             return RequestResult(False, "User creation failed", status_code=500)
         if user.role == UserRole.HIWI:
@@ -86,14 +91,101 @@ class UserService:
             supervisor_data['hiwis'].append(user_data['username'])
             result_user_creation = self.user_repository.create_user(user)
             if not result_user_creation.is_successful:
-                return RequestResult(False, "Failed to create HiWi", status_code=500)
+                return result_user_creation
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
-                return RequestResult(False, "Failed to update supervisor. HiWi was not created.",
-                                     status_code=500)
+                return result_supervisor_update
             return RequestResult(True, "HiWi created successfully", status_code=201)
 
         return self.user_repository.create_user(user)
+
+    def _calculate_vacation_minutes(self, monthly_working_hours: int):
+        """
+        Calculates the number of vacation hours based on the monthly working hours.
+
+        :param monthly_working_hours: The number of monthly working hours.
+        :return: The number of vacation hours.
+        """
+
+        return round(((monthly_working_hours * 20 * 3.95) / (85 * 12) * 2), 0) / 2
+
+    def add_overtime_minutes(self, username: str, minutes: int):
+        """
+        Adds overtime hours to a user identified by their username.
+
+        :param username: The username of the user to add overtime hours to.
+        :param minutes: The number of minutes to add to the user's overtime balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        user_data['contractInfo']['overtimeMinutes'] += minutes
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
+
+    def remove_overtime_minutes(self, username: str, minutes: int):
+        """
+        Removes overtime hours from a user identified by their username.
+
+        :param username: The username of the user to remove overtime hours from.
+        :param minutes: The number of minutes to remove from the user's overtime balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        user_data['contractInfo']['overtimeMinutes'] -= minutes
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
+
+    def add_vacation_minutes(self, username: str, minutes: int = None):
+        """
+        Adds vacation hours to a user identified by their username.
+
+        :param username: The username of the user to add vacation hours to.
+        :param minutes: The number of minutes to add to the user's vacation balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        if minutes is not None:
+            user_data['contractInfo']['vacationMinutes'] += minutes
+        else:
+            monthly_working_hours = user_data['contractInfo']['workingHours']
+            monthly_vacation_hours = self._calculate_vacation_minutes(monthly_working_hours)
+            user_data['contractInfo']['vacationMinutes'] += monthly_vacation_hours * 60
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
+
+    def remove_vacation_minutes(self, username: str, minutes: int = None):
+        """
+        Removes vacation hours from a user identified by their username.
+
+        :param username: The username of the user to remove vacation hours from.
+        :param minutes: The number of minutes to remove from the user's vacation balance.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if 'contractInfo' not in user_data:
+            return RequestResult(False, "User has no contract information", status_code=400)
+        if minutes is not None:
+            user_data['contractInfo']['vacationMinutes'] -= minutes
+        else:
+            monthly_working_hours = user_data['contractInfo']['workingHours']
+            monthly_vacation_hours = self._calculate_vacation_minutes(monthly_working_hours)
+            user_data['contractInfo']['vacationMinutes'] -= monthly_vacation_hours
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return self.user_repository.update_user(user)
 
     def update_user(self, user_data: dict):
         """
@@ -135,8 +227,7 @@ class UserService:
             supervisor_data['hiwis'].remove(user_data['username'])
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
-                return RequestResult(False, "Failed to remove Hiwi from Supervisor. Hiwi was not deleted.",
-                                     status_code=500)
+                return result_supervisor_update
         return self.user_repository.delete_user(username)
 
     def get_users(self) -> list[User]:
@@ -191,6 +282,9 @@ class UserService:
             return RequestResult(False, "Supervisor not found", status_code=404)
         if supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
+        for hiwi_username in supervisor_data['hiwis']:
+            print(self.get_profile(hiwi_username))
+
         hiwis_data = list(self.get_profile(hiwi_username) for hiwi_username in supervisor_data['hiwis'])
         if not hiwis_data:
             return RequestResult(False, "No Hiwis found", status_code=404)
@@ -220,8 +314,6 @@ class UserService:
         relevant_supervisor_data.pop('personalNumber', None)
         relevant_supervisor_data['role'] = supervisor_data['role']
         return RequestResult(True, "", status_code=200, data=relevant_supervisor_data)
-
-
 
     def get_supervisors(self):
         """

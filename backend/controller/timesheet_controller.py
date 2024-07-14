@@ -34,6 +34,7 @@ class TimesheetController(MethodView):
             '/get': self.get_timesheets,
             '/getByUsernameStatus': self.get_timesheets_by_username_status,
             '/getCurrentTimesheet': self.get_current_timesheet,
+            '/getHighestPriorityTimesheet': self.get_highest_priority_timesheet,
             '/getByMonthYear': self.get_timesheet_by_month_year
         }
         return self._dispatch_request(endpoint_mapping)
@@ -186,6 +187,21 @@ class TimesheetController(MethodView):
         if username is None:
             return jsonify({'error': 'No username provided'}), 400
         result = self.timesheet_service.get_current_timesheet(username)
+        if result.status_code != 200:
+            return jsonify(result.message), result.status_code
+        return jsonify(result.data.to_str_dict()), result.status_code
+
+    @jwt_required()
+    def get_highest_priority_timesheet(self):
+        """
+        Retrieves the highest priority timesheet for a user. I. e. the oldest timesheet that isn't complete.
+
+        :return: JSON response containing the highest priority timesheet data or an error message.
+        """
+        username = request.args.get('username')
+        if username is None:
+            return jsonify({'error': 'No username provided'}), 400
+        result = self.timesheet_service.get_highest_priority_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
         return jsonify(result.data.to_str_dict()), result.status_code

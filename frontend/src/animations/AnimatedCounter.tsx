@@ -4,20 +4,23 @@ import { animate } from 'framer-motion';
 export const useAnimatedCounter = (
   maxValue: number,
   initialValue = 0,
-  duration = 1,
+  duration = 1
 ) => {
   const [counter, setCounter] = useState<number>(initialValue);
+  const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
     const controls = animate(initialValue, maxValue, {
       duration,
-      ease: 'easeOut',
-      onUpdate(value) {
-        setCounter(value);
-      }
+      ease: "easeInOut",
+      onUpdate: value => setCounter(value),
+      onComplete: () => setIsComplete(true)
     });
-    return () => controls.stop();
+
+    return () => {
+      controls.stop();
+    };
   }, [initialValue, maxValue, duration]);
 
-  return counter;
-}
+  return { counter, isComplete };
+};

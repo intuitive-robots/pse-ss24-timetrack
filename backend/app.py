@@ -80,6 +80,9 @@ timesheet_blueprint.add_url_rule('/ensureExists', view_func=timesheet_view, meth
 
 timesheet_blueprint.add_url_rule('/getCurrentTimesheet', view_func=timesheet_view, methods=['GET'],
                                  endpoint='get_current_timesheet')
+
+timesheet_blueprint.add_url_rule('getHighestPriorityTimesheet', view_func=timesheet_view, methods=['GET'],
+                                 endpoint='get_highest_priority_timesheet')
 timesheet_blueprint.add_url_rule('/getByMonthYear', view_func=timesheet_view, methods=['GET'],
                                  endpoint='get_timesheets_by_month_year')
 
