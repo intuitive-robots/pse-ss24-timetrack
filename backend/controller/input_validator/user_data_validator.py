@@ -24,7 +24,7 @@ class UserDataValidator(InputValidator):
             'lastName': r'^[a-zA-Z]{2,20}$',  # Only letters, 2-20 characters long
             'email': r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
             'personalNumber': r'^\d{4,10}$',  # 4 to 10 digits
-            'instituteName': r'^[a-zA-Z\s]{2,30}$'  # Only letters and spaces, 2-20 characters long
+            'instituteName': r'^[a-zA-Z\s]{2,40}$'  # Only letters and spaces, 2-20 characters long
         }
 
     def is_valid(self, user_data):
