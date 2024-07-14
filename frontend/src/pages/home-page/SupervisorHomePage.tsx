@@ -13,8 +13,8 @@ import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
-import {isValidRole, Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
+import {Roles} from "../../components/auth/roles";
 
 
 /**
@@ -26,7 +26,8 @@ const SupervisorHomePage = (): React.ReactElement => {
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[] | null>(null);
     const [timesheets, setTimesheets] = useState<(Timesheet | null)[]>([]);
-    const { user} = useAuth();
+    const [openTimesheetsCount, setOpenTimesheetsCount] = useState(0);
+    const { user, role} = useAuth();
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
@@ -68,10 +69,45 @@ const SupervisorHomePage = (): React.ReactElement => {
                         } as Timesheet;
                     });
                 setTimesheets(validTimesheets);
+
+                const openTimesheets = validTimesheets.filter(timesheet => timesheet && ['Pending'].includes(timesheet.status));
+                setOpenTimesheetsCount(openTimesheets.length);
+
                 console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
             });
         }
     }, [hiwis, month, year]);
+
+//     useEffect(() => {
+//     const fetchHiwisAndTimesheets = async () => {
+//         if (user) {
+//             try {
+//                 const fetchedHiwis: User[] = await getHiwis();
+//                 setHiwis(fetchedHiwis);
+//
+//                 const fetchedTimesheets = await Promise.all(fetchedHiwis.map(async (hiwi) => {
+//                     try {
+//                         return await getTimesheetByMonthYear(hiwi.username, month, year);
+//                     } catch (error) {
+//                         console.error(`Failed to fetch timesheet for ${hiwi.username}:`, error);
+//                         return null;
+//                     }
+//                 }));
+//
+//                 const validTimesheets = fetchedTimesheets.filter(timesheet => timesheet && isValidTimesheetStatus(timesheet.status));
+//                 setTimesheets(validTimesheets);
+//
+//                 const openTimesheets = validTimesheets.filter(timesheet => timesheet && ['Not Submitted', 'Revision'].includes(timesheet.status));
+//                 setOpenTimesheetsCount(openTimesheets.length);
+//             } catch (error) {
+//                 console.error('Failed to fetch hiwis or timesheets:', error);
+//             }
+//         }
+//     };
+//
+//     fetchHiwisAndTimesheets();
+// }, [user, month, year]);
+
 
 
 
@@ -116,7 +152,7 @@ const SupervisorHomePage = (): React.ReactElement => {
 
 
     return (
-        <div className="px-6 py-6">
+        <div className="px-6 py-6 text-nowrap">
 
             <div className="flex flex-row gap-8 items-center">
                 <div className="flex flex-row gap-4">
@@ -141,12 +177,11 @@ const SupervisorHomePage = (): React.ReactElement => {
 
             <h1 className="text-3xl font-bold text-gray-800 mt-5">Hello Nico,</h1>
 
-            <h2 className="text-md font-medium text-subtitle mt-1">You have X assigned employees with Y open
+            <h2 className="text-md font-medium text-subtitle mt-1">You have {hiwis?.length ?? 0} assigned employees with {openTimesheetsCount} open
                 timesheets</h2>
 
 
-            <div className="h-5"/>
-            <div className="px-4">
+            <div className="px-4 mt-5">
                 <StatusFilter setFilter={setFilter}/>
                 {hiwis ? (
                     <div className="flex flex-col py-6 overflow-y-auto max-h-96">
@@ -161,6 +196,11 @@ const SupervisorHomePage = (): React.ReactElement => {
                                     lastName={hiwi.personalInfo.lastName}
                                     role={hiwi.role}
                                     profileImageUrl={ProfilePlaceholder} // TODO: hiwi.profileImageUrl
+                                    // status={
+                                    //     role && isValidRole(role) && timesheet.status && isValidTimesheetStatus(timesheet.status) ?
+                                    //     statusMapping[role][timesheet.status] :
+                                    //     StatusType.Pending
+                                    // }
                                     status={timesheet.status}
                                     onCheck={() => handleCheckTimesheet(hiwi, month, year)} // TODO
                                 />
