@@ -1,7 +1,6 @@
 import React from 'react';
 import {Timesheet} from "../../interfaces/Timesheet";
 import {useAuth} from "../../context/AuthContext";
-import {isValidTimesheetStatus} from "../status/StatusMapping";
 import {Roles} from "../auth/roles";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
@@ -41,51 +40,6 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
         (sheets != null) ? (
             <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
                 {sheets.map((sheet, index) => {
-                    /*
-                    let hiwi = hiwis.find(h => h.username === sheet.username) || null;
-                    let supervisor;
-                    if (hiwi) {
-                        let supervisorName = hiwi.supervisor;
-                        console.log("supervisor of : " + hiwi.username + " is : " + hiwi.supervisor);
-                        if (supervisorName) {
-                            supervisor = supervisors.find(s => s.username === supervisorName);
-                        }
-                    } else {
-                        console.log("No hiwi found for sheet: " + sheet.username);
-                    }
-                    if (!supervisor) {
-                        console.log("No supervisor found for: " + sheet.username);
-                    }
-                    return (hiwi && supervisor) ? (
-                        <SecretaryTimesheetTile
-                            key={sheet._id}
-                            totalTime={sheet.totalTime}
-                            overtime={sheet.overtime}
-                            vacationDays={0}
-                            status={sheet.status}
-                             onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
-                            username={sheet.username}
-                            firstName={hiwi.personalInfo.firstName}
-                            lastName={hiwi.personalInfo.lastName}
-                            supervisorName={supervisor.personalInfo.firstName + " " + supervisor.personalInfo.lastName}
-                            profileImageUrl={ProfilePlaceholder}
-                        />
-                        ) : (
-                            <SecretaryTimesheetTile
-                            key={sheet._id}
-                            totalTime={sheet.totalTime}
-                            overtime={sheet.overtime}
-                            vacationDays={0}
-                            status={sheet.status}
-                             onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
-                            username={sheet.username}
-                            firstName={"FirstName"}
-                            lastName={"LastName"}
-                            supervisorName={"Supervisor"}
-                            profileImageUrl={ProfilePlaceholder}
-                        />
-                    );
-                    */
                     let hiwi = hiwis.find(h => h.username === sheet.username) || null;
 
                     return hiwi ? (
