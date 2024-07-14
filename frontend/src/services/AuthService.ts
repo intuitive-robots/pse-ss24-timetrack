@@ -51,6 +51,7 @@ const logout = async () => {
     localStorage.removeItem('token');
   } catch (error) {
     console.error('Logout failed', error);
+    localStorage.removeItem('token')
     handleAxiosError(error);
   }
 };

@@ -49,13 +49,13 @@ const DocumentPage: React.FC = () => {
                     <TimesheetListView sheets={timesheets} />
                     <div className="flex mt-8 flex-col gap-2 items-center">
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                        <div className="flex flex-row ml-9">
+                        <div className="flex flex-row ml-12">
                             <div className="w-24"/>
                             <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
                                 <p>Work</p>
-                                <div className="w-12"/>
+                                <div className="w-20"/>
                                 <p>Vacation days</p>
-                                <div className="w-8"/>
+                                <div className="w-16"/>
                                 <p>Overtime</p>
                             </div>
                         </div>

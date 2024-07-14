@@ -134,7 +134,7 @@ const AddUserPopup: React.FC = () => {
                     firstName: formData.firstName,
                     lastName: formData.lastName,
                     email: formData.email,
-                    personalNumber: formData.personalNumber,
+                    personalNumber: formData.personalNumber.toString(),
                     instituteName: 'Institute of Intuitive Robotics'
                 },
                 contractInfo: {

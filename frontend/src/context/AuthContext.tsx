@@ -8,6 +8,7 @@ interface AuthState {
   role: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  justLoggedIn: boolean;
   user: User | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -22,6 +23,7 @@ const initialState: AuthState = {
   role: null,
   isAuthenticated: false,
   isLoading: true,
+  justLoggedIn: false,
   user: null,
   login: async () => {},
   logout: async () => {},
@@ -90,6 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
         role: decoded.role,
         isAuthenticated: true,
         isLoading: false,
+        justLoggedIn: true,
         user: profile,
         login: handleLogin,
         logout: handleLogout,
@@ -108,7 +111,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
     try {
       await logoutService();
       localStorage.removeItem('token');
-      setAuthState(initialState);
+      setAuthState({
+        ...initialState,
+        justLoggedIn: false
+      });
     } catch (error) {
       console.error('Logout failed');
     }

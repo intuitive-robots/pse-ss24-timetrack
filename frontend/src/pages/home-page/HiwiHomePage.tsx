@@ -6,7 +6,6 @@ import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
 import QuickActionButton from "../../components/input/QuickActionButton";
-import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import {TimeEntry} from "../../interfaces/TimeEntry";
 import TimeEntryListView from "../../components/timesheet/TimeEntryListView";
 import {getEntriesByTimesheetId} from "../../services/TimeEntryService";
@@ -14,11 +13,8 @@ import {Timesheet} from "../../interfaces/Timesheet";
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {isValidRole} from "../../components/auth/roles";
 import DocumentStatus from "../../components/status/DocumentStatus";
-import {User} from "../../interfaces/Hiwi";
-import WorkingHoursProgress from "../../components/charts/ProgressCard";
 import ProgressCard from "../../components/charts/ProgressCard";
 import MonthDisplay from "../../components/display/MonthDisplay";
-import YearTimespan from "../../components/timesheet/YearTimespan";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -248,7 +244,7 @@ const HiwiHomePage = (): React.ReactElement => {
                     />
                 </div>
                 <div className="invisible"> {/* Invisible spacer to balance flex space-between */}
-                    This Month, {displayStatus()}
+                    Sheet Status, {displayStatus()}
                 </div>
             </div>
 
