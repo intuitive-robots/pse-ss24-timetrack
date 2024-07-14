@@ -37,8 +37,8 @@ const SupervisorHomePage = (): React.ReactElement => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user && user.username) {
-            getHiwis(user.username)
+        if (user) {
+            getHiwis()
                 .then(fetchedHiwis => {
                     setHiwis(fetchedHiwis);
                 })

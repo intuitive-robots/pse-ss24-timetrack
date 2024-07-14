@@ -2,10 +2,9 @@ import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
 import {handleAxiosError} from "../utils/AxiosUtils";
 
-const getHiwis = async (username: string) => {
+const getHiwis = async () => {
   try {
-    const response = await axiosInstance.get('/user/getHiwis', {
-      params: { username } });
+    const response = await axiosInstance.get('/user/getHiwis');
     return response.data;
   } catch (error) {
     console.error('Fetching hiwis by username failed');

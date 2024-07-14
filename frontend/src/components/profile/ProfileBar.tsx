@@ -39,10 +39,10 @@ const ProfileBar: React.FC = (): React.ReactElement => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
     } catch (error) {
       console.error('Logout failed', error);
     }
+    navigate('/login');
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
