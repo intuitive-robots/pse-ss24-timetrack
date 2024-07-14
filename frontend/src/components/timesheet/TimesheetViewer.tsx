@@ -19,6 +19,8 @@ import AddUserIcon from "images/add_user_icon.svg";
 import TrackTimePopup from "../popup/TrackTimePopup";
 import RequestChangePopup from "../popup/RequestChangePopup";
 import {usePopup} from "../popup/PopupContext";
+import ProgressCard from "../charts/ProgressCard";
+import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 
 const TimesheetViewer = () => {
 
@@ -150,9 +152,19 @@ const TimesheetViewer = () => {
         );
     };
 
+    const totalHoursInDecimal = () => {
+        const minutes = timesheet?.totalTime ?? 0;
+        return minutesToHoursFormatted(minutes);
+    };
+
 
     return (
         <div className="px-6 py-6">
+
+            <div className="absolute right-10">
+                <ProgressCard currentValue={totalHoursInDecimal()} targetValue={80} //TODO: remove hardcoded target value, get from user
+                              label={"Total hours working"}/>
+            </div>
 
             <div className="flex flex-row gap-8 items-center">
                 <div className="flex flex-row gap-4">
