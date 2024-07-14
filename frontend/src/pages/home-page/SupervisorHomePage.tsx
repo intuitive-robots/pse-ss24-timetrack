@@ -13,8 +13,9 @@ import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
-import {useNavigate} from "react-router-dom";
 import {Roles} from "../../components/auth/roles";
+import {useNavigate} from "react-router-dom";
+
 
 
 /**
@@ -27,7 +28,7 @@ const SupervisorHomePage = (): React.ReactElement => {
     const [hiwis, setHiwis] = useState<User[] | null>(null);
     const [timesheets, setTimesheets] = useState<(Timesheet | null)[]>([]);
     const [openTimesheetsCount, setOpenTimesheetsCount] = useState(0);
-    const { user, role} = useAuth();
+    const { user} = useAuth();
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
