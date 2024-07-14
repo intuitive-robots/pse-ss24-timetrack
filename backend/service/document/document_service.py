@@ -4,6 +4,7 @@ from glob import glob
 from io import BytesIO
 from zipfile import ZipFile
 
+from model.timesheet_status import TimesheetStatus
 from service.document.pdf_generator_strategy import PDFGeneratorStrategy
 from model.document_data import DocumentData
 from model.file.FileType import FileType
@@ -166,6 +167,8 @@ class DocumentService:
             return None
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
+            return None
+        if result.data.status != TimesheetStatus.COMPLETE:
             return None
         supervisor = self.user_service.get_profile(user.supervisor)
         if supervisor.role != UserRole.SUPERVISOR:
