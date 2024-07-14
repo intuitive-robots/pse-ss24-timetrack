@@ -65,8 +65,6 @@ const DocumentPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-
         </div>
     );
 };

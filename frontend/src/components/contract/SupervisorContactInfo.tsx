@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSupervisor } from '../../services/UserService';
+import { getHiwiSupervisor } from '../../services/UserService';
 import UserInfo from "../UserInfo";
 import MailIcon from "../../assets/images/contact_mail.svg";
 import SlackIcon from "../../assets/images/contact_slack.svg";
@@ -13,7 +13,7 @@ const UserContactInfo: React.FC = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        getSupervisor().then(data => {
+        getHiwiSupervisor().then(data => {
             setSupervisor(data);
             setIsLoading(false);
         }).catch(error => {

@@ -109,18 +109,6 @@ const TimesheetViewer = () => {
         }
     };
 
-    const handleRequestChangeTimesheet = async () => {
-        if (timesheet) {
-            try {
-                const result = await requestChange(timesheet._id);
-                window.location.reload();
-            } catch (error) {
-                console.error('Error requesting change for timesheet:', error);
-                alert('Failed to request change for the timesheet');
-            }
-        }
-    };
-
     const getStatusOrButtons = () => {
         if (!timesheet) return null;
         const timesheetStatus = timesheet.status;

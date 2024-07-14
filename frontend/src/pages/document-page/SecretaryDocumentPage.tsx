@@ -5,23 +5,26 @@ import {Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 import {useAuth} from "../../context/AuthContext";
-import {getUsersByRole} from "../../services/UserService";
+import {getSupervisor, getUsersByRole} from "../../services/UserService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
-import {getRole, isValidRole, Roles} from "../../components/auth/roles";
+import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
-import TimesheetListView from "../../components/timesheet/TimesheetListView";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
+import QuickActionButton from "../../components/input/QuickActionButton";
+import {generateDocument} from "../../services/DocumentService";
+import DownloadIcon from "../../assets/images/download_icon_white.svg";
 
 
 const SecretaryDocumentPage: React.FC = () => {
 
     const [filter, setFilter] = useState<StatusType | null>(null);
-    const [hiwis, setHiwis] = useState<User[] | null>(null);
+    const [hiwis, setHiwis] = useState<User[]>([]);
+    const [supervisors, setSupervisors] = useState<User[]>([]);
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
     const { user, role } = useAuth();
 
@@ -32,6 +35,7 @@ const SecretaryDocumentPage: React.FC = () => {
     const currentYear = new Date().getFullYear();
 
     const navigate = useNavigate();
+
     const defaultTimesheet = (
         id: string,
         username: string,
@@ -59,7 +63,18 @@ const SecretaryDocumentPage: React.FC = () => {
             .catch(error => console.error('Failed to fetch hiwis for supervisor:', error));
     }, []);
 
-
+    useEffect(() => {
+         if (hiwis && hiwis.length > 0) {
+             hiwis.map(hiwi => {
+                 getSupervisor(hiwi.username)
+                     .then(fetchedSupervisor => {
+                         setSupervisors(prevSupervisors => [...prevSupervisors, fetchedSupervisor]);
+                     })
+                     .catch(error => console.error(`Failed to fetch supervisor for ${hiwi.username}: `, error));
+             })
+         }
+    }, [hiwis]);
+    // console.log("supervisors: " + supervisors.map(s => s.username));
     useEffect(() => {
         if (hiwis && hiwis.length > 0) {
             Promise.all(hiwis.map(async (hiwi) => {
@@ -67,7 +82,7 @@ const SecretaryDocumentPage: React.FC = () => {
                     const timesheet = await getTimesheetByMonthYear(hiwi.username, month, year);
                     return timesheet || defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 } catch (error) {
-                    console.error(`Failed to fetch timesheet for ${hiwi.username}:`, error);
+                    console.error(`Failed to fetch timesheet for ${hiwi.username}: `, error);
                     return null;
                 }
             })).then(fetchedTimesheets => {
@@ -82,7 +97,7 @@ const SecretaryDocumentPage: React.FC = () => {
                         }
                         return {
                             ...timesheet,
-                            status: statusMapping[Roles.Secretary][timesheet.status]
+                            status: statusMapping[Roles.Secretary][timesheet.status],
                         } as Timesheet;
                       });
                 setTimesheets(validTimesheets);
@@ -93,6 +108,7 @@ const SecretaryDocumentPage: React.FC = () => {
             });
         }
     }, [hiwis, month, year]);
+
 
   const filteredTimesheets = timesheets
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
@@ -118,16 +134,10 @@ const SecretaryDocumentPage: React.FC = () => {
         }
     };
 
-    const handleDownloadTimesheet = (hiwi: User, month: number, year: number) => {
-        // console.log("check timesheet");
-        // console.log("Params on call:", { month, year });
+    const handleDownloadAll = () => {
+        for (const sheet in filteredTimesheets.filter(sheet => sheet.status === StatusType.Complete && sheet.username != null)) {
 
-        let monthString = month.toString();
-        let yearString = year.toString();
-
-
-        //const path = `/app/timesheet/${hiwi.username.replace(/\s+/g, '-')}/${month}/${year}`;
-        //navigate(path);
+        }
 
     };
 
@@ -137,7 +147,7 @@ const SecretaryDocumentPage: React.FC = () => {
             <div className="flex flex-row gap-8 items-center">
                 <div className="flex flex-row gap-4">
                     <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                    <MonthTimespan year={year} month={month} />
+                    <MonthTimespan year={year} month={month}/>
                 </div>
                 <div className="flex gap-4">
                     <ListIconCardButton
@@ -155,34 +165,43 @@ const SecretaryDocumentPage: React.FC = () => {
                 </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-800 mt-5">All monthly Documents</h1>
+            <h1 className="text-3xl font-bold text-headline mt-4">All monthly Documents</h1>
 
             <h2 className="text-md font-medium text-subtitle mt-1">There are X documents ready to download</h2>
 
 
             <div className="h-5"/>
-            <div className="px-4">
-                <StatusFilter setFilter={setFilter}/>
+            <StatusFilter setFilter={setFilter}/>
 
-                <div className="flex flex-row mt-8 gap-12">
+            <div className="flex flex-row mt-8 gap-12">
 
-                    <img src={VerticalTimeLine} alt="Vertical Time Line"/>
+                <img src={VerticalTimeLine} alt="Vertical Time Line"/>
 
-                    <div className="flex flex-col w-full h-full justify-between">
-                        <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                        <SecretaryDocumentListView sheets={filteredTimesheets} />
-                        <div className="flex mt-8 flex-col gap-2 items-center">
-                            <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                            <div className="flex ml-8 text-sm font-semibold text-[#B5B5B5] gap-10">
+                <div className="flex flex-col w-full h-full justify-between">
+                    <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
+                    <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
+                    <div className="flex mt-8 flex-col gap-2 items-center">
+                        <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                        <div className="flex flex-row ml-9">
+                            <div className="w-40"/>
+                            <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
                                 <p>Work</p>
+                                <div className="w-12"/>
                                 <p>Vacation days</p>
+                                <div className="w-12"/>
                                 <p>Overtime</p>
-                                <p>Status</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div className="w-fit ml-auto absolute right-14 bottom-10">
+                <QuickActionButton
+                icon={DownloadIcon}
+                label="Download All"
+                onClick={() => console.log("Download all")}/>
+            </div>
+
         </div>
     );
 };
