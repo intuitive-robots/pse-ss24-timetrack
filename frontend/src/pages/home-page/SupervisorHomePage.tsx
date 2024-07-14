@@ -13,7 +13,7 @@ import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
-import {isValidRole, Roles} from "../../components/auth/roles";
+import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 
 
@@ -35,6 +35,18 @@ const SupervisorHomePage = (): React.ReactElement => {
     const currentYear = new Date().getFullYear();
 
     const navigate = useNavigate();
+
+
+
+    useEffect(() => {
+      const storedMonth = localStorage.getItem('selectedMonth');
+      const storedYear = localStorage.getItem('selectedYear');
+      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
+      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
+
+      setMonth(newMonth);
+      setYear(newYear);
+    }, [month, year]);
 
     useEffect(() => {
         if (user && user.username) {
@@ -84,21 +96,29 @@ const SupervisorHomePage = (): React.ReactElement => {
 
     // TODO: duplicate code with HiwiHomepage.tsx
     const handleMonthChange = (direction: string) => {
+        let newMonth = month;
+        let newYear = year;
+
         if (direction === 'next') {
             if (month === 12) {
-                setMonth(1);
-                setYear(prevYear => prevYear + 1);
+                newMonth = 1;
+                newYear = year + 1;
             } else {
-                setMonth(prevMonth => prevMonth + 1);
+                newMonth = month + 1;
             }
         } else if (direction === 'prev') {
             if (month === 1) {
-                setMonth(12);
-                setYear(prevYear => prevYear - 1);
+                newMonth = 12;
+                newYear = year - 1;
             } else {
-                setMonth(prevMonth => prevMonth - 1);
+                newMonth = month - 1;
             }
         }
+        localStorage.setItem('selectedMonth', newMonth.toString());
+        localStorage.setItem('selectedYear', newYear.toString());
+
+        setMonth(newMonth);
+        setYear(newYear);
     };
 
     const handleCheckTimesheet = (hiwi: User, month: number, year: number) => {
