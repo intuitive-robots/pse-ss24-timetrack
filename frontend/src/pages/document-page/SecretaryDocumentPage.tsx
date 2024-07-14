@@ -16,7 +16,6 @@ import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
 import QuickActionButton from "../../components/input/QuickActionButton";
-import {generateDocument} from "../../services/DocumentService";
 import DownloadIcon from "../../assets/images/download_icon_white.svg";
 
 
@@ -24,7 +23,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[]>([]);
-    const [supervisors, setSupervisors] = useState<User[]>([]);
+    const [supervisors, setSupervisors] = useState<any[]>([]);
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
     const { user, role } = useAuth();
 
@@ -56,6 +55,16 @@ const SecretaryDocumentPage: React.FC = () => {
     };
 
     useEffect(() => {
+      const storedMonth = localStorage.getItem('selectedMonth');
+      const storedYear = localStorage.getItem('selectedYear');
+      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
+      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
+
+      setMonth(newMonth);
+      setYear(newYear);
+    }, [month, year]);
+
+    useEffect(() => {
         getUsersByRole(Roles.Hiwi)
             .then(fetchedHiwis => {
                 setHiwis(fetchedHiwis);
@@ -74,7 +83,7 @@ const SecretaryDocumentPage: React.FC = () => {
              })
          }
     }, [hiwis]);
-    // console.log("supervisors: " + supervisors.map(s => s.username));
+    //console.log("supervisors: " + supervisors.map(s => s.lastName));
     useEffect(() => {
         if (hiwis && hiwis.length > 0) {
             Promise.all(hiwis.map(async (hiwi) => {
@@ -117,21 +126,29 @@ const SecretaryDocumentPage: React.FC = () => {
 
     // TODO: duplicate code with HiwiHomepage.tsx
     const handleMonthChange = (direction: string) => {
+        let newMonth = month;
+        let newYear = year;
+
         if (direction === 'next') {
             if (month === 12) {
-                setMonth(1);
-                setYear(prevYear => prevYear + 1);
+                newMonth = 1;
+                newYear = year + 1;
             } else {
-                setMonth(prevMonth => prevMonth + 1);
+                newMonth = month + 1;
             }
         } else if (direction === 'prev') {
             if (month === 1) {
-                setMonth(12);
-                setYear(prevYear => prevYear - 1);
+                newMonth = 12;
+                newYear = year - 1;
             } else {
-                setMonth(prevMonth => prevMonth - 1);
+                newMonth = month - 1;
             }
         }
+        localStorage.setItem('selectedMonth', newMonth.toString());
+        localStorage.setItem('selectedYear', newYear.toString());
+
+        setMonth(newMonth);
+        setYear(newYear);
     };
 
     const handleDownloadAll = () => {

@@ -29,13 +29,14 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
                                                          onDownload, username,
                                                          firstName,
                                                          lastName,
-                                                            //supervisorName,
+                                                           //supervisorName,
                                                          profileImageUrl,
                                                          vacationDays
 }) => {
     const totalTimeString = totalTime.toString() + "h";
     const vacationDaysString = vacationDays.toString() + " days";
     const overtimeString = overtime.toString() + "h";
+
 
     const [supervisorName, setSupervisorName] = useState('');
 
@@ -49,7 +50,6 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
             setSupervisorName('Unknown Supervisor');
         }
     };
-
     fetchSupervisor();
 }, [username]);
 

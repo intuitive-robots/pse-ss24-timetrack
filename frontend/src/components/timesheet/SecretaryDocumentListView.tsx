@@ -15,7 +15,7 @@ import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 interface SecretaryDocumentListViewProps {
     sheets: Timesheet[];
     hiwis: User[];
-    supervisors: User[];
+    supervisors: any[];
 }
 
 
@@ -75,7 +75,7 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                             firstName={hiwi.personalInfo.firstName}
                             lastName={hiwi.personalInfo.lastName}
                             supervisorName={supervisor.personalInfo.firstName + " " + supervisor.personalInfo.lastName}
-                            profileImageUrl={ProfilePlaceholder} // TODO: profileImage of Hiwi by username
+                            profileImageUrl={ProfilePlaceholder}
                         />
                         ) : (
                             <SecretaryTimesheetTile
@@ -89,7 +89,7 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                             firstName={"FirstName"}
                             lastName={"LastName"}
                             supervisorName={"Supervisor"}
-                            profileImageUrl={ProfilePlaceholder} // TODO: profileImage of Hiwi by username
+                            profileImageUrl={ProfilePlaceholder}
                         />
                     );
                     */
@@ -122,6 +122,8 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                         profileImageUrl={ProfilePlaceholder} // TODO: profileImage of Hiwi by username
                     />
                     );
+
+
                 })}
             </div>
         ) : (
