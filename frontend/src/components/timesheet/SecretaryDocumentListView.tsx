@@ -1,16 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Timesheet} from "../../interfaces/Timesheet";
-import TimesheetTile from "../TimesheetTile";
-import {StatusType} from "../../interfaces/StatusType";
 import {useAuth} from "../../context/AuthContext";
-import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../status/StatusMapping";
-import {isValidRole, Roles} from "../auth/roles";
+import {isValidTimesheetStatus} from "../status/StatusMapping";
+import {Roles} from "../auth/roles";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
 import {generateDocument} from "../../services/DocumentService";
 import {User} from "../../interfaces/User";
-import {getSupervisor} from '../../services/UserService';
-import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 
 interface SecretaryDocumentListViewProps {
     sheets: Timesheet[];
