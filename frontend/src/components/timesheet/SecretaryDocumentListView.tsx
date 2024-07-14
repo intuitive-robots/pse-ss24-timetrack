@@ -1,16 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Timesheet} from "../../interfaces/Timesheet";
-import TimesheetTile from "../TimesheetTile";
-import {StatusType} from "../../interfaces/StatusType";
 import {useAuth} from "../../context/AuthContext";
-import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../status/StatusMapping";
-import {isValidRole, Roles} from "../auth/roles";
+import {Roles} from "../auth/roles";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
 import {generateDocument} from "../../services/DocumentService";
 import {User} from "../../interfaces/User";
-import {getSupervisor} from '../../services/UserService';
-import {getTimesheetByMonthYear} from "../../services/TimesheetService";
+import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 
 interface SecretaryDocumentListViewProps {
     sheets: Timesheet[];
@@ -22,14 +18,9 @@ interface SecretaryDocumentListViewProps {
 const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ sheets, hiwis, supervisors }) => {
     const { role } = useAuth();
 
-
-
-    for (const sheet of sheets) {
-        console.log(sheet.status + ", valid timesheet: " + isValidTimesheetStatus(sheet.status));
-    }
-
-
-
+    // for (const sheet of sheets) {
+    //     console.log(sheet.status + ", valid timesheet: " + isValidTimesheetStatus(sheet.status));
+    // }
 
     const handleDownload = async (username: string, month: number, year: number) => {
         if (!username) return;
@@ -43,63 +34,19 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
             alert('Failed to download document');
         }
     };
-    console.log("hiwis: " + hiwis.map(h => h.username));
+
+    // console.log("hiwis: " + hiwis.map(h => h.username));
     return (role === Roles.Secretary) ? (
         (sheets != null) ? (
             <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
                 {sheets.map((sheet, index) => {
-                    /*
-                    let hiwi = hiwis.find(h => h.username === sheet.username) || null;
-                    let supervisor;
-                    if (hiwi) {
-                        let supervisorName = hiwi.supervisor;
-                        console.log("supervisor of : " + hiwi.username + " is : " + hiwi.supervisor);
-                        if (supervisorName) {
-                            supervisor = supervisors.find(s => s.username === supervisorName);
-                        }
-                    } else {
-                        console.log("No hiwi found for sheet: " + sheet.username);
-                    }
-                    if (!supervisor) {
-                        console.log("No supervisor found for: " + sheet.username);
-                    }
-                    return (hiwi && supervisor) ? (
-                        <SecretaryTimesheetTile
-                            key={sheet._id}
-                            totalTime={sheet.totalTime}
-                            overtime={sheet.overtime}
-                            vacationDays={0}
-                            status={sheet.status}
-                             onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
-                            username={sheet.username}
-                            firstName={hiwi.personalInfo.firstName}
-                            lastName={hiwi.personalInfo.lastName}
-                            supervisorName={supervisor.personalInfo.firstName + " " + supervisor.personalInfo.lastName}
-                            profileImageUrl={ProfilePlaceholder}
-                        />
-                        ) : (
-                            <SecretaryTimesheetTile
-                            key={sheet._id}
-                            totalTime={sheet.totalTime}
-                            overtime={sheet.overtime}
-                            vacationDays={0}
-                            status={sheet.status}
-                             onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
-                            username={sheet.username}
-                            firstName={"FirstName"}
-                            lastName={"LastName"}
-                            supervisorName={"Supervisor"}
-                            profileImageUrl={ProfilePlaceholder}
-                        />
-                    );
-                    */
                     let hiwi = hiwis.find(h => h.username === sheet.username) || null;
 
                     return hiwi ? (
                         <SecretaryTimesheetTile
                         key={sheet._id}
-                        totalTime={sheet.totalTime}
-                        overtime={sheet.overtime}
+                        totalTime={minutesToHoursFormatted(sheet.totalTime)}
+                        overtime={minutesToHoursFormatted(sheet.overtime)}
                         vacationDays={0}
                         status={sheet.status}
                          onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
@@ -111,11 +58,11 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                     ) : (
                         <SecretaryTimesheetTile
                         key={sheet._id}
-                        totalTime={sheet.totalTime}
-                        overtime={sheet.overtime}
+                        totalTime={minutesToHoursFormatted(sheet.totalTime)}
+                        overtime={minutesToHoursFormatted(sheet.overtime)}
                         vacationDays={0}
                         status={sheet.status}
-                         onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
+                        onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
                         username={sheet.username}
                         firstName={"FirstName"}
                         lastName={"LastName"}

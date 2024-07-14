@@ -177,7 +177,7 @@ class TimesheetService:
             total_minutes += time_entry.get_duration()
         hiwi = self.user_service.get_profile(timesheet_data["username"])
         monthly_working_hours = hiwi.contract_info.working_hours
-        previous_overtime = self._get_previous_overtime(timesheet_data["username"], timesheet_data["month"], timesheet_data["year"])
+        previous_overtime = self.get_previous_overtime(timesheet_data["username"], timesheet_data["month"], timesheet_data["year"])
         overtime_minutes = total_minutes - (monthly_working_hours * 60) + previous_overtime
         timesheet_data["overtime"] = overtime_minutes
         if timesheet_data["status"] != TimesheetStatus.COMPLETE.value:

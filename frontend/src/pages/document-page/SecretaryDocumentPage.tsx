@@ -4,14 +4,12 @@ import {StatusType} from "../../interfaces/StatusType";
 import {Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
-import {useAuth} from "../../context/AuthContext";
 import {getSupervisor, getUsersByRole} from "../../services/UserService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
-import {useNavigate} from "react-router-dom";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
@@ -25,15 +23,12 @@ const SecretaryDocumentPage: React.FC = () => {
     const [hiwis, setHiwis] = useState<User[]>([]);
     const [supervisors, setSupervisors] = useState<any[]>([]);
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
-    const { user, role } = useAuth();
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
-
-    const navigate = useNavigate();
 
     const defaultTimesheet = (
         id: string,
@@ -92,7 +87,7 @@ const SecretaryDocumentPage: React.FC = () => {
                     return timesheet || defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 } catch (error) {
                     console.error(`Failed to fetch timesheet for ${hiwi.username}: `, error);
-                    return null;
+                    return defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 }
             })).then(fetchedTimesheets => {
                 const validTimesheets = fetchedTimesheets
@@ -110,7 +105,6 @@ const SecretaryDocumentPage: React.FC = () => {
                         } as Timesheet;
                       });
                 setTimesheets(validTimesheets);
-                console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
             }).catch(error => {
                 console.error('Failed to load timesheets:', error);
                 setTimesheets([]);
@@ -158,7 +152,6 @@ const SecretaryDocumentPage: React.FC = () => {
 
     };
 
-    console.log('All timesheets:', filteredTimesheets);
     return (
         <div className="px-6 py-6">
             <div className="flex flex-row gap-8 items-center">
@@ -184,39 +177,34 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <h1 className="text-3xl font-bold text-headline mt-4">All monthly Documents</h1>
 
-            <h2 className="text-md font-medium text-subtitle mt-1">There are X documents ready to download</h2>
+            <h2 className="text-md font-medium text-subtitle mt-1">There are 3 documents ready to download</h2>
 
 
-            <div className="h-5"/>
-            <StatusFilter setFilter={setFilter}/>
+            <div className="h-4"/>
 
-            <div className="flex flex-row mt-8 gap-12">
 
-                <img src={VerticalTimeLine} alt="Vertical Time Line"/>
-
-                <div className="flex flex-col w-full h-full justify-between">
-                    <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                    <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
-                    <div className="flex mt-8 flex-col gap-2 items-center">
-                        <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                        <div className="flex flex-row ml-9">
-                            <div className="w-40"/>
-                            <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
-                                <p>Work</p>
-                                <div className="w-12"/>
-                                <p>Vacation days</p>
-                                <div className="w-12"/>
-                                <p>Overtime</p>
-                            </div>
+            <div className="flex flex-col gap-2 w-full h-full justify-between ml-2">
+                <StatusFilter setFilter={setFilter}/>
+                <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
+                <div className="flex mt-8 flex-col gap-2 items-center">
+                    <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                    <div className="flex flex-row">
+                        <div className="w-40"/>
+                        <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
+                            <p>Work</p>
+                            <div className="w-12"/>
+                            <p>Vacation days</p>
+                            <div className="w-8"/>
+                            <p>Overtime</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="w-fit ml-auto absolute right-14 bottom-10">
                 <QuickActionButton
-                icon={DownloadIcon}
-                label="Download All"
-                onClick={() => console.log("Download all")}/>
+                    icon={DownloadIcon}
+                    label="Download All"
+                    onClick={() => console.log("Download all")}/>
             </div>
 
         </div>

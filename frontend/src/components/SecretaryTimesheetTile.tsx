@@ -55,7 +55,7 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
 
 
     return (
-      <div className="flex items-center px-4 gap-6 py-2 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
+      <div className="flex items-center px-4 gap-6 py-3 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
           <div className="flex gap-5">
               <UserInfoSecretaryView
                   firstName={firstName}
@@ -68,7 +68,7 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
 
           <ListTileInfo items={
               [totalTimeString, vacationDaysString, overtimeString]}
-              gap={"lg:gap-20 gap-8 transition-all"}
+              gap={"lg:gap-12 gap-8 transition-all"}
           />
 
           <div className="flex flex-row gap-5">

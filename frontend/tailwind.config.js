@@ -54,7 +54,8 @@ module.exports = {
         'navbar-shadow': '0 6px 10px rgba(0, 0, 0, 0.02)', // Navbar Shadow
         'card-shadow': '0 4px 10px rgba(0, 0, 0, 0.05)',
         'inside-card-shadow': '0 0 8px rgba(0, 0, 0, 0.04)',
-        'profile-popup-shadow': '0 5px 4px -1px rgba(0, 0, 0, 0.07)'
+        'profile-popup-shadow': '0 5px 4px -1px rgba(0, 0, 0, 0.07)',
+        'filter-shadow': '0 2px 6px rgba(0, 0, 0, 0.07)',
       },
       borderWidth: {
         '1.7': '1.7px',
