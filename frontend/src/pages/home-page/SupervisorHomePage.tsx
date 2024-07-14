@@ -168,9 +168,10 @@ const SupervisorHomePage = (): React.ReactElement => {
                         })}
                     </div>
                 ) : (
-                    <div className="p-4 bg-red-100 text-red-700 rounded shadow">
-                        Keine HiWis gefunden.
-                    </div>
+                    // <div className="p-4 bg-red-100 text-red-700 rounded shadow">
+                    //     Keine HiWis gefunden.
+                    // </div>
+                    <div/>
                 )}
             </div>
         </div>

@@ -18,23 +18,20 @@ interface HiwiCardProps {
 
 const HiwiTimesheetCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUrl, lastName, status, onCheck}) => {
   return (
-      <div className="flex items-center p-4 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
+      <div className="flex items-center p-4 pr-6 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
           <UserInfoSupervisorView
               name={name}
               lastName={lastName}
               role={role}
               profileImageUrl={profileImageUrl}
           />
-          <div className="flex ml-auto gap-6">
+          <div className="flex ml-auto gap-8">
               <ListIconCardButton
                   iconSrc={CheckTimesheetIcon}
                   label="Check"
                   onClick={onCheck}
               />
-              <div className="pr-6 items-center justify-center">
-                  <StatusLabel status={status} />
-              </div>
-
+              <StatusLabel status={status} />
           </div>
 
       </div>
