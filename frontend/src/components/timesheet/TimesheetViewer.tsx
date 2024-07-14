@@ -21,6 +21,7 @@ import RequestChangePopup from "../popup/RequestChangePopup";
 import {usePopup} from "../popup/PopupContext";
 import ProgressCard from "../charts/ProgressCard";
 import {minutesToHoursFormatted} from "../../utils/TimeUtils";
+import MonthDisplay from "../display/MonthDisplay";
 
 const TimesheetViewer = () => {
 
@@ -28,8 +29,6 @@ const TimesheetViewer = () => {
     const {openPopup} = usePopup();
 
     const {username, monthString, yearString} = useParams();
-
-
 
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
     const { role} = useAuth();
@@ -162,21 +161,43 @@ const TimesheetViewer = () => {
         <div className="px-6 py-6">
 
             <div className="absolute right-10">
-                <ProgressCard currentValue={totalHoursInDecimal()} targetValue={80} //TODO: remove hardcoded target value, get from user
+                <ProgressCard currentValue={totalHoursInDecimal()}
+                              targetValue={80} //TODO: remove hardcoded target value, get from user
                               label={"Total hours working"}/>
             </div>
 
-            <div className="flex flex-row gap-8 items-center">
-                <div className="flex flex-row gap-4">
-                    <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                    <MonthTimespan month={month} year={year}/>
+            {/*<div className="flex flex-row gap-8 items-center">*/}
+            {/*    <div className="flex flex-row gap-4">*/}
+            {/*        <p className="text-lg font-semibold text-subtitle">This Month,</p>*/}
+            {/*        <MonthTimespan month={month} year={year}/>*/}
+            {/*    </div>*/}
+            {/*    <div className="flex gap-4">*/}
+            {/*        <ListIconCardButton*/}
+            {/*            iconSrc={LeftNavbarIcon}*/}
+            {/*            label={"Before"}*/}
+            {/*            onClick={() => handleMonthChange('prev')}*/}
+            {/*        />*/}
+            {/*        <ListIconCardButton*/}
+            {/*            iconSrc={RightNavbarIcon}*/}
+            {/*            label={"Next"}*/}
+            {/*            orientation={"right"}*/}
+            {/*            onClick={() => handleMonthChange('next')}*/}
+            {/*            disabled={month === currentMonth && year === currentYear}*/}
+            {/*        />*/}
+            {/*    </div>*/}
+            {/*</div>*/}
+
+            <div className="flex justify-between items-center w-full">
+                <div className="text-lg font-semibold text-subtitle">
+                    Sheet Status, <span className={`text-nav-gray font-bold ml-1`}>{timesheet?.status}</span>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex justify-center items-center gap-6 flex-grow">
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
                         onClick={() => handleMonthChange('prev')}
                     />
+                    <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
@@ -185,11 +206,16 @@ const TimesheetViewer = () => {
                         disabled={month === currentMonth && year === currentYear}
                     />
                 </div>
+                <div className="invisible"> {/* Invisible spacer to balance flex space-between */}
+                    Sheet Status, <span className={`text-nav-gray font-bold ml-1`}>{timesheet?.status}</span>
+                </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-headline mt-4">Hello Nico,</h1>
-            <h2 className="text-md font-medium text-subtitle mt-1">This is {username}'s timesheet</h2>
-
+            <h1 className="text-2xl font-bold text-headline mt-4"> {username}'s
+                <span className="text2xl font-semibold text-subtitle ml-2">Timesheet</span>
+            </h1>
+            {/*<h1 className="text-3xl font-bold text-headline mt-4">Hello Nico,</h1>*/}
+            {/*<h2 className="text-md font-medium text-subtitle mt-1">This is {username}'s timesheet</h2>*/}
             <TimesheetEntryView timesheet={timesheet}/>
 
             <div className="absolute right-14 bottom-10">

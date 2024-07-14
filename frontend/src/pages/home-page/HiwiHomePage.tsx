@@ -248,7 +248,7 @@ const HiwiHomePage = (): React.ReactElement => {
                     />
                 </div>
                 <div className="invisible"> {/* Invisible spacer to balance flex space-between */}
-                    This Month, {displayStatus()}
+                    Sheet Status, {displayStatus()}
                 </div>
             </div>
 
