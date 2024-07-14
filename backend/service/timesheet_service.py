@@ -100,6 +100,7 @@ class TimesheetService:
             return RequestResult(False, "Timesheet already approved", 409)
         if timesheet['status'] != 'Waiting for Approval':
             return RequestResult(False, "Timesheet cannot be approved", 400)
+
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
 
     def request_change(self, timesheet_id: str):
@@ -176,11 +177,31 @@ class TimesheetService:
             total_minutes += time_entry.get_duration()
         hiwi = self.user_service.get_profile(timesheet_data["username"])
         monthly_working_hours = hiwi.contract_info.working_hours
-        overtime_minutes = total_minutes - (monthly_working_hours * 60)
+        previous_overtime = self._get_previous_overtime(timesheet_data["username"], timesheet_data["month"], timesheet_data["year"])
+        overtime_minutes = total_minutes - (monthly_working_hours * 60) + previous_overtime
         timesheet_data["overtime"] = overtime_minutes
-        self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
+        if timesheet_data["status"] != TimesheetStatus.COMPLETE.value:
+            self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
+            return RequestResult(True, "", 200, overtime_minutes)
+        return RequestResult(False, "Overtime can't be edited when Timesheet is complete", 409)
 
 
+
+    def get_previous_overtime(self, username: str, current_month: int, current_year: int):
+        """
+        Retrieves the overtime from the previous month for a Hiwi.
+
+        :param username: The username of the Hiwi
+        :param current_month: The current month
+        :param current_year: The current year
+        :return: The overtime from the previous month
+        """
+        previous_month = current_month - 1 if current_month > 1 else 12
+        previous_year = current_year if current_month > 1 else current_year - 1
+        timesheet_data = self.timesheet_repository.get_timesheet(username, previous_month, previous_year)
+        if timesheet_data is None:
+            return 0
+        return timesheet_data.get("overtime", 0)
 
     def delete_timesheet_by_id(self, timesheet_id: str):
         """

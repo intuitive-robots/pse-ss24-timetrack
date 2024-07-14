@@ -123,3 +123,15 @@ class TimeEntry(ABC):
         :rtype: int
         """
         pass
+
+    def get_duration_hhmm(self):
+        """
+        Calculates the duration of the time entry in hours and minutes.
+
+        :return: The duration of the time entry as a tuple of hours and minutes.
+        :rtype: tuple
+        """
+        duration = self.get_duration()
+        hours, minutes = divmod(duration, 60)
+        duration_str = f"{int(hours):02d}:{int(minutes):02d}"
+        return duration_str

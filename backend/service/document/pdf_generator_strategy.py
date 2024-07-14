@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from fillpdf import fillpdfs
+
+from model.vacation_entry import VacationEntry
 from service.document.document_generator_strategy import DocumentGeneratorStrategy
 from model.document_data import DocumentData
 from model.request_result import RequestResult
@@ -36,11 +38,16 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         if not os.path.exists(self.TEMP_DIR):
             os.makedirs(self.TEMP_DIR)
         data_dict = self._prepare_data_dict(document_data)
+        vacation_minutes = 0
         for i in range(len(document_data.time_entries)):
             time_entry = document_data.time_entries[i]
+            if time_entry.entry_type == TimeEntryType.VACATION_ENTRY:
+                vacation_minutes += time_entry.get_duration()
             formatted_data = self._format_time_entry_data(time_entry, i)
             data_dict.update(formatted_data)
-
+        hours, minutes = divmod(vacation_minutes, 60)
+        duration_str = f"{int(hours):02d}:{int(minutes):02d}"
+        data_dict["Urlaub anteilig"] = duration_str
         output_path_pdf = self._get_output_path(document_data, "Unsigned.pdf")
         fillpdfs.write_fillable_pdf(self.TEMPLATE_PATH,
                                     output_path_pdf,
@@ -108,7 +115,7 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         formatted_data[f"ttmmjjRow{i + 1}"] = time_entry.start_time.strftime("%d.%m.%y")
         formatted_data[f"hhmmRow{i + 1}"] = time_entry.start_time.strftime("%H:%M")
         formatted_data[f"hhmmRow{i + 1}_2"] = time_entry.end_time.strftime("%H:%M")
-        formatted_data[f"hhmmRow{i + 1}_4"] = time_entry.get_duration()
+        formatted_data[f"hhmmRow{i + 1}_4"] = time_entry.get_duration_hhmm()
         return formatted_data
 
     def _prepare_data_dict(self, document_data):
@@ -134,9 +141,9 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
             "Stundensatz": contract_info.hourly_wage,
             "Summe": document_data.get_monthly_working_hours(),
             "monatliche SollArbeitszeit": document_data.get_contract_hours_per_month(),
-            "Urlaub anteilig": "Urlaub anteilig",
+            "Urlaub anteilig": "",
             "Übertrag vom Vormonat": document_data.overtime_from_previous_month,
-            "Übertrag in den Folgemonat": document_data.get_overtime(),
+            "Übertrag in den Folgemonat": document_data.overtime,
             "Ich bestätige die Richtigkeit der Angaben": datetime.now().strftime("%d.%m.%Y, "),
             "undefined": datetime.now().strftime("%d.%m.%Y, ")
         }
