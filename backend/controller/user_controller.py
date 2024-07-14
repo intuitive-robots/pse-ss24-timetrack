@@ -296,6 +296,7 @@ class UserController(MethodView):
             return jsonify(result.message), result.status_code
         return jsonify(result.data), result.status_code
 
+
     @check_access(roles=[UserRole.ADMIN])
     def get_supervisors(self):
         """

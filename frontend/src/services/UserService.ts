@@ -79,9 +79,21 @@ const updateUser = async (userData: User): Promise<any> => {
  *
  * @returns {Promise<any>} The response data from the backend containing supervisor details or an error message.
  */
-const getSupervisor = async (): Promise<any> => {
+const getHiwiSupervisor = async (): Promise<any> => {
     try {
         const response = await axiosInstance.get('/user/getSupervisor');
+        return response.data;
+    } catch (error) {
+        console.error('Fetching supervisor failed', error);
+        throw error;
+    }
+};
+
+const getSupervisor = async (username: string) : Promise<any> => {
+    try {
+        const response = await axiosInstance.get('/user/getSupervisor', {
+            params: { username }
+        });
         return response.data;
     } catch (error) {
         console.error('Fetching supervisor failed', error);
@@ -105,4 +117,4 @@ const getSupervisors = async (): Promise<User[]> => {
 };
 
 
-export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getSupervisors, updateUser };
+export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser };

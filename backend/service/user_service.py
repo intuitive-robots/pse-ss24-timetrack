@@ -296,10 +296,12 @@ class UserService:
 
         Returns: A RequestResult object containing the result of the operation.
         """
+        print(username)
         hiwi_data = self.user_repository.find_by_username(username)
         if not hiwi_data:
             return RequestResult(False, "Hiwi not found", status_code=404)
         if hiwi_data['role'] != 'Hiwi':
+            print(hiwi_data['role'])
             return RequestResult(False, "User is not a Hiwi", status_code=400)
         supervisor_data = self.user_repository.find_by_username(hiwi_data['supervisor'])
         if not supervisor_data:
