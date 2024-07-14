@@ -85,12 +85,12 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}: StatusFilterPro
 
   return (
     <div className="flex my-2">
-      <div className="flex flex-row text-md font-medium px-3 py-2 bg-neutral-50 items-center rounded-lg transition-all">
+      <div className="flex flex-row text-md font-medium px-3 py-2 bg-[#FAFAFA] items-center rounded-xl transition-all">
         {statuses.map((status) => (
           <div
             key={status}
             className={`relative flex items-center justify-center px-6 py-1.5 rounded-lg transition-all duration-300 cursor-pointer ${
-              activeStatus === status ? 'bg-white shadow-card-shadow' : 'bg-transparent'
+              activeStatus === status ? 'bg-white shadow-filter-shadow' : 'bg-transparent'
             }`}
             onClick={() => handleStatusClick(status)}
           >

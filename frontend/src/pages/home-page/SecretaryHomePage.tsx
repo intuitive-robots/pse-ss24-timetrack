@@ -121,10 +121,7 @@ const SecretaryHomePage: React.FC = () => {
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
 
-  console.log("filter", filteredTimesheets);
 
-
-    // TODO: duplicate code with HiwiHomepage.tsx
     const handleMonthChange = (direction: string) => {
         let newMonth = month;
         let newYear = year;
@@ -180,27 +177,10 @@ const SecretaryHomePage: React.FC = () => {
 
 
             <div className="h-5"/>
-            <StatusFilter setFilter={setFilter}/>
 
-            <div className="flex flex-row mt-8 gap-12">
-
-                <div className="flex flex-col w-full h-full justify-between">
-                    <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                    <SecretaryTimesheetListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
-                    <div className="flex mt-8 flex-col gap-2 items-center">
-                        <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                        <div className="flex flex-row">
-                            <div className="w-40"/>
-                            <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
-                                <p>Work</p>
-                                <div className="w-12"/>
-                                <p>Vacation days</p>
-                                <div className="w-8"/>
-                                <p>Overtime</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="flex flex-col gap-2 w-full h-full justify-between">
+                <StatusFilter setFilter={setFilter}/>
+                <SecretaryTimesheetListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
             </div>
 
         </div>

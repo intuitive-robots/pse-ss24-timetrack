@@ -105,7 +105,6 @@ const SecretaryDocumentPage: React.FC = () => {
                         } as Timesheet;
                       });
                 setTimesheets(validTimesheets);
-                // console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
             }).catch(error => {
                 console.error('Failed to load timesheets:', error);
                 setTimesheets([]);
@@ -117,8 +116,6 @@ const SecretaryDocumentPage: React.FC = () => {
   const filteredTimesheets = timesheets
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
-
-  console.log("filter", filteredTimesheets);
 
 
     // TODO: duplicate code with HiwiHomepage.tsx
@@ -155,7 +152,6 @@ const SecretaryDocumentPage: React.FC = () => {
 
     };
 
-    console.log('All timesheets:', filteredTimesheets);
     return (
         <div className="px-6 py-6">
             <div className="flex flex-row gap-8 items-center">
@@ -184,36 +180,31 @@ const SecretaryDocumentPage: React.FC = () => {
             <h2 className="text-md font-medium text-subtitle mt-1">There are 3 documents ready to download</h2>
 
 
-            <div className="h-5"/>
-            <StatusFilter setFilter={setFilter}/>
+            <div className="h-4"/>
 
-            <div className="flex flex-row mt-8 gap-12">
 
-                <img src={VerticalTimeLine} alt="Vertical Time Line"/>
-
-                <div className="flex flex-col w-full h-full justify-between">
-                    <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                    <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
-                    <div className="flex mt-8 flex-col gap-2 items-center">
-                        <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                        <div className="flex flex-row">
-                            <div className="w-40"/>
-                            <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
-                                <p>Work</p>
-                                <div className="w-12"/>
-                                <p>Vacation days</p>
-                                <div className="w-8"/>
-                                <p>Overtime</p>
-                            </div>
+            <div className="flex flex-col gap-2 w-full h-full justify-between ml-2">
+                <StatusFilter setFilter={setFilter}/>
+                <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
+                <div className="flex mt-8 flex-col gap-2 items-center">
+                    <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
+                    <div className="flex flex-row">
+                        <div className="w-40"/>
+                        <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
+                            <p>Work</p>
+                            <div className="w-12"/>
+                            <p>Vacation days</p>
+                            <div className="w-8"/>
+                            <p>Overtime</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="w-fit ml-auto absolute right-14 bottom-10">
                 <QuickActionButton
-                icon={DownloadIcon}
-                label="Download All"
-                onClick={() => console.log("Download all")}/>
+                    icon={DownloadIcon}
+                    label="Download All"
+                    onClick={() => console.log("Download all")}/>
             </div>
 
         </div>
