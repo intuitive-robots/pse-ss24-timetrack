@@ -7,6 +7,7 @@ import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
 import {generateDocument} from "../../services/DocumentService";
 import {User} from "../../interfaces/User";
+import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 
 interface SecretaryDocumentListViewProps {
     sheets: Timesheet[];
@@ -20,12 +21,9 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
 
 
 
-    for (const sheet of sheets) {
-        console.log(sheet.status + ", valid timesheet: " + isValidTimesheetStatus(sheet.status));
-    }
-
-
-
+    // for (const sheet of sheets) {
+    //     console.log(sheet.status + ", valid timesheet: " + isValidTimesheetStatus(sheet.status));
+    // }
 
     const handleDownload = async (username: string, month: number, year: number) => {
         if (!username) return;
@@ -39,7 +37,8 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
             alert('Failed to download document');
         }
     };
-    console.log("hiwis: " + hiwis.map(h => h.username));
+
+    // console.log("hiwis: " + hiwis.map(h => h.username));
     return (role === Roles.Secretary) ? (
         (sheets != null) ? (
             <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
@@ -94,8 +93,8 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                     return hiwi ? (
                         <SecretaryTimesheetTile
                         key={sheet._id}
-                        totalTime={sheet.totalTime}
-                        overtime={sheet.overtime}
+                        totalTime={minutesToHoursFormatted(sheet.totalTime)}
+                        overtime={minutesToHoursFormatted(sheet.overtime)}
                         vacationDays={0}
                         status={sheet.status}
                          onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
@@ -111,7 +110,7 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                         overtime={sheet.overtime}
                         vacationDays={0}
                         status={sheet.status}
-                         onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
+                        onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
                         username={sheet.username}
                         firstName={"FirstName"}
                         lastName={"LastName"}

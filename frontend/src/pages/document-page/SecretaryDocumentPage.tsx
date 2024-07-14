@@ -4,14 +4,12 @@ import {StatusType} from "../../interfaces/StatusType";
 import {Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
-import {useAuth} from "../../context/AuthContext";
 import {getSupervisor, getUsersByRole} from "../../services/UserService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
-import {useNavigate} from "react-router-dom";
 import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
@@ -25,15 +23,12 @@ const SecretaryDocumentPage: React.FC = () => {
     const [hiwis, setHiwis] = useState<User[]>([]);
     const [supervisors, setSupervisors] = useState<any[]>([]);
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
-    const { user, role } = useAuth();
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
-
-    const navigate = useNavigate();
 
     const defaultTimesheet = (
         id: string,
@@ -184,7 +179,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <h1 className="text-3xl font-bold text-headline mt-4">All monthly Documents</h1>
 
-            <h2 className="text-md font-medium text-subtitle mt-1">There are X documents ready to download</h2>
+            <h2 className="text-md font-medium text-subtitle mt-1">There are 3 documents ready to download</h2>
 
 
             <div className="h-5"/>
