@@ -68,7 +68,7 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
 
           <ListTileInfo items={
               [totalTimeString, vacationDaysString, overtimeString]}
-              gap={"lg:gap-20 gap-8 transition-all"}
+              gap={"lg:gap-12 gap-8 transition-all"}
           />
 
           <div className="flex flex-row gap-5">

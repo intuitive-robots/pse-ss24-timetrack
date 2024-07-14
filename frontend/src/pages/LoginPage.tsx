@@ -2,16 +2,23 @@ import React, {useState} from 'react';
 import TextInput from '../components/input/TextInput';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import {EyeFilledIcon} from "../assets/iconComponents/EyeFilledIcon";
+import {EyeNotFilledIcon} from "../assets/iconComponents/EyeNotFilledIcon";
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login, isAuthenticated} = useAuth();
 
   if (isAuthenticated) {
     navigate('/');
   }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -33,17 +40,23 @@ const LoginForm: React.FC = () => {
             label="Username"
             type="text"
             value={username}
-            placeholder="name@example.com"
+            placeholder="Enter your username"
             onChange={setUsername}
         />
-        <TextInput
-            id="password"
-            label="Password"
-            type="password"
-            value={password}
-            placeholder="Enter your password"
-            onChange={setPassword}
-        />
+        <div className="relative">
+          <TextInput
+              id="password"
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              placeholder="Enter your password"
+              onChange={setPassword}
+          />
+          <div className="absolute inset-y-0 top-7 right-2 flex items-center pr-3 cursor-pointer"
+               onClick={togglePasswordVisibility}>
+            {showPassword ? <EyeFilledIcon className="hover:fill-gray-900 fill-black"/> : <EyeNotFilledIcon className="hover:fill-gray-900 fill-black"/>}
+          </div>
+        </div>
         <button type="submit"
                 className="w-full bg-gray-950 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700">
           LOGIN

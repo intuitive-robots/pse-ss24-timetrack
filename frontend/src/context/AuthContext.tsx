@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import {jwtDecode} from 'jwt-decode';
 import { getProfile, login as loginService, logout as logoutService } from '../services/AuthService';
 import {User} from "../interfaces/User";
+import {handleAxiosError} from "../utils/AxiosUtils";
 
 interface AuthState {
   token: string | null;
@@ -98,7 +99,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
         logout: handleLogout,
       });
     } catch (error) {
-      throw new Error('Login failed');
+      alert(`Login failed: ${error}`);
+      console.error('Login Error:', error);
     }
   };
 
@@ -116,6 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProv
         justLoggedIn: false
       });
     } catch (error) {
+      handleAxiosError(error);
       console.error('Logout failed');
     }
   };

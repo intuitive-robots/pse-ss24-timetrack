@@ -49,11 +49,11 @@ class DocumentController(MethodView):
         year = int(request_data.get('year'))
         username = request_data.get('username')
         if not month or not year or not username:
-            return jsonify({'error': 'Missing required fields'}), 400
+            return jsonify('Missing required fields'), 400
 
         result = self.document_service.generate_document(month, year, username, get_jwt_identity())
         if result.status_code != 200:
-            return jsonify({'error': result.message}), result.status_code
+            return jsonify(result.message), result.status_code
         file_path = result.data
         if not file_path:
             return jsonify({'error': 'Failed to generate document'}), 500

@@ -1,4 +1,5 @@
 import axiosInstance from "./AxiosInstance";
+import {handleAxiosError} from "../utils/AxiosUtils";
 
 interface DocumentResponse {
   status: number;
@@ -17,7 +18,7 @@ export interface DocumentRequestParams {
  * @param params Parameters including month, year, and username to generate the document.
  * @returns A promise that resolves to the URL of the generated document or throws an error.
  */
-async function generateDocument(params: DocumentRequestParams): Promise<string> {
+async function generateDocument(params: DocumentRequestParams): Promise<string | undefined> {
   try {
     const response = await axiosInstance.get('document/generateDocument', {
       params,
@@ -27,10 +28,10 @@ async function generateDocument(params: DocumentRequestParams): Promise<string> 
     if (response.status === 200 && response.data) {
       return window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
     }
-    throw new Error('Failed to generate document');
+     // throw new Error(response);
   } catch (error: any) {
-    console.error('Error generating document:', error.response?.data.message || error.message);
-    throw new Error(error.response?.data.message || "An error occurred during document generation.");
+    console.error('Document generation failed', error);
+    handleAxiosError(error);
   }
 }
 

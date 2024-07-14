@@ -19,8 +19,6 @@ interface SecretaryDocumentListViewProps {
 const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ sheets, hiwis, supervisors }) => {
     const { role } = useAuth();
 
-
-
     // for (const sheet of sheets) {
     //     console.log(sheet.status + ", valid timesheet: " + isValidTimesheetStatus(sheet.status));
     // }
@@ -106,8 +104,8 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                     ) : (
                         <SecretaryTimesheetTile
                         key={sheet._id}
-                        totalTime={sheet.totalTime}
-                        overtime={sheet.overtime}
+                        totalTime={minutesToHoursFormatted(sheet.totalTime)}
+                        overtime={minutesToHoursFormatted(sheet.overtime)}
                         vacationDays={0}
                         status={sheet.status}
                         onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}

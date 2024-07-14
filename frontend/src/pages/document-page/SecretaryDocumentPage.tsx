@@ -87,7 +87,7 @@ const SecretaryDocumentPage: React.FC = () => {
                     return timesheet || defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 } catch (error) {
                     console.error(`Failed to fetch timesheet for ${hiwi.username}: `, error);
-                    return null;
+                    return defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 }
             })).then(fetchedTimesheets => {
                 const validTimesheets = fetchedTimesheets
@@ -105,7 +105,7 @@ const SecretaryDocumentPage: React.FC = () => {
                         } as Timesheet;
                       });
                 setTimesheets(validTimesheets);
-                console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
+                // console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
             }).catch(error => {
                 console.error('Failed to load timesheets:', error);
                 setTimesheets([]);
@@ -117,6 +117,8 @@ const SecretaryDocumentPage: React.FC = () => {
   const filteredTimesheets = timesheets
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
+
+  console.log("filter", filteredTimesheets);
 
 
     // TODO: duplicate code with HiwiHomepage.tsx
@@ -194,13 +196,13 @@ const SecretaryDocumentPage: React.FC = () => {
                     <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
                     <div className="flex mt-8 flex-col gap-2 items-center">
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                        <div className="flex flex-row ml-9">
+                        <div className="flex flex-row">
                             <div className="w-40"/>
-                            <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
+                            <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
                                 <p>Work</p>
                                 <div className="w-12"/>
                                 <p>Vacation days</p>
-                                <div className="w-12"/>
+                                <div className="w-8"/>
                                 <p>Overtime</p>
                             </div>
                         </div>
