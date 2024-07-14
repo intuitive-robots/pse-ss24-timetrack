@@ -106,7 +106,7 @@ class AuthenticationService:
         :rtype: RequestResult
         """
         if not username or not new_password:
-            return RequestResult(False, "Username and new password must be provided", status_code=400)
+            return RequestResult(False, "New password must be provided", status_code=400)
 
         user_data = self.user_repository.find_by_username(username)
         current_user_data = self.user_repository.find_by_username(current_username)
