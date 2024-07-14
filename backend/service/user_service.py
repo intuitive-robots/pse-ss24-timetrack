@@ -197,6 +197,7 @@ class UserService:
         if 'username' not in user_data:
             return RequestResult(False, "Username must be provided for user update", status_code=400)
         existing_user_data = self.user_repository.find_by_username(user_data['username'])
+        existing_supervisor = existing_user_data.get('supervisor', None)
         if not existing_user_data:
             return RequestResult(False, "User not found", status_code=404)
         updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash"])
@@ -209,8 +210,43 @@ class UserService:
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)
-
+        if updated_user.role == UserRole.HIWI.value and user_data['supervisor'] != existing_supervisor:
+            update_supervisor_result = self._update_supervisor(user_data['username'], existing_supervisor,
+                                                               user_data['supervisor'])
+            if not update_supervisor_result.is_successful:
+                return update_supervisor_result
         return self.user_repository.update_user(updated_user)
+
+    def _update_supervisor(self, hiwi_username: str, supervisor_username: str, new_supervisor_username: str):
+        """
+        Updates the supervisor of a Hiwi.
+
+        :param hiwi_username: The username of the Hiwi.
+        :param supervisor_username: The username of the current supervisor.
+        :param new_supervisor_username: The username of the new supervisor.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        hiwi_data = self.user_repository.find_by_username(hiwi_username)
+        if not hiwi_data:
+            return RequestResult(False, "Hiwi not found", status_code=404)
+        if hiwi_data['role'] != 'Hiwi':
+            return RequestResult(False, "User is not a Hiwi", status_code=400)
+        supervisor_data = self.user_repository.find_by_username(supervisor_username)
+        if not supervisor_data:
+            return RequestResult(False, "Supervisor not found", status_code=404)
+        if supervisor_data['role'] != 'Supervisor':
+            return RequestResult(False, "User is not a Supervisor", status_code=400)
+        new_supervisor_data = self.user_repository.find_by_username(new_supervisor_username)
+        if not new_supervisor_data:
+            return RequestResult(False, "New supervisor not found", status_code=404)
+        if new_supervisor_data['role'] != 'Supervisor':
+            return RequestResult(False, "User is not a Supervisor", status_code=400)
+        supervisor_data['hiwis'].remove(hiwi_username)
+        result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
+        if not result_supervisor_update.is_successful:
+            return result_supervisor_update
+        new_supervisor_data['hiwis'].append(hiwi_username)
+        return self.user_repository.update_user(Supervisor.from_dict(new_supervisor_data))
 
     def delete_user(self, username: str):
         """

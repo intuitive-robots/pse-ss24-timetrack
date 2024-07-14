@@ -64,7 +64,6 @@ class TestUserController(unittest.TestCase):
         """
         update_data = {
             "username": "testAdmin1",
-            "role": "Admin",
             "personalInfo": {
                 "firstName": "Nico",
                 "lastName": "Admin",
