@@ -35,6 +35,34 @@ async function generateDocument(params: DocumentRequestParams): Promise<string |
   }
 }
 
+/**
+ * Handles the logic for downloading the document with a proper filename.
+ * @param username The username associated with the document.
+ * @param month The month for the document.
+ * @param year The year for the document.
+ */
+const handleDownload = async (username: string, month: number, year: number) => {
+    if (!username) return;
+    console.log("Downloading document for", username, month, year);
+
+    try {
+        const documentUrl = await generateDocument({ username, month, year });
+        if (documentUrl) {
+            const link = document.createElement('a');
+            link.href = documentUrl;
+            link.download = `${username}_document_${month}_${year}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(documentUrl);
+        }
+    } catch (error) {
+        console.error('Failed to download document:', error);
+        alert('Failed to download document');
+    }
+};
+
 export {
-  generateDocument
+  generateDocument,
+  handleDownload
 };
