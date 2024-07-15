@@ -8,10 +8,6 @@ export interface DocumentRequestParams {
   username: string;
 }
 
-interface MultipleDocumentRequestParams {
-  timesheetIds: string[];
-}
-
 /**
  * Generates a document and retrieves it from the server.
  * @param params Parameters including month, year, and username to generate the document.
