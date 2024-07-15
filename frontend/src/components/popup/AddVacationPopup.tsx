@@ -16,7 +16,12 @@ const AddVacationPopup: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!selectedDate || duration === '') {
-            alert("Please fill all the fields correctly.");
+            let missingFields = [];
+
+            if (!selectedDate) missingFields.push("selectedDate");
+            if (duration === '') missingFields.push("duration");
+
+            alert("Please fill all the fields correctly. Missing fields: " + missingFields.join(", "));
             return;
         }
 
