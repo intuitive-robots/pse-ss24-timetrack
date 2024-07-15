@@ -4,7 +4,7 @@ import {useAuth} from "../../context/AuthContext";
 import {Roles} from "../auth/roles";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
-import {generateDocument, handleDownload} from "../../services/DocumentService";
+import {handleDownload} from "../../services/DocumentService";
 import {User} from "../../interfaces/User";
 import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 

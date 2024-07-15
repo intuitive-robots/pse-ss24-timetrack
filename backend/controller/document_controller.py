@@ -56,7 +56,7 @@ class DocumentController(MethodView):
             return jsonify(result.message), result.status_code
         file_path = result.data
         if not file_path:
-            return jsonify({'error': 'Failed to generate document'}), 500
+            return jsonify('Failed to generate document'), 500
         if os.path.isfile(file_path):
             with open(file_path, 'rb') as file:
                 file_content = file.read()
@@ -69,7 +69,7 @@ class DocumentController(MethodView):
 
             # Step 5: Return the response object
             return response
-        return jsonify({'error': 'Failed to generate document'}), 500
+        return jsonify('Failed to generate document'), 500
 
     @jwt_required()
     def generate_multiple_documents(self):
@@ -80,13 +80,17 @@ class DocumentController(MethodView):
 
         request_data = request.args
         usernames = request_data.getlist('usernames')
-        month = int(request_data.get('month'))
-        year = int(request_data.get('year'))
         timesheet_ids = request_data.getlist('timesheetIds')
         start_date_str = request_data.get('startDate')
         end_date_str = request_data.get('endDate')
         username = request_data.get('username')
-        if usernames and month and year:
+
+        month_str = request_data.get('month')
+        year_str = request_data.get('year')
+        month = int(month_str) if month_str and month_str is not None and month_str.isdigit() else None
+        year = int(year_str) if year_str and year_str is not None and year_str.isdigit() else None
+
+        if usernames and month is not None and year is not None:
             result = self.document_service.generate_multiple_documents(usernames, month, year, get_jwt_identity())
         elif timesheet_ids:
             result = self.document_service.generate_multiple_documents_by_id(timesheet_ids, get_jwt_identity())
@@ -94,12 +98,13 @@ class DocumentController(MethodView):
             start_date = datetime.strptime(start_date_str, '%d-%m-%y')
             end_date = datetime.strptime(end_date_str, '%d-%m-%y')
 
-            result = self.document_service.generate_document_in_date_range(start_date, end_date, username, get_jwt_identity())
+            result = self.document_service.generate_document_in_date_range(start_date, end_date, username,
+                                                                           get_jwt_identity())
         else:
-            return jsonify({'error': 'Missing required fields'}), 400
+            return jsonify('Missing required fields'), 400
 
         if result.status_code != 200:
-            return jsonify({'error': result.message}), result.status_code
+            return jsonify(result.message), result.status_code
 
         return send_file(result.data, as_attachment=True, download_name='documents.zip')
 

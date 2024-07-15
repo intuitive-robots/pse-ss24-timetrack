@@ -10,11 +10,11 @@ import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
-import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
 import QuickActionButton from "../../components/input/QuickActionButton";
 import DownloadIcon from "../../assets/images/download_icon_white.svg";
+import {handleDownloadMultipleDocuments} from "../../services/DocumentService";
 
 
 const SecretaryDocumentPage: React.FC = () => {
@@ -69,7 +69,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
     useEffect(() => {
          if (hiwis && hiwis.length > 0) {
-             hiwis.map(hiwi => {
+             hiwis.forEach(hiwi => {
                  getSupervisor(hiwi.username)
                      .then(fetchedSupervisor => {
                          setSupervisors(prevSupervisors => [...prevSupervisors, fetchedSupervisor]);
@@ -145,11 +145,20 @@ const SecretaryDocumentPage: React.FC = () => {
         setYear(newYear);
     };
 
-    const handleDownloadAll = () => {
-        for (const sheet in filteredTimesheets.filter(sheet => sheet.status === StatusType.Complete && sheet.username != null)) {
+    const handleDownloadAll = async () => {
+        const completeTimesheets = timesheets.filter(sheet => sheet.status === StatusType.Complete);
+        const timesheetIds = completeTimesheets.map(sheet => sheet._id);
 
+        if (timesheetIds.length > 0) {
+            try {
+                await handleDownloadMultipleDocuments(month, year, timesheetIds);
+            } catch (error) {
+                console.error('Error downloading all documents:', error);
+                alert('Failed to download all documents');
+            }
+        } else {
+            alert('No completed timesheets available to download');
         }
-
     };
 
     return (
@@ -204,7 +213,7 @@ const SecretaryDocumentPage: React.FC = () => {
                 <QuickActionButton
                     icon={DownloadIcon}
                     label="Download All"
-                    onClick={() => console.log("Download all")}/>
+                    onClick={handleDownloadAll}/>
             </div>
 
         </div>
