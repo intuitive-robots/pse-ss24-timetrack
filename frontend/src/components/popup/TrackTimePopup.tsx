@@ -10,17 +10,27 @@ import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
+import Dropdown from "../input/Dropdown";
+import {Roles} from "../auth/roles";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
 
     const [activity, setActivity] = useState('');
+    const [activityType, setActivityType] = useState('');
     const [project, setProject] = useState('');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [breakTime, setBreakTime] = useState(0);
 
+
+    const activityTypeOptions = ["Projektbesprechung", "Projektarbeit"].map(role => ({
+        label: role,
+        value: role
+    }));
+
+    /*TODO: add activity type */
     const handleSubmit = async () => {
         if (!activity || !project || !selectedDate || !startTime || !endTime || !breakTime) {
             let missingFields = [];
@@ -97,7 +107,9 @@ const TrackTimePopup: React.FC = () => {
                         onChange={setProject}
                     />
                 </div>
-
+                <div className="w-7/12">
+                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType} icon={ActivityIcon} options={activityTypeOptions} />
+                </div>
                 <div className="flex flex-col gap-1.5">
                     <h2 className="text-md font-semibold">{"Working Time"}</h2>
                     <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
