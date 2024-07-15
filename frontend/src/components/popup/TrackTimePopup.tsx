@@ -23,7 +23,16 @@ const TrackTimePopup: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!activity || !project || !selectedDate || !startTime || !endTime || !breakTime) {
-            alert("Please fill all the fields correctly.");
+            let missingFields = [];
+
+            if (!activity) missingFields.push("activity");
+            if (!project) missingFields.push("project");
+            if (!selectedDate) missingFields.push("selectedDate");
+            if (!startTime) missingFields.push("startTime");
+            if (!endTime) missingFields.push("endTime");
+            if (!breakTime) missingFields.push("breakTime");
+
+            alert("Please fill all the fields correctly. Missing fields: " + missingFields.join(", "));
             return;
         }
 
