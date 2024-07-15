@@ -116,7 +116,6 @@ const SecretaryHomePage: React.FC = () => {
         }
     }, [hiwis, month, year]);
 
-
   const filteredTimesheets = timesheets
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];

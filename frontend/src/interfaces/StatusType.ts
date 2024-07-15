@@ -9,6 +9,7 @@ export enum StatusType {
 
 
 export function getStatusType(value: string): StatusType | undefined {
+    value = value.replace(" ", "");
     if (value in StatusType) {
         return StatusType[value as keyof typeof StatusType];
     }
