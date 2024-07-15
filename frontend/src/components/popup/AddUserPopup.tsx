@@ -49,15 +49,19 @@ const AddUserPopup: React.FC = () => {
 
 
     useEffect(() => {
-    const fetchSupervisors = async () => {
-        const fetchedSupervisors: any[] = await getSupervisors();
-        const supervisorOptions = fetchedSupervisors.map(sup => ({
-            label: `${sup.firstName} ${sup.lastName}`,
-            value: sup.username
-        }));
-        setSupervisors(supervisorOptions);
-    };
-    fetchSupervisors();
+        const fetchSupervisors = async () => {
+            const fetchedSupervisors: any[] = await getSupervisors();
+            const supervisorOptions = fetchedSupervisors.map(sup => ({
+                label: `${sup.firstName} ${sup.lastName}`,
+                value: sup.username
+            }));
+            setSupervisors(supervisorOptions);
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                supervisor: prevFormData.supervisor || supervisorOptions[0].value
+            }));
+        };
+        fetchSupervisors();
 }, []);
 
 
@@ -66,8 +70,22 @@ const AddUserPopup: React.FC = () => {
         creationSteps.push('Employment Details');
     }
 
+    const requiresThreeSteps = (role: string) => {
+        return role === Roles.Hiwi;
+    };
+
+    const getButtonLabel = () => {
+        if (requiresThreeSteps(formData.role) && step < 3) {
+            return "Next";
+        }
+        if (step === (requiresThreeSteps(formData.role) ? 3 : 2)) {
+            return "Add Member";
+        }
+        return "Next";
+    };
+
     const handleNext = () => {
-        if (step < 3) {
+        if (step < (requiresThreeSteps(formData.role) ? 3 : 2)) {
             setStep(step + 1);
         } else {
             handleSubmit();
@@ -114,13 +132,18 @@ const AddUserPopup: React.FC = () => {
             requiredFields.push('hourlyWage', 'workingTime', 'supervisor');
         }
 
+        let missingFields: string[] = [];
         const canSubmit = requiredFields.every(field => {
             const value = formData[field];
-            return value !== undefined && value !== '';
+            if (value === undefined || value === '') {
+                missingFields.push(field);
+                return false;
+            }
+            return true;
         });
 
         if (!canSubmit) {
-            alert("Please fill all the required fields.");
+            alert(`Please fill all the required fields: ${missingFields.join(', ')}.`);
             return;
         }
 
@@ -208,7 +231,7 @@ const AddUserPopup: React.FC = () => {
                 <DialogButton label="Cancel" secondary={true} onClick={closePopup} />
                 <div className="flex gap-2">
                     {step > 1 && <DialogButton label="Prev" secondary={true} onClick={() => handlePrev()} />}
-                    <DialogButton label={step === 3 ? "Add Member" : "Next"} primary={true} onClick={() => handleNext()} />
+                    <DialogButton label={getButtonLabel()} primary={true} onClick={() => handleNext()} />
                 </div>
             </div>
         </div>
