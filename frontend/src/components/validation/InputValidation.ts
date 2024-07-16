@@ -1,6 +1,9 @@
 import {ValidationResult, ValidationError} from "json-schema";
 
 
+
+const currentDate = new Date();
+
 export function createTimeEntryValidation(activity: string, project: string, selectedDate: Date, startTime: string, endTime: string, breakTime: number): ValidationResult {
     const result: ValidationResult = {
         valid: false,
@@ -13,7 +16,6 @@ export function createTimeEntryValidation(activity: string, project: string, sel
     endDate.setHours(parseInt(endTime.split(':')[0]), parseInt(endTime.split(':')[1]));
 
     const workTimeSpan = (endDate.getTime() - startDate.getTime()) / (1000 * 60); // in minutes
-    const currentDate = new Date();
     const maxWorkingMinutes = 600;
     const recommendedWorkingMinutes = 480;
     const workingMinutesWithoutBreak = 360;
@@ -43,6 +45,8 @@ export function createTimeEntryValidation(activity: string, project: string, sel
         alert("The maximum permissible working time is 10 hours per day. Please choose a valid time span.");
             return result;
     }
+
+    // warning for time span
     if (workTimeSpan > recommendedWorkingMinutes) {
         result.errors.push({
             property: "workTimeSpan",
@@ -81,6 +85,11 @@ export function validateCreateVacationEntry(selectedDate: Date, duration: string
         errors: []
     };
 
+    const hours = parseInt(duration.split(':')[0]);
+    const minutes = parseInt(duration.split(':')[1]);
+
+    const minHours = 1;
+
     // missing fields
     if (!selectedDate || duration === '') {
         let missingFields = [];
@@ -92,6 +101,17 @@ export function validateCreateVacationEntry(selectedDate: Date, duration: string
         return result;
     }
 
+    // invalid date (in future)
+    if (selectedDate > currentDate) {
+        alert("I don't think you can travel into the future. Please choose a valid date.");
+        return result;
+    }
+
+    // invalid duration
+    if (hours < minHours) {
+        alert("Please choose at least an one hour duration.");
+        return result;
+    }
 
     result.valid = true;
     return result;
