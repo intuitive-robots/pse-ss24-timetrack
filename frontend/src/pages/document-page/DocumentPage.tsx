@@ -7,6 +7,8 @@ import {useAuth} from "../../context/AuthContext";
 import {getTimesheets} from "../../services/TimesheetService";
 import {StatusType} from "../../interfaces/StatusType";
 import StatusFilter from "../../components/status/StatusFilter";
+import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
+import {Roles} from "../../components/auth/roles";
 
 
 const DocumentPage: React.FC = () => {
@@ -18,15 +20,32 @@ const DocumentPage: React.FC = () => {
     if (user && user.username) {
       getTimesheets(user.username)
         .then(sheets => {
-          setTimesheets(sheets);
-          console.log('Loaded timesheets:', sheets);
-        })
-        .catch(error => {
+          const validTimesheets = sheets
+                .filter((timesheet): timesheet is Timesheet => timesheet !== null)
+                    .map(timesheet => {
+                        if (!isValidTimesheetStatus(timesheet.status)) {
+                            return {
+                              ...timesheet,
+                                status: StatusType.Error,
+                            } as Timesheet;
+                        }
+                        return {
+                            ...timesheet,
+                            status: statusMapping[Roles.Hiwi][timesheet.status],
+                        } as Timesheet;
+                      });
+                setTimesheets(validTimesheets);
+        }).catch(error => {
           console.error('Failed to load timesheets:', error);
           setTimesheets([]);
         });
     }
   }, [user]);
+
+     console.log("status: " + filter);
+  const filteredTimesheets = timesheets
+    ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
+    : [];
 
     return (
         <div className="px-6 py-6">
@@ -46,7 +65,7 @@ const DocumentPage: React.FC = () => {
 
                 <div className="flex flex-col w-full h-full justify-between">
                     <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                    <TimesheetListView sheets={timesheets} />
+                    <TimesheetListView sheets={filteredTimesheets} />
                     <div className="flex mt-8 flex-col gap-2 items-center">
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                         <div className="flex flex-row ml-12">

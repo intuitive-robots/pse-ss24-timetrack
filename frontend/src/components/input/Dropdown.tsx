@@ -9,7 +9,7 @@ interface DropdownProps {
     width?: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ title, value, onChange, options, icon, width = "w-40" }) => {
+const Dropdown: React.FC<DropdownProps> = ({ title, value, onChange, options, icon, width = "w-full" }) => {
     return (
         <div className={`flex flex-col mb-4 ${width}`}>
             <label className="font-semibold mb-2">{title}</label>

@@ -41,7 +41,7 @@ export const statusMapping: RoleStatusMaps = {
     },
     Secretary: {
         [TimesheetStatus.NotSubmitted]: StatusType.Waiting,
-        [TimesheetStatus.Revision]: StatusType.Revision,
+        [TimesheetStatus.Revision]: StatusType.Waiting,
         [TimesheetStatus.WaitingForApproval]: StatusType.Waiting,
         [TimesheetStatus.Complete]: StatusType.Complete,
         [TimesheetStatus.NoTimesheet]: StatusType.NoTimesheet,
