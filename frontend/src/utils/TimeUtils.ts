@@ -8,6 +8,12 @@ export function minutesToHoursFormatted(minutes: number): number {
     return Math.round(hours * 100) / 100;  // Multiplies by 100, rounds it, then divides by 100
 }
 
+export function minutesToTime(totalMinutes: number): string {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = Math.abs(totalMinutes % 60);
+        return `${hours}h ${minutes}min`;
+}
+
 /**
  * Converts hours to minutes.
  * @param hours The number of hours.
