@@ -11,8 +11,7 @@ import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import Dropdown from "../input/Dropdown";
-import {Roles} from "../auth/roles";
-import {validateCreateTimeEntry} from "../validation/ValidateCreateTimeEntry";
+import {createTimeEntryValidation} from "../validation/InputValidation";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -24,6 +23,7 @@ const TrackTimePopup: React.FC = () => {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [breakTime, setBreakTime] = useState(0);
+    const [workingTimeWarning, setWorkingTimeWarning] = useState(false);
 
 
     const activityTypeOptions = ["Projektbesprechung", "Projektarbeit"].map(role => ({
@@ -33,8 +33,17 @@ const TrackTimePopup: React.FC = () => {
 
     /*TODO: add activity type */
     const handleSubmit = async () => {
-
-        if (!validateCreateTimeEntry(activity, project, selectedDate, startTime, endTime, breakTime).valid) {
+        const result = createTimeEntryValidation(activity, project, selectedDate, startTime, endTime, breakTime);
+        if (!result.valid) {
+            if (result.errors && result.errors.length > 0) {
+                result.errors.forEach(error => {
+                    if (error.property == "workTimeSpan") {
+                        setWorkingTimeWarning(true);
+                    }
+                    console.log('Validation error:', error.message);
+                    return;
+                });
+            }
             return;
         }
 
@@ -101,42 +110,33 @@ const TrackTimePopup: React.FC = () => {
                     />
                 </div>
                 <div className="w-7/12">
-                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType} icon={ActivityIcon} options={activityTypeOptions} />
+                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType} icon={ActivityIcon}
+                              options={activityTypeOptions}/>
                 </div>
                 <div className="flex flex-col gap-1.5">
                     <h2 className="text-md font-semibold">{"Working Time"}</h2>
                     <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
-                    <div className="flex flex-row mt-2 justify-between w-7/12 items-center">
-                        {/*<ShortInputField*/}
-                        {/*    icon={TimeIcon}*/}
-                        {/*    type="time"*/}
-                        {/*    placeholder="08:00 AM"*/}
-                        {/*    value={startTime}*/}
-                        {/*    onChange={setStartTime}*/}
-                        {/*/>*/}
-                        {/*<ShortInputField*/}
-                        {/*    icon={TimeIcon}*/}
-                        {/*    type="time"*/}
-                        {/*    placeholder="12:00 AM"*/}
-                        {/*    value={endTime}*/}
-                        {/*    onChange={setEndTime}*/}
-                        {/*/>*/}
-                        <IntuitiveTimePicker value={startTime} onChange={setStartTime}/>
-                        <p className="text-center items-center justify-center text-gray-700 font-extrabold">—</p>
-                        <IntuitiveTimePicker value={endTime} onChange={setEndTime}/>
+                    <div className="flex flex-row items-center mt-2 w-full">
+                        <div className="flex flex-row justify-between items-center w-7/12">
+                            <IntuitiveTimePicker value={startTime} onChange={setStartTime}/>
+                            <p className="text-center items-center justify-center text-gray-700 font-extrabold">—</p>
+                            <IntuitiveTimePicker value={endTime} onChange={setEndTime}/>
+                        </div>
+                        {workingTimeWarning && (
+                            <p className="text-red-600 font-bold ml-4 whitespace-nowrap">Warning: Working time {'>'} 8h.</p>
+                        )}
                     </div>
-
                 </div>
 
                 <ShortInputField
                     icon={BreakIcon}
-                        type="number"
-                        title={"Break Time"}
-                        placeholder="15"
-                        suffix={"min"}
-                        value={breakTime.toString()}
-                        onChange={(value) => setBreakTime(parseInt(value))}
-                    />
+                    type="number"
+                    title={"Break Time"}
+                    placeholder="15"
+                    suffix={"min"}
+                    value={breakTime.toString()}
+                    onChange={(value) => setBreakTime(parseInt(value))}
+                />
 
                 <div className="flex flex-row gap-3 justify-end">
                     <DialogButton

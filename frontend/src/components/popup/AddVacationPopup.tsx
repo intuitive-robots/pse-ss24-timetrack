@@ -7,6 +7,7 @@ import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import {createVacationEntry} from "../../services/TimeEntryService";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
+import {validateCreateVacationEntry} from "../validation/InputValidation";
 
 const AddVacationPopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -15,13 +16,7 @@ const AddVacationPopup: React.FC = () => {
     const [duration, setDuration] = useState('');
 
     const handleSubmit = async () => {
-        if (!selectedDate || duration === '') {
-            let missingFields = [];
-
-            if (!selectedDate) missingFields.push("selectedDate");
-            if (duration === '') missingFields.push("duration");
-
-            alert("Please fill all the fields correctly. Missing fields: " + missingFields.join(", "));
+        if (!validateCreateVacationEntry(selectedDate, duration).valid) {
             return;
         }
 
