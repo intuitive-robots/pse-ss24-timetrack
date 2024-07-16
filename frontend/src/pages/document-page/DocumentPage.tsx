@@ -56,8 +56,8 @@ const DocumentPage: React.FC = () => {
                 </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-headline mt-4">Your monthly documents</h1>
-            <StatusFilter setFilter={setFilter}/>
+            <h1 className="text-3xl font-bold text-headline mt-4 mb-4">Your monthly documents</h1>
+            <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Pending]}/>
 
             <div className="flex flex-row mt-8 gap-12">
                 <img src={VerticalTimeLine} alt="Vertical Time Line"/>

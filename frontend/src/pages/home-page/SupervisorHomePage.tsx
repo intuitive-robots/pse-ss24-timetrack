@@ -207,7 +207,7 @@ const SupervisorHomePage = (): React.ReactElement => {
 
 
             <div className="px-4 mt-5">
-                <StatusFilter setFilter={setFilter}/>
+                <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Pending, StatusType.Waiting]}/>
                 {hiwis ? (
                     <div className="flex flex-col mt-5 overflow-y-auto max-h-96">
                         {filteredTimesheets.map((timesheet, index) => {

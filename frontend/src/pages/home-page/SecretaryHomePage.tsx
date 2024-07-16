@@ -173,7 +173,7 @@ const SecretaryHomePage: React.FC = () => {
 
 
             <div className="flex flex-col gap-2 w-full h-full justify-between mt-3">
-                <StatusFilter setFilter={setFilter}/>
+                <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Waiting]}/>
                 <SecretaryTimesheetListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
             </div>
 
