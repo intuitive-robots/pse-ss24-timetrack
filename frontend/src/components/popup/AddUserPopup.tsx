@@ -206,7 +206,7 @@ const AddUserPopup: React.FC = () => {
                         </div>
                         <ShortInputField title="E-Mail" value={formData.email} onChange={handleChange('email')}
                                          icon={ActivityIcon} type="text"/>
-                        <ShortInputField title="Personal Number" value={formData.personalNumber} size={"medium"}
+                        <ShortInputField title="Personal Number (SAP-ID)" value={formData.personalNumber} size={"medium"}
                                          onChange={handleChange('personalNumber')} icon={ActivityIcon} type="number"/>
                     </>
                 )}
