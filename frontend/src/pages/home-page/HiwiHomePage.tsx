@@ -175,54 +175,10 @@ const HiwiHomePage = (): React.ReactElement => {
 
             <div className="absolute right-10">
                 <ProgressCard currentValue={totalHoursInDecimal()} targetValue={user?.contractInfo?.workingHours ?? 0}
-                              label={"Total hours working"}/>
+                              label={"Total hours working"}
+                              unit={"h"}
+                />
             </div>
-
-            {/*<div className="flex flex-row gap-8 items-center">*/}
-            {/*    <div className="flex flex-row gap-4 text-nowrap">*/}
-            {/*        <p className="text-lg font-semibold text-subtitle">This Month,</p>*/}
-            {/*        <MonthTimespan month={month} year={year}/>*/}
-            {/*    </div>*/}
-            {/*    <div className="flex gap-4">*/}
-            {/*        <ListIconCardButton*/}
-            {/*            iconSrc={LeftNavbarIcon}*/}
-            {/*            label={"Before"}*/}
-            {/*            onClick={() => handleMonthChange('prev')}*/}
-            {/*        />*/}
-            {/*        <ListIconCardButton*/}
-            {/*            iconSrc={RightNavbarIcon}*/}
-            {/*            label={"Next"}*/}
-            {/*            orientation={"right"}*/}
-            {/*            onClick={() => handleMonthChange('next')}*/}
-            {/*            disabled={month === currentMonth && year === currentYear}*/}
-            {/*        />*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
-            {/*<div className="flex flex-row items-center">*/}
-            {/*    <div className="flex flex-row items-center gap-6">*/}
-            {/*        <div className="flex flex-row gap-8 items-center">*/}
-            {/*            <div className="flex flex-row gap-4">*/}
-            {/*                <p className="text-lg font-semibold text-subtitle">*/}
-            {/*                    This Month, {displayStatus()}*/}
-            {/*                </p>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*        <ListIconCardButton*/}
-            {/*            iconSrc={LeftNavbarIcon}*/}
-            {/*            label={"Before"}*/}
-            {/*            onClick={() => handleMonthChange('prev')}*/}
-            {/*        />*/}
-            {/*        <MonthDisplay month={month} year={year}/>*/}
-            {/*        <ListIconCardButton*/}
-            {/*            iconSrc={RightNavbarIcon}*/}
-            {/*            label={"Next"}*/}
-            {/*            orientation={"right"}*/}
-            {/*            onClick={() => handleMonthChange('next')}*/}
-            {/*            disabled={month === currentMonth && year === currentYear}*/}
-            {/*        />*/}
-            {/*    </div>*/}
-            {/*</div>*/}
 
             <div className="flex justify-between items-center w-full">
                 <div className="text-lg font-semibold text-subtitle">

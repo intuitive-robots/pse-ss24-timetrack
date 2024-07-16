@@ -191,7 +191,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
 
             <div className="flex flex-col gap-2 w-full h-full justify-between ml-2">
-                <StatusFilter setFilter={setFilter}/>
+                <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Waiting]}/>
                 <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
                 <div className="flex mt-8 flex-col gap-2 items-center">
                     <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {getStatusType, StatusType} from "../../interfaces/StatusType";
-import {useAuth} from "../../context/AuthContext";
-import {Roles} from "../auth/roles";
 
 interface StatusFilterProps {
     setFilter: (status: StatusType | null) => void;
+    filterStatuses?: StatusType[];
 }
 
 /**
@@ -16,22 +15,9 @@ interface StatusFilterProps {
  */
 
 
-const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}: StatusFilterProps): React.ReactElement => {
-    const {role} = useAuth();
-    const getStatusesByRole = (role: string | null) => {
-        const allStatuses = ['View all'];
-
-        if (role === Roles.Secretary) {
-            return [...allStatuses, StatusType.Complete, StatusType.NoTimesheet, StatusType.Waiting];
-        } else if (role === Roles.Hiwi || role === Roles.Supervisor) {
-            return [...allStatuses, StatusType.Pending, StatusType.Waiting];
-        } else {
-            return allStatuses;
-        }
-    };
-
-    const statuses = getStatusesByRole(role);
-    const [activeStatus, setActiveStatus] = useState<string>(statuses[0]);
+const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter, filterStatuses = []}: StatusFilterProps): React.ReactElement => {
+    const availableStatuses = ['View All', ...filterStatuses];
+    const [activeStatus, setActiveStatus] = useState<string>(availableStatuses[0]);
 
   const handleStatusClick = (status : string) => {
     setActiveStatus(status);
@@ -49,7 +35,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ setFilter}: StatusFilterPro
   return (
     <div className="flex my-2">
       <div className="flex flex-row text-md font-medium px-3 py-2 bg-[#FAFAFA] items-center rounded-xl transition-all">
-        {statuses.map((status) => (
+        {availableStatuses.map((status) => (
           <div
             key={status}
             className={`relative flex items-center justify-center px-6 py-1.5 rounded-lg transition-all duration-300 cursor-pointer ${

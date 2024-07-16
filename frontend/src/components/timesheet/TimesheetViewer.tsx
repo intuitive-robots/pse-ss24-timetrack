@@ -150,6 +150,7 @@ const TimesheetViewer = () => {
 
             <div className="absolute right-10">
                 <ProgressCard currentValue={totalHoursInDecimal()}
+                              unit={"h"}
                               targetValue={80} //TODO: remove hardcoded target value, get from user
                               label={"Total hours working"}/>
             </div>

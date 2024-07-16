@@ -6,7 +6,7 @@ import {useAuth} from "../../context/AuthContext";
 import {isValidTimesheetStatus, statusMapping} from "../status/StatusMapping";
 import {isValidRole} from "../auth/roles";
 import {handleDownload} from "../../services/DocumentService";
-import {minutesToHoursFormatted, minutesToTime} from "../../utils/TimeUtils";
+import {minutesToHoursFormatted, minutesToHourMinuteFormatted} from "../../utils/TimeUtils";
 
 interface TimesheetListProps {
     sheets: Timesheet[];
@@ -28,8 +28,8 @@ const TimesheetListView: React.FC<TimesheetListProps> = ({ sheets }) => {
                     key={sheet._id}
                     month={sheet.month}
                     year={sheet.year}
-                    totalTime={minutesToTime(sheet.totalTime)}
-                    overtime={minutesToTime(sheet.overtime)}
+                    totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
+                    overtime={minutesToHourMinuteFormatted(sheet.overtime)}
                     projectName={"Project Alpha"} //TODO: Add correct project name
                     vacationDays={0}
                     status={(role && isValidRole(role) && sheet.status && isValidTimesheetStatus(sheet.status)) ? statusMapping[role][sheet.status]: StatusType.Pending}

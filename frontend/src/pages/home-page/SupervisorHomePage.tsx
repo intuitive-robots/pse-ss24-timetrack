@@ -16,6 +16,7 @@ import {isValidTimesheetStatus, statusMapping} from "../../components/status/Sta
 import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 import MonthDisplay from "../../components/display/MonthDisplay";
+import ProgressCard from "../../components/charts/ProgressCard";
 
 
 
@@ -174,6 +175,11 @@ const SupervisorHomePage = (): React.ReactElement => {
     return (
         <div className="px-6 py-6 text-nowrap">
 
+            <div className="absolute right-10">
+                <ProgressCard currentValue={openTimesheetsCount} targetValue={timesheets.length}
+                              label={"Timesheets To View"}/>
+            </div>
+
             <div className="flex flex-row gap-8 items-center">
 
                 <div className="flex justify-center items-center gap-6 flex-grow">
@@ -201,9 +207,9 @@ const SupervisorHomePage = (): React.ReactElement => {
 
 
             <div className="px-4 mt-5">
-                <StatusFilter setFilter={setFilter}/>
+                <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Pending, StatusType.Waiting]}/>
                 {hiwis ? (
-                    <div className="flex flex-col py-6 overflow-y-auto max-h-96">
+                    <div className="flex flex-col mt-5 overflow-y-auto max-h-96">
                         {filteredTimesheets.map((timesheet, index) => {
                             if (!timesheet) return null;
                             const hiwi = hiwis.find(h => h.username === timesheet.username);
