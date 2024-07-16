@@ -12,7 +12,7 @@ import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
-import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
+import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 import MonthDisplay from "../../components/display/MonthDisplay";
@@ -40,7 +40,24 @@ const SupervisorHomePage = (): React.ReactElement => {
 
     const navigate = useNavigate();
 
-
+    const defaultTimesheet = (
+        id: string,
+        username: string,
+        month: number,
+        year: number
+    ): Timesheet => {
+        return {
+            _id: id,
+            username: username,
+            month: month,
+            year: year,
+            status: statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet],
+            totalTime: 0,
+            overtime: 0,
+            lastSignatureChange: new Date().toISOString(),
+            projectName: 'default project',
+      };
+    };
 
     useEffect(() => {
       const storedMonth = localStorage.getItem('selectedMonth');
@@ -63,6 +80,43 @@ const SupervisorHomePage = (): React.ReactElement => {
     }, [user]);
 
 
+    useEffect(() => {
+        if (hiwis && hiwis.length > 0) {
+            Promise.all(hiwis.map(async (hiwi) => {
+                try {
+                    const timesheet = await getTimesheetByMonthYear(hiwi.username, month, year);
+                    return timesheet || defaultTimesheet(hiwi._id, hiwi.username, month, year);
+                } catch (error) {
+                    console.error(`Failed to fetch timesheet for ${hiwi.username}: `, error);
+                    return defaultTimesheet(hiwi._id, hiwi.username, month, year);
+                }
+            })).then(fetchedTimesheets => {
+                const validTimesheets = fetchedTimesheets
+                .filter((timesheet): timesheet is Timesheet => timesheet !== null)
+                    .map(timesheet => {
+                        if (!isValidTimesheetStatus(timesheet.status)) {
+                            return {
+                              ...timesheet,
+                                status: StatusType.Error,
+                            } as Timesheet;
+                        }
+                        return {
+                            ...timesheet,
+                            status: statusMapping[Roles.Supervisor][timesheet.status],
+                        } as Timesheet;
+                      });
+                setTimesheets(validTimesheets);
+                const openTimesheets = validTimesheets.filter(timesheet => timesheet && ['Pending'].includes(timesheet.status));
+                setOpenTimesheetsCount(openTimesheets.length);
+
+                console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
+            }).catch(error => {
+                console.error('Failed to load timesheets:', error);
+                setTimesheets([]);
+            });
+        }
+    }, [hiwis, month, year]);
+    /*
     useEffect(() => {
         if (hiwis && hiwis.length > 0) {
             Promise.all(hiwis.map(hiwi =>
@@ -92,7 +146,7 @@ const SupervisorHomePage = (): React.ReactElement => {
             });
         }
     }, [hiwis, month, year]);
-
+    */
 //     useEffect(() => {
 //     const fetchHiwisAndTimesheets = async () => {
 //         if (user) {
