@@ -4,7 +4,7 @@ import {useAuth} from "../../context/AuthContext";
 import {Roles} from "../auth/roles";
 import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
-import {generateDocument} from "../../services/DocumentService";
+import {handleDownload} from "../../services/DocumentService";
 import {User} from "../../interfaces/User";
 import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 
@@ -18,24 +18,6 @@ interface SecretaryDocumentListViewProps {
 const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ sheets, hiwis, supervisors }) => {
     const { role } = useAuth();
 
-    // for (const sheet of sheets) {
-    //     console.log(sheet.status + ", valid timesheet: " + isValidTimesheetStatus(sheet.status));
-    // }
-
-    const handleDownload = async (username: string, month: number, year: number) => {
-        if (!username) return;
-        console.log("Downloading document for", username, month, year)
-
-        try {
-            const documentUrl = await generateDocument({ username, month, year });
-            window.open(documentUrl, '_blank');
-        } catch (error) {
-            console.error('Failed to download document:', error);
-            alert('Failed to download document');
-        }
-    };
-
-    // console.log("hiwis: " + hiwis.map(h => h.username));
     return (role === Roles.Secretary) ? (
         (sheets != null) ? (
             <div className="flex flex-col gap-4 overflow-y-auto max-h-[28rem]">
