@@ -15,6 +15,7 @@ import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
+import MonthDisplay from "../../components/display/MonthDisplay";
 
 
 
@@ -174,16 +175,14 @@ const SupervisorHomePage = (): React.ReactElement => {
         <div className="px-6 py-6 text-nowrap">
 
             <div className="flex flex-row gap-8 items-center">
-                <div className="flex flex-row gap-4">
-                    <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                    <MonthTimespan month={month} year={year}/>
-                </div>
-                <div className="flex gap-4">
+
+                <div className="flex justify-center items-center gap-6 flex-grow">
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
                         onClick={() => handleMonthChange('prev')}
                     />
+                    <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
@@ -196,7 +195,8 @@ const SupervisorHomePage = (): React.ReactElement => {
 
             <h1 className="text-3xl font-bold text-gray-800 mt-5">Hello Nico,</h1>
 
-            <h2 className="text-md font-medium text-subtitle mt-1">You have {hiwis?.length ?? 0} assigned employees with {openTimesheetsCount} open
+            <h2 className="text-md font-medium text-subtitle mt-1">You have {hiwis?.length ?? 0} assigned employees
+                with {openTimesheetsCount} open
                 timesheets</h2>
 
 

@@ -29,7 +29,7 @@ const MonthDisplay: React.FC<MonthDisplayProps> = ({ month, year }) => {
         </div>
         */
         <div className="text-lg font-semibold text-nav-gray leading-tight w-24 text-center">
-            {formattedMonth} - {year}
+            {formattedMonth} / {year}
         </div>
         /*
         <div className="text-lg font-semibold text-nav-gray leading-tight text-center">

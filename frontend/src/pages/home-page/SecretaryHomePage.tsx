@@ -17,6 +17,7 @@ import QuickActionButton from "../../components/input/QuickActionButton";
 import DownloadIcon from "../../assets/images/download_icon_white.svg";
 import SecretaryTimesheetListView from "../../components/timesheet/SecretaryTimesheetListView";
 import {useAuth} from "../../context/AuthContext";
+import MonthDisplay from "../../components/display/MonthDisplay";
 
 
 
@@ -151,16 +152,13 @@ const SecretaryHomePage: React.FC = () => {
     return (
         <div className="px-6 py-6">
             <div className="flex flex-row gap-8 items-center">
-                <div className="flex flex-row gap-4">
-                    <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                    <MonthTimespan year={year} month={month}/>
-                </div>
-                <div className="flex gap-4">
+                <div className="flex justify-center items-center gap-6 flex-grow">
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
                         onClick={() => handleMonthChange('prev')}
                     />
+                    <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
