@@ -63,7 +63,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
         <div className="flex flex-row mt-8 gap-12">
             <img src={VerticalTimeLine} alt="Vertical Time Line"/>
 
-            <div className="flex flex-col w-full h-full justify-between">
+            <div className="relative flex flex-col w-full h-full justify-between">
                 <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
                 <div className="flex flex-col overflow-y-auto gap-3 max-h-[31rem] flex-grow">
                     {/*flex flex-col gap-4 overflow-y-auto max-h-[28rem]*/}
@@ -78,7 +78,8 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                                 period={`${formatTime(entry.startTime)} - ${formatTime(entry.endTime)}`}
                                 date={entry.startTime}
                                 onDelete={interactable ? () => handleDelete(entry._id) : undefined}
-                                onEdit={interactable ? () => openPopup(<EditTimeEntryPopup entryData={entry}/>) : undefined}
+                                onEdit={interactable ? () => openPopup(<EditTimeEntryPopup
+                                    entryData={entry}/>) : undefined}
                             />;
                         }
                         if (entry.entryType === TimeEntryTypes.VACATION_ENTRY) {
@@ -87,12 +88,13 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                                 startDate={entry.startTime}
                                 endDate={entry.endTime}
                                 onDelete={interactable ? () => handleDelete(entry._id) : undefined}
-                                onEdit={interactable ? () => openPopup(<EditVacationEntryPopup entryData={entry}/>) : undefined}
+                                onEdit={interactable ? () => openPopup(<EditVacationEntryPopup
+                                    entryData={entry}/>) : undefined}
                             />
                         }
 
                         return <div>Invalid Entry Type</div>;
-                })}
+                    })}
                 </div>
 
                 <div
@@ -109,7 +111,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
                         </div>
                     </div>
                 </div>
-
+                <div className="absolute bottom-10 left-0 right-0 h-28 complex-gradient pointer-events-none"></div>
             </div>
         </div>
     );

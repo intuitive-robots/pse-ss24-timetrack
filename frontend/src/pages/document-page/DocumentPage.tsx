@@ -60,12 +60,11 @@ const DocumentPage: React.FC = () => {
             <StatusFilter setFilter={setFilter}/>
 
             <div className="flex flex-row mt-8 gap-12">
-        
                 <img src={VerticalTimeLine} alt="Vertical Time Line"/>
 
-                <div className="flex flex-col w-full h-full justify-between">
+                <div className="relative flex flex-col w-full h-full justify-between">
                     <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
-                    <TimesheetListView sheets={filteredTimesheets} />
+                    <TimesheetListView sheets={filteredTimesheets}/>
                     <div className="flex mt-8 flex-col gap-2 items-center">
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                         <div className="flex flex-row ml-12">
@@ -79,7 +78,9 @@ const DocumentPage: React.FC = () => {
                             </div>
                         </div>
                     </div>
+                    <div className="absolute bottom-10 left-0 right-0 h-20 complex-gradient pointer-events-none"></div>
                 </div>
+
             </div>
         </div>
     );

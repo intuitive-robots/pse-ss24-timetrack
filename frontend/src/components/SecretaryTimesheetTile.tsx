@@ -54,7 +54,7 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
 
     return (
       <div className="flex items-center px-4 gap-6 py-3 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
-          <div className="flex gap-5">
+          <div className="flex gap-5 w-60">
               <UserInfoSecretaryView
                   firstName={firstName}
                   lastName={lastName}

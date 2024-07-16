@@ -10,6 +10,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer utilities {
+  .complex-gradient {
+    background: linear-gradient(to bottom,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.75) 66%,
+                rgba(255, 255, 255, 1) 74%,
+                rgba(255, 255, 255, 1) 100%);
+  }
+}
+
 ::-webkit-scrollbar {
   display: none;
   width: 0;
