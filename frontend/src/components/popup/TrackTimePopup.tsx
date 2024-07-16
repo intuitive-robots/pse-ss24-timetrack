@@ -12,6 +12,7 @@ import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import Dropdown from "../input/Dropdown";
 import {Roles} from "../auth/roles";
+import {validateCreateTimeEntry} from "../validation/ValidateCreateTimeEntry";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -32,19 +33,11 @@ const TrackTimePopup: React.FC = () => {
 
     /*TODO: add activity type */
     const handleSubmit = async () => {
-        if (!activity || !project || !selectedDate || !startTime || !endTime || !breakTime) {
-            let missingFields = [];
 
-            if (!activity) missingFields.push("activity");
-            if (!project) missingFields.push("project");
-            if (!selectedDate) missingFields.push("selectedDate");
-            if (!startTime) missingFields.push("startTime");
-            if (!endTime) missingFields.push("endTime");
-            if (!breakTime) missingFields.push("breakTime");
-
-            alert("Please fill all the fields correctly. Missing fields: " + missingFields.join(", "));
+        if (!validateCreateTimeEntry(activity, project, selectedDate, startTime, endTime, breakTime).valid) {
             return;
         }
+
 
         const startDate = new Date(selectedDate);
         startDate.setHours(parseInt(startTime.split(':')[0]), parseInt(startTime.split(':')[1]));
