@@ -11,9 +11,9 @@ import {getSupervisor} from "../services/UserService";
 
 interface SecretaryTimesheetTileProps {
   key: string;
-  totalTime: number;
+  totalTime: string;
   vacationDays: number;
-  overtime: number;
+  overtime: string;
   status: StatusType;
   onDownload: () => void;
   username: string;
@@ -33,9 +33,7 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
                                                          profileImageUrl,
                                                          vacationDays
 }) => {
-    const totalTimeString = totalTime.toString() + "h";
     const vacationDaysString = vacationDays.toString() + " days";
-    const overtimeString = overtime.toString() + "h";
 
 
     const [supervisorName, setSupervisorName] = useState('');
@@ -67,7 +65,7 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
 
 
           <ListTileInfo items={
-              [totalTimeString, vacationDaysString, overtimeString]}
+              [totalTime, vacationDaysString, overtime]}
               gap={"lg:gap-12 gap-8 transition-all"}
           />
 

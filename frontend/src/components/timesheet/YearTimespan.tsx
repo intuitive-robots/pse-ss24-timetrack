@@ -15,7 +15,7 @@ const YearTimespan: React.FC<YearTimespanProps> = ({ year  }: YearTimespanProps)
     const formatDate = (date: Date): string => {
         return new Intl.DateTimeFormat('en-US', {
             year: 'numeric',
-            month: 'long',
+            month: 'short',
         }).format(date);
     };
 

@@ -6,7 +6,7 @@ import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
 import {handleDownload} from "../../services/DocumentService";
 import {User} from "../../interfaces/User";
-import {minutesToHoursFormatted} from "../../utils/TimeUtils";
+import {minutesToHoursFormatted, minutesToTime} from "../../utils/TimeUtils";
 
 interface SecretaryDocumentListViewProps {
     sheets: Timesheet[];
@@ -27,8 +27,8 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                     return hiwi ? (
                         <SecretaryTimesheetTile
                         key={sheet._id}
-                        totalTime={minutesToHoursFormatted(sheet.totalTime)}
-                        overtime={minutesToHoursFormatted(sheet.overtime)}
+                        totalTime={minutesToTime(sheet.totalTime)}
+                        overtime={minutesToTime(sheet.overtime)}
                         vacationDays={0}
                         status={sheet.status}
                          onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
@@ -40,8 +40,8 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                     ) : (
                         <SecretaryTimesheetTile
                         key={sheet._id}
-                        totalTime={minutesToHoursFormatted(sheet.totalTime)}
-                        overtime={minutesToHoursFormatted(sheet.overtime)}
+                        totalTime={minutesToTime(sheet.totalTime)}
+                        overtime={minutesToTime(sheet.overtime)}
                         vacationDays={0}
                         status={sheet.status}
                         onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}

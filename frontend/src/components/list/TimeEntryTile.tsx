@@ -29,7 +29,7 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({
             className={`flex items-center pl-4 py-2.5 gap-6 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap ${rightPadding}`}>
             <div className="flex gap-5 ">
                 <CalendarDay dayTime={date}/>
-                <div className="flex flex-col w-32  mt-1.5 gap-0.5">
+                <div className="flex flex-col w-64  mt-1.5 gap-0.5">
                     <p className="text-md font-semibold truncate overflow-hidden">{entryName}</p>
                     <p className="text-sm font-semibold text-[#9F9F9F]">{projectName}</p>
                 </div>

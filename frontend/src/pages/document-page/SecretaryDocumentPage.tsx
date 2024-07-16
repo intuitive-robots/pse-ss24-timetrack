@@ -14,6 +14,7 @@ import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
 import QuickActionButton from "../../components/input/QuickActionButton";
 import DownloadIcon from "../../assets/images/download_icon_white.svg";
+import MonthDisplay from "../../components/display/MonthDisplay";
 import {handleDownloadMultipleDocuments} from "../../services/DocumentService";
 
 
@@ -164,16 +165,13 @@ const SecretaryDocumentPage: React.FC = () => {
     return (
         <div className="px-6 py-6">
             <div className="flex flex-row gap-8 items-center">
-                <div className="flex flex-row gap-4">
-                    <p className="text-lg font-semibold text-subtitle">This Month,</p>
-                    <MonthTimespan year={year} month={month}/>
-                </div>
-                <div className="flex gap-4">
+                <div className="flex justify-center items-center gap-6 flex-grow">
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
                         onClick={() => handleMonthChange('prev')}
                     />
+                    <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
@@ -198,7 +196,7 @@ const SecretaryDocumentPage: React.FC = () => {
                 <div className="flex mt-8 flex-col gap-2 items-center">
                     <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                     <div className="flex flex-row">
-                        <div className="w-40"/>
+                    <div className="w-40"/>
                         <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
                             <p>Work</p>
                             <div className="w-12"/>
