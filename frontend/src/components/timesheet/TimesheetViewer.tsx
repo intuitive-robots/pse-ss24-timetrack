@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import TimesheetEntryView from "./TimesheetEntryView";
 import {Timesheet} from "../../interfaces/Timesheet";
-import {User} from "../../interfaces/Hiwi";
-import MonthTimespan from "./MonthTimespan";
 import ListIconCardButton from "../input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg";
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg";
@@ -14,9 +12,6 @@ import QuickActionButton from "../input/QuickActionButton";
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
 import DocumentStatus from "../status/DocumentStatus";
 import { useParams, useNavigate } from "react-router-dom";
-import PopupActionButton from "../input/PopupActionButton";
-import AddUserIcon from "images/add_user_icon.svg";
-import TrackTimePopup from "../popup/TrackTimePopup";
 import RequestChangePopup from "../popup/RequestChangePopup";
 import {usePopup} from "../popup/PopupContext";
 import ProgressCard from "../charts/ProgressCard";
@@ -56,7 +51,6 @@ const TimesheetViewer = () => {
     const [year, setYear] = useState(validateYear(yearString));
 
     useEffect(() => {
-        console.log(monthString, yearString);
         setMonth(validateMonth(monthString));
         setYear(validateYear(yearString));
         // console.log(month, year)
@@ -64,12 +58,15 @@ const TimesheetViewer = () => {
 
     useEffect(() => {
         if (username) {
-            console.log(username);
             getTimesheetByMonthYear(username, month, year)
                 .then(fetchedTimesheet => {
+                    console.log('Fetched timesheet:', fetchedTimesheet);
                     setTimesheet(fetchedTimesheet);
                 })
-                .catch(error => console.error('Failed to fetch timesheet for given month and year:', error));
+                .catch(error => {
+                    setTimesheet(null);
+                    console.error('Failed to fetch timesheet for given month and year:', error);
+                });
         }
     }, [username, month, year]);
 
@@ -154,27 +151,6 @@ const TimesheetViewer = () => {
                               targetValue={80} //TODO: remove hardcoded target value, get from user
                               label={"Total hours working"}/>
             </div>
-
-            {/*<div className="flex flex-row gap-8 items-center">*/}
-            {/*    <div className="flex flex-row gap-4">*/}
-            {/*        <p className="text-lg font-semibold text-subtitle">This Month,</p>*/}
-            {/*        <MonthTimespan month={month} year={year}/>*/}
-            {/*    </div>*/}
-            {/*    <div className="flex gap-4">*/}
-            {/*        <ListIconCardButton*/}
-            {/*            iconSrc={LeftNavbarIcon}*/}
-            {/*            label={"Before"}*/}
-            {/*            onClick={() => handleMonthChange('prev')}*/}
-            {/*        />*/}
-            {/*        <ListIconCardButton*/}
-            {/*            iconSrc={RightNavbarIcon}*/}
-            {/*            label={"Next"}*/}
-            {/*            orientation={"right"}*/}
-            {/*            onClick={() => handleMonthChange('next')}*/}
-            {/*            disabled={month === currentMonth && year === currentYear}*/}
-            {/*        />*/}
-            {/*    </div>*/}
-            {/*</div>*/}
 
             <div className="flex justify-between items-center w-full">
                 <div className="text-lg font-semibold text-subtitle">

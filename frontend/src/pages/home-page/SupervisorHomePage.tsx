@@ -275,11 +275,6 @@ const SupervisorHomePage = (): React.ReactElement => {
                                     lastName={hiwi.personalInfo.lastName}
                                     role={hiwi.role}
                                     profileImageUrl={ProfilePlaceholder} // TODO: hiwi.profileImageUrl
-                                    // status={
-                                    //     role && isValidRole(role) && timesheet.status && isValidTimesheetStatus(timesheet.status) ?
-                                    //     statusMapping[role][timesheet.status] :
-                                    //     StatusType.Pending
-                                    // }
                                     status={timesheet.status}
                                     onCheck={() => handleCheckTimesheet(hiwi, month, year)} // TODO
                                 />

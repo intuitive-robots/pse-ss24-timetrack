@@ -22,7 +22,7 @@ export function createTimeEntryValidation(activity: string, project: string, sel
     const minBreakMinutes = 30;
 
     // missing fields
-    if (!activity || !project || !selectedDate || !startTime || !endTime || !breakTime) {
+    if (!activity || !project || !selectedDate || !startTime || !endTime || breakTime === null) {
         let missingFields = [];
 
         if (!activity) missingFields.push("activity");
@@ -30,7 +30,7 @@ export function createTimeEntryValidation(activity: string, project: string, sel
         if (!selectedDate) missingFields.push("selectedDate");
         if (!startTime) missingFields.push("startTime");
         if (!endTime) missingFields.push("endTime");
-        if (!breakTime) missingFields.push("breakTime");
+        if (breakTime === null) missingFields.push("breakTime");
 
         alert("Please fill all the fields correctly. Missing fields: " + missingFields.join(", "));
         return result;
@@ -70,10 +70,10 @@ export function createTimeEntryValidation(activity: string, project: string, sel
     }
 
     // invalid date (in future)
-    if (selectedDate > currentDate) {
-        alert("I don't think you can travel into the future. Please choose a valid date.");
-        return result;
-    }
+    // if (selectedDate > currentDate) {
+    //     alert("I don't think you can travel into the future. Please choose a valid date.");
+    //     return result;
+    // }
 
     result.valid = true;
     return result;
@@ -102,10 +102,10 @@ export function validateCreateVacationEntry(selectedDate: Date, duration: string
     }
 
     // invalid date (in future)
-    if (selectedDate > currentDate) {
-        alert("I don't think you can travel into the future. Please choose a valid date.");
-        return result;
-    }
+    // if (selectedDate > currentDate) {
+    //     alert("I don't think you can travel into the future. Please choose a valid date.");
+    //     return result;
+    // }
 
     // invalid duration
     if (hours < minHours) {

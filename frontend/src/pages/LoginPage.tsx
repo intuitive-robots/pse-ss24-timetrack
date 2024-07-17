@@ -54,7 +54,7 @@ const LoginForm: React.FC = () => {
           />
           <div className="absolute inset-y-0 top-7 right-2 flex items-center pr-3 cursor-pointer"
                onClick={togglePasswordVisibility}>
-            {showPassword ? <EyeFilledIcon className="hover:fill-gray-900 fill-black"/> : <EyeNotFilledIcon className="hover:fill-gray-900 fill-black"/>}
+            {showPassword ? <EyeFilledIcon className="hover:fill-gray-600 fill-gray-800"/> : <EyeNotFilledIcon className="hover:fill-gray-600 fill-gray-800"/>}
           </div>
         </div>
         <button type="submit"

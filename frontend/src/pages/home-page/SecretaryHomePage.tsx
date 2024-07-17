@@ -10,11 +10,6 @@ import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
-import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
-import MonthTimespan from "../../components/timesheet/MonthTimespan";
-import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
-import QuickActionButton from "../../components/input/QuickActionButton";
-import DownloadIcon from "../../assets/images/download_icon_white.svg";
 import SecretaryTimesheetListView from "../../components/timesheet/SecretaryTimesheetListView";
 import {useAuth} from "../../context/AuthContext";
 import MonthDisplay from "../../components/display/MonthDisplay";
@@ -74,7 +69,7 @@ const SecretaryHomePage: React.FC = () => {
 
     useEffect(() => {
          if (hiwis && hiwis.length > 0) {
-             hiwis.map(hiwi => {
+             hiwis.forEach(hiwi => {
                  getSupervisor(hiwi.username)
                      .then(fetchedSupervisor => {
                          setSupervisors(prevSupervisors => [...prevSupervisors, fetchedSupervisor]);
