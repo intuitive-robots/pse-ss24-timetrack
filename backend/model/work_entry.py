@@ -139,7 +139,7 @@ class WorkEntry(TimeEntry):
     def get_duration(self):
 
         """
-        Calculates and returns the total duration of the work entry, minus break time, expressed in hours.
+        Calculates and returns the total duration of the work entry, minus break time, expressed in minutes.
 
         :return: The total number of hours worked, excluding break time.
         :rtype: int

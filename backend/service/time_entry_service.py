@@ -9,6 +9,7 @@ from model.repository.time_entry_repository import TimeEntryRepository
 from model.time_entry import TimeEntry
 from model.request_result import RequestResult
 from model.time_entry_type import TimeEntryType
+from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 from model.timesheet_status import TimesheetStatus
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
@@ -33,7 +34,8 @@ class TimeEntryService:
         """
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.timesheet_service = TimesheetService()
-        self.entry_validator = TimeEntryDataValidator()
+        self.entry_data_validator = TimeEntryDataValidator()
+        self.entry_validator = TimeEntryValidator()
         self.user_service = UserService()
 
 
@@ -64,9 +66,9 @@ class TimeEntryService:
         if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
             return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=400)
                         
-        validation_result = self.entry_validator.is_valid(entry_data)
-        if validation_result.status == ValidationStatus.FAILURE:
-            return RequestResult(False, validation_result.message, status_code=400)
+        data_validation_result = self.entry_data_validator.is_valid(entry_data)
+        if data_validation_result.status == ValidationStatus.FAILURE:
+            return RequestResult(False, data_validation_result.message, status_code=400)
 
         # Select the appropriate class based on entry_type and create a time entry instance
         entry_class = self.entry_type_mapping.get(entry_type)
@@ -79,6 +81,11 @@ class TimeEntryService:
         if not entry_creation_result.is_successful:
             return entry_creation_result
 
+        strategy_validation_results = self.entry_validator.validate_entry(time_entry)
+        for result in strategy_validation_results:
+            if result.status == ValidationStatus.FAILURE:
+                return RequestResult(False, result.message, status_code=400)
+
         timesheet_exists_result = self.timesheet_service.ensure_timesheet_exists(
             username, time_entry.start_time.month, time_entry.start_time.year)
         if not timesheet_exists_result.is_successful:
@@ -90,16 +97,17 @@ class TimeEntryService:
         result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
         if not result.is_successful:
             return result
-        if validation_result.status == ValidationStatus.WARNING:
-            return RequestResult(True, f"{entry_type.name} entry added with warnings ´{validation_result.message}´",
-                                 status_code=200, data={"_id": entry_creation_result.data["_id"]})
+
         self.timesheet_service.calculate_overtime(entry_data['timesheetId'])
+        if data_validation_result.status == ValidationStatus.WARNING:
+            return RequestResult(True, f"{entry_type.name} entry added with warnings ´{data_validation_result.message}´",
+                                 status_code=200, data={"_id": entry_creation_result.data["_id"]})
+        for result in strategy_validation_results:
+            if result.status == ValidationStatus.WARNING:
+                return RequestResult(True, f"{entry_type.name} entry added with warnings ´{result.message}´",
+                                     status_code=200, data={"_id": entry_creation_result.data["_id"]})
         return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200,
                              data={"_id": entry_creation_result.data["_id"]})
-
-
-
-
 
     def create_work_entry(self, entry_data: dict, username: str) -> RequestResult:
         """

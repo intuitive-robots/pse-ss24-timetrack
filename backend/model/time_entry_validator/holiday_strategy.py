@@ -42,8 +42,8 @@ class HolidayStrategy(TimeEntryStrategy):
               the validation will return:
               ValidationResult(ValidationStatus.SUCCESS, "Entry date is not a public holiday.")
         """
-        if entry.date in self.holiday_calendar:
-            holiday_name = self.holiday_calendar.get(entry.date)
+        if entry.start_time.date() in self.holiday_calendar:
+            holiday_name = self.holiday_calendar.get(entry.start_time.date())
             return ValidationResult(ValidationStatus.FAILURE, f"Entry date is a public holiday: {holiday_name}.")
 
         return ValidationResult(ValidationStatus.SUCCESS, "Entry date is not a public holiday.")

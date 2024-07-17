@@ -48,16 +48,16 @@ class WorkingTimeStrategy(TimeEntryStrategy):
         # TODO Type Check within implementatino
 
         # Validate business hours
-        if not (self.BUSINESS_START <= entry.start_time < self.BUSINESS_END):
+        if not (self.BUSINESS_START <= entry.start_time.time() < self.BUSINESS_END):
             return ValidationResult(ValidationStatus.WARNING,
                                     "Entry is outside of standard business hours (8 AM to 6 PM).")
 
         # Validate maximum working hours
         work_duration = entry.get_duration()
-        if work_duration > self.MAX_WORKING_HOURS:
+        if work_duration > (self.MAX_WORKING_HOURS * 60):
             return ValidationResult(ValidationStatus.WARNING, "Working time exceeds the maximum allowed 8 hours.")
 
-        if work_duration > self.FAILURE_WORKING_HOURS:
+        if work_duration > (self.FAILURE_WORKING_HOURS * 60):
             return ValidationResult(ValidationStatus.FAILURE, "Working time exceeds the permitted 10 hours.")
 
         return ValidationResult(ValidationStatus.SUCCESS, "Time entry is valid.")

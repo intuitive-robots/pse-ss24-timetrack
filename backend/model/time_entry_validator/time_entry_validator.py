@@ -1,4 +1,7 @@
 from model.time_entry import TimeEntry
+from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
+from model.time_entry_validator.holiday_strategy import HolidayStrategy
+from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 
 
 class TimeEntryValidator:
@@ -16,6 +19,12 @@ class TimeEntryValidator:
         Constructs a TimeEntryValidator with an empty list, ready to accept validation strategies.
         """
         self.validationRules = []
+        working_time_strategy = WorkingTimeStrategy()
+        holiday_strategy = HolidayStrategy()
+        break_length_strategy = BreakLengthStrategy()
+        self.add_validation_rule(working_time_strategy)
+        self.add_validation_rule(holiday_strategy)
+        self.add_validation_rule(break_length_strategy)
 
     def add_validation_rule(self, rule):
         """
