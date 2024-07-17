@@ -15,12 +15,10 @@ const UserContactInfo: React.FC = () => {
     useEffect(() => {
         getHiwiSupervisor().then(data => {
             setSupervisor(data);
-            setIsLoading(false);
         }).catch(error => {
             console.error('Failed to fetch supervisor:', error);
             alert('Failed to fetch supervisor data.');
-            setIsLoading(false);
-        });
+        }).finally(() => setIsLoading(false));
     }, []);
 
     const handleCopyEmail = async () => {
@@ -48,25 +46,16 @@ const UserContactInfo: React.FC = () => {
         }
     };
 
-    if (isLoading) {
-        return <div>
-            <UserInfo
-                name={""}
-                lastName={""}
-                role={Roles.Supervisor}
-                profileImageUrl={ProfilePicture}
-            />
-        </div>;
-    }
 
     return (
         <div className="flex flex-col items-center">
             <div className="flex flex-row justify-between w-full">
                 <UserInfo
-                    name={supervisor.firstName}
-                    lastName={supervisor.lastName}
-                    role={supervisor.role || "N/A"}
-                    profileImageUrl={supervisor.profileImageUrl || ProfilePicture}
+                    name={isLoading ? "" : supervisor.firstName}
+                    lastName={isLoading ? "" : supervisor.lastName}
+                    role={isLoading ? Roles.Supervisor : (supervisor.role || "N/A")}
+                    profileImageUrl={isLoading ? ProfilePicture : (supervisor.profileImageUrl || ProfilePicture)}
+                    loading={isLoading}
                 />
                 <div className="flex flex-row gap-3">
                     <ContactButton icon={MailIcon} onClick={handleCopyEmail}/>

@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import YearTimespan from "../../components/timesheet/YearTimespan";
 import TimesheetListView from "../../components/timesheet/TimesheetListView";
 import {Timesheet} from "../../interfaces/Timesheet";
@@ -9,6 +8,7 @@ import {StatusType} from "../../interfaces/StatusType";
 import StatusFilter from "../../components/status/StatusFilter";
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
+import {TimeLineIcon} from "../../assets/iconComponents/TimeLineIcon";
 
 
 const DocumentPage: React.FC = () => {
@@ -60,7 +60,7 @@ const DocumentPage: React.FC = () => {
             <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Pending]}/>
 
             <div className="flex flex-row mt-8 gap-12">
-                <img src={VerticalTimeLine} alt="Vertical Time Line"/>
+                <TimeLineIcon/>
 
                 <div className="relative flex flex-col w-full h-full justify-between">
                     <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>
