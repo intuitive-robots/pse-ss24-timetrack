@@ -12,6 +12,7 @@ import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import Dropdown from "../input/Dropdown";
 import {createTimeEntryValidation} from "../validation/InputValidation";
+import {wait} from "@testing-library/user-event/dist/utils";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -46,6 +47,11 @@ const TrackTimePopup: React.FC = () => {
                 });
             }
             return;
+        }
+
+        if (result.errors && result.errors.some(error => error.property === "workTimeSpan")) {
+            setWorkingTimeWarning(true);
+            await wait(500);
         }
 
 
