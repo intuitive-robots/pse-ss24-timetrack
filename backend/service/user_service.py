@@ -278,7 +278,7 @@ class UserService:
 
         return users
 
-    def get_users_by_role(self, role: str) -> list[User]:
+    def get_users_by_role(self, role: str):
         """
         Retrieves a list of users in the system filtered by a specific role.
 
@@ -332,7 +332,6 @@ class UserService:
 
         Returns: A RequestResult object containing the result of the operation.
         """
-        print(username)
         hiwi_data = self.user_repository.find_by_username(username)
         if not hiwi_data:
             return RequestResult(False, "Hiwi not found", status_code=404)

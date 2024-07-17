@@ -34,7 +34,7 @@ class TimeEntryService:
         """
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.timesheet_service = TimesheetService()
-        self.entry_data_validator = TimeEntryDataValidator()
+        self.entry_input_validator = TimeEntryDataValidator()
         self.entry_validator = TimeEntryValidator()
         self.user_service = UserService()
 
@@ -65,8 +65,9 @@ class TimeEntryService:
         timesheet_status = self.timesheet_service.get_timesheet_status(entry_data['timesheetId']).data
         if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
             return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=400)
-                        
-        data_validation_result = self.entry_data_validator.is_valid(entry_data)
+
+        # Validate input data
+        data_validation_result = self.entry_input_validator.is_valid(entry_data)
         if data_validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, data_validation_result.message, status_code=400)
 
@@ -77,14 +78,15 @@ class TimeEntryService:
 
         time_entry = entry_class.from_dict(entry_data)
 
-        entry_creation_result = self.time_entry_repository.create_time_entry(time_entry)
-        if not entry_creation_result.is_successful:
-            return entry_creation_result
-
-        strategy_validation_results = self.entry_validator.validate_entry(time_entry)
+        # Validate the entry through strategy pattern
+        strategy_validation_results = time_entry.time_entry_validator.validate_entry(time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
+
+        entry_creation_result = self.time_entry_repository.create_time_entry(time_entry)
+        if not entry_creation_result.is_successful:
+            return entry_creation_result
 
         timesheet_exists_result = self.timesheet_service.ensure_timesheet_exists(
             username, time_entry.start_time.month, time_entry.start_time.year)
@@ -159,7 +161,8 @@ class TimeEntryService:
         updated_entry_data = existing_entry_data.copy()
         updated_entry_data.update(update_data)
 
-        validation_result = self.entry_validator.is_valid(updated_entry_data)
+        # Validate input update data
+        validation_result = self.entry_input_validator.is_valid(updated_entry_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
 
@@ -172,6 +175,11 @@ class TimeEntryService:
         if existing_start_date.month != updated_start_date.month or existing_start_date.year != updated_start_date.year:
             return RequestResult(False, "Cannot update time entry to a different month or year", status_code=400)
 
+        # Validate the updated entry through strategy pattern
+        strategy_validation_results = updated_time_entry.time_entry_validator.validate_entry(updated_time_entry)
+        for result in strategy_validation_results:
+            if result.status == ValidationStatus.FAILURE:
+                return RequestResult(False, result.message, status_code=400)
 
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
         if not repo_result.is_successful:

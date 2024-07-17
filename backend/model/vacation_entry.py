@@ -34,7 +34,6 @@ class VacationEntry(TimeEntry):
         """
 
         super().__init__(timesheet_id, start_time, end_time, TimeEntryType.VACATION_ENTRY, time_entry_id)
-        self.time_entry_validator = TimeEntryValidator()
         self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
         self.time_entry_validator.add_validation_rule(HolidayStrategy())
 
