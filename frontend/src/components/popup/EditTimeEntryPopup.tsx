@@ -31,6 +31,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
         if (!result.valid) {
             if (result.errors && result.errors.length > 0) {
                 result.errors.forEach(error => {
+                    alert(error.message);
                     console.log('Validation error:', error.message);
                     return;
                 });

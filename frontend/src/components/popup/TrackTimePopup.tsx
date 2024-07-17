@@ -40,6 +40,7 @@ const TrackTimePopup: React.FC = () => {
                     if (error.property === "workTimeSpan") {
                         setWorkingTimeWarning(true);
                     }
+                    alert(error.message);
                     console.log('Validation error:', error.message);
                     return;
                 });

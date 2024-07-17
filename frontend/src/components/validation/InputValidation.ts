@@ -48,13 +48,13 @@ export function createTimeEntryValidation(activity: string, project: string, sel
     }
 
     // warning for time span
-    if (workTimeSpan > recommendedWorkingMinutes) {
-        result.errors.push({
-            property: "workTimeSpan",
-            message: "The working time span exceeds the recommended working minutes."
-        });
-        return result;
-    }
+    // if (workTimeSpan > recommendedWorkingMinutes) { //TODO Warning, but no error
+    //     result.errors.push({
+    //         property: "workTimeSpan",
+    //         message: "The working time span exceeds the recommended working minutes."
+    //     });
+    //     return result;
+    // }
 
     // invalid break time
     if (breakTime > workTimeSpan) {
