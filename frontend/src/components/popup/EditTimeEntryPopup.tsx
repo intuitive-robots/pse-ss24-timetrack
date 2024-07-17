@@ -11,6 +11,7 @@ import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import {TimeEntry} from "../../interfaces/TimeEntry";
 import {updateTimeEntry} from "../../services/TimeEntryService";
+import {createTimeEntryValidation} from "../validation/InputValidation";
 
 interface EditTimeEntryPopupProps {
     entryData: TimeEntry;
@@ -26,8 +27,14 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
     const [breakTime, setBreakTime] = useState<number>(entryData.breakTime);
 
     const handleSubmit = async () => {
-        if (!activity || !project || !selectedDate || !startTime || !endTime) {
-            alert("Please fill all the fields correctly.");
+        const result = createTimeEntryValidation(activity, project, selectedDate, startTime, endTime, breakTime);
+        if (!result.valid) {
+            if (result.errors && result.errors.length > 0) {
+                result.errors.forEach(error => {
+                    console.log('Validation error:', error.message);
+                    return;
+                });
+            }
             return;
         }
 
@@ -54,7 +61,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
             closePopup();
             window.location.reload();
         } catch (error) {
-            alert("Failed to update work entry.");
+            alert(`Failed to update work entry:\n${error}`);
             console.error('Error updating work entry:', error);
         }
     };

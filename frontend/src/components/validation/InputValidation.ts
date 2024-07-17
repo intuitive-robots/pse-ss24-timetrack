@@ -21,6 +21,7 @@ export function createTimeEntryValidation(activity: string, project: string, sel
     const workingMinutesWithoutBreak = 360;
     const minBreakMinutes = 30;
 
+
     // missing fields
     if (!activity || !project || !selectedDate || !startTime || !endTime || breakTime === null) {
         let missingFields = [];
@@ -110,6 +111,11 @@ export function validateCreateVacationEntry(selectedDate: Date, duration: string
     // invalid duration
     if (hours < minHours) {
         alert("Please choose at least an one hour duration.");
+        return result;
+    }
+
+    if (hours > 8) {
+        alert("You can not take vacation more than a regular working day.");
         return result;
     }
 
