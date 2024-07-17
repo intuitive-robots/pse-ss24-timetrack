@@ -70,15 +70,19 @@ class TimesheetController(MethodView):
         """
         #TODO: Get Methode falls Felder fehlen / Wiederholte Codezeilen -> Prüfung auslagern
         if not request.is_json:
-            return jsonify({'error': 'Request must be in JSON format'}), 400
+            return jsonify('Request must be in JSON format'), 400
         request_data = request.get_json()
         if request_data is None:
-            return jsonify({'error': 'Request data is missing'}), 400
-        username = request_data['username']
+            return jsonify('Request data is missing'), 400
+        username = request_data.get('username')
         month = request_data['month']
-        year = request_data['year']
-        if not username or not month or not year:
-            return jsonify({'error': 'Missing required fields'}), 400
+        year = request_data.get('year')
+        if not username:
+            return jsonify('No username provided'), 400
+        if not month:
+            return jsonify('No month provided'), 400
+        if not year:
+            return jsonify('No year provided'), 400
         result = self.timesheet_service.ensure_timesheet_exists(username, month, year)
         return jsonify(result.message), result.status_code
 
@@ -91,13 +95,13 @@ class TimesheetController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         request_data = request.get_json()
         timesheet_id = request_data['_id']
         if timesheet_id is None:
-            return jsonify({'error': 'No timesheet ID provided'}), 400
+            return jsonify( 'No timesheet ID provided'), 400
         if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
-            return jsonify({'error': 'No signature has been uploaded.'}), 400
+            return jsonify('No signature has been uploaded.'), 400
         result = self.timesheet_service.sign_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -110,13 +114,13 @@ class TimesheetController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify( 'Request data must be in JSON format'), 400
         request_data = request.get_json()
         timesheet_id = request_data['_id']
         if timesheet_id is None:
-            return jsonify({'error': 'No timesheet ID provided'}), 400
+            return jsonify('No timesheet ID provided'), 400
         if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
-            return jsonify({'error': 'No signature has been uploaded.'}), 400
+            return jsonify('No signature has been uploaded.'), 400
         result = self.timesheet_service.approve_timesheet(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -129,13 +133,13 @@ class TimesheetController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         request_data = request.get_json()
         timesheet_id = request_data['_id']
         if timesheet_id is None:
-            return jsonify({'error': 'No timesheet ID provided'}), 400
+            return jsonify('No timesheet ID provided'), 400
         if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
-            return jsonify({'error': 'No signature has been uploaded.'}), 400
+            return jsonify('No signature has been uploaded.'), 400
         result = self.timesheet_service.request_change(timesheet_id)
         return jsonify(result.message), result.status_code
 
@@ -150,7 +154,7 @@ class TimesheetController(MethodView):
         request_data = request.args
         username = request_data.get('username')
         if username is None:
-            return jsonify({'error': 'No username provided'}), 400
+            return jsonify('No username provided'), 400
         result = self.timesheet_service.get_timesheets_by_username(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -169,8 +173,12 @@ class TimesheetController(MethodView):
         month = int(request_data.get('month'))
         year = int(request_data.get('year'))
         print(username, month, year)
-        if username is None or month is None or year is None:
-            return jsonify({'error': 'Missing required fields'}), 400
+        if username is None:
+            return jsonify('No username provided'), 400
+        if month is None:
+            return jsonify('No month provided'), 400
+        if year is None:
+            return jsonify('No year provided'), 400
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -185,7 +193,7 @@ class TimesheetController(MethodView):
         """
         username = request.args.get('username')
         if username is None:
-            return jsonify({'error': 'No username provided'}), 400
+            return jsonify('No username provided'), 400
         result = self.timesheet_service.get_current_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -200,7 +208,7 @@ class TimesheetController(MethodView):
         """
         username = request.args.get('username')
         if username is None:
-            return jsonify({'error': 'No username provided'}), 400
+            return jsonify('No username provided'), 400
         result = self.timesheet_service.get_highest_priority_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -218,12 +226,14 @@ class TimesheetController(MethodView):
         request_data = request.args
         username = request_data.get('username')
         status = request_data.get('status')
-        if username is None or status is None:
-            return jsonify({'error': 'Missing required fields'}), 400
+        if username is None:
+            return jsonify('No username provided'), 400
+        if status is None:
+            return jsonify('No status provided'), 400
         #TODO: changes status in timesheet service to string and convert there
         timesheets = self.timesheet_service.get_timesheets_by_username_status(username, status).data
         if timesheets is None or len(timesheets) == 0:
-            return jsonify({'error': 'No timesheets found'}), 404
+            return jsonify('No timesheets found'), 404
         return jsonify([timesheet.to_str_dict() for timesheet in timesheets]), 200
 
     def _dispatch_request(self, endpoint_mapping):
@@ -237,4 +247,4 @@ class TimesheetController(MethodView):
         for path, func in endpoint_mapping.items():
             if request_path.endswith(path):
                 return func()
-        return jsonify({'error': 'Endpoint not found'}), 404
+        return jsonify('Endpoint not found'), 404

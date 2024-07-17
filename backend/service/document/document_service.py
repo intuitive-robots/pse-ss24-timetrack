@@ -48,10 +48,10 @@ class DocumentService:
         for username in usernames:
             if not self._check_if_authorized(requesting_username, username):
                 return RequestResult(False, "Unauthorized to generate document", status_code=403)
-            document = self.gather_document_data(month, year, username)
-            if document is None:
-                return RequestResult(False, "Failed to gather document data.", status_code=400)
-            documents.append(document)
+            document_generation = self.gather_document_data(month, year, username)
+            if not document_generation.is_successful:
+                return document_generation
+            documents.append(document_generation.data)
         output_dir = self.pdf_generator_strategy.generate_multiple_documents(documents).data
         if not output_dir:
             return RequestResult(False, "Failed to generate documents.", status_code=500)
@@ -70,10 +70,10 @@ class DocumentService:
         """
         if not self._check_if_authorized(requesting_username, username):
             return RequestResult(False, "Unauthorized to generate document", status_code=403)
-        document_data = self.gather_document_data(month, year, username)
-        if document_data is None:
-            return RequestResult(False, "Failed to gather document data.", status_code=400)
-        return self.pdf_generator_strategy.generate_document(document_data)
+        document_generation_result = self.gather_document_data(month, year, username)
+        if not document_generation_result.is_successful:
+            return document_generation_result
+        return self.pdf_generator_strategy.generate_document(document_generation_result.data)
 
     def generate_multiple_documents_by_id(self, timesheet_ids: list[str], requesting_username: str):
         """
@@ -90,10 +90,10 @@ class DocumentService:
                 return RequestResult(False, "Failed to gather document data.", status_code=400)
             if not self._check_if_authorized(requesting_username, timesheet.username):
                 return RequestResult(False, "Unauthorized to generate document", status_code=403)
-            document = self.gather_document_data(timesheet.month, timesheet.year, timesheet.username)
-            if document is None:
-                return RequestResult(False, "Failed to gather document data.", status_code=400)
-            documents.append(document)
+            document_generation_result = self.gather_document_data(timesheet.month, timesheet.year, timesheet.username)
+            if not document_generation_result.is_successful:
+                return document_generation_result
+            documents.append(document_generation_result.data)
         output_dir = self.pdf_generator_strategy.generate_multiple_documents(documents).data
         if not output_dir:
             return RequestResult(False, "Failed to generate documents.", status_code=500)
@@ -130,11 +130,11 @@ class DocumentService:
             return RequestResult(False, "Unauthorized to generate document", status_code=403)
         documents = []
         while start_date <= end_date:
-            document = self.gather_document_data(start_date.month, start_date.year, username)
-            if document is None:
+            document_generation_result = self.gather_document_data(start_date.month, start_date.year, username)
+            if not document_generation_result.is_successful:
                 start_date = self._increment_month(start_date)
                 continue
-            documents.append(document)
+            documents.append(document_generation_result.data)
             start_date = self._increment_month(start_date)
         output_dir = self.pdf_generator_strategy.generate_multiple_documents(documents).data
         if not output_dir:
@@ -164,24 +164,27 @@ class DocumentService:
         """
         user = self.user_service.get_profile(username)
         if user.role != UserRole.HIWI:
-            return None
+            return RequestResult(False, "User is not a HIWI.", status_code=400)
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
-            return None
+            return RequestResult(False, "Failed to get timesheet data.", status_code=400)
         if result.data.status != TimesheetStatus.COMPLETE:
-            return None
+            return RequestResult (False, "Timesheet is not complete.", status_code=400)
         supervisor = self.user_service.get_profile(user.supervisor)
         if supervisor.role != UserRole.SUPERVISOR:
-            return None
+            return RequestResult(False, "Supervisor is not a supervisor.", status_code=400)
         timesheet = result.data
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet.timesheet_id).data
         signature_stream = self.file_service.get_image(username, FileType.SIGNATURE)
         supervisor_signature_stream = self.file_service.get_image(supervisor.username, FileType.SIGNATURE)
         previous_overtime = self.timesheet_service.get_previous_overtime(username, month, year)
         if signature_stream is None:
-            return None
-        return DocumentData(month, year, user.personal_info, user.contract_info, self._time_format(previous_overtime), signature_stream,
+            return RequestResult(False, "Failed to get Hiwi signature.", status_code=400)
+        if supervisor_signature_stream is None:
+            return RequestResult(False, "Failed to get supervisor signature.", status_code=400)
+        document = DocumentData(month, year, user.personal_info, user.contract_info, self._time_format(previous_overtime), signature_stream,
                             supervisor_signature_stream, self._time_format(timesheet.overtime), time_entries)
+        return RequestResult(True, "Document data gathered successfully.", 200, document)
 
     def _time_format(self, minutes: int):
         """

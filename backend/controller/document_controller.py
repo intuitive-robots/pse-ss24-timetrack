@@ -48,8 +48,12 @@ class DocumentController(MethodView):
         month = int(request_data.get('month'))
         year = int(request_data.get('year'))
         username = request_data.get('username')
-        if not month or not year or not username:
-            return jsonify('Missing required fields'), 400
+        if not username:
+            return jsonify('No username provided'), 400
+        if not year:
+            return jsonify('No year provided'), 400
+        if not month:
+            return jsonify('No month provided'), 400
 
         result = self.document_service.generate_document(month, year, username, get_jwt_identity())
         if result.status_code != 200:
@@ -120,5 +124,5 @@ class DocumentController(MethodView):
         for path, func in endpoint_mapping.items():
             if request_path.endswith(path):
                 return func()
-        return jsonify({'error': 'Endpoint not found'}), 404
+        return jsonify('Endpoint not found'), 404
 
