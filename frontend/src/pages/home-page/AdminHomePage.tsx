@@ -50,30 +50,30 @@ const AdminHomePage = (): React.ReactElement => {
         }
     };
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const fetchedUsers = await getUsers();
-                setUsers(fetchedUsers);
-                setFilteredUsers(fetchedUsers);
-            } catch (error) {
-                console.log('Failed to fetch users', error);
-            }
-        };
+    const fetchUsers = async () => {
+        try {
+            const fetchedUsers = await getUsers();
+            setUsers(fetchedUsers);
+            setFilteredUsers(fetchedUsers);
+        } catch (error) {
+            console.error('Failed to fetch users', error);
+        }
+    };
 
+    useEffect(() => {
         fetchUsers();
     }, []);
 
     useEffect(() => {
         if (activeRole === "View all") {
-        setFilteredUsers(users.filter(user => !user.username.startsWith('test')));
+            setFilteredUsers(users.filter(user => !user.username.startsWith('test')));
         } else {
             setFilteredUsers(users.filter(user => user.role === activeRole && !user.username.startsWith('test')));
         }
     }, [activeRole, users]);
 
     const handleOnChange = (user: User) => {
-        openPopup(<EditUserPopup userData={user}/>)
+        openPopup(<EditUserPopup userData={user}/>, fetchUsers);
     }
 
     const generateHeader = () => {

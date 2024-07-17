@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {createContext, useContext, useState, ReactNode, useCallback} from 'react';
 
 interface PopupContextType {
   popupContent: ReactNode;
-  openPopup: (content: ReactNode) => void;
+  openPopup: (content: ReactNode, onCloseComplete?: () => void) => void;
   closePopup: () => void;
 }
 
@@ -18,9 +18,20 @@ export const usePopup = () => useContext(PopupContext);
 
 export const PopupProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [popupContent, setPopupContent] = useState<ReactNode>(null);
+  const [onCloseComplete, setOnCloseComplete] = useState<() => void | undefined>();
 
-  const openPopup = (content: ReactNode) => setPopupContent(content);
-  const closePopup = () => setPopupContent(null);
+  const openPopup = useCallback((content: ReactNode, onCloseComplete?: () => void) => {
+    setPopupContent(content);
+    setOnCloseComplete(() => onCloseComplete);
+  }, []);
+
+  const closePopup = useCallback(() => {
+    setPopupContent(null);
+    if (onCloseComplete) {
+      onCloseComplete();
+      setOnCloseComplete(undefined);
+    }
+  }, [onCloseComplete]);
 
   return (
     <PopupContext.Provider value={{ popupContent, openPopup, closePopup }}>
