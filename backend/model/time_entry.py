@@ -4,7 +4,6 @@ from datetime import datetime
 from bson import ObjectId
 
 from model.time_entry_type import TimeEntryType
-from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 
 
 class TimeEntry(ABC):
@@ -44,7 +43,7 @@ class TimeEntry(ABC):
         self.start_time = start_time
         self.end_time = end_time
         self.entry_type = entry_type
-        self.time_entry_validator = TimeEntryValidator()
+        # self.time_entry_validator = TimeEntryValidator()
 
     def set_id(self, time_entry_id: ObjectId):
         """

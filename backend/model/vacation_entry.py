@@ -4,9 +4,7 @@ from datetime import datetime, timedelta
 import math
 from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType
-from model.time_entry_validator.holiday_strategy import HolidayStrategy
-from model.time_entry_validator.time_entry_validator import TimeEntryValidator
-from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
+
 
 
 class VacationEntry(TimeEntry):
@@ -34,8 +32,11 @@ class VacationEntry(TimeEntry):
         """
 
         super().__init__(timesheet_id, start_time, end_time, TimeEntryType.VACATION_ENTRY, time_entry_id)
-        self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
-        self.time_entry_validator.add_validation_rule(HolidayStrategy())
+
+        # from model.time_entry_validator.holiday_strategy import HolidayStrategy
+        # from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
+        # self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        # self.time_entry_validator.add_validation_rule(HolidayStrategy())
 
     def to_dict(self):
         """

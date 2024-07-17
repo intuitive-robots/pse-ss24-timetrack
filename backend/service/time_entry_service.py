@@ -79,7 +79,7 @@ class TimeEntryService:
         time_entry = entry_class.from_dict(entry_data)
 
         # Validate the entry through strategy pattern
-        strategy_validation_results = time_entry.time_entry_validator.validate_entry(time_entry)
+        strategy_validation_results = self.entry_validator.validate_entry(time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
@@ -176,7 +176,7 @@ class TimeEntryService:
             return RequestResult(False, "Cannot update time entry to a different month or year", status_code=400)
 
         # Validate the updated entry through strategy pattern
-        strategy_validation_results = updated_time_entry.time_entry_validator.validate_entry(updated_time_entry)
+        strategy_validation_results = self.entry_validator.validate_entry(updated_time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
