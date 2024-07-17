@@ -163,7 +163,11 @@ const SecretaryHomePage: React.FC = () => {
                 </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-headline mt-4">Hello, {user?.personalInfo.firstName}</h1>
+            <h1 className="text-3xl font-bold text-headline mt-4">
+                Hello <span className={`transition-all duration-300 ease-in-out ${user ? 'blur-none' : 'blur-sm'}`}>
+                    {user ? user.personalInfo.firstName : 'Petersasd'}
+                </span>,
+            </h1>
             <h2 className="text-md font-medium text-subtitle mt-1">There are {hiwis.length} hiwis registered.</h2>
 
 
