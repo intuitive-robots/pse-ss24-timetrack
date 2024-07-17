@@ -253,7 +253,11 @@ const SupervisorHomePage = (): React.ReactElement => {
                 </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-800 mt-5">Hello Nico,</h1>
+            <h1 className="text-3xl font-bold text-headline mt-4">
+                Hello <span className={`transition-all duration-300 ease-in-out ${user ? 'blur-none' : 'blur-sm'}`}>
+                    {user ? user.personalInfo.firstName : 'Petersasd'}
+                </span>,
+            </h1>
 
             <h2 className="text-md font-medium text-subtitle mt-1">You have {hiwis?.length ?? 0} assigned employees
                 with {openTimesheetsCount} open
@@ -275,11 +279,6 @@ const SupervisorHomePage = (): React.ReactElement => {
                                     lastName={hiwi.personalInfo.lastName}
                                     role={hiwi.role}
                                     profileImageUrl={ProfilePlaceholder} // TODO: hiwi.profileImageUrl
-                                    // status={
-                                    //     role && isValidRole(role) && timesheet.status && isValidTimesheetStatus(timesheet.status) ?
-                                    //     statusMapping[role][timesheet.status] :
-                                    //     StatusType.Pending
-                                    // }
                                     status={timesheet.status}
                                     onCheck={() => handleCheckTimesheet(hiwi, month, year)} // TODO
                                 />

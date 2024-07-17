@@ -4,11 +4,11 @@ import TimeEntryTile from "../list/TimeEntryTile";
 import {deleteTimeEntry} from "../../services/TimeEntryService";
 import ConfirmationPopup from "../popup/ConfirmationPopup";
 import {usePopup} from "../popup/PopupContext";
-import VerticalTimeLine from "../../assets/images/time_line_vertical.svg"
 import {TimeEntryTypes} from "../../interfaces/TimeEntryTypes";
 import VacationEntryTile from "../list/VacationEntryTile";
 import EditTimeEntryPopup from "../popup/EditTimeEntryPopup";
 import EditVacationEntryPopup from "../popup/EditVacationEntryPopup";
+import {TimeLineIcon} from "../../assets/iconComponents/TimeLineIcon";
 
 interface TimeEntryListProps {
     entries: TimeEntry[];
@@ -61,7 +61,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
 
     return (
         <div className="flex flex-row mt-8 gap-12">
-            <img src={VerticalTimeLine} alt="Vertical Time Line"/>
+            <TimeLineIcon/>
 
             <div className="relative flex flex-col w-full h-full justify-between">
                 <p className="mb-3 text-sm font-semibold text-[#434343]">Today</p>

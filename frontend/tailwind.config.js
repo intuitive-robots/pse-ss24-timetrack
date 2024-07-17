@@ -5,6 +5,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      transitionProperty: {
+        'height': 'height',
+        'spacing': 'margin, padding',
+        'filter': 'filter'
+      },
       keyframes: {
         slideIn: {
           '0%': { transform: 'scaleX(0)' },

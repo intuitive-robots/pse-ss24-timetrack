@@ -14,6 +14,7 @@ import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import {usePopup} from "../popup/PopupContext";
 import PasswordResetPopup from "../popup/PasswordResetPopup";
 import {ClockwiseIcon} from "../../assets/iconComponents/ClockwiseIcon";
+import UserInfo from "../UserInfo";
 
 /**
  * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,
@@ -32,7 +33,7 @@ import {ClockwiseIcon} from "../../assets/iconComponents/ClockwiseIcon";
  */
 const ProfileBar: React.FC = (): React.ReactElement => {
   const navigate = useNavigate();
-  const { role, user, logout } = useAuth();
+  const { role, user, logout, isLoading } = useAuth();
 
   const {openPopup} = usePopup();
 
@@ -69,8 +70,8 @@ const ProfileBar: React.FC = (): React.ReactElement => {
         </div>
         <div className="relative ml-auto">
             {user && (
-                <div className="flex px-4 items-center cursor-pointer z-50">
-                    <UserInfoSupervisorView
+                <div className={`flex px-4 items-center cursor-pointer z-50`}>
+                    <UserInfo
                         name={user.personalInfo.firstName}
                         lastName={user.personalInfo.lastName}
                         role={role || "N/A"}

@@ -1,4 +1,3 @@
-import VerticalTimeLine from "../../assets/images/time_line_vertical.svg";
 import TimeEntryListView from "./TimeEntryListView";
 import React, {useEffect, useState} from "react";
 import {Timesheet} from "../../interfaces/Timesheet";
