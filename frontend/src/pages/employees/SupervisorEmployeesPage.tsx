@@ -20,7 +20,7 @@ const SupervisorEmployeesPage: React.FC = () => {
         <div className="px-6 py-6">
             <h1 className="text-3xl font-bold text-gray-800 mt-5">Employees</h1>
             <div className="flex flex-col min-w-96 w-6/12 mt-5 py-7 px-10 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg gap-5">
-                <div className={`transition-all duration-300 ease-in-out ${isLoading ? 'blur-sm' : 'blur-none'}`}>
+                <div className={""}>
                     <h2 className="font-bold text-md text-[#B5B5B5] mb-3">Assigned Hiwis - (Rework Planned Soon)</h2>
                     <div className={`transition-all duration-300 ease-in-out ${isLoading ? 'blur-sm' : 'blur-none'}`}>
                         {hiwis ? (
