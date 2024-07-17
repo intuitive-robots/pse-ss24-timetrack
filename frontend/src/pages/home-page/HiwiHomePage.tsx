@@ -25,7 +25,7 @@ import {StatusType} from "../../interfaces/StatusType";
 const HiwiHomePage = (): React.ReactElement => {
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
     const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
-    const { user, role, isLoading} = useAuth();
+    const { user, role} = useAuth();
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
