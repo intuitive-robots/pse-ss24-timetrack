@@ -82,7 +82,7 @@ class UserController(MethodView):
         for path, func in endpoint_mapping.items():
             if request_path.endswith(path):
                 return func()
-        return jsonify({'error': 'Endpoint not found'}), 404
+        return jsonify('Endpoint not found'), 404
 
     @jwt_required()
     @check_access(roles=[UserRole.ADMIN])
@@ -93,7 +93,7 @@ class UserController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         user_data = request.get_json()
         result = self.user_service.create_user(user_data)
         return jsonify(result.message), result.status_code
@@ -107,7 +107,7 @@ class UserController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         user_data = request.get_json()
         result = self.user_service.update_user(user_data)
         return jsonify(result.message), result.status_code
@@ -122,7 +122,7 @@ class UserController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         username_data = request.get_json()
         result = self.user_service.delete_user(username_data['username'])
         return jsonify(result.message), result.status_code
@@ -134,7 +134,7 @@ class UserController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         credentials = request.get_json()
         result = self.auth_service.login(credentials['username'], credentials['password'])
         if not result.is_successful:
@@ -159,7 +159,7 @@ class UserController(MethodView):
         :return: JSON response with the result of the password reset attempt.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         credentials = request.get_json()
         username = credentials.get('username', get_jwt_identity())
         result = self.auth_service.reset_password(get_jwt_identity(), username, credentials['password'])
@@ -197,7 +197,7 @@ class UserController(MethodView):
         """
         args = request.args
         if 'role' not in args:
-            return jsonify({'error': 'Role parameter is required'}), 400
+            return jsonify('Role parameter is required'), 400
         role = args['role']
         result = self.user_service.get_users_by_role(role)
         users_data = [user.to_dict() for user in result.data]
@@ -240,17 +240,17 @@ class UserController(MethodView):
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
 
         if file_type == FileType.SIGNATURE and username != get_jwt_identity():
-            return jsonify({'error': 'You are not authorized to access this file'}), 403
+            return jsonify('You are not authorized to access this file'), 403
 
         if not username:
-            return jsonify({'error': 'Username is required'}), 400
+            return jsonify('Username is required'), 400
 
         if not file_type:
-            return jsonify({'error': 'Valid File type is required'}), 400
+            return jsonify('Valid File type is required'), 400
 
         file_stream = self.file_service.get_image(username, file_type)
         if not file_stream:
-            return jsonify({'error': 'File not found'}), 404
+            return jsonify('File not found'), 404
 
         return send_file(
             file_stream,
@@ -285,7 +285,7 @@ class UserController(MethodView):
         request_args = request.args
 
         if len(request_args) > 0 and user.role == UserRole.HIWI:
-            return jsonify({'error': 'Invalid Arguments.'}), 400
+            return jsonify('Invalid Arguments.'), 400
         if user.role == UserRole.SECRETARY and 'username' in request_args:
             username = request_args['username']
             result = self.user_service.get_supervisor(username, True)
@@ -323,10 +323,10 @@ class UserController(MethodView):
         username = request.args.get('username')
         file_type = FileType.get_type_by_value(request.args.get('fileType'))
         if not username:
-            return jsonify({'error': 'Username is required'}), 400
+            return jsonify('Username is required'), 400
 
         if not file_type:
-            return jsonify({'error': 'Valid File type is required'}), 400
+            return jsonify('Valid File type is required'), 400
 
         result = self.file_service.delete_image(username, file_type)
         return jsonify(result.message), result.status_code

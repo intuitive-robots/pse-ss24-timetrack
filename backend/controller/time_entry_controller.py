@@ -59,7 +59,7 @@ class TimeEntryController(MethodView):
         for path, func in endpoint_mapping.items():
             if request_path.endswith(path):
                 return func()
-        return jsonify({'error': 'Endpoint not found'}), 404
+        return jsonify('Endpoint not found'), 404
 
     @jwt_required()
     @check_access(roles=[UserRole.HIWI])
@@ -70,7 +70,7 @@ class TimeEntryController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         time_entry_data = request.get_json()
         username = get_jwt_identity()
         result = self.time_entry_service.create_work_entry(time_entry_data, username)
@@ -85,7 +85,7 @@ class TimeEntryController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         vacation_data = request.get_json()
         username = get_jwt_identity()
         result = self.time_entry_service.create_vacation_entry(vacation_data, username)
@@ -100,7 +100,7 @@ class TimeEntryController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         time_entry_data = request.get_json()
         time_entry_id = time_entry_data.get('_id')
         time_entry_data.pop('_id')
@@ -116,7 +116,7 @@ class TimeEntryController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
+            return jsonify('Request data must be in JSON format'), 400
         time_entry_id = request.get_json().get('timeEntryId')
         result = self.time_entry_service.delete_time_entry(time_entry_id)
         return jsonify(result.message), result.status_code
