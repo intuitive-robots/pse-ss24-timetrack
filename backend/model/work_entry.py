@@ -3,10 +3,6 @@ from datetime import datetime, timedelta
 
 from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType
-from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
-from model.time_entry_validator.holiday_strategy import HolidayStrategy
-from model.time_entry_validator.time_entry_validator import TimeEntryValidator
-from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 
 
 class WorkEntry(TimeEntry):
@@ -46,10 +42,10 @@ class WorkEntry(TimeEntry):
         self.break_time = break_time
         self.activity = activity
         self.project_name = project_name
-        time_entry_validator = TimeEntryValidator()
-        time_entry_validator.add_validation_rule(WorkingTimeStrategy())
-        time_entry_validator.add_validation_rule(HolidayStrategy())
-        time_entry_validator.add_validation_rule(BreakLengthStrategy())
+
+        # self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        # self.time_entry_validator.add_validation_rule(HolidayStrategy())
+        # self.time_entry_validator.add_validation_rule(BreakLengthStrategy())
 
     def to_dict(self):
         """

@@ -42,7 +42,7 @@ const AddVacationPopup: React.FC = () => {
             closePopup();
             window.location.reload();
         } catch (error) {
-            alert("Failed to create vacation entry.");
+            alert(`Failed to create vacation entry:\n${error}`);
             console.error('Error creating vacation entry:', error);
         }
     };

@@ -7,8 +7,8 @@ import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import { updateTimeEntry } from "../../services/TimeEntryService";
 import {VacationEntry} from "../../interfaces/TimeEntry";
-import ShortInputField from "../input/ShortInputField";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
+import {validateCreateVacationEntry} from "../validation/InputValidation";
 
 interface EditVacationEntryPopupProps {
     entryData: VacationEntry;
@@ -26,8 +26,7 @@ const EditVacationEntryPopup: React.FC<EditVacationEntryPopupProps> = ({ entryDa
     });
 
     const handleSubmit = async () => {
-        if (!selectedDate || !duration) {
-            alert("Please fill all the fields correctly.");
+        if (!validateCreateVacationEntry(selectedDate, duration).valid) {
             return;
         }
 
@@ -49,7 +48,7 @@ const EditVacationEntryPopup: React.FC<EditVacationEntryPopupProps> = ({ entryDa
             closePopup();
             window.location.reload();
         } catch (error) {
-            alert("Failed to update vacation entry.");
+            alert(`Failed to update vacation entry:\n${error}`);
             console.error('Error updating vacation entry:', error);
         }
     };

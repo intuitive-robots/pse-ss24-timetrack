@@ -71,7 +71,7 @@ const TrackTimePopup: React.FC = () => {
             closePopup();
             window.location.reload();
         } catch (error) {
-            alert("Failed to create work entry.");
+            alert(`Failed to create work entry:\n${error}`);
             console.error('Error creating work entry:', error);
         }
     };
