@@ -103,10 +103,18 @@ const AdminHomePage = (): React.ReactElement => {
     return (
         <div className="flex flex-col h-full px-6 mt-6">
             <div className="mb-4">
-                <p className="text-lg font-medium text-subtitle">{user ? user.personalInfo.instituteName : "Institute Name"}</p>
-                <h1 className="text-3xl font-bold text-gray-800 mt-3.5">Hello {user ? user.personalInfo.firstName : "User"}</h1>
-                <h2 className="text-md font-medium text-subtitle mt-1">{generateHeader()}</h2>
-                <RoleFilter onRoleChange={setActiveRole} />
+                <p className={`text-lg font-medium text-subtitle transition-all duration-300 ease-in-out ${!user ? 'blur-sm' : 'blur-none'}`}>
+                    {user ? user.personalInfo.instituteName : "Institute Name"}
+                </p>
+                <h1 className="text-3xl font-bold text-headline mt-4">
+                    Hello <span className={`transition-all duration-300 ease-in-out ${user ? 'blur-none' : 'blur-sm'}`}>
+                    {user ? user.personalInfo.firstName : 'IRL'}
+                </span>,
+                </h1>
+                <h2 className={`text-md font-medium text-subtitle mt-1 transition-all duration-300 ease-in-out ${users? 'blur-none' : 'blur-sm'}`}>
+                    {generateHeader()}
+                </h2>
+                <RoleFilter onRoleChange={setActiveRole}/>
             </div>
             <div className="flex flex-col overflow-y-auto gap-0 mb-6 mt-2 flex-grow">
                 {filteredUsers.map((user) => (
