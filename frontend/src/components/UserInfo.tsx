@@ -7,6 +7,7 @@ interface UserInfoProps {
   username?: string;
   role: string;
   profileImageUrl: string;
+  loading?: boolean;
 }
 
 /**
@@ -16,7 +17,7 @@ interface UserInfoProps {
  * @param {UserInfoProps} props - The props passed to the UserInfoSupervisorView component.
  * @returns {React.ReactElement} A React Element that renders the user's profile information.
  */
-const UserInfo: React.FC<UserInfoProps> = ({username, name, lastName, role, profileImageUrl}: UserInfoProps): React.ReactElement => {
+const UserInfo: React.FC<UserInfoProps> = ({username, name, lastName, role, profileImageUrl, loading = false}: UserInfoProps): React.ReactElement => {
   return (
     <div className="flex items-center space-x-3 mr-8 z-50">
       <img src={profileImageUrl} alt="User Avatar" className="h-12 w-12 rounded-full"/>

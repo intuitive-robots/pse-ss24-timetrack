@@ -34,3 +34,13 @@ code {
 input[type="time"]::-webkit-calendar-picker-indicator {
   display: none;
 }
+
+.blur-effect {
+    filter: blur(5px);
+    transition: filter 300ms ease-in-out;
+}
+
+.no-blur {
+    filter: none;
+    transition: filter 300ms ease-in-out;
+}

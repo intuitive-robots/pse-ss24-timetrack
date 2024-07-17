@@ -15,6 +15,7 @@ import {isValidRole} from "../../components/auth/roles";
 import DocumentStatus from "../../components/status/DocumentStatus";
 import ProgressCard from "../../components/charts/ProgressCard";
 import MonthDisplay from "../../components/display/MonthDisplay";
+import {StatusType} from "../../interfaces/StatusType";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -24,7 +25,7 @@ import MonthDisplay from "../../components/display/MonthDisplay";
 const HiwiHomePage = (): React.ReactElement => {
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
     const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
-    const { user, role} = useAuth();
+    const { user, role, isLoading} = useAuth();
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
@@ -158,16 +159,17 @@ const HiwiHomePage = (): React.ReactElement => {
     }
 
     const displayStatus = () => {
-        const statusColor = {
-            "Revision": "text-red-400",
-            "Not Submitted": "text-orange-400",
-            "Waiting for Approval": "text-orange-400",
-            "Complete": "text-green-400"
-        };
-        const status = timesheet ? timesheet.status : "";
-        const color = "text-nav-gray";
+        const blurClass = timesheet ? 'blur-none transition-filter duration-500 ease-out' : 'blur-sm transition-filter duration-500 ease-out';
 
-        return <span className={`${color} font-bold ml-1`}>{status}</span>;
+        const statusDisplay = timesheet
+            ? timesheet.status
+            : StatusType.NoTimesheet;
+
+        return (
+            <span className={`text-nav-gray font-bold ml-1 ${blurClass}`}>
+                {statusDisplay}
+            </span>
+        );
     };
 
     return (
@@ -181,7 +183,7 @@ const HiwiHomePage = (): React.ReactElement => {
             </div>
 
             <div className="flex justify-between items-center w-full">
-                <div className="text-lg font-semibold text-subtitle">
+                <div className="text-lg font-semibold text-subtitle ">
                     Sheet Status, {displayStatus()}
                 </div>
                 <div className="flex justify-center items-center gap-6 flex-grow">
@@ -204,7 +206,11 @@ const HiwiHomePage = (): React.ReactElement => {
                 </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-headline mt-4">Hello {user ? user.personalInfo.firstName : ""},</h1>
+            <h1 className="text-3xl font-bold text-headline mt-4">
+                Hello <span className={`transition-all duration-300 ease-in-out ${user ? 'blur-none' : 'blur-sm'}`}>
+                    {user ? user.personalInfo.firstName : 'Peter'}
+                </span>,
+            </h1>
 
             <TimeEntryListView entries={timeEntries ?? []} interactable={isStatusInteractable()}/>
 

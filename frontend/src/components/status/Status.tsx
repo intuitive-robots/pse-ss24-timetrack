@@ -13,7 +13,7 @@ const StatusLabel: React.FC<StatusProps> = ({ status }) => {
     [StatusType.Waiting]: { bgColor: "bg-waiting-bg", textColor: "text-waiting-fg", fontWeight: "font-semibold" },
     [StatusType.Revision]: { bgColor: "bg-revision-bg", textColor: "text-revision-fg", fontWeight: "font-semibold" },
     [StatusType.NoTimesheet]: { bgColor: "bg-gray-50", textColor: "text-gray-500", fontWeight: "font-semibold" },
-    [StatusType.Error]: { bgColor: "bg-error-bg", textColor: "text-error-fg", fontWeight: "font-light" },
+    [StatusType.Error]: { bgColor: "bg-error-bg", textColor: "text-error-fg", fontWeight: "font-semibold" },
   };
 
   const { bgColor, textColor, fontWeight } = statusStyles[status] || { bgColor: "bg-white", textColor: "text-black" };
