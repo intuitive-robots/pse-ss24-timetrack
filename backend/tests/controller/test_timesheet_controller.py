@@ -28,6 +28,45 @@ class TestTimesheetController(unittest.TestCase):
         Test the ensure_timesheet_exists method of the TimesheetController class.
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
+
+        # Test for no json format
+        no_json_format_response = self.client.post('/timesheet/ensureExists',
+                                             headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_json_format_response.status_code)
+        self.assertEqual('Request must be in JSON format', no_json_format_response.json)
+
+        # Test for no username
+        test_no_username_data = {
+            'month': 5,
+            'year': 2024
+        }
+        no_username_response = self.client.post('/timesheet/ensureExists', json=test_no_username_data,
+                                             headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_username_response.status_code)
+        self.assertEqual('No username provided', no_username_response.json)
+
+
+        # Test for no month
+        test_no_month_data = {
+            'username': 'testHiwi1',
+            'year': 2024
+        }
+        no_month_response = self.client.post('/timesheet/ensureExists', json=test_no_month_data,
+                                             headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_month_response.status_code)
+        self.assertEqual('No month provided', no_month_response.json)
+
+
+        # Test for no year
+        test_no_year_data = {
+            'username': 'testHiwi1',
+            'month': 5,
+        }
+        no_year_response = self.client.post('/timesheet/ensureExists', json=test_no_year_data,
+                                             headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_year_response.status_code)
+        self.assertEqual('No year provided', no_year_response.json)
+
         # Test for already existing timesheet
         test_existing_timesheet_data = {
             'username': 'testHiwi1',
@@ -57,9 +96,14 @@ class TestTimesheetController(unittest.TestCase):
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
         file = open("../resources/testProfilePic.jpg", "rb")
-        response = self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
+        self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
                                     headers={"Authorization": f"Bearer {access_token}"})
         file.close()
+        no_json_response = self.client.patch('/timesheet/sign',
+                                             headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_json_response.status_code)
+        self.assertEqual('Request data must be in JSON format', no_json_response.json)
+
         response = self.client.patch('/timesheet/sign', json={"_id": "6679ca2935df0d8f7202c5fa"},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
@@ -74,6 +118,12 @@ class TestTimesheetController(unittest.TestCase):
         """
         access_token = self.authenticate('testSupervisor1', 'test_password')
         test_timesheet_id = "667bd177cf0aa6181e9c8ddb"
+
+        # Test for no json
+        response = self.client.patch('/timesheet/approve',
+                                     headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('Request data must be in JSON format', response.json)
 
         response = self.client.patch('/timesheet/approve', json={"_id": test_timesheet_id},
                                     headers={"Authorization": f"Bearer {access_token}"})
@@ -90,6 +140,12 @@ class TestTimesheetController(unittest.TestCase):
         access_token = self.authenticate('testSupervisor1', 'test_password')
         test_timesheet_id = "667bd177cf0aa6181e9c8ddb"
 
+        # Test for no json
+        response = self.client.patch('/timesheet/requestChange',
+                                     headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('Request data must be in JSON format', response.json)
+
         response = self.client.patch('/timesheet/requestChange', json={"_id": test_timesheet_id},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
@@ -104,6 +160,13 @@ class TestTimesheetController(unittest.TestCase):
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
         test_username = "testHiwi1"
+
+        # Test for no username
+        no_username_response = self.client.get('/timesheet/get', query_string={},
+                                   headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_username_response.status_code)
+        self.assertEqual('No username provided', no_username_response.json)
+
         response = self.client.get('/timesheet/get', query_string={"username": test_username},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
@@ -118,6 +181,37 @@ class TestTimesheetController(unittest.TestCase):
         Test the get_timesheets_by_month_year method of the TimesheetController class.
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
+
+        # Test for no username
+        test_no_username_data = {
+            'month': 5,
+            'year': 2024
+        }
+        no_username_response = self.client.get('/timesheet/getByMonthYear', query_string=test_no_username_data,
+                                                headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_username_response.status_code)
+        self.assertEqual('No username provided', no_username_response.json)
+
+        # Test for no month
+        test_no_month_data = {
+            'username': 'testHiwi1',
+            'year': 2024
+        }
+        no_month_response = self.client.get('/timesheet/getByMonthYear', query_string=test_no_month_data,
+                                             headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_month_response.status_code)
+        self.assertEqual('No month provided', no_month_response.json)
+
+        # Test for no year
+        test_no_year_data = {
+            'username': 'testHiwi1',
+            'month': 5,
+        }
+        no_year_response = self.client.get('/timesheet/getByMonthYear', query_string=test_no_year_data,
+                                            headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_year_response.status_code)
+        self.assertEqual('No year provided', no_year_response.json)
+
         test_data = {
             'username': 'testHiwi1',
             'month': 5,
@@ -136,6 +230,13 @@ class TestTimesheetController(unittest.TestCase):
         Test the get_current_timesheet method of the TimesheetController class.
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
+
+        # Test for no username
+        no_username_response = self.client.get('/timesheet/getCurrentTimesheet', query_string={},
+                                               headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_username_response.status_code)
+        self.assertEqual('No username provided', no_username_response.json)
+
         response = self.client.get('/timesheet/getCurrentTimesheet', query_string={"username": "testHiwi1"}, headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
         timesheet = response.json
@@ -146,6 +247,13 @@ class TestTimesheetController(unittest.TestCase):
         Test the get_highest_priority_timesheet method of the TimesheetController class.
         """
         access_token = self.authenticate('testHiwi1', 'test_password')
+
+        # Test for no username
+        no_username_response = self.client.get('/timesheet/getHighestPriorityTimesheet', query_string={},
+                                               headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_username_response.status_code)
+        self.assertEqual('No username provided', no_username_response.json)
+
         response = self.client.get('/timesheet/getHighestPriorityTimesheet', query_string={"username": "testHiwi1"}, headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
         timesheet = response.json
@@ -166,6 +274,27 @@ class TestTimesheetController(unittest.TestCase):
         self.assertEqual("Complete", response.json[0]["status"])
         self.assertEqual("Complete", response.json[1]["status"])
 
+        no_username_data = {
+            "status": "Complete"
+        }
+        responseNoUsername = self.client.get('/timesheet/getByUsernameStatus', query_string=no_username_data,
+                                           headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual("No username provided", responseNoUsername.json)
+        self.assertEqual(responseNoUsername.status_code, 400)
 
+        no_status_data = {
+            "username": "testHiwi1",
+        }
+        responseNoStatus = self.client.get('/timesheet/getByUsernameStatus', query_string=no_status_data, headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual("No status provided", responseNoStatus.json)
+        self.assertEqual(responseNoStatus.status_code, 400)
 
+        no_timesheets_data = {
+            "username": "testHiwi9",
+            "status": "Complete"
+        }
+        responseNoStatus = self.client.get('/timesheet/getByUsernameStatus', query_string=no_timesheets_data,
+                                           headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual("No timesheets found", responseNoStatus.json)
+        self.assertEqual(responseNoStatus.status_code, 404)
 

@@ -44,7 +44,6 @@ class UserFactory(ABC):
         if factory_class:
             return factory_class()
         return None
-
     @abstractmethod
     def create_user(self, user_data: dict) -> User:
         """
@@ -54,7 +53,6 @@ class UserFactory(ABC):
         :return: An instance of a subclass of User.
         """
         pass
-
     @staticmethod
     def create_user_if_factory_exists(user_data) -> User or None:
         """

@@ -83,7 +83,6 @@ class UserController(MethodView):
             if request_path.endswith(path):
                 return func()
         return jsonify('Endpoint not found'), 404
-
     @jwt_required()
     @check_access(roles=[UserRole.ADMIN])
     def create_user(self):
@@ -223,7 +222,6 @@ class UserController(MethodView):
         file_type = FileType.get_type_by_value(file_type_str)
         if not file_type:
             return jsonify("Invalid file type"), 400
-
         result = self.file_service.upload_image(file, username, file_type)
 
         return jsonify(result.message), result.status_code
@@ -241,17 +239,13 @@ class UserController(MethodView):
 
         if file_type == FileType.SIGNATURE and username != get_jwt_identity():
             return jsonify('You are not authorized to access this file'), 403
-
         if not username:
             return jsonify('Username is required'), 400
-
         if not file_type:
             return jsonify('Valid File type is required'), 400
-
         file_stream = self.file_service.get_image(username, file_type)
         if not file_stream:
             return jsonify('File not found'), 404
-
         return send_file(
             file_stream,
             as_attachment=True,

@@ -37,8 +37,6 @@ class UserDataValidator(InputValidator):
         # Check role
         if 'role' in user_data and not self.validate_role(user_data['role']):
             return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified user role.")
-
-
         if user_data['role'] == UserRole.HIWI.value:
             if 'contractInfo' not in user_data:
                 return ValidationResult(ValidationStatus.FAILURE, "Missing contractInfo.")
@@ -53,7 +51,6 @@ class UserDataValidator(InputValidator):
             if not isinstance(contract_info['workingHours'], (int, float)) or contract_info['workingHours'] <= 0:
                 return ValidationResult(ValidationStatus.FAILURE,
                                         "Invalid workingHours in contractInfo. Must be a positive number.")
-
         for field in self.field_patterns.keys():
             if field in user_data and not user_data[field].strip():
                 return ValidationResult(ValidationStatus.FAILURE, f"{field} cannot be empty.")
@@ -61,7 +58,6 @@ class UserDataValidator(InputValidator):
         for field, pattern in self.field_patterns.items():
             if field in user_data and not re.match(pattern, user_data[field]):
                 return ValidationResult(ValidationStatus.FAILURE, f"Invalid or missing {field}.")
-
         # Validate personal information
         if 'personalInfo' in user_data:
             for field_key in PersonalInfo.dict_keys():
@@ -70,7 +66,6 @@ class UserDataValidator(InputValidator):
                                                                            user_data['personalInfo'][field_key]):
                     return ValidationResult(ValidationStatus.FAILURE,
                                             f"Invalid or missing personal info field: {field_key}.")
-
         return ValidationResult(ValidationStatus.SUCCESS, "User data is valid.")
 
     def validate_role(self, role: str):

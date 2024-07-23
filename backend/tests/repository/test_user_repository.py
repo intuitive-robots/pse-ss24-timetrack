@@ -124,6 +124,8 @@ class TestUserRepository(unittest.TestCase):
                                               PersonalInfo("Test", "TestUser",
                                                            "testmail", "231232",
                                                            "Test Institute"), UserRole.ADMIN))
+        deletionResult = self.user_repository.delete_user("Test129387")
+        self.assertEqual(deletionResult.status_code, 404)
         self.user_repository.delete_user("testDeleteUser")
         self.assertIsNone(self.user_repository.find_by_username("testDeleteUser"))
 

@@ -26,17 +26,42 @@ class TestDocumentController(unittest.TestCase):
         """
         access_token = self.authenticate("testAdmin1", "test_password")
 
-        response = self.client.get('/document/generateDocument?month=5&year=2024&username=testHiwi1', headers={'Authorization': f'Bearer {access_token}'})
-        self.assertIsNotNone(response.data)
+        responseNoUsername = self.client.get('/document/generateDocument?month=6&year=2024',
+                                   headers={'Authorization': f'Bearer {access_token}'})
+        self.assertEqual(responseNoUsername.status_code, 400)
 
+        responseNoMonth = self.client.get('/document/generateDocument?year=2024&username=testHiwi2',
+                                             headers={'Authorization': f'Bearer {access_token}'})
+        self.assertEqual(responseNoMonth.status_code, 400)
+
+        responseNoYear = self.client.get('/document/generateDocument?month=6&username=testHiwi2',
+                                             headers={'Authorization': f'Bearer {access_token}'})
+        self.assertEqual(responseNoYear.status_code, 400)
+
+        response = self.client.get('/document/generateDocument?month=6&year=2024&username=testHiwi2',
+                                   headers={'Authorization': f'Bearer {access_token}'})
+        self.assertIsNotNone(response.data)
     def test_generate_multiple_documents(self):
         """
         Test the generate_multiple_documents method of the DocumentController class.
         """
         access_token = self.authenticate("testAdmin1", "test_password")
 
-        response = self.client.get('/document/generateMultipleDocuments?usernames=testHiwi1&usernames=testHiwi2&month=5&year=2024',
+        responseUsername = self.client.get('/document/generateMultipleDocuments?usernames=testHiwi1&usernames=testHiwi2&month=5&year=2024',
                                    headers={'Authorization': f'Bearer {access_token}'})
-        self.assertIsNotNone(response.data)
+        self.assertIsNotNone(responseUsername.data)
+        responseIds = self.client.get(
+            '/document/generateMultipleDocuments?timesheetIds=667bd050cf0aa6181e9c8dd9&timesheetIds=667bd14ecf0aa6181e9c8dda',
+            headers={'Authorization': f'Bearer {access_token}'})
+        self.assertIsNotNone(responseIds.data)
 
 
+        responseDates = self.client.get(
+            '/document/generateMultipleDocuments?username=testHiwi1&startDate=01-03-24&endDate=01-04-24',
+            headers={'Authorization': f'Bearer {access_token}'})
+        self.assertIsNotNone(responseDates.data)
+
+        responseError = self.client.get(
+            '/document/generateMultipleDocuments?username=testHiwi1',
+            headers={'Authorization': f'Bearer {access_token}'})
+        self.assertEqual(responseError.status_code, 400)

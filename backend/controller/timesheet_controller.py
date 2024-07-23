@@ -75,7 +75,7 @@ class TimesheetController(MethodView):
         if request_data is None:
             return jsonify('Request data is missing'), 400
         username = request_data.get('username')
-        month = request_data['month']
+        month = request_data.get('month')
         year = request_data.get('year')
         if not username:
             return jsonify('No username provided'), 400
@@ -99,7 +99,7 @@ class TimesheetController(MethodView):
         request_data = request.get_json()
         timesheet_id = request_data['_id']
         if timesheet_id is None:
-            return jsonify( 'No timesheet ID provided'), 400
+            return jsonify('No timesheet ID provided'), 400
         if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
             return jsonify('No signature has been uploaded.'), 400
         result = self.timesheet_service.sign_timesheet(timesheet_id)
@@ -114,7 +114,7 @@ class TimesheetController(MethodView):
         :return: JSON response containing the status message and status code.
         """
         if not request.is_json:
-            return jsonify( 'Request data must be in JSON format'), 400
+            return jsonify('Request data must be in JSON format'), 400
         request_data = request.get_json()
         timesheet_id = request_data['_id']
         if timesheet_id is None:
@@ -170,15 +170,17 @@ class TimesheetController(MethodView):
 
         request_data = request.args
         username = request_data.get('username')
+
+        if username is None:
+            return jsonify('No username provided'), 400
+        if request_data.get('month') is None:
+            return jsonify('No month provided'), 400
+        if request_data.get('year') is None:
+            return jsonify('No year provided'), 400
         month = int(request_data.get('month'))
         year = int(request_data.get('year'))
         print(username, month, year)
-        if username is None:
-            return jsonify('No username provided'), 400
-        if month is None:
-            return jsonify('No month provided'), 400
-        if year is None:
-            return jsonify('No year provided'), 400
+
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
