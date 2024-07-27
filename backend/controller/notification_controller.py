@@ -18,10 +18,22 @@ class NotificationController(MethodView):
         }
         return self._dispatch_request(endpoint_mapping)
 
+    def delete(self):
+        endpoint_mapping = {
+            "/delete": self.delete_notification
+        }
+        return self._dispatch_request(endpoint_mapping)
+
     @jwt_required()
     def create_notification(self):
         notification_data = request.json
         result = self.notification_service.send_notification(notification_data)
+        return jsonify(result.message), result.status_code
+
+    @jwt_required()
+    def delete_notification(self):
+        notification_id = request.args.get("id")
+        result = self.notification_service.delete_notification(notification_id)
         return jsonify(result.message), result.status_code
 
     def _dispatch_request(self, endpoint_mapping):

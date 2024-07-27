@@ -19,8 +19,8 @@ class NotificationService:
             return RequestResult(False, "Notification data is empty", 400)
 
         #TODO: Replace this with a validation strategy
-        if notification_data.get("sender") is None:
-            notification_data["sender"] = get_jwt_identity()
+
+        notification_data["sender"] = get_jwt_identity()
         if notification_data.get("receiver") is None:
             return RequestResult(False, "Receiver is not specified", 400)
         if notification_data.get("message") is None:
@@ -53,11 +53,13 @@ class NotificationService:
         if receiver_data.get("slackId") is None:
             return RequestResult(False, "Receiver does not have a Slack ID", 400)
         receiver_slack_id = receiver_data.get("slackId")
-        receiver_full_name = receiver_data.get("personalInfo").get("firstName") + " " + receiver_data.get("personalInfo").get("lastName")
+        receiver_full_name = receiver_data.get("personalInfo").get("firstName") + " " + receiver_data.get(
+            "personalInfo").get("lastName")
 
         if sender_data.get("slackId") is None:
             return RequestResult(False, "Sender does not have a Slack ID", 400)
-        sender_full_name = sender_data.get("personalInfo").get("firstName") + " " + sender_data.get("personalInfo").get("lastName")
+        sender_full_name = sender_data.get("personalInfo").get("firstName") + " " + sender_data.get("personalInfo").get(
+            "lastName")
 
         slack_body = {
             "text": f"From: {sender_full_name}\nTo: {receiver_full_name}\nMessage: {notification.message}",
@@ -76,5 +78,10 @@ class NotificationService:
     def delete_notification(self, notification_id: str):
         if notification_id is None:
             return RequestResult(False, "Notification ID is empty", 400)
+        notification = self.notification_repository.get_notification_by_id(notification_id).data
+        if notification is None:
+            return RequestResult(False, "Notification not found", 404)
+        if not notification.receiver == get_jwt_identity():  # Only the receiver can delete the notification
+            return RequestResult(False, "You are not authorized to delete this notification", 403)
 
         return self.notification_repository.delete_notification_by_id(notification_id)

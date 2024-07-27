@@ -57,6 +57,8 @@ app.register_blueprint(user_blueprint, url_prefix='/user')
 notification_view = NotificationController.as_view('notification')
 notification_blueprint.add_url_rule('/send', view_func=notification_view, methods=['POST'],
                                     endpoint='send_notification')
+notification_blueprint.add_url_rule('/delete', view_func=notification_view, methods=['DELETE'],
+                                    endpoint='delete_notification')
 app.register_blueprint(notification_blueprint, url_prefix='/notification')
 
 time_entry_view = TimeEntryController.as_view('time_entry')
