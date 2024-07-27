@@ -27,6 +27,9 @@ class NotificationService:
             return RequestResult(False, "Message is not specified", 400)
         if notification_data.get("message_type") is None:
             return RequestResult(False, "Message type is not specified", 400)
+        message_type = notification_data.get("message_type")
+        if not message_type == MessageType.TIMESHEET_STATUS_CHANGE.value and not message_type == MessageType.REMINDER.value:
+            return RequestResult(False, "Invalid message type", 400)
         notification = NotificationMessage.from_dict(notification_data)
         if notification is None:
             return RequestResult(False, "Notification data is invalid", 400)
