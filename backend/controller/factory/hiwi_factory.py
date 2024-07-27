@@ -34,4 +34,5 @@ class HiwiFactory(UserFactory):
             personal_info=personal_info,
             supervisor=supervisor,
             contract_info=contract_info,
+            slack_id=user_data.get('slackId'),
         )
