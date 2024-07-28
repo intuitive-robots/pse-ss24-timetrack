@@ -38,7 +38,6 @@ class TimeEntryService:
         self.entry_validator = TimeEntryValidator()
         self.user_service = UserService()
 
-
         self.entry_type_mapping = {
             TimeEntryType.WORK_ENTRY: WorkEntry,
             TimeEntryType.VACATION_ENTRY: VacationEntry
@@ -241,6 +240,24 @@ class TimeEntryService:
             return result
 
         return delete_result
+
+    def delete_time_entries_by_timesheet_id(self, timesheet_id: str) -> RequestResult:
+        """
+        Deletes all time entries of a user that is being deleted.
+
+        :param timesheet_id: The id of the timesheet for which to delete all time entries.
+        :type timesheet_id: str
+        :return: A RequestResult object containing the result of the delete operation.
+        :rtype: RequestResult
+        """
+        time_entries = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+        for entry in time_entries:
+            entry_id = str(entry['_id'])
+            delete_result = self.time_entry_repository.delete_time_entry(entry_id)
+            if not delete_result.is_successful:
+                return delete_result
+
+        return RequestResult(True, "All time entries deleted successfully", status_code=200)
 
     def get_entries_of_timesheet(self, timesheet_id: str):
         """

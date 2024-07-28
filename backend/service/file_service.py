@@ -110,3 +110,19 @@ class FileService:
         :rtype: bool
         """
         return self.file_repository.does_file_exist(username, file_type)
+
+    def delete_files_by_username(self, username: str) -> RequestResult:
+        """
+        Deletes all files associated with a specific username.
+
+        :param username: The username linked to the files.
+        :type username: str
+        :return: Indicates the success or failure of the delete operation.
+        :rtype: RequestResult
+        """
+        for filetype in FileType:
+            if self.does_file_exist(username, filetype):
+                result = self.delete_image(username, filetype)
+                if not result.is_successful:
+                    return result
+        return RequestResult(True, "All files deleted successfully", 200)
