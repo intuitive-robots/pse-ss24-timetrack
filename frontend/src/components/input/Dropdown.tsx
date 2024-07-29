@@ -5,7 +5,7 @@ interface DropdownProps {
     value: string;
     onChange: (value: string) => void;
     options: { label: string; value: string }[];
-    icon: string;
+    icon: string | React.ReactNode;
     width?: string;
 }
 
@@ -26,7 +26,11 @@ const Dropdown: React.FC<DropdownProps> = ({ title, value, onChange, options, ic
                     ))}
                 </select>
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <img src={icon} alt="" className="h-5 w-5 text-gray-500"/>
+                    {typeof icon === 'string' ? (
+                        <img src={icon} alt="" className="h-5 w-5 text-gray-500" />
+                    ) : (
+                        icon
+                    )}
                 </div>
             </div>
         </div>
