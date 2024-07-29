@@ -289,7 +289,7 @@ class TestUserController(unittest.TestCase):
         """
         access_token = self.authenticate("testSupervisor1", "test_password")
         response = self.client.get('/user/getHiwis', headers={"Authorization": f"Bearer {access_token}"})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(200, response.status_code)
         self.assertIsNotNone(response.json)
         self.assertIsInstance(response.json, list)
         self.assertGreaterEqual(len(response.json), 1)
