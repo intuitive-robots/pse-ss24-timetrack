@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NotificationIconActive } from "../../assets/iconComponents/NotificationIconActive";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
+import NotificationsList from "./NotificationList";
 
 export const NotificationShowcase = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +19,7 @@ export const NotificationShowcase = () => {
                 <NotificationIconActive />
             </button>
             {isOpen && (
-                <div className={`absolute right-[-0.5rem] top-11 mt-2 w-80 min-h-52 rounded-xl bg-white border-[#EBEBEB] border-[1px] shadow-profile-popup-shadow py-4 transform transition-opacity duration-200 ease-out ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 hidden'} origin-top`}>
+                <div className={`absolute right-[-0.5rem] top-11 mt-2 w-96 min-h-52 rounded-xl bg-white border-[#EBEBEB] border-[1px] shadow-profile-popup-shadow py-4 transform transition-opacity duration-200 ease-out ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 hidden'} origin-top`}>
                     <div>
                         <div className="flex flex-row justify-between items-end mb-4 px-4">
                             <h1 className="text-md font-semibold text-black">Notifications</h1>
@@ -27,7 +28,7 @@ export const NotificationShowcase = () => {
                         </div>
                         <HorizontalSeparator/>
                     </div>
-
+                    <NotificationsList/>
                 </div>
             )}
         </div>
