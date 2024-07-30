@@ -8,7 +8,6 @@ import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
 import { usePopup } from "../../components/popup/PopupContext";
 import { deleteUser } from "../../services/UserService";
 import RoleFilter from "../../components/filter/RoleFilter";
-import {Roles} from "../../components/auth/roles";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
 import ViewUserPopup from "../../components/popup/ViewUserPopup";
@@ -32,8 +31,22 @@ const AdminHomePage = (): React.ReactElement => {
         openPopup(
             <ConfirmationPopup
                 title={"Delete User"}
-                description={"Are you sure you want to delete this user?"}
+                description={"Are you sure you want to delete this user including user data?"}
+                note={"NOTE: This action cannot be undone."}
+                noteColor={"text-red-600"}
                 onConfirm={() => confirmDeleteUser(username)}
+                onCancel={closePopup}
+            />
+        );
+    };
+
+    const handleLockUser = (username: string) => {
+        openPopup(
+            <ConfirmationPopup
+                title={"Lock User"}
+                description={"Are you sure you want to lock this user?"}
+                note={"NOTE: This action will not remove any user data"}
+                onConfirm={() => confirmLockUser(username)}
                 onCancel={closePopup}
             />
         );
@@ -46,6 +59,15 @@ const AdminHomePage = (): React.ReactElement => {
             setUsers(prev => prev.filter(u => u.username !== username));
         } catch (error) {
             console.error('Failed to delete user:', error);
+            closePopup();
+        }
+    };
+
+    const confirmLockUser = async (username: string) => {
+        try {
+            closePopup();
+        } catch (error) {
+            console.error('Failed to Lock user:', error);
             closePopup();
         }
     };
@@ -127,6 +149,7 @@ const AdminHomePage = (): React.ReactElement => {
                         profileImageUrl={ProfilePlaceholder}
                         onView={() => {openPopup(<ViewUserPopup userData={user}/>)}}
                         onEdit={() => {handleOnChange(user)}}
+                        onLock={() => {handleLockUser(user.username)}}
                         onDelete={() => handleDeleteUser(user.username)}
                     />
                 ))}
