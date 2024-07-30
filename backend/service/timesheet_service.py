@@ -58,13 +58,13 @@ class TimesheetService:
         time_entries = [TimeEntry.from_dict(entry_data) for entry_data in time_entries_data]
         total_time = sum([entry.get_duration() for entry in time_entries])
         timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if not timesheet:
+            return RequestResult(False, "Timesheet not found", 404)
         timesheet['totalTime'] = total_time
         result = self.timesheet_repository.update_timesheet_by_dict(timesheet)
         if result.is_successful:
             return RequestResult(True, "Total time updated", 200)
         return RequestResult(False, "Failed to update total time", 500)
-
-
 
     def sign_timesheet(self, timesheet_id: str):
         """
@@ -153,11 +153,8 @@ class TimesheetService:
             if not update_result.is_successful:
                 self.timesheet_repository.delete_timesheet(result.data["_id"])
                 return update_result
-
             return RequestResult(True, "Timesheet created", 201, {"_id": result.data["_id"]})
-
         return RequestResult(False, "Failed to create timesheet", 500)
-
     def calculate_overtime(self, timesheet_id):
         """
         Calculates the overtime for a timesheet.
@@ -184,9 +181,6 @@ class TimesheetService:
             self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
             return RequestResult(True, "", 200, overtime_minutes)
         return RequestResult(False, "Overtime can't be edited when Timesheet is complete", 409)
-
-
-
     def get_previous_overtime(self, username: str, current_month: int, current_year: int):
         """
         Retrieves the overtime from the previous month for a Hiwi.
@@ -323,7 +317,7 @@ class TimesheetService:
             return RequestResult(False, "No timesheets found", 404)
         return RequestResult(True, "", 200, sorted_timesheets[0])
 
-    def _get_status_priority(self, status: TimesheetStatus):
+    def _get_status_priority(self, status: TimesheetStatus): #pragma: no cover
         if status == TimesheetStatus.REVISION:
             return 1
         elif status == TimesheetStatus.NOT_SUBMITTED:

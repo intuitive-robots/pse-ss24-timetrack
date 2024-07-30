@@ -82,6 +82,7 @@ class TimesheetRepository:
             timesheet_data = self.db.timesheets.find_one({"username": username, "status": TimesheetStatus.NOT_SUBMITTED.value})
             if timesheet_data:
                 return timesheet_data
+            return None
         except PyMongoError as e:
             return None
 

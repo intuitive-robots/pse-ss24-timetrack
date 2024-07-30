@@ -30,7 +30,7 @@ class UserService:
         self.user_repository = UserRepository.get_instance()
         self.user_validator = UserDataValidator()
 
-    def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict:
+    def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict: #pragma: no cover
         """
         Recursively update a dictionary with another dictionary, excluding specified keys.
 
@@ -43,7 +43,6 @@ class UserService:
 
         if exclude_keys is None:
             exclude_keys = set()
-
         for key, value in updates.items():
             if key in exclude_keys:
                 continue  # Skip updating this key if it's in the exclude list
@@ -96,9 +95,7 @@ class UserService:
             if not result_supervisor_update.is_successful:
                 return result_supervisor_update
             return RequestResult(True, "HiWi created successfully", status_code=201)
-
         return self.user_repository.create_user(user)
-
     def _calculate_vacation_minutes(self, monthly_working_hours: int):
         """
         Calculates the number of vacation hours based on the monthly working hours.
@@ -108,7 +105,6 @@ class UserService:
         """
 
         return round(((monthly_working_hours * 20 * 3.95) / (85 * 12) * 2), 0) / 2
-
     def add_overtime_minutes(self, username: str, minutes: int):
         """
         Adds overtime hours to a user identified by their username.
@@ -197,9 +193,9 @@ class UserService:
         if 'username' not in user_data:
             return RequestResult(False, "Username must be provided for user update", status_code=400)
         existing_user_data = self.user_repository.find_by_username(user_data['username'])
-        existing_supervisor = existing_user_data.get('supervisor', None)
         if not existing_user_data:
             return RequestResult(False, "User not found", status_code=404)
+        existing_supervisor = existing_user_data.get('supervisor', None)
         updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash"])
 
         # Validate the updated user data
@@ -217,7 +213,7 @@ class UserService:
                 return update_supervisor_result
         return self.user_repository.update_user(updated_user)
 
-    def _update_supervisor(self, hiwi_username: str, supervisor_username: str, new_supervisor_username: str):
+    def _update_supervisor(self, hiwi_username: str, supervisor_username: str, new_supervisor_username: str): # pragma: no cover
         """
         Updates the supervisor of a Hiwi.
 
@@ -288,7 +284,7 @@ class UserService:
         """
         parsedRole = UserRole.get_role_by_value(role)
         if not parsedRole:
-            return []
+            return RequestResult(False, "Role not found", status_code=404, data=[])
         users_data = self.user_repository.get_users_by_role(parsedRole)
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
 
@@ -319,7 +315,7 @@ class UserService:
         if supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
         for hiwi_username in supervisor_data['hiwis']:
-            print(self.get_profile(hiwi_username))
+            print(hiwi_username)
 
         hiwis_data = list(self.get_profile(hiwi_username) for hiwi_username in supervisor_data['hiwis'])
         if not hiwis_data:

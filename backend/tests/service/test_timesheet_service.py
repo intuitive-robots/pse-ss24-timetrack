@@ -18,6 +18,7 @@ class TestTimesheetService(unittest.TestCase):
         """
         Test the ensure_timesheet_exists method of the TimesheetService class.
         """
+
         # Test ensuring a timesheet exists for a user
         test_username = "testHiwi1"
 
@@ -35,6 +36,18 @@ class TestTimesheetService(unittest.TestCase):
         timesheet_id = self.timesheet_repository.get_timesheet_id(test_username, 8, 2024)
         delete_result = self.timesheet_service.delete_timesheet_by_id(timesheet_id)
         self.assertTrue(delete_result.is_successful)
+
+    def test_set_total_time(self):
+        # Test invalid timesheet id
+        result_invalid_timesheet_id = self.timesheet_service.set_total_time("666666666666666666666666")
+        self.assertEqual("Timesheet not found", result_invalid_timesheet_id.message)
+        self.assertFalse(result_invalid_timesheet_id.is_successful)
+        self.assertEqual(404, result_invalid_timesheet_id.status_code)
+
+        result = self.timesheet_service.set_total_time(ObjectId('6679ca2935df0d8f7202c5fa'))
+        self.assertEqual("Total time updated", result.message)
+        self.assertTrue(result.is_successful)
+        self.assertEqual(200, result.status_code)
 
     def test_sign_timesheet(self):
         """
@@ -80,6 +93,29 @@ class TestTimesheetService(unittest.TestCase):
         test_completed_timesheet_id = "667bd050cf0aa6181e9c8dd9"
         result = self.timesheet_service.request_change(test_completed_timesheet_id)
         self.assertFalse(result.is_successful)
+
+    def test_calculate_overtime(self):
+        # Test for invalid timesheet id
+        result_invalid_timesheet_id = self.timesheet_service.calculate_overtime("666666666666666666666666")
+        self.assertEqual("Timesheet not found", result_invalid_timesheet_id.message)
+        self.assertFalse(result_invalid_timesheet_id.is_successful)
+        self.assertEqual(404, result_invalid_timesheet_id.status_code)
+
+        result = self.timesheet_service.calculate_overtime(ObjectId('6679ca2935df0d8f7202c5fa'))
+        self.assertEqual("", result.message)
+        self.assertTrue(result.is_successful)
+        self.assertEqual(-4366, result.data)
+        self.assertEqual(200, result.status_code)
+    def test_get_previous_overtime(self):
+        result = self.timesheet_service.get_previous_overtime("testHiwi1", 5, 2024)
+        self.assertEqual(0.0, result)
+
+    def test_delete_timesheet_by_id(self):
+        # Test for invalid timesheet id
+        result_invalid_timesheet_id = self.timesheet_service.delete_timesheet_by_id("666666666666666666666666")
+        self.assertEqual("Timesheet not found", result_invalid_timesheet_id.message)
+        self.assertFalse(result_invalid_timesheet_id.is_successful)
+        self.assertEqual(404, result_invalid_timesheet_id.status_code)
 
     def test_get_timesheet_by_id(self):
         """
@@ -138,6 +174,13 @@ class TestTimesheetService(unittest.TestCase):
             {"_id": ObjectId("667bd14ecf0aa6181e9c8dda"), "username": "testHiwi1", "month": 3, "year": 2024,
              "status": "Complete", "totalTime": 0.0, "overtime": 0.0,
              "lastSignatureChange": datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
+
+        # Test for invalid username
+        result_invalid_username = self.timesheet_service.get_timesheets_by_username_status("", TimesheetStatus.COMPLETE)
+        self.assertEqual("No timesheets found", result_invalid_username.message)
+        self.assertFalse(result_invalid_username.is_successful)
+        self.assertEqual(404, result_invalid_username.status_code)
+
         result = self.timesheet_service.get_timesheets_by_username_status("testHiwi1", TimesheetStatus.COMPLETE)
         self.assertTrue(result.is_successful)
         self.assertEqual(len(result.data), len(test_timesheet_data))
@@ -163,10 +206,31 @@ class TestTimesheetService(unittest.TestCase):
         fail_result = self.timesheet_service.get_timesheet_id("testHiwiNonexistent", 5, 2024)
         self.assertFalse(fail_result.is_successful)
 
+    def test_get_timesheet_status(self):
+        # Test for invalid timesheet id
+        result_invalid_timesheet_id = self.timesheet_service.get_timesheet_status("666666666666666666666666")
+        self.assertEqual("Timesheet not found", result_invalid_timesheet_id.message)
+        self.assertFalse(result_invalid_timesheet_id.is_successful)
+        self.assertEqual(404, result_invalid_timesheet_id.status_code)
+
+        result = self.timesheet_service.get_timesheet_status(ObjectId("6679ca2935df0d8f7202c5fa"))
+        self.assertEqual("", result.message)
+        self.assertTrue(result.is_successful)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(TimesheetStatus(TimesheetStatus.NOT_SUBMITTED), result.data)
+
     def test_get_current_timesheet(self):
         """
         Test the get_current_timesheet method of the TimesheetService class.
         """
+        # Test for no username
+        result_no_username = self.timesheet_service.get_current_timesheet(None)
+        self.assertEqual("Please provide a username to retrieve the timesheet", result_no_username.message)
+        self.assertFalse(result_no_username.is_successful)
+        self.assertEqual(400, result_no_username.status_code)
+
+
+
         # Test getting the current timesheet for a user
         test_username = "testHiwi1"
         test_timesheet_id = ObjectId("6679ca2935df0d8f7202c5fa")
@@ -183,6 +247,12 @@ class TestTimesheetService(unittest.TestCase):
         """
         Test the get_highest_priority_timesheet method of the TimesheetService class.
         """
+        # Test for no username
+        result_no_username = self.timesheet_service.get_highest_priority_timesheet(None)
+        self.assertEqual("Please provide a username to retrieve the timesheet", result_no_username.message)
+        self.assertFalse(result_no_username.is_successful)
+        self.assertEqual(400, result_no_username.status_code)
+
         # Test getting the current timesheet for a user
         test_username = "testHiwi1"
         test_timesheet_id = ObjectId("6679ca2935df0d8f7202c5fa")
@@ -195,6 +265,12 @@ class TestTimesheetService(unittest.TestCase):
         """
         Test the get_timesheet method of the TimesheetService class.
         """
+        # Test for no username
+        result_no_username = self.timesheet_service.get_timesheet(None, 5, 2024)
+        self.assertEqual("Please provide a username, month, and year to retrieve the timesheet", result_no_username.message)
+        self.assertFalse(result_no_username.is_successful)
+        self.assertEqual(400, result_no_username.status_code)
+
         # Test getting a timesheet for a user
         test_username = "testHiwi1"
         test_month = 5
