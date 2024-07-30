@@ -315,6 +315,8 @@ class TimesheetService:
             self._get_status_priority(timesheet.status), timesheet.year, timesheet.month))
         if sorted_timesheets is None or len(sorted_timesheets) == 0:
             return RequestResult(False, "No timesheets found", 404)
+        if sorted_timesheets[0].status == TimesheetStatus.COMPLETE:
+            return RequestResult(True, "", 200, sorted_timesheets[-1])
         return RequestResult(True, "", 200, sorted_timesheets[0])
 
     def _get_status_priority(self, status: TimesheetStatus): #pragma: no cover
