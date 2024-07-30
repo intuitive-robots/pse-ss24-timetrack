@@ -8,7 +8,6 @@ import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
 import { usePopup } from "../../components/popup/PopupContext";
 import { deleteUser } from "../../services/UserService";
 import RoleFilter from "../../components/filter/RoleFilter";
-import {Roles} from "../../components/auth/roles";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
 import ViewUserPopup from "../../components/popup/ViewUserPopup";
@@ -127,6 +126,7 @@ const AdminHomePage = (): React.ReactElement => {
                         profileImageUrl={ProfilePlaceholder}
                         onView={() => {openPopup(<ViewUserPopup userData={user}/>)}}
                         onEdit={() => {handleOnChange(user)}}
+                        onLock={() => {}}
                         onDelete={() => handleDeleteUser(user.username)}
                     />
                 ))}
