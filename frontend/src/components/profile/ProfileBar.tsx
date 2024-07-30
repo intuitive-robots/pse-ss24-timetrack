@@ -77,7 +77,7 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             <div className="z-50 mr-6">
                 <NotificationShowcase/>
             </div>
-            <div className="flex items-center cursor-pointer z-50 mr-4">
+            <div className="flex items-center z-50 mr-4">
                 <UserInfo
                     name={user ? user.personalInfo.firstName : "Max"}
                     lastName={user ? user.personalInfo.lastName : "Muster"}

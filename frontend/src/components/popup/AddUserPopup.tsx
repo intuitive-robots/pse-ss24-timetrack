@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import { usePopup } from "./PopupContext";
 import DialogButton from "../input/DialogButton";
 import ShortInputField from "../input/ShortInputField";
-import PasswordIcon from "../../assets/images/password_icon.svg";
 import UserIcon from "../../assets/images/username_icon.svg";
 import StepIndicator from "./StepIndicator";
 import Dropdown from "../input/Dropdown";
@@ -17,6 +16,7 @@ import {BriefcaseIcon} from "../../assets/iconComponents/BriefcaseIcon";
 import {SupervisorIcon} from "../../assets/iconComponents/SupervisorIcon";
 import {RoleIcon} from "../../assets/iconComponents/RoleIcon";
 import {NameIcon} from "../../assets/iconComponents/NameIcon";
+import {PasswordIcon} from "../../assets/iconComponents/PasswordIcon";
 
 interface FormData {
     username: string;
@@ -199,7 +199,7 @@ const AddUserPopup: React.FC = () => {
                     <>
                         <ShortInputField title="Username" value={formData.username} onChange={handleChange('username')} icon={UserIcon} type="text" size={"medium"} />
                         <div className="flex items-center gap-4">
-                            <ShortInputField title="Password" type="text" value={formData.password} onChange={handleChange('password')} icon={PasswordIcon} size="medium"/>
+                            <ShortInputField title="Password" type="text" value={formData.password} onChange={handleChange('password')} icon={<PasswordIcon/>} size="medium"/>
                             <button onClick={generateRandomPassword} className="px-4 py-2 mt-8 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Generate</button>
                         </div>
                         <Dropdown title="Role" value={formData.role} onChange={handleChange('role')} icon={<RoleIcon/>} options={roleOptions} />
