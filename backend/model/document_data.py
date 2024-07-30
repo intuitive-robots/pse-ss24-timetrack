@@ -36,7 +36,9 @@ class DocumentData:
         Calculates the total number of working hours in a month.
         :return: The total number of working hours in a month.
         """
-        duration_minutes = round(sum(entry.get_duration() for entry in self.time_entries), 2)
+        if not self.time_entries:
+            return f"{0:02d}:{0:02d}"
+        duration_minutes = round(sum(entry.get_duration() for entry in self.time_entries), 2) or 0
         hours, minutes = divmod(duration_minutes, 60)
         duration_str = f"{int(hours):02d}:{int(minutes):02d}"
         return duration_str
