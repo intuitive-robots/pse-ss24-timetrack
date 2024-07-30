@@ -75,6 +75,10 @@ const NavigationBar: React.FC = (): React.ReactElement => {
     navigate(path);
   }
 
+  const renderIcon = (icon: string | React.ReactNode, altText: string) => {
+    return typeof icon === 'string' ? <img src={icon} alt={altText} className="mr-3" /> : <span className="mr-3">{icon}</span>;
+  };
+
   return (
     <div className="flex-col w-72 h-full shadow-navbar-shadow border-r-2.7 border-border-gray transition-all duration-200 ease-in-out">
       <div className="h-full py-14 px-6 gap-6 flex flex-col font-semibold">
@@ -94,9 +98,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
                       }`}
                       onClick={() => handleItemClick(item)}
                   >
-                    <img
-                        src={activeItem === item ? navigationIcons[item.replace(/\s+/, '')].active : navigationIcons[item.replace(/\s+/, '')].default}
-                        className="mr-3 fill-amber-200" alt={`${item} icon`}/>
+                    {renderIcon(activeItem === item ? navigationIcons[item.replace(/\s+/g, '')].active : navigationIcons[item.replace(/\s+/g, '')].default, `${item} icon`)}
                     {item}
                   </button>
               ))}

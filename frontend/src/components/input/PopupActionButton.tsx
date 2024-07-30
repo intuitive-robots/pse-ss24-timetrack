@@ -8,7 +8,7 @@ interface PopupActionButtonProps {
   textColor?: string;
   bgColor?: string;
   hover?: string;
-  icon?: string;
+  icon?: string | ReactNode;
   border?: string;
   primary?: boolean;
   secondary?: boolean;

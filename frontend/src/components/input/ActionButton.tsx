@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 
 interface ActionButtonProps {
   label: string;
@@ -7,7 +7,7 @@ interface ActionButtonProps {
   bgColor?: string;
   hover?: string;
   border?: string;
-  icon?: string;
+  icon?: string | ReactNode;
   primary?: boolean;
   secondary?: boolean;
 }
@@ -32,12 +32,18 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   const buttonClass = primary ? primaryClass : secondary ? secondaryClass : defaultClass;
 
+  const iconElement = typeof icon === 'string' ? (
+    <img src={icon} alt="" className=""/>
+  ) : (
+    icon
+  );
+
   return icon ? (
       <button
           className={`flex items-center gap-3 w-full py-3 px-5 ${buttonClass} ${bgColor} ${textColor} rounded-md shadow mt-4 ${hover} transition-colors ${border}`}
           onClick={onClick}
       >
-        <img src={icon} alt="" className=""/>
+        {iconElement}
         <p className={`${textColor} font-semibold text-nowrap`}>{label}</p>
       </button>
 
