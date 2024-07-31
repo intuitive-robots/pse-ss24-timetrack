@@ -11,6 +11,8 @@ import RoleFilter from "../../components/filter/RoleFilter";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
 import ViewUserPopup from "../../components/popup/ViewUserPopup";
+import {useSearch} from "../../context/SearchContext";
+import {SearchUtils} from "../../utils/SearchUtils";
 
 interface RoleCounts {
     Hiwi: number;
@@ -21,11 +23,13 @@ interface RoleCounts {
 
 const AdminHomePage = (): React.ReactElement => {
     const { user } = useAuth();
+    const { searchString } = useSearch();
+    const { openPopup, closePopup } = usePopup();
+
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [activeRole, setActiveRole] = useState<string>("View all");
-
-    const { openPopup, closePopup } = usePopup();
+    const [searchUtils, setSearchUtils] = useState<SearchUtils<User> | null>(null);
 
     const handleDeleteUser = (username: string) => {
         openPopup(
@@ -77,6 +81,10 @@ const AdminHomePage = (): React.ReactElement => {
             const fetchedUsers = await getUsers();
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
+            setSearchUtils(new SearchUtils(fetchedUsers, {
+                keys: ["role", "username", "personalInfo.firstName", "personalInfo.lastName"],
+                threshold: 0.3
+            }));
         } catch (error) {
             console.error('Failed to fetch users', error);
         }
@@ -85,6 +93,13 @@ const AdminHomePage = (): React.ReactElement => {
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    useEffect(() => {
+        const results = searchUtils && searchString ? searchUtils.searchItems(searchString) : users;
+        const filteredByRole = activeRole === "View all" ? results : results.filter(user => user.role === activeRole);
+        const nonTestUsers = filteredByRole.filter(user => !user.username.startsWith('test'));
+        setFilteredUsers(nonTestUsers);
+    }, [searchString, searchUtils, users, activeRole]);
 
     useEffect(() => {
         if (activeRole === "View all") {

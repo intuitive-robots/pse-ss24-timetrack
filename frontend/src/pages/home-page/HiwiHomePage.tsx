@@ -16,6 +16,8 @@ import DocumentStatus from "../../components/status/DocumentStatus";
 import ProgressCard from "../../components/charts/ProgressCard";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import {StatusType} from "../../interfaces/StatusType";
+import {SearchUtils} from "../../utils/SearchUtils";
+import {useSearch} from "../../context/SearchContext";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -24,7 +26,13 @@ import {StatusType} from "../../interfaces/StatusType";
  */
 const HiwiHomePage = (): React.ReactElement => {
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
+
     const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
+
+    const [filteredTimeEntries, setFilteredTimeEntries] = useState<TimeEntry[]>([]);
+    const [searchUtils, setSearchUtils] = useState<SearchUtils<TimeEntry> | null>(null);
+    const {searchString} = useSearch();
+
     const { user, role} = useAuth();
 
     const currentMonth = new Date().getMonth() + 1;
@@ -61,7 +69,7 @@ const HiwiHomePage = (): React.ReactElement => {
       if (user && user.username) {
         getTimesheetByMonthYear(user.username, month, year)
           .then(fetchedTimesheet => {
-            console.log('Fetched timesheet:', fetchedTimesheet);
+            // console.log('Fetched timesheet:', fetchedTimesheet);
             setTimesheet(fetchedTimesheet);
           })
           .catch(error => {
@@ -80,10 +88,23 @@ const HiwiHomePage = (): React.ReactElement => {
             getEntriesByTimesheetId(timesheet._id)
                 .then(fetchedEntries => {
                     setTimeEntries(fetchedEntries);
+                    setSearchUtils(new SearchUtils(fetchedEntries, {
+                        keys: ["activity", "projectName", "entryType"]
+                    }));
                 })
                 .catch(error => console.error('Failed to fetch entries for timesheet:', error));
         }
     }, [timesheet]);
+
+    useEffect(() => {
+        if (searchUtils && searchString.trim()) {
+            const results = searchUtils.searchItems(searchString);
+            setFilteredTimeEntries(results);
+        } else {
+            setFilteredTimeEntries(timeEntries ?? []);
+        }
+    }, [searchString, searchUtils, timeEntries]);
+
 
     const totalHoursInDecimal = () => {
         const minutes = timesheet?.totalTime ?? 0;
@@ -212,7 +233,7 @@ const HiwiHomePage = (): React.ReactElement => {
                 </span>,
             </h1>
 
-            <TimeEntryListView entries={timeEntries ?? []} interactable={isStatusInteractable()}/>
+            <TimeEntryListView entries={filteredTimeEntries ?? []} interactable={isStatusInteractable()}/>
 
             <div className="w-fit ml-auto absolute right-14 bottom-10">
                 {getStatusOrButton()}
