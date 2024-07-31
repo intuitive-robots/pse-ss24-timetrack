@@ -16,6 +16,7 @@ import PasswordResetPopup from "../popup/PasswordResetPopup";
 import {ClockwiseIcon} from "../../assets/iconComponents/ClockwiseIcon";
 import UserInfo from "../UserInfo";
 import {NotificationShowcase} from "../notification/NotificationShowcase";
+import {useSearch} from "../../context/SearchContext";
 
 /**
  * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,
@@ -58,9 +59,8 @@ const ProfileBar: React.FC = (): React.ReactElement => {
             <ClockwiseIcon/>
             <div className="transition-all duration-500 ease-in-out md:w-12 lg:w-32" />
             <div className="hidden sm:flex">
-                <SearchInput placeholder="Search" />
+                <SearchInput placeholder="Search"/>
             </div>
-
           <div className="flex gap-3">
               <button
                   className="btn border hover:bg-gray-200 text-sm text-light-navGray h-full py-2 px-6 rounded-lg hidden md:flex">This
