@@ -44,11 +44,11 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder, onChange }: Sear
         {/*</div>*/}
           <div className="absolute right-5">
               {inputValue ? (
-                <button onClick={clearInput} className="p-2">
+                <button onClick={clearInput} className="py-2">
                   <AiOutlineClose size={20} className="text-[#717171]" />
                 </button>
               ) : (
-                <FiSearch size={20} className="m-2 text-[#717171]" />
+                <SearchIcon/>
               )}
           </div>
       </div>
