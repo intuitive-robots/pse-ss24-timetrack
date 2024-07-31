@@ -1,5 +1,6 @@
 import unittest
 import datetime
+from unittest import TestCase
 
 from bson import ObjectId
 
@@ -78,6 +79,7 @@ class TestTimesheetRepository(unittest.TestCase):
              'totalTime': 0.0,
              'overtime': 0.0,
              'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
+
         self.assertEqual(test_timesheet_data,
                          self.timesheet_repository.get_timesheets_by_time_period(test_timesheet_data[0]['username'],
                                                                                  datetime.date(2024, 3, 12),
@@ -143,7 +145,8 @@ class TestTimesheetRepository(unittest.TestCase):
             {'_id': ObjectId('667bd14ecf0aa6181e9c8dda'), 'username': 'testHiwi1', 'month': 3, 'year': 2024,
              'status': 'Complete', 'totalTime': 0.0, 'overtime': 0.0,
              'lastSignatureChange': datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
-        self.assertEqual(test_timesheet_data, self.timesheet_repository.get_timesheets_by_username(test_timesheet_data[0]['username']))
+        self.assertEqual(test_timesheet_data,
+                         self.timesheet_repository.get_timesheets_by_username(test_timesheet_data[0]['username']))
 
     def test_update_timesheet(self):
         """
@@ -224,3 +227,30 @@ class TestTimesheetRepository(unittest.TestCase):
 
     if __name__ == '__main__':
         unittest.main()
+    def test_create_timesheet_by_dict(self):
+        """
+        Test the create_timesheet_by_dict method of the TimesheetRepository class.
+        """
+        test_timesheet_data = {'_id': None,
+                               'username': 'testCreateUser',
+                               'month': 4,
+                               'year': 2024,
+                               'status': 'Complete',
+                               'totalTime': 1.0,
+                               'overtime': 1.0,
+                               'lastSignatureChange': datetime.datetime(2024, 6, 13, 23, 41, 45, 279000)}
+        result = self.timesheet_repository.create_timesheet_by_dict(Timesheet.from_dict(test_timesheet_data))
+        test_timesheet_data['_id'] = result.data['_id']
+        self.assertEqual(test_timesheet_data, self.timesheet_repository.get_timesheet_by_id(str(result.data['_id'])))
+        # Delete Timesheet and return database to its original state
+        self.timesheet_repository.delete_timesheet(str(result.data['_id']))
+
+
+
+
+
+
+
+
+
+}
