@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {SearchIcon} from "../../assets/iconComponents/SearchIcon";
 import {AiOutlineClose} from "react-icons/ai";
-import {FiSearch} from "react-icons/fi";
 import {useSearch} from "../../context/SearchContext";
 
 interface SearchInputProps {
@@ -23,10 +22,12 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder, onChange }: Sear
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
+        setSearchString(event.target.value);
         // onChange(event.target.value);
     };
     const clearInput = () => {
         setInputValue('');
+        setSearchString('');
         // onChange('');
     };
 
