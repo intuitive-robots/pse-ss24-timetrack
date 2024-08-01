@@ -164,10 +164,8 @@ class TimeEntryRepository:
             result = self.db.timeEntries.delete_one({"_id": ObjectId(entry_id)})
             if result.deleted_count == 0:
                 return RequestResult(False, "Entry not found", 404)
-
             if result.acknowledged:
                 return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
         except PyMongoError as e:
             return RequestResult(False, f"Entry deletion failed: {str(e)}", 500)
         return RequestResult(False, "Entry deletion failed", 500)
-

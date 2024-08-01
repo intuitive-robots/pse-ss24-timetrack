@@ -38,6 +38,20 @@ class TestUserRepository(unittest.TestCase):
             "lastLogin": None
         }
 
+        # Test for no user
+        response_no_user = self.user_repository.create_user(None)
+        self.assertEqual("User object is None", response_no_user.message)
+        self.assertEqual(False, response_no_user.is_successful)
+        self.assertEqual(400, response_no_user.status_code)
+
+        # Test for user already existing
+        test_hiwi_one = self.user_repository.find_by_username("testHiwi1")
+        response_no_user = self.user_repository.create_user(User.from_dict(test_hiwi_one))
+        self.assertEqual("User already exists", response_no_user.message)
+        self.assertEqual(False, response_no_user.is_successful)
+        self.assertEqual(409, response_no_user.status_code)
+
+        # Test create_user method
         test_user = User.from_dict(test_user_data)
         self.user_repository.create_user(test_user)
         created_user_data = self.user_repository.find_by_username("testAdmin10")
@@ -82,15 +96,61 @@ class TestUserRepository(unittest.TestCase):
         self.assertEqual(test_user_data, created_user_data)
         self.user_repository.delete_user("testHiwi10")
 
+    def test_set_last_login(self):
+        """
+        Test the set_last_login method of the UserRepository class.
+        """
+        received_user_data = self.user_repository.find_by_username("testAdmin1")
+        previous_last_login = received_user_data["lastLogin"]
+        new_last_login = datetime.datetime(2024, 8, 1, 18, 45, 29, 170000)
+
+        # Test for invalid username
+        response_invalid_username = self.user_repository.set_last_login("", previous_last_login)
+        self.assertEqual("User not found", response_invalid_username.message)
+        self.assertEqual(False, response_invalid_username.is_successful)
+        self.assertEqual(404, response_invalid_username.status_code)
+
+        # Test for no change
+        response_no_change = self.user_repository.set_last_login("testAdmin1", previous_last_login)
+        self.assertEqual("Last login update failed", response_no_change.message)
+        self.assertEqual(False, response_no_change.is_successful)
+        self.assertEqual(500, response_no_change.status_code)
+
+
+        # Set new lastLogin
+        response = self.user_repository.set_last_login("testAdmin1", new_last_login)
+        self.assertEqual("Last login updated successfully", response.message)
+        self.assertEqual(True, response.is_successful)
+        self.assertEqual(200, response.status_code)
+        received_user_data = self.user_repository.find_by_username("testAdmin1")
+        self.assertEqual(received_user_data["lastLogin"], new_last_login)
+
+        # Reset lastLogin
+        response_reset = self.user_repository.set_last_login("testAdmin1", previous_last_login)
+        self.assertEqual("Last login updated successfully", response_reset.message)
+        self.assertEqual(True, response_reset.is_successful)
+        self.assertEqual(200, response_reset.status_code)
+        received_user_data = self.user_repository.find_by_username("testAdmin1")
+        self.assertEqual(received_user_data["lastLogin"], previous_last_login)
+
+
+
     def test_find_by_username(self):
         """
         Test the find_by_username method of the UserRepository class.
         """
         test_user_data = {'_id': ObjectId('667c433eba00f12151afe642'),
                           'username': 'testAdmin1',
+                          'slackId': 'U07BENARPHB',
                           'personalInfo': {'firstName': 'Nico', 'lastName': 'Admin',
                                            'email': 'test@gmail1.com', 'personalNumber': '6981211',
                                            'instituteName': 'Info Institute'}, 'role': 'Admin'}
+
+        # Test for no username
+        response_no_username = self.user_repository.find_by_username(None)
+        self.assertEqual(None, response_no_username)
+
+        # Test find_by_username method
         received_user_data = self.user_repository.find_by_username("testAdmin1")
         received_user_data.pop("lastLogin")
         received_user_data.pop("accountCreation")
@@ -102,6 +162,16 @@ class TestUserRepository(unittest.TestCase):
         """
         Test the update_user method of the UserRepository class.
         """
+        # Test for invalid username
+        invalid_username_data = self.user_repository.find_by_username("testAdmin1")
+        invalid_username_data["username"] = ""
+        invalid_username_user = User.from_dict(invalid_username_data)
+        response_invalid_username = self.user_repository.update_user(invalid_username_user)
+        self.assertEqual("User not found", response_invalid_username.message)
+        self.assertEqual(False, response_invalid_username.is_successful)
+        self.assertEqual(404, response_invalid_username.status_code)
+
+        # Test update_user method
         test_user_data = self.user_repository.find_by_username("testAdmin1")
         test_user_data["personalInfo"]["email"] = "testUpdateMethodDict@gmail.com"
         user = User.from_dict(test_user_data)
@@ -124,10 +194,34 @@ class TestUserRepository(unittest.TestCase):
                                               PersonalInfo("Test", "TestUser",
                                                            "testmail", "231232",
                                                            "Test Institute"), UserRole.ADMIN))
+
+        # Test for no username
+        response_no_username = self.user_repository.delete_user(None)
+        self.assertEqual("Please provide a username to delete the user.", response_no_username.message)
+        self.assertEqual(False, response_no_username.is_successful)
+        self.assertEqual(400, response_no_username.status_code)
+
+        # Test for invalid username
+        response_invalid_username = self.user_repository.delete_user("")
+        self.assertEqual("User not found", response_invalid_username.message)
+        self.assertEqual(False, response_invalid_username.is_successful)
+        self.assertEqual(404, response_invalid_username.status_code)
+
+        # Test delete_user method
         deletionResult = self.user_repository.delete_user("Test129387")
-        self.assertEqual(deletionResult.status_code, 404)
+        self.assertEqual(404, deletionResult.status_code)
         self.user_repository.delete_user("testDeleteUser")
         self.assertIsNone(self.user_repository.find_by_username("testDeleteUser"))
+
+    def test_get_users(self):
+        users = self.user_repository.get_users()
+        self.assertIsNotNone(users)
+
+    def test_get_users_by_role(self):
+        users_by_role = self.user_repository.get_users_by_role(UserRole.ADMIN)
+        self.assertIsNotNone(users_by_role)
+
+
 
     if __name__ == '__main__':
         unittest.main()
