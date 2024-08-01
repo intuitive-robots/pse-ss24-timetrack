@@ -57,11 +57,9 @@ class FileService:
 
         if file_length > self.MAX_FILE_SIZE:
             return RequestResult(False, "File size exceeds the allowed limit of 20 MB.", 400)
-
         existing_metadata = self.file_repository.get_image_metadata(username, file_type)
         if existing_metadata:
             return self.file_repository.update_image(file, existing_metadata['gridfsId'], username, file_type)
-
         return self.file_repository.upload_image(file, username, file_type)
 
     def delete_image(self, username: str, file_type: FileType) -> RequestResult:
@@ -82,7 +80,6 @@ class FileService:
         image_id = image_metadata.get('gridfsId')
         if not image_id:
             return RequestResult(False, "Image ID not found", 404)
-
         return self.file_repository.delete_image(image_id)
 
     def get_image(self, username: str, file_type: FileType):

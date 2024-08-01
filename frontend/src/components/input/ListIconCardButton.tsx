@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ListIconCardButtonProps {
-  iconSrc: string;
+  iconSrc: string | React.ReactNode;
   label: string;
   onClick: () => void;
   orientation?: 'left' | 'right';
@@ -22,7 +22,11 @@ const ListIconCardButton: React.FC<ListIconCardButtonProps> = ({
 }) => {
   const marginClass = orientation === 'left' ? 'mr-2' : 'ml-2';
 
-  const iconElement = <img src={iconSrc} alt={label} className={` ${marginClass}`} />;
+  const iconElement = typeof iconSrc === 'string' ? (
+    <img src={iconSrc} alt={label} className={marginClass} />
+  ) : (
+    <span className={marginClass}>{iconSrc}</span>
+  );
   const labelElement = <p className="font-semibold text-[#717171]">{label}</p>;
 
   return (

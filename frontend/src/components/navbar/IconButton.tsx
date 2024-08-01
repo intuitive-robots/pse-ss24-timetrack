@@ -2,7 +2,7 @@ import React from 'react';
 
 interface IconButtonProps {
   onClick: () => void;
-  icon: string;
+  icon: string | React.ReactNode;
   bgColor: string;
   hover: string;
   size?: string;
@@ -25,13 +25,20 @@ const IconButton: React.FC<IconButtonProps> = ({
   disabled = false
 }: IconButtonProps): React.ReactElement => {
   const fixedSize = `min-w-10 min-h-10 ${size}`;
+
+  const iconElement = typeof icon === 'string' ? (
+    <img src={icon} alt="" className="object-contain" />
+  ) : (
+    icon
+  );
+
   return (
     <button
       className={`flex items-center justify-center ${fixedSize} ${bgColor} rounded-md ${hover} transition-colors`}
       onClick={onClick}
       disabled={disabled}
     >
-      <img src={icon} alt="" />
+      {iconElement}
     </button>
   );
 };

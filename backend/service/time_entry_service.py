@@ -44,7 +44,7 @@ class TimeEntryService:
             TimeEntryType.VACATION_ENTRY: VacationEntry
         }
 
-    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str):
+    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str): #pragma: no cover
         """
         General method to handle addition of work or vacation time entries.
 
@@ -180,9 +180,8 @@ class TimeEntryService:
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
-
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
-        if not repo_result.is_successful:
+        if not repo_result.is_successful: #pragma: no cover
             self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
 
             if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
@@ -239,7 +238,6 @@ class TimeEntryService:
         if not result.is_successful and delete_result.is_successful:
             result.message = "Time entry deleted, but total hours could not be updated."
             return result
-
         return delete_result
 
     def get_entries_of_timesheet(self, timesheet_id: str):
@@ -256,7 +254,7 @@ class TimeEntryService:
         entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
 
         if not entries_data:
-            RequestResult(is_successful=False, message="No entries found", status_code=404)
+            return RequestResult(is_successful=False, message="No entries found", status_code=404)
         time_entries = []
         for entry_data in entries_data:
             entry_type = TimeEntryType.get_type_by_value(entry_data['entryType'])

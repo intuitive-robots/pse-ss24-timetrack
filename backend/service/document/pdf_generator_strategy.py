@@ -37,6 +37,10 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
 
         if not os.path.exists(self.TEMP_DIR):
             os.makedirs(self.TEMP_DIR)
+
+        if document_data.time_entries is None:
+            document_data.time_entries = []
+
         data_dict = self._prepare_data_dict(document_data)
         vacation_minutes = 0
         for i in range(len(document_data.time_entries)):
@@ -177,6 +181,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
             return RequestResult(False, "No data provided", 400)
 
         for document_data in documents:
+            if not document_data:
+                return RequestResult(False, "No data provided", 400)
             result = self.generate_document(document_data)
             if result.status_code != 200:
                 return RequestResult(False, "Some of the documents couldn't be generated",

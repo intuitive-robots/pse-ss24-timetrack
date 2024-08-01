@@ -12,4 +12,5 @@ export interface User {
   accountCreation?: string;
   lastLogin?: string;
   supervisor?: string;
+  slackId?: string;
 }
