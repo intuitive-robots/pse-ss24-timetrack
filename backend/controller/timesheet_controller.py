@@ -211,6 +211,8 @@ class TimesheetController(MethodView):
         username = request.args.get('username')
         if username is None:
             return jsonify('No username provided'), 400
+        if check_access(roles=[UserRole.HIWI]) and username != get_jwt_identity():
+            return jsonify('Hiwis can only access their own timesheets'), 403
         result = self.timesheet_service.get_highest_priority_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
