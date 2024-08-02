@@ -24,6 +24,29 @@ class NotificationController(MethodView):
         }
         return self._dispatch_request(endpoint_mapping)
 
+    def get(self):
+        endpoint_mapping = {
+            "/readAll": self.read_all_notifications,
+            "/doesUnreadMessageExist": self.does_unread_messages_exist
+        }
+        return self._dispatch_request(endpoint_mapping)
+
+    @jwt_required()
+    def does_unread_messages_exist(self):
+        result = self.notification_service.does_unread_message_exist()
+        return jsonify(result.message), result.status_code
+
+
+    @jwt_required()
+    def read_all_notifications(self):
+        result = self.notification_service.read_all_notifications()
+        if result.is_successful:
+            data_dict = [notification.to_dict() for notification in result.data]
+            return jsonify(data_dict), result.status_code
+        return jsonify(result.message), result.status_code
+
+
+
     @jwt_required()
     def create_notification(self):
         notification_data = request.json

@@ -59,6 +59,10 @@ notification_blueprint.add_url_rule('/send', view_func=notification_view, method
                                     endpoint='send_notification')
 notification_blueprint.add_url_rule('/delete', view_func=notification_view, methods=['DELETE'],
                                     endpoint='delete_notification')
+notification_blueprint.add_url_rule('/readAll', view_func=notification_view, methods=['GET'],
+                                    endpoint='read_all_notifications')
+notification_blueprint.add_url_rule('/doesUnreadMessageExist', view_func=notification_view, methods=['GET'],
+                                    endpoint='does_unread_messages_exist')
 app.register_blueprint(notification_blueprint, url_prefix='/notification')
 
 time_entry_view = TimeEntryController.as_view('time_entry')
