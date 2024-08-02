@@ -12,12 +12,6 @@ class NotificationController(MethodView):
     def __init__(self):
         self.notification_service = NotificationService()
 
-    def post(self):
-        endpoint_mapping = {
-            "/send": self.create_notification
-        }
-        return self._dispatch_request(endpoint_mapping)
-
     def delete(self):
         endpoint_mapping = {
             "/delete": self.delete_notification
@@ -43,14 +37,6 @@ class NotificationController(MethodView):
         if result.is_successful:
             data_dict = [notification.to_dict() for notification in result.data]
             return jsonify(data_dict), result.status_code
-        return jsonify(result.message), result.status_code
-
-
-
-    @jwt_required()
-    def create_notification(self):
-        notification_data = request.json
-        result = self.notification_service.send_notification(notification_data)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
