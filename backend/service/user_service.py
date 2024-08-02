@@ -301,6 +301,21 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         return UserFactory.create_user_if_factory_exists(user_data)
 
+    def get_contract_info(self, username: str):
+        """
+        Retrieves the contract information of a hiwi identified by their username.
+
+        :param str username: The username of the hiwi whose contract information is being requested.
+        :return: A RequestResult object containing the result of the operation.
+        """
+        hiwi = self.get_profile(username)
+        if not hiwi:
+            return RequestResult(False, "User not found", status_code=404)
+        if hiwi.role != UserRole.HIWI:
+            return RequestResult(False, "User is not a Hiwi", status_code=400)
+        contract_info = hiwi.contract_info
+        return RequestResult(True, "", status_code=200, data=contract_info)
+
     def get_hiwis(self, username: str):
         """
         Retrieves a list of Hiwis managed by a Supervisor identified by their username.
