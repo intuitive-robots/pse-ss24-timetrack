@@ -3,11 +3,15 @@ from datetime import datetime
 from controller.factory.user_factory import UserFactory
 from controller.input_validator.user_data_validator import UserDataValidator
 from controller.input_validator.validation_status import ValidationStatus
+from model.file.FileType import FileType
 from model.repository.user_repository import UserRepository
 from model.request_result import RequestResult
 from model.user.role import UserRole
 from model.user.supervisor import Supervisor
 from model.user.user import User
+import service.timesheet_service
+import service.time_entry_service
+import service.file_service
 from utils.security_utils import SecurityUtils
 
 
@@ -28,6 +32,8 @@ class UserService:
         user data validation
         """
         self.user_repository = UserRepository.get_instance()
+        # self.timesheet_service = service.timesheet_service.TimesheetService()
+        # self.time_entry_service = service.time_entry_service.TimeEntryService()
         self.user_validator = UserDataValidator()
 
     def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict: #pragma: no cover
@@ -251,16 +257,41 @@ class UserService:
         :param username: The username of the user to be deleted.
         :return: A RequestResult object containing the result of the delete operation.
         """
+        timesheet_service = service.timesheet_service.TimesheetService()
+        time_entry_service = service.time_entry_service.TimeEntryService()
+        file_service = service.file_service.FileService()
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == 'Supervisor':
+            if user_data['hiwis']:
+                return RequestResult(False, "Supervisor has Hiwis assigned", status_code=400)
         if user_data['role'] == 'Hiwi':
             supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
             supervisor_data['hiwis'].remove(user_data['username'])
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
                 return result_supervisor_update
+            timesheets_result = timesheet_service.get_timesheets_by_username(username)
+            if not timesheets_result.is_successful:
+                return timesheets_result
+            timesheets = timesheets_result.data
+            for timesheet in timesheets:
+                delete_time_entries_result = time_entry_service.delete_time_entries_by_timesheet_id(timesheet.timesheet_id)
+                if not delete_time_entries_result.is_successful:
+                    supervisor_data['hiwis'].append(user_data['username'])
+                    self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
+                    return delete_time_entries_result
+            delete_timesheets_result = timesheet_service.delete_timesheets_by_username(username)
+            if not delete_timesheets_result.is_successful:
+                supervisor_data['hiwis'].append(user_data['username'])
+                self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
+                return delete_timesheets_result
+        file_result = file_service.delete_files_by_username(username)
+        if not file_result.is_successful:
+            return file_result
         return self.user_repository.delete_user(username)
+
 
     def get_users(self) -> list[User]:
         """

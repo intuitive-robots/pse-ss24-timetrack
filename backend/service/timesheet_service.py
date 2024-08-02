@@ -220,6 +220,22 @@ class TimesheetService:
                 return update_result
         return result
 
+    def delete_timesheets_by_username(self, username: str):
+        """
+        Deletes all timesheets for a given username.
+
+        :param username: The username of the Hiwi
+        :return: The result of the delete operation
+        """
+        timesheets_data = self.timesheet_repository.get_timesheets_by_username(username)
+        if timesheets_data is None or len(timesheets_data) == 0:
+            return RequestResult(True, "No timesheets to delete", 200)
+        for timesheet_data in timesheets_data:
+            result = self.delete_timesheet_by_id(timesheet_data["_id"])
+            if not result.is_successful:
+                return result
+        return RequestResult(True, "Timesheets deleted", 200)
+
     def get_timesheet_by_id(self, timesheet_id: str):
         """
         Retrieves a timesheet by its ID.
