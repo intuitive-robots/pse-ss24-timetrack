@@ -16,8 +16,9 @@ import DocumentStatus from "../../components/status/DocumentStatus";
 import ProgressCard from "../../components/charts/ProgressCard";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import {StatusType} from "../../interfaces/StatusType";
-import {SearchUtils} from "../../utils/SearchUtils";
 import {useSearch} from "../../context/SearchContext";
+import {SearchUtils} from "../../utils/SearchUtils";
+import {minutesToHours} from "date-fns";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -193,11 +194,16 @@ const HiwiHomePage = (): React.ReactElement => {
         );
     };
 
+    const overtimeHours = user?.contractInfo?.overtimeMinutes
+        ? minutesToHours(user.contractInfo.overtimeMinutes)
+        : 0;
+
     return (
         <div className="px-6 py-6">
 
             <div className="absolute right-10">
                 <ProgressCard currentValue={totalHoursInDecimal()} targetValue={user?.contractInfo?.workingHours ?? 0}
+                              overtime={month === currentMonth && year === currentYear ? overtimeHours : undefined}
                               label={"Total hours working"}
                               unit={"h"}
                 />
