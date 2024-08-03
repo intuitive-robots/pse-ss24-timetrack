@@ -176,6 +176,7 @@ class UserController(MethodView):
         return jsonify(user_profile.to_dict()), 200
 
     @jwt_required()
+    @check_access(roles=[UserRole.SUPERVISOR, UserRole.ADMIN, UserRole.SECRETARY])
     def get_contract_info(self):
         """
         Retrieves the contract information for a given hiwi.
@@ -187,8 +188,6 @@ class UserController(MethodView):
         username = args['username']
         if not username:
             return jsonify('Username is required'), 400
-        if check_access(roles=[UserRole.HIWI]) and username != get_jwt_identity():
-            return jsonify('You are not authorized to access this information'), 403
         result = self.user_service.get_contract_info(username)
         if not result.is_successful:
             return jsonify(result.message), result.status_code
