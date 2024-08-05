@@ -12,7 +12,7 @@ from model.request_result import RequestResult
 
 class NotificationService:
     def __init__(self):
-        self.SLACK_TOKEN = "xoxb-7391548519795-7490974089332-yGD8ins3aFpjSER7TD3lZdlp"
+        self.SLACK_TOKEN = "xoxb-7391548519795-7490974089332-yGD8ins3aFpjSER7TD3lZdlp" # TODO: Move to environment variable
         self.notification_repository = NotificationRepository.get_instance()
         self.user_repository = UserRepository.get_instance()
 
