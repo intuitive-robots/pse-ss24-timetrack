@@ -327,7 +327,6 @@ class TimesheetService:
         elif status == TimesheetStatus.COMPLETE:
             return 4
 
-
     def get_timesheet(self, username: str, month: int, year: int):
         """
         Retrieves a timesheet by username, month, and year.
@@ -345,3 +344,15 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         return RequestResult(True, "", 200,
                              Timesheet.from_dict(timesheet_data))
+
+    def is_user_archived_by_timesheet_id(self, timesheet_id: str):
+        """
+        Checks if the user associated with the timesheet is archived.
+
+        :param timesheet_id: The ID of the timesheet
+        :return: True if the user is archived, False otherwise
+        """
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
+            return False
+        return self.user_service.is_archived(timesheet_data["username"])

@@ -48,6 +48,8 @@ class DocumentController(MethodView):
         username = request_data.get('username')
         if not username:
             return jsonify('No username provided'), 400
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
         if not request_data.get('year'):
             return jsonify('No year provided'), 400
         if not request_data.get('month'):
@@ -83,6 +85,9 @@ class DocumentController(MethodView):
 
         request_data = request.args
         usernames = request_data.getlist('usernames')
+        for username in usernames:
+            if self.user_service.is_archived(username):
+                return jsonify('A user is archived'), 400
         timesheet_ids = request_data.getlist('timesheetIds')
         start_date_str = request_data.get('startDate')
         end_date_str = request_data.get('endDate')

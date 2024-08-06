@@ -286,6 +286,19 @@ class UserService:
         user_data['isArchived'] = True
         return self.update_user(user_data)
 
+    def unarchive_user(self, username: str):
+        """
+        Unarchives a user in the system identified by their username.
+
+        :param username: The username of the user to be unarchived.
+        :return: A RequestResult object containing the result of the unarchive operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        user_data['isArchived'] = False
+        return self.update_user(user_data)
+
     def get_users(self) -> list[User]:
         """
         Retrieves a list of all users in the system.
@@ -402,6 +415,6 @@ class UserService:
         """
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
-            return RequestResult(False, "User not found", status_code=404)
+            return False
         user = UserFactory.create_user_if_factory_exists(user_data)
         return user.is_archived
