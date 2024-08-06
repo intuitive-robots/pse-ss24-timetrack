@@ -59,13 +59,6 @@ const HiwiHomePage = (): React.ReactElement => {
     }, [user]);
 
     useEffect(() => {
-      // const storedMonth = localStorage.getItem('selectedMonth');
-      // const storedYear = localStorage.getItem('selectedYear');
-      // const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
-      // const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
-      //
-      // setMonth(newMonth);
-      // setYear(newYear);
 
       if (user && user.username) {
         getTimesheetByMonthYear(user.username, month, year)
@@ -83,6 +76,7 @@ const HiwiHomePage = (): React.ReactElement => {
     useEffect(() => {
         if (timesheet == null) {
             setTimeEntries([]);
+            setFilteredTimeEntries([]);
         }
 
         if (timesheet && timesheet._id) {
@@ -93,7 +87,11 @@ const HiwiHomePage = (): React.ReactElement => {
                         keys: ["activity", "projectName", "entryType"]
                     }));
                 })
-                .catch(error => console.error('Failed to fetch entries for timesheet:', error));
+                .catch(error => {
+                    setTimeEntries([]);
+                    setFilteredTimeEntries([]);
+                    console.error('Failed to fetch entries for timesheet:', error);
+                });
         }
     }, [timesheet]);
 
