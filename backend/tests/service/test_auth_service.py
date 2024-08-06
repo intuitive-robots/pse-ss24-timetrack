@@ -1,6 +1,9 @@
 import unittest
 
+from flask_jwt_extended.exceptions import NoAuthorizationError
+
 from app import app
+from model.user.role import UserRole
 from model.user.user import User
 from service.auth_service import AuthenticationService
 
@@ -42,15 +45,46 @@ class TestAuthService(unittest.TestCase):
 
     def test_login(self):
         with self.app.app_context():
+            # Test for invalid username
+            response_invalid_username = self.auth_service.login("xyz", "test_password")
+            self.assertEqual("Invalid username", response_invalid_username.message)
+            self.assertEqual(401, response_invalid_username.status_code)
+            self.assertEqual(False, response_invalid_username.is_successful)
+
+            # Test for invalid password
+            response_invalid_password = self.auth_service.login("testAdmin1", "xyz")
+            self.assertEqual("Invalid username or password", response_invalid_password.message)
+            self.assertEqual(401, response_invalid_password.status_code)
+            self.assertEqual(False, response_invalid_password.is_successful)
+
             response = self.auth_service.login("testAdmin1", "test_password")
             self.assertIsNotNone(response)
             self.assertIsNotNone(response.data)
 
     def test_reset_password(self):
         with self.app.app_context():
+            # Test for missing new password
+            response_missing_password = self.auth_service.reset_password("testAdmin1", "testAdmin1", "")
+            self.assertEqual("New password must be provided", response_missing_password.message)
+            self.assertEqual(400, response_missing_password.status_code)
+            self.assertEqual(False, response_missing_password.is_successful)
+
+            # Test for invalid current username
+            response_invalid_username = self.auth_service.reset_password("", "testAdmin1", "test_password")
+            self.assertEqual("User not found", response_invalid_username.message)
+            self.assertEqual(404, response_invalid_username.status_code)
+            self.assertEqual(False, response_invalid_username.is_successful)
+
+            # Test for user role != admin and current user != user
+            response_authorization_denied = self.auth_service.reset_password("testHiwi1", "testAdmin1", "test_password")
+            self.assertEqual("Password reset authorization denied", response_authorization_denied.message)
+            self.assertEqual(401, response_authorization_denied.status_code)
+            self.assertEqual(False, response_authorization_denied.is_successful)
+
             response = self.auth_service.reset_password("testAdmin1", "testAdmin1", "test_password")
             self.assertIsNotNone(response)
             self.assertEqual(response.status_code, 200)
+
 
 
 

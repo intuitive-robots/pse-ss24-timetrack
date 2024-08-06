@@ -60,6 +60,8 @@ class TimesheetService:
         time_entries = [TimeEntry.from_dict(entry_data) for entry_data in time_entries_data]
         total_time = sum([entry.get_duration() for entry in time_entries])
         timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if not timesheet:
+            return RequestResult(False, "Timesheet not found", 404)
         timesheet['totalTime'] = total_time
         result = self.timesheet_repository.update_timesheet_by_dict(timesheet)
         if result.is_successful:
@@ -187,11 +189,8 @@ class TimesheetService:
             if not update_result.is_successful:
                 self.timesheet_repository.delete_timesheet(result.data["_id"])
                 return update_result
-
             return RequestResult(True, "Timesheet created", 201, {"_id": result.data["_id"]})
-
         return RequestResult(False, "Failed to create timesheet", 500)
-
     def calculate_overtime(self, timesheet_id):
         """
         Calculates the overtime for a timesheet.
@@ -258,6 +257,22 @@ class TimesheetService:
             if not update_result.is_successful:
                 return update_result
         return result
+
+    def delete_timesheets_by_username(self, username: str):
+        """
+        Deletes all timesheets for a given username.
+
+        :param username: The username of the Hiwi
+        :return: The result of the delete operation
+        """
+        timesheets_data = self.timesheet_repository.get_timesheets_by_username(username)
+        if timesheets_data is None or len(timesheets_data) == 0:
+            return RequestResult(True, "No timesheets to delete", 200)
+        for timesheet_data in timesheets_data:
+            result = self.delete_timesheet_by_id(timesheet_data["_id"])
+            if not result.is_successful:
+                return result
+        return RequestResult(True, "Timesheets deleted", 200)
 
     def get_timesheet_by_id(self, timesheet_id: str):
         """
@@ -354,9 +369,11 @@ class TimesheetService:
             self._get_status_priority(timesheet.status), timesheet.year, timesheet.month))
         if sorted_timesheets is None or len(sorted_timesheets) == 0:
             return RequestResult(False, "No timesheets found", 404)
+        if sorted_timesheets[0].status == TimesheetStatus.COMPLETE:
+            return RequestResult(True, "", 200, sorted_timesheets[-1])
         return RequestResult(True, "", 200, sorted_timesheets[0])
 
-    def _get_status_priority(self, status: TimesheetStatus):
+    def _get_status_priority(self, status: TimesheetStatus): #pragma: no cover
         if status == TimesheetStatus.REVISION:
             return 1
         elif status == TimesheetStatus.NOT_SUBMITTED:

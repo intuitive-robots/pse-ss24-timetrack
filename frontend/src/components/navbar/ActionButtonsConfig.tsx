@@ -1,10 +1,10 @@
 import { Roles } from "../auth/roles";
-import AddUserIcon from "../../assets/images/add_user_icon.svg";
-import VacationIcon from "../../assets/images/vacation_icon.svg";
 import TrackTimePopup from "../popup/TrackTimePopup";
 import React, {ReactElement} from "react";
 import AddUserPopup from "../popup/AddUserPopup";
 import AddVacationPopup from "../popup/AddVacationPopup";
+import {TrackTimeActionIcon} from "../../assets/iconComponents/navbar/TrackTimeActionIcon";
+import {AddVacationActionIcon} from "../../assets/iconComponents/navbar/AddVacationActionIcon";
 
 interface ButtonConfig {
   icon: any;
@@ -21,7 +21,7 @@ export const buttonConfigurations: ButtonConfigurations  = {
 
   Admin: [
     {
-      icon: AddUserIcon,
+      icon: <TrackTimeActionIcon/>,
       label: "Add User",
       action: () => console.log("Managing users"),
       popup: <AddUserPopup/>
@@ -29,13 +29,13 @@ export const buttonConfigurations: ButtonConfigurations  = {
   ],
   Hiwi: [
     {
-      icon: AddUserIcon,
+      icon: <TrackTimeActionIcon/>,
       label: "Track Time",
-      action: () => console.log("Tracks Time"),
+      action: () => console.log("Track Time"),
       popup: <TrackTimePopup/>
     },
     {
-      icon: VacationIcon,
+      icon: <AddVacationActionIcon/>,
       label: "Add Vacation",
       action: () => console.log("Add Vacation"),
       popup: <AddVacationPopup/>
@@ -43,7 +43,7 @@ export const buttonConfigurations: ButtonConfigurations  = {
   ],
   Supervisor: [
     {
-      icon: AddUserIcon,
+      icon: <TrackTimeActionIcon/>,
       label: "Add Project",
       action: () => console.log("Add Project"),
       popup: <TrackTimePopup/>

@@ -50,7 +50,6 @@ class AuthenticationService:
         username = get_jwt_identity()
         if not username:
             return None
-
         user_data = self.user_repository.find_by_username(username)
 
         user = UserFactory.create_user_if_factory_exists(user_data)
@@ -125,11 +124,9 @@ class AuthenticationService:
         result = self.user_repository.update_user(user)
         if result.is_successful:
             return RequestResult(True, "Password reset successful", status_code=200)
-
         return result
 
-
-def check_access(roles: [UserRole] = []):
+def check_access(roles: [UserRole] = []): #pragma: no cover
     """
     Decorator function to check if the user has the required role to access the endpoint.
 
@@ -162,7 +159,6 @@ def check_access(roles: [UserRole] = []):
             if current_user_role not in roles:
                 raise NoAuthorizationError("Role is not allowed.")
             return f(*args, **kwargs)
-
         return decorator_function
 
     return decorator

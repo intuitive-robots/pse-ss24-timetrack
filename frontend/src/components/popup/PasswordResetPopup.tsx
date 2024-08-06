@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { usePopup } from "./PopupContext";
 import ShortInputField from "../input/ShortInputField";
 import DialogButton from "../input/DialogButton";
-import PasswordIcon from "../../assets/images/password_icon.svg";
 import {resetPassword} from "../../services/AuthService";
+import {PasswordIcon} from "../../assets/iconComponents/PasswordIcon";
 
 const PasswordResetPopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -33,14 +33,14 @@ const PasswordResetPopup: React.FC = () => {
             {error && <p className="text-red-500 mb-3">{error}</p>}
             <form className="space-y-4">
                 <ShortInputField
-                    icon={PasswordIcon}
+                    icon={<PasswordIcon/>}
                     type="text"
                     placeholder="New Password"
                     value={password}
                     onChange={setPassword}
                 />
                 <ShortInputField
-                    icon={PasswordIcon}
+                    icon={<PasswordIcon/>}
                     type="text"
                     placeholder="Confirm Password"
                     value={confirmPassword}

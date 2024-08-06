@@ -49,6 +49,7 @@ class UserController(MethodView):
         """
         endpoint_mapping = {
             '/getProfile': self.get_profile,
+            '/getContractInfo': self.get_contract_info,
             '/getUsers': self.get_users,
             '/getUsersByRole': self.get_users_by_role,
             '/getFile': self.get_user_file,
@@ -173,6 +174,24 @@ class UserController(MethodView):
         """
         user_profile = self.user_service.get_profile(get_jwt_identity())
         return jsonify(user_profile.to_dict()), 200
+
+    @jwt_required()
+    @check_access(roles=[UserRole.SUPERVISOR, UserRole.ADMIN, UserRole.SECRETARY])
+    def get_contract_info(self):
+        """
+        Retrieves the contract information for a given hiwi.
+        :return: JSON response containing the user's contract information.
+        """
+        args = request.args
+        if 'username' not in args:
+            return jsonify('Username parameter is required'), 400
+        username = args['username']
+        if not username:
+            return jsonify('Username is required'), 400
+        result = self.user_service.get_contract_info(username)
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
+        return jsonify(result.data.to_dict()), 200
 
     @jwt_required()
     @check_access(roles=[UserRole.ADMIN])

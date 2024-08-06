@@ -8,10 +8,11 @@ import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
 import { usePopup } from "../../components/popup/PopupContext";
 import { deleteUser } from "../../services/UserService";
 import RoleFilter from "../../components/filter/RoleFilter";
-import {Roles} from "../../components/auth/roles";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
 import ViewUserPopup from "../../components/popup/ViewUserPopup";
+import {useSearch} from "../../context/SearchContext";
+import {SearchUtils} from "../../utils/SearchUtils";
 
 interface RoleCounts {
     Hiwi: number;
@@ -22,18 +23,34 @@ interface RoleCounts {
 
 const AdminHomePage = (): React.ReactElement => {
     const { user } = useAuth();
+    const { searchString } = useSearch();
+    const { openPopup, closePopup } = usePopup();
+
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [activeRole, setActiveRole] = useState<string>("View all");
-
-    const { openPopup, closePopup } = usePopup();
+    const [searchUtils, setSearchUtils] = useState<SearchUtils<User> | null>(null);
 
     const handleDeleteUser = (username: string) => {
         openPopup(
             <ConfirmationPopup
                 title={"Delete User"}
-                description={"Are you sure you want to delete this user?"}
+                description={"Are you sure you want to delete this user including user data?"}
+                note={"NOTE: This action cannot be undone."}
+                noteColor={"text-red-600"}
                 onConfirm={() => confirmDeleteUser(username)}
+                onCancel={closePopup}
+            />
+        );
+    };
+
+    const handleLockUser = (username: string) => {
+        openPopup(
+            <ConfirmationPopup
+                title={"Lock User"}
+                description={"Are you sure you want to lock this user?"}
+                note={"NOTE: This action will not remove any user data"}
+                onConfirm={() => confirmLockUser(username)}
                 onCancel={closePopup}
             />
         );
@@ -50,11 +67,24 @@ const AdminHomePage = (): React.ReactElement => {
         }
     };
 
+    const confirmLockUser = async (username: string) => {
+        try {
+            closePopup();
+        } catch (error) {
+            console.error('Failed to Lock user:', error);
+            closePopup();
+        }
+    };
+
     const fetchUsers = async () => {
         try {
             const fetchedUsers = await getUsers();
             setUsers(fetchedUsers);
             setFilteredUsers(fetchedUsers);
+            setSearchUtils(new SearchUtils(fetchedUsers, {
+                keys: ["role", "username", "personalInfo.firstName", "personalInfo.lastName"],
+                threshold: 0.3
+            }));
         } catch (error) {
             console.error('Failed to fetch users', error);
         }
@@ -63,6 +93,13 @@ const AdminHomePage = (): React.ReactElement => {
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    useEffect(() => {
+        const results = searchUtils && searchString ? searchUtils.searchItems(searchString) : users;
+        const filteredByRole = activeRole === "View all" ? results : results.filter(user => user.role === activeRole);
+        const nonTestUsers = filteredByRole.filter(user => !user.username.startsWith('test'));
+        setFilteredUsers(nonTestUsers);
+    }, [searchString, searchUtils, users, activeRole]);
 
     useEffect(() => {
         if (activeRole === "View all") {
@@ -127,6 +164,7 @@ const AdminHomePage = (): React.ReactElement => {
                         profileImageUrl={ProfilePlaceholder}
                         onView={() => {openPopup(<ViewUserPopup userData={user}/>)}}
                         onEdit={() => {handleOnChange(user)}}
+                        onLock={() => {handleLockUser(user.username)}}
                         onDelete={() => handleDeleteUser(user.username)}
                     />
                 ))}

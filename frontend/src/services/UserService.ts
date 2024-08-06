@@ -1,6 +1,7 @@
 import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
 import {handleAxiosError} from "../utils/AxiosUtils";
+import {ContractInfo} from "../interfaces/ContractInfo";
 
 const getHiwis = async () => {
   try {
@@ -115,5 +116,24 @@ const getSupervisors = async (): Promise<User[]> => {
     }
 };
 
+/**
+ * Fetches contract information for a specific user.
+ *
+ * @param {string} username - The username of the user whose contract information is to be fetched.
+ * @returns {Promise<ContractInfo>} The response data from the backend containing the contract information.
+ */
+const getContractInfo = async (username: string): Promise<ContractInfo> => {
+  try {
+    const response = await axiosInstance.get('user/getContractInfo', {
+      params: { username }
+    });
+    return response.data as ContractInfo;
+  } catch (error) {
+    console.error('Fetching contract information failed', error);
+    handleAxiosError(error);
+    throw error;
+  }
+};
 
-export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser };
+
+export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser, getContractInfo };

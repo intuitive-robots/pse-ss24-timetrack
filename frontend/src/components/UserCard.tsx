@@ -1,10 +1,11 @@
 import React from 'react';
 import ListIconCardButton from "./input/ListIconCardButton";
-import EditUserIcon from "../assets/images/edit_user_icon.svg"
-import ViewUserIcon from "../assets/images/view_icon.svg"
-import RemoveIcon from "../assets/images/remove_icon.svg"
 import IconButton from "./navbar/IconButton";
 import UserInfo from "./UserInfo";
+import {EditUserIcon} from "../assets/iconComponents/EditUserIcon";
+import {ViewUserIcon} from "../assets/iconComponents/ViewUserIcon";
+import {RemoveUserIcon} from "../assets/iconComponents/RemoveUserIcon";
+import {LockUserIcon} from "../assets/iconComponents/LockUserIcon";
 
 interface UserCardProps {
   name: string;
@@ -14,10 +15,11 @@ interface UserCardProps {
   profileImageUrl: string;
   onView: () => void;
   onEdit: () => void;
+  onLock: () => void;
   onDelete: () => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, lastName, onView, onEdit, onDelete }) => {
+const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, lastName, onView, onEdit, onDelete, onLock }) => {
   return (
       <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
           <UserInfo
@@ -28,17 +30,22 @@ const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageU
           />
           <div className="flex ml-auto gap-5">
               <ListIconCardButton
-              iconSrc={ViewUserIcon}
+              iconSrc={<ViewUserIcon/>}
               label="View"
               onClick={() => onView()}
           />
           <ListIconCardButton
-              iconSrc={EditUserIcon}
+              iconSrc={<EditUserIcon/>}
               label="Edit"
               onClick={() => onEdit()}
           />
+              <ListIconCardButton
+              iconSrc={<LockUserIcon/>}
+              label="Lock"
+              onClick={() => onLock()}
+          />
           <IconButton
-              icon={RemoveIcon}
+              icon={<RemoveUserIcon/>}
               onClick={() => onDelete()}
               bgColor="bg-purple-100"
               hover="hover:bg-purple-200"

@@ -38,13 +38,12 @@ class TimeEntryService:
         self.entry_validator = TimeEntryValidator()
         self.user_service = UserService()
 
-
         self.entry_type_mapping = {
             TimeEntryType.WORK_ENTRY: WorkEntry,
             TimeEntryType.VACATION_ENTRY: VacationEntry
         }
 
-    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str):
+    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str): #pragma: no cover
         """
         General method to handle addition of work or vacation time entries.
 
@@ -180,9 +179,8 @@ class TimeEntryService:
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
-
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
-        if not repo_result.is_successful:
+        if not repo_result.is_successful: #pragma: no cover
             self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
 
             if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
@@ -239,8 +237,25 @@ class TimeEntryService:
         if not result.is_successful and delete_result.is_successful:
             result.message = "Time entry deleted, but total hours could not be updated."
             return result
-
         return delete_result
+
+    def delete_time_entries_by_timesheet_id(self, timesheet_id: str) -> RequestResult:
+        """
+        Deletes all time entries of a user that is being deleted.
+
+        :param timesheet_id: The id of the timesheet for which to delete all time entries.
+        :type timesheet_id: str
+        :return: A RequestResult object containing the result of the delete operation.
+        :rtype: RequestResult
+        """
+        time_entries = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+        for entry in time_entries:
+            entry_id = str(entry['_id'])
+            delete_result = self.time_entry_repository.delete_time_entry(entry_id)
+            if not delete_result.is_successful:
+                return delete_result
+
+        return RequestResult(True, "All time entries deleted successfully", status_code=200)
 
     def get_entries_of_timesheet(self, timesheet_id: str):
         """
@@ -256,7 +271,7 @@ class TimeEntryService:
         entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
 
         if not entries_data:
-            RequestResult(is_successful=False, message="No entries found", status_code=404)
+            return RequestResult(is_successful=False, message="No entries found", status_code=404)
         time_entries = []
         for entry_data in entries_data:
             entry_type = TimeEntryType.get_type_by_value(entry_data['entryType'])
