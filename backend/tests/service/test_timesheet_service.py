@@ -3,9 +3,11 @@ import unittest
 
 from bson import ObjectId
 
+from app import app
 from model.repository.timesheet_repository import TimesheetRepository
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
+from service.auth_service import AuthenticationService
 from service.timesheet_service import TimesheetService
 
 
@@ -13,6 +15,9 @@ class TestTimesheetService(unittest.TestCase):
     def setUp(self):
         self.timesheet_service = TimesheetService()
         self.timesheet_repository = TimesheetRepository.get_instance()
+        self.app = app
+        self.client = self.app.test_client()
+        self.auth_service = AuthenticationService()
 
     def test_ensure_timesheet_exists(self):
         """
@@ -54,45 +59,55 @@ class TestTimesheetService(unittest.TestCase):
         Test the sign_timesheet method of the TimesheetService class.
         """
         # Test signing a timesheet
-        test_timesheet_id = "6679ca2935df0d8f7202c5fa"
-        self.timesheet_service.sign_timesheet(test_timesheet_id)
-        timesheet = self.timesheet_repository.get_timesheet_by_id(test_timesheet_id)
-        self.assertEqual("Waiting for Approval", timesheet["status"])
-        self.timesheet_repository.set_timesheet_status(test_timesheet_id, TimesheetStatus.NOT_SUBMITTED)
-        # Test signing a timesheet that is already signed
-        test_signed_timesheet_id = "667bd050cf0aa6181e9c8dd9"
-        result = self.timesheet_service.sign_timesheet(test_signed_timesheet_id)
-        self.assertFalse(result.is_successful)
+        with self.app.app_context():
+            token = self.auth_service.create_token("testAdmin1", "Admin")
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {token}"}):
+                test_timesheet_id = "6679ca2935df0d8f7202c5fa"
+                self.timesheet_service.sign_timesheet(test_timesheet_id)
+                timesheet = self.timesheet_repository.get_timesheet_by_id(test_timesheet_id)
+                self.assertEqual("Waiting for Approval", timesheet["status"])
+                self.timesheet_repository.set_timesheet_status(test_timesheet_id, TimesheetStatus.NOT_SUBMITTED)
+                # Test signing a timesheet that is already signed
+                test_signed_timesheet_id = "667bd050cf0aa6181e9c8dd9"
+                result = self.timesheet_service.sign_timesheet(test_signed_timesheet_id)
+                self.assertFalse(result.is_successful)
 
     def test_approve_timesheet(self):
         """
         Test the approve_timesheet method of the TimesheetService class.
         """
-        # Test approving a timesheet
-        test_timesheet_id = "667bd177cf0aa6181e9c8ddb"
-        self.timesheet_service.approve_timesheet(test_timesheet_id)
-        timesheet = self.timesheet_repository.get_timesheet_by_id(test_timesheet_id)
-        self.assertEqual("Complete", timesheet["status"])
-        self.timesheet_repository.set_timesheet_status(test_timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
-        # Test approving a timesheet that hasn't been submitted
-        test_unsigned_timesheet_id = "6679ca2935df0d8f7202c5fa"
-        result = self.timesheet_service.approve_timesheet(test_unsigned_timesheet_id)
-        self.assertFalse(result.is_successful)
+
+        with self.app.app_context():
+            token = self.auth_service.create_token("testAdmin1", "Admin")
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {token}"}):
+                # Test approving a timesheet
+                test_timesheet_id = "667bd177cf0aa6181e9c8ddb"
+                self.timesheet_service.approve_timesheet(test_timesheet_id)
+                timesheet = self.timesheet_repository.get_timesheet_by_id(test_timesheet_id)
+                self.assertEqual("Complete", timesheet["status"])
+                self.timesheet_repository.set_timesheet_status(test_timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
+                # Test approving a timesheet that hasn't been submitted
+                test_unsigned_timesheet_id = "6679ca2935df0d8f7202c5fa"
+                result = self.timesheet_service.approve_timesheet(test_unsigned_timesheet_id)
+                self.assertFalse(result.is_successful)
 
     def test_request_change(self):
         """
         Test the request_timesheet method of the TimesheetService class.
         """
-        # Test requesting a timesheet
-        test_timesheet_id = "667bd177cf0aa6181e9c8ddb"
-        self.timesheet_service.request_change(test_timesheet_id)
-        timesheet = self.timesheet_repository.get_timesheet_by_id(test_timesheet_id)
-        self.assertEqual("Revision", timesheet["status"])
-        self.timesheet_repository.set_timesheet_status(test_timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
-        # Test requesting a timesheet that is already complete
-        test_completed_timesheet_id = "667bd050cf0aa6181e9c8dd9"
-        result = self.timesheet_service.request_change(test_completed_timesheet_id)
-        self.assertFalse(result.is_successful)
+        with self.app.app_context():
+            token = self.auth_service.create_token("testAdmin1", "Admin")
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {token}"}):
+                # Test requesting a timesheet
+                test_timesheet_id = "667bd177cf0aa6181e9c8ddb"
+                self.timesheet_service.request_change(test_timesheet_id)
+                timesheet = self.timesheet_repository.get_timesheet_by_id(test_timesheet_id)
+                self.assertEqual("Revision", timesheet["status"])
+                self.timesheet_repository.set_timesheet_status(test_timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
+                # Test requesting a timesheet that is already complete
+                test_completed_timesheet_id = "667bd050cf0aa6181e9c8dd9"
+                result = self.timesheet_service.request_change(test_completed_timesheet_id)
+                self.assertFalse(result.is_successful)
 
     def test_calculate_overtime(self):
         # Test for invalid timesheet id

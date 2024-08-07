@@ -29,8 +29,8 @@ class TestTimeEntryController(unittest.TestCase):
         Test the create_work_entry method of the TimeEntryController class.
         """
         test_time_entry_data = {
-            'startTime': '2024-05-22T09:20:30.656Z',
-            'endTime': '2024-05-22T12:00:00Z',
+            'startTime': '2024-05-22T10:00:00',
+            'endTime': '2024-05-22T12:00:00',
             'breakTime': 30,
             'activity': 'testCreateWorkEntry of Hiwi1',
             'projectName': 'timeEntryControllerTesting'
@@ -51,8 +51,8 @@ class TestTimeEntryController(unittest.TestCase):
         """
         test_time_entry_data = {
 
-            'startTime': '2024-05-22T08:20:30.656Z',
-            'endTime': '2024-05-22T12:00:00Z'
+            'startTime': '2024-05-22T08:20:30.656',
+            'endTime': '2024-05-22T12:00:00'
         }
         with self.app.app_context():
             access_token = self.authenticate('testHiwi1', 'test_password')

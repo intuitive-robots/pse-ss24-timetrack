@@ -118,7 +118,6 @@ class TestUserRepository(unittest.TestCase):
         self.assertEqual(False, response_no_change.is_successful)
         self.assertEqual(500, response_no_change.status_code)
 
-
         # Set new lastLogin
         response = self.user_repository.set_last_login("testAdmin1", new_last_login)
         self.assertEqual("Last login updated successfully", response.message)
@@ -135,8 +134,6 @@ class TestUserRepository(unittest.TestCase):
         received_user_data = self.user_repository.find_by_username("testAdmin1")
         self.assertEqual(received_user_data["lastLogin"], previous_last_login)
 
-
-
     def test_find_by_username(self):
         """
         Test the find_by_username method of the UserRepository class.
@@ -147,7 +144,7 @@ class TestUserRepository(unittest.TestCase):
                           'slackId': 'U07BENARPHB',
                           'personalInfo': {'firstName': 'Nico', 'lastName': 'Admin',
                                            'email': 'test@gmail1.com', 'personalNumber': '6981211',
-                                           'instituteName': 'Info Institute'}, 'role': 'Admin' }
+                                           'instituteName': 'Info Institute'}, 'role': 'Admin'}
 
         # Test for no username
         response_no_username = self.user_repository.find_by_username(None)
@@ -187,8 +184,6 @@ class TestUserRepository(unittest.TestCase):
         user = User.from_dict(test_user_data)
         self.user_repository.update_user(user)
 
-
-
     def test_delete_user(self):
         """
         Test the delete_user method of the UserRepository class.
@@ -223,8 +218,6 @@ class TestUserRepository(unittest.TestCase):
     def test_get_users_by_role(self):
         users_by_role = self.user_repository.get_users_by_role(UserRole.ADMIN)
         self.assertIsNotNone(users_by_role)
-
-
 
     if __name__ == '__main__':
         unittest.main()

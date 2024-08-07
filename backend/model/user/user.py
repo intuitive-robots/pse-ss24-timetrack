@@ -51,7 +51,7 @@ class User:
         slack_id = user_data.get("slackId")
         personal_info = PersonalInfo.from_dict(personal_info_data)
 
-        return User(username, password_hash, personal_info, role, account_creation)
+        return User(username, password_hash, personal_info, role, slack_id, account_creation)
 
     def to_dict(self):
         """

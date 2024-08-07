@@ -1,6 +1,7 @@
 import math
 
 from bson import ObjectId
+from flask_jwt_extended import jwt_required
 
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
@@ -68,6 +69,7 @@ class TimesheetService:
             return RequestResult(True, "Total time updated", 200)
         return RequestResult(False, "Failed to update total time", 500)
 
+    @jwt_required()
     def sign_timesheet(self, timesheet_id: str):
         """
         Method used by the Hiwi to sign his timesheet.
@@ -100,6 +102,7 @@ class TimesheetService:
 
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
 
+    @jwt_required()
     def approve_timesheet(self, timesheet_id: str):
         """
         Method used by the supervisor to sign a timesheet_data.
@@ -125,6 +128,7 @@ class TimesheetService:
                                                                                       f"{timesheet_data['year']}"})
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
 
+    @jwt_required()
     def request_change(self, timesheet_id: str):
         """
         Method used by the supervisor to request changes to a timesheet_data.

@@ -9,8 +9,6 @@ from model.request_result import RequestResult
 from model.user.role import UserRole
 from model.user.supervisor import Supervisor
 from model.user.user import User
-import service.timesheet_service
-import service.time_entry_service
 import service.file_service
 from utils.security_utils import SecurityUtils
 
@@ -32,8 +30,6 @@ class UserService:
         user data validation
         """
         self.user_repository = UserRepository.get_instance()
-        # self.timesheet_service = service.timesheet_service.TimesheetService()
-        # self.time_entry_service = service.time_entry_service.TimeEntryService()
         self.user_validator = UserDataValidator()
 
     def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict: #pragma: no cover
@@ -73,7 +69,7 @@ class UserService:
 
         #TODO: AccountCreation and LastLogin are also required fields, which should not be the case.
         for key in User.dict_keys():
-            if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin']:
+            if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin', 'slackId']:
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
         result = self.user_validator.is_valid(user_data)  # check if field format is valid
         if result.status == ValidationStatus.FAILURE:
@@ -257,8 +253,11 @@ class UserService:
         :param username: The username of the user to be deleted.
         :return: A RequestResult object containing the result of the delete operation.
         """
-        timesheet_service = service.timesheet_service.TimesheetService()
-        time_entry_service = service.time_entry_service.TimeEntryService()
+        # Local imports needed to avoid circular imports
+        from service.timesheet_service import TimesheetService
+        from service.time_entry_service import TimeEntryService
+        timesheet_service = TimesheetService()
+        time_entry_service = TimeEntryService()
         file_service = service.file_service.FileService()
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
@@ -273,20 +272,19 @@ class UserService:
             if not result_supervisor_update.is_successful:
                 return result_supervisor_update
             timesheets_result = timesheet_service.get_timesheets_by_username(username)
-            if not timesheets_result.is_successful:
-                return timesheets_result
-            timesheets = timesheets_result.data
-            for timesheet in timesheets:
-                delete_time_entries_result = time_entry_service.delete_time_entries_by_timesheet_id(timesheet.timesheet_id)
-                if not delete_time_entries_result.is_successful:
+            if timesheets_result.is_successful:
+                timesheets = timesheets_result.data
+                for timesheet in timesheets:
+                    delete_time_entries_result = time_entry_service.delete_time_entries_by_timesheet_id(timesheet.timesheet_id)
+                    if not delete_time_entries_result.is_successful:
+                        supervisor_data['hiwis'].append(user_data['username'])
+                        self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
+                        return delete_time_entries_result
+                delete_timesheets_result = timesheet_service.delete_timesheets_by_username(username)
+                if not delete_timesheets_result.is_successful:
                     supervisor_data['hiwis'].append(user_data['username'])
                     self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
-                    return delete_time_entries_result
-            delete_timesheets_result = timesheet_service.delete_timesheets_by_username(username)
-            if not delete_timesheets_result.is_successful:
-                supervisor_data['hiwis'].append(user_data['username'])
-                self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
-                return delete_timesheets_result
+                    return delete_timesheets_result
         file_result = file_service.delete_files_by_username(username)
         if not file_result.is_successful:
             return file_result
@@ -360,8 +358,7 @@ class UserService:
             return RequestResult(False, "Supervisor not found", status_code=404)
         if supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
-        for hiwi_username in supervisor_data['hiwis']:
-            print(hiwi_username)
+
 
         hiwis_data = list(self.get_profile(hiwi_username) for hiwi_username in supervisor_data['hiwis'])
         if not hiwis_data:
