@@ -339,6 +339,8 @@ class UserController(MethodView):
         if self.user_service.is_archived(username):
             return jsonify('User is archived'), 400
         result = self.user_service.get_hiwis(username)
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
         hiwis_data = [hiwi.to_dict() for hiwi in result.data]
         return jsonify(hiwis_data), result.status_code
 

@@ -24,5 +24,6 @@ class SecretaryFactory(UserFactory):
             username=user_data['username'],
             password_hash=user_data['passwordHash'],
             personal_info=personal_info,
-            role=UserRole.get_role_by_value(user_data['role'])
+            role=UserRole.get_role_by_value(user_data['role']),
+            is_archived=user_data['isArchived']
         )

@@ -5,7 +5,7 @@ from model.user.user import User
 
 class Supervisor(User):
     def __init__(self, username: str, password_hash: str,
-                 personal_info: PersonalInfo, hiwis=None, currentTimesheetIds=None):
+                 personal_info: PersonalInfo, hiwis=None, currentTimesheetIds=None, is_archived=False):
         """
         Initializes a new instance of the Supervisor class, which extends the User class.
 
@@ -14,7 +14,7 @@ class Supervisor(User):
         :param personal_info: An instance of PersonalInfo containing the Supervisor's personal information.
         :param hiwis: A list of Hiwi objects that the Supervisor manages. Defaults to an empty list if none is provided.
         """
-        super().__init__(username, password_hash, personal_info, UserRole.SUPERVISOR)
+        super().__init__(username, password_hash, personal_info, UserRole.SUPERVISOR, is_archived=is_archived)
         self.currentTimesheetIds = currentTimesheetIds if currentTimesheetIds is not None else []
         self.hiwis = hiwis if hiwis is not None else []
         self.signature_image = None

@@ -215,7 +215,7 @@ class UserService:
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)
-        if updated_user.role == UserRole.HIWI.value and user_data['supervisor'] != existing_supervisor:
+        if updated_user.role == UserRole.HIWI and user_data['supervisor'] != existing_supervisor:
             update_supervisor_result = self._update_supervisor(user_data['username'], existing_supervisor,
                                                                user_data['supervisor'])
             if not update_supervisor_result.is_successful:
@@ -246,6 +246,8 @@ class UserService:
             return RequestResult(False, "New supervisor not found", status_code=404)
         if new_supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
+        if new_supervisor_data['isArchived']:
+            return RequestResult(False, "New supervisor is archived", status_code=400)
         supervisor_data['hiwis'].remove(hiwi_username)
         result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
         if not result_supervisor_update.is_successful:
@@ -263,7 +265,7 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
-        if user_data['role'] == 'Hiwi':
+        if user_data['role'] == 'Hiwi' and not user_data['isArchived']:
             supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
             supervisor_data['hiwis'].remove(user_data['username'])
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
@@ -281,6 +283,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['isArchived']:
+            return RequestResult(False, "User is already archived", status_code=400)
         if user_data['role'] == 'Supervisor' and len(user_data['hiwis']) > 0:
             return RequestResult(False, "Supervisor has Hiwis assigned", status_code=400)
         if user_data['role'] == 'Hiwi':
@@ -291,7 +295,8 @@ class UserService:
             if not result_supervisor_update.is_successful:
                 return result_supervisor_update
         user_data['isArchived'] = True
-        return self.update_user(user_data)
+        user = UserFactory.get_factory(user_data['role']).create_user(user_data)
+        return self.user_repository.update_user(user)
 
     def unarchive_user(self, username: str):
         """
@@ -303,6 +308,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if not user_data['isArchived']:
+            return RequestResult(False, "User is not archived", status_code=400)
         if user_data['role'] == 'Hiwi':
             supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
             supervisor = Supervisor.from_dict(supervisor_data)
@@ -311,7 +318,8 @@ class UserService:
             if not result_supervisor_update.is_successful:
                 return result_supervisor_update
         user_data['isArchived'] = False
-        return self.update_user(user_data)
+        user = UserFactory.get_factory(user_data['role']).create_user(user_data)
+        return self.user_repository.update_user(user)
 
     def get_users(self) -> list[User]:
         """
@@ -351,7 +359,7 @@ class UserService:
             return RequestResult(False, "Role not found", status_code=404, data=[])
         users_data = self.user_repository.get_users_by_role(parsedRole)
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
-        users = [user for user in users if not user.is_archived()]
+        users = [user for user in users if not user.is_archived]
         return RequestResult(True, "", status_code=200, data=users)
 
     def get_profile(self, username: str) -> User:
@@ -367,13 +375,13 @@ class UserService:
             return None
         return UserFactory.create_user_if_factory_exists(user_data)
 
-    def get_hiwis(self, username: str):
+    def get_hiwis(self, username: str) -> RequestResult:
         """
         Retrieves a list of Hiwis managed by a Supervisor identified by their username.
 
         :param str username: The username of the Supervisor whose Hiwis are being requested.
         :return: A list of Hiwi model instances representing the Supervisor's Hiwis.
-        :rtype: list[Hiwi]
+        :rtype: RequestResult
         """
         supervisor_data = self.user_repository.find_by_username(username)
         if not supervisor_data:

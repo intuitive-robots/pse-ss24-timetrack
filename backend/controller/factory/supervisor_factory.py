@@ -24,5 +24,6 @@ class SupervisorFactory(UserFactory):
             username=user_data['username'],
             password_hash=user_data['passwordHash'],
             personal_info=personal_info,
-            hiwis=hiwis
+            hiwis=hiwis,
+            is_archived=user_data['isArchived']
         )

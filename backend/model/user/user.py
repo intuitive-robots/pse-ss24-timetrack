@@ -66,7 +66,6 @@ class User:
 
         :return: A dictionary representing the user's data.
         """
-        #TODO: Add is_archived to dictionary?
         return {
             "username": self.username,
             "passwordHash": self.password_hash,
@@ -74,6 +73,7 @@ class User:
             "role": str(self.role),
             "accountCreation": self.account_creation,
             "lastLogin": self.last_login,
+            "isArchived": self.is_archived
         }
 
     @classmethod

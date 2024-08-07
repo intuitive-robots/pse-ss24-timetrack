@@ -34,4 +34,5 @@ class HiwiFactory(UserFactory):
             personal_info=personal_info,
             supervisor=supervisor,
             contract_info=contract_info,
+            is_archived=user_data['isArchived']
         )
