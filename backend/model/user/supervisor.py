@@ -19,7 +19,7 @@ class Supervisor(User):
         self.hiwis = hiwis if hiwis is not None else []
         self.signature_image = None
 
-    def add_hiwi(self, hiwi):
+    def add_hiwi(self, hiwi: str):
         """
         Adds a Hiwi to the Supervisor's list of Hiwis.
 
@@ -27,7 +27,7 @@ class Supervisor(User):
         """
         self.hiwis.append(hiwi)
 
-    def remove_hiwi(self, hiwi):
+    def remove_hiwi(self, hiwi: str):
         """
         Removes a Hiwi from the Supervisor's list of Hiwis.
 

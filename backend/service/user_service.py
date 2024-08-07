@@ -93,7 +93,7 @@ class UserService:
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
                 return result_supervisor_update
-            return RequestResult(True, "HiWi created successfully", status_code=201)
+            return RequestResult(True, "Hiwi created successfully", status_code=201)
         return self.user_repository.create_user(user)
     def _calculate_vacation_minutes(self, monthly_working_hours: int):
         """
@@ -283,6 +283,13 @@ class UserService:
             return RequestResult(False, "User not found", status_code=404)
         if user_data['role'] == 'Supervisor' and len(user_data['hiwis']) > 0:
             return RequestResult(False, "Supervisor has Hiwis assigned", status_code=400)
+        if user_data['role'] == 'Hiwi':
+            supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
+            supervisor = Supervisor.from_dict(supervisor_data)
+            supervisor.remove_hiwi(user_data['username'])
+            result_supervisor_update = self.user_repository.update_user(supervisor)
+            if not result_supervisor_update.is_successful:
+                return result_supervisor_update
         user_data['isArchived'] = True
         return self.update_user(user_data)
 
@@ -296,6 +303,13 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == 'Hiwi':
+            supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
+            supervisor = Supervisor.from_dict(supervisor_data)
+            supervisor.add_hiwi(user_data['username'])
+            result_supervisor_update = self.user_repository.update_user(supervisor)
+            if not result_supervisor_update.is_successful:
+                return result_supervisor_update
         user_data['isArchived'] = False
         return self.update_user(user_data)
 
@@ -310,6 +324,18 @@ class UserService:
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
         users = [user for user in users if not user.is_archived()]
 
+        return users
+
+    def get_archived_users(self) -> list[User]:
+        """
+        Retrieves a list of all archived users in the system.
+
+        :return: A list of User model instances representing all archived users in the system.
+        :rtype: list[User]
+        """
+        users_data = self.user_repository.get_users()
+        users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
+        users = [user for user in users if user.is_archived()]
         return users
 
     def get_users_by_role(self, role: str):

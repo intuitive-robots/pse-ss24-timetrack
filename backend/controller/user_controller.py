@@ -37,7 +37,9 @@ class UserController(MethodView):
             '/login': self.login,
             '/logout': self.logout,
             '/resetPassword': self.reset_password,
-            '/uploadFile': self.upload_user_file
+            '/uploadFile': self.upload_user_file,
+            '/archiveUser': self.archive_user,
+            '/unarchiveUser': self.unarchive_user
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -54,7 +56,8 @@ class UserController(MethodView):
             '/getFile': self.get_user_file,
             '/getHiwis': self.get_hiwis,
             '/getSupervisor': self.get_supervisor,
-            '/getSupervisors': self.get_supervisors
+            '/getSupervisors': self.get_supervisors,
+            '/getArchivedUsers': self.get_archived_users
         }
         return self._dispatch_request(endpoint_mapping)
 
@@ -132,6 +135,38 @@ class UserController(MethodView):
         result = self.user_service.delete_user(username_data['username'])
         return jsonify(result.message), result.status_code
 
+    @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
+    def archive_user(self):
+        """
+        Archives a user identified by their username provided in JSON data.
+
+        :return: JSON response containing the status message and status code.
+        """
+        if self.user_service.is_archived(get_jwt_identity()):
+            return jsonify('User is archived'), 400
+        if not request.is_json:
+            return jsonify('Request data must be in JSON format'), 400
+        username_data = request.get_json()
+        result = self.user_service.archive_user(username_data['username'])
+        return jsonify(result.message), result.status_code
+
+    @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
+    def unarchive_user(self):
+        """
+        Unarchives a user identified by their username provided in JSON data.
+
+        :return: JSON response containing the status message and status code.
+        """
+        if self.user_service.is_archived(get_jwt_identity()):
+            return jsonify('User is archived'), 400
+        if not request.is_json:
+            return jsonify('Request data must be in JSON format'), 400
+        username_data = request.get_json()
+        result = self.user_service.unarchive_user(username_data['username'])
+        return jsonify(result.message), result.status_code
+
     def login(self):
         """
         Deletes a user identified by their username provided in JSON data.
@@ -199,6 +234,20 @@ class UserController(MethodView):
         if self.user_service.is_archived(get_jwt_identity()):
             return jsonify('User is archived'), 400
         users = self.user_service.get_users()
+        user_dict_list = [user.to_dict() for user in users]
+        return jsonify(user_dict_list), 200
+
+    @jwt_required()
+    @check_access(roles=[UserRole.ADMIN])
+    def get_archived_users(self):
+        """
+        Retrieves a list of all archived users in the system.
+
+        :return: JSON response containing a list of archived user profiles.
+        """
+        if self.user_service.is_archived(get_jwt_identity()):
+            return jsonify('User is archived'), 400
+        users = self.user_service.get_archived_users()
         user_dict_list = [user.to_dict() for user in users]
         return jsonify(user_dict_list), 200
 
