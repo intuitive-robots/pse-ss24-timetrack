@@ -1,10 +1,28 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { NotificationIconActive } from "../../assets/iconComponents/NotificationIconActive";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import NotificationsList from "./NotificationList";
+import {NotificationService} from "../../services/NotificationService";
+import {NotificationMessage} from "../../interfaces/Message";
 
 export const NotificationShowcase = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [notifications, setNotifications] = useState<NotificationMessage[]>([]);
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            const notificationService = new NotificationService();
+            try {
+                const fetchedNotifications = await notificationService.readAllNotifications();
+                setNotifications(fetchedNotifications);
+            } catch (error) {
+                console.error('Failed to fetch notifications:', error);
+                setNotifications([]);
+            }
+        };
+
+        fetchNotifications();
+    }, [isOpen]);
 
     const toggleOverlay = () => {
         setIsOpen(!isOpen);
@@ -28,7 +46,7 @@ export const NotificationShowcase = () => {
                         </div>
                         <HorizontalSeparator/>
                     </div>
-                    <NotificationsList/>
+                    <NotificationsList notifications={notifications} limit={5}/>
                 </div>
             )}
         </div>

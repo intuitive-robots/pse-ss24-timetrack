@@ -1,9 +1,9 @@
 import React from 'react';
-import {Message} from "../../interfaces/Message";
 import {SubmissionReminderIcon} from "../../assets/iconComponents/SubmissionReminderIcon";
+import {NotificationMessage} from "../../interfaces/Message";
 
 interface NotificationItemProps {
-  notification: Message;
+  notification: NotificationMessage;
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => {
@@ -12,9 +12,12 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
             <div className="flex h-10 w-12 rounded-md border-border-gray border-1.7 items-center justify-center">
                 <SubmissionReminderIcon/>
             </div>
+            {/*<p className="text-wrap text-sm font-medium text-[#ABABAB]">*/}
+            {/*    <span className="font-semibold text-[#2E2E2E]">{notification.sender} </span>*/}
+            {/*    requests change: {notification.message}*/}
+            {/*</p>*/}
             <p className="text-wrap text-sm font-medium text-[#ABABAB]">
-                <span className="font-semibold text-[#2E2E2E]">{notification.sender} </span>
-                requests change: {notification.message}
+                {notification.message}
             </p>
         </div>
     );
