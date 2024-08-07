@@ -35,7 +35,8 @@ class TestUserRepository(unittest.TestCase):
                 "instituteName": "Info Institute"
             },
             "accountCreation": None,
-            "lastLogin": None
+            "lastLogin": None,
+            "slackId": None
         }
 
         # Test for no user
@@ -85,7 +86,8 @@ class TestUserRepository(unittest.TestCase):
             },
             "supervisor": "testSupervisor1",
             "lastLogin": None,
-            "timesheets": []
+            "timesheets": [],
+            "slackId": None
         }
 
         test_user = Hiwi.from_dict(test_user_data)
@@ -140,11 +142,12 @@ class TestUserRepository(unittest.TestCase):
         Test the find_by_username method of the UserRepository class.
         """
         test_user_data = {'_id': ObjectId('667c433eba00f12151afe642'),
+                          'isArchived': False,
                           'username': 'testAdmin1',
                           'slackId': 'U07BENARPHB',
                           'personalInfo': {'firstName': 'Nico', 'lastName': 'Admin',
                                            'email': 'test@gmail1.com', 'personalNumber': '6981211',
-                                           'instituteName': 'Info Institute'}, 'role': 'Admin'}
+                                           'instituteName': 'Info Institute'}, 'role': 'Admin' }
 
         # Test for no username
         response_no_username = self.user_repository.find_by_username(None)
