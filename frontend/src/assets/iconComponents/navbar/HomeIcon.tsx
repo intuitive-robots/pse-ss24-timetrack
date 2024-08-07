@@ -9,7 +9,7 @@ export const HomeIcon: React.FC<HomeIconProps> = ({ isActive }) => {
 
     return (
         <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_241_1303)">
+            <g clipPath="url(#clip0_241_1303)">
                 <path
                     d="M2.83332 0H4.95832C6.52312 0 7.79164 1.26853 7.79164 2.83332V4.95832C7.79164 6.52312 6.52312 7.79164 4.95832 7.79164H2.83332C1.26853 7.79168 0 6.52315 0 4.95832V2.83332C0 1.26853 1.26853 0 2.83332 0Z"
                     fill={fillColor}/>
