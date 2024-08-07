@@ -343,7 +343,7 @@ class UserService:
         """
         users_data = self.user_repository.get_users()
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
-        users = [user for user in users if user.is_archived()]
+        users = [user for user in users if user.is_archived]
         return users
 
     def get_users_by_role(self, role: str):

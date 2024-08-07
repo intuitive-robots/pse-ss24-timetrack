@@ -34,14 +34,6 @@ class User:
         """
         return self.role == UserRole.ADMIN
 
-    def is_archived(self):
-        """
-        Checks if the user is archived.
-
-        :return: True if the user is archived, False otherwise.
-        """
-        return self.is_archived
-
     @staticmethod
     def from_dict(user_data: dict):
         """
