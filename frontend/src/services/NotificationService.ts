@@ -18,4 +18,22 @@ export class NotificationService {
             throw new Error('Failed to read all notifications');
         }
     }
+
+
+    /**
+     * Checks if there are any unread messages.
+     *
+     * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if there are unread messages.
+     */
+    public async doesUnreadMessagesExist(): Promise<boolean> {
+        try {
+            const response = await axiosInstance.get<boolean>('notification/doesUnreadMessageExist');
+            return response.data;
+        } catch (error) {
+            console.error('Error checking for unread messages', error);
+            handleAxiosError(error);
+            throw new Error('Failed to check for unread messages');
+        }
+    }
+
 }
