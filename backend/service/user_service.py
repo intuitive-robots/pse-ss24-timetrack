@@ -205,7 +205,7 @@ class UserService:
         if existing_user_data['isArchived']:
             return RequestResult(False, "User is archived", status_code=400)
         existing_supervisor = existing_user_data.get('supervisor', None)
-        updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash"])
+        updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash", "isArchived"])
 
         # Validate the updated user data
         validation_result = self.user_validator.is_valid(updated_user_data)
