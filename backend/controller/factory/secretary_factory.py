@@ -25,5 +25,6 @@ class SecretaryFactory(UserFactory):
             password_hash=user_data['passwordHash'],
             personal_info=personal_info,
             role=UserRole.get_role_by_value(user_data['role']),
-            is_archived=user_data['isArchived']
+            is_archived=user_data['isArchived'],
+            slack_id=user_data.get('slackId')
         )

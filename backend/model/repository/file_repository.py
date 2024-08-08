@@ -160,4 +160,3 @@ class FileRepository:
             return metadata
         except PyMongoError as e:
             return None
-

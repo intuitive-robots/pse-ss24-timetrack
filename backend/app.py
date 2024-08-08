@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required
 from auth import init_auth_routes
 
 from controller.document_controller import DocumentController, document_blueprint
+from controller.notification_controller import NotificationController, notification_blueprint
 from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
@@ -33,7 +34,6 @@ jwt = JWTManager(app)
 
 init_auth_routes(app)
 
-
 # Registering the user routes
 user_view = UserController.as_view('user')
 user_blueprint.add_url_rule('/createUser', view_func=user_view, endpoint='create_user')
@@ -45,6 +45,7 @@ user_blueprint.add_url_rule('/updateUser', view_func=user_view, methods=['POST']
 user_blueprint.add_url_rule('/archiveUser', view_func=user_view, methods=['POST'], endpoint='archive_user')
 user_blueprint.add_url_rule('/unarchiveUser', view_func=user_view, methods=['POST'], endpoint='unarchive_user')
 user_blueprint.add_url_rule('/getProfile', view_func=user_view, methods=['GET'], endpoint='get_profile')
+user_blueprint.add_url_rule('getContractInfo', view_func=user_view, methods=['GET'], endpoint='get_contract_info')
 user_blueprint.add_url_rule('/deleteUser', view_func=user_view, methods=['DELETE'], endpoint='delete_user')
 user_blueprint.add_url_rule('/getUsers', view_func=user_view, methods=['GET'], endpoint='get_users')
 user_blueprint.add_url_rule('/getArchivedUsers', view_func=user_view, methods=['GET'], endpoint='get_archived_users')
@@ -55,9 +56,16 @@ user_blueprint.add_url_rule('/deleteFile', view_func=user_view, methods=['DELETE
 user_blueprint.add_url_rule('/getHiwis', view_func=user_view, methods=['GET'], endpoint='get_hiwis')
 user_blueprint.add_url_rule('/getSupervisor', view_func=user_view, methods=['GET'], endpoint='get_supervisor')
 user_blueprint.add_url_rule('/getSupervisors', view_func=user_view, methods=['GET'], endpoint='get_supervisors')
-
-
 app.register_blueprint(user_blueprint, url_prefix='/user')
+
+notification_view = NotificationController.as_view('notification')
+notification_blueprint.add_url_rule('/delete', view_func=notification_view, methods=['DELETE'],
+                                    endpoint='delete_notification')
+notification_blueprint.add_url_rule('/readAll', view_func=notification_view, methods=['GET'],
+                                    endpoint='read_all_notifications')
+notification_blueprint.add_url_rule('/doesUnreadMessageExist', view_func=notification_view, methods=['GET'],
+                                    endpoint='does_unread_messages_exist')
+app.register_blueprint(notification_blueprint, url_prefix='/notification')
 
 time_entry_view = TimeEntryController.as_view('time_entry')
 time_entry_blueprint.add_url_rule('/createWorkEntry', view_func=time_entry_view, methods=['POST'])
@@ -67,7 +75,6 @@ time_entry_blueprint.add_url_rule('/deleteTimeEntry', view_func=time_entry_view,
 time_entry_blueprint.add_url_rule('/getEntriesByTimesheetId', view_func=time_entry_view, methods=['GET'])
 
 app.register_blueprint(time_entry_blueprint, url_prefix='/timeEntry')
-
 
 timesheet_view = TimesheetController.as_view('timesheet')
 timesheet_blueprint.add_url_rule('/sign', view_func=timesheet_view, methods=['PATCH'], endpoint='sign_timesheet')
@@ -91,7 +98,6 @@ timesheet_blueprint.add_url_rule('/getByMonthYear', view_func=timesheet_view, me
 
 app.register_blueprint(timesheet_blueprint, url_prefix='/timesheet')
 
-
 document_view = DocumentController.as_view('document')
 document_blueprint.add_url_rule('/generateDocument', view_func=document_view, methods=['GET'])
 document_blueprint.add_url_rule('/generateMultipleDocuments', view_func=document_view, methods=['GET'])
@@ -102,12 +108,16 @@ app.register_blueprint(document_blueprint, url_prefix='/document')
 def home():
     return "Flask Backend"
 
+
 def timesheet_to_dict(timesheet):
     timesheet['_id'] = str(timesheet['_id'])  # Convert ObjectId to string
     return timesheet
+
+
 def work_entry_to_dict(work_entry):
     work_entry['_id'] = str(work_entry['_id'])  # Convert ObjectId to string
     return work_entry
+
 
 @app.route('/createTestUser')
 @jwt_required()
@@ -138,11 +148,13 @@ def create_user():
 
     return result.to_dict(), result.status_code
 
+
 @app.route('/test1')
 def test1():
     time_entry_repository = TimeEntryRepository.get_instance()
     time_entry = time_entry_repository.get_time_entry_by_id("666611873270f3785020e764")
     return work_entry_to_dict(time_entry), 200
+
 
 #TODO: This is a hardcoded time entry!
 @app.route('/createTestTimeEntry')
@@ -180,9 +192,11 @@ def create_timesheet():
     result = timesheet_repo.create_timesheet(timesheet)
 
     timesheet_service = TimesheetService()
-    timesheet_id = timesheet_service.get_timesheet(timesheet.username, timesheet.month, timesheet.year).data.timesheet_id
+    timesheet_id = timesheet_service.get_timesheet(timesheet.username, timesheet.month,
+                                                   timesheet.year).data.timesheet_id
     timesheet_service.add_time_entry(timesheet_id, "6668bdd0c1c2ec60ed516ceb")
     return result.to_dict(), result.status_code
+
 
 @app.route('/checkMongoDBConnection')
 def check_mongodb_connection():

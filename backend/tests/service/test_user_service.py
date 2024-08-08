@@ -45,8 +45,9 @@ class TestUserService(unittest.TestCase):
             },
             "lastLogin": None,
             "accountCreation": None
+
         }
-        data_to_compare = {'username': 'testAdmin10',
+        data_to_compare = {'username': 'testAdmin10',  'slackId': None,
                            'personalInfo': {'firstName': 'Paul',
                                             'lastName': 'Admin',
                                             'email': 'test@gmail.com',
@@ -55,7 +56,7 @@ class TestUserService(unittest.TestCase):
                            'role': 'Admin',
                            'lastLogin': None}
         with self.app.app_context():
-            access_token = self.authenticate('testHiwi1', 'test_password')
+            access_token = self.authenticate('testAdmin1', 'test_password')
             with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
                 result = self.user_service.create_user(test_user_data)
                 self.assertEqual(result.status_code, 201)
@@ -117,6 +118,7 @@ class TestUserService(unittest.TestCase):
                                                        'lastName': 'Supervisor',
                                                        'personalNumber': '6381212'},
                                       'role': 'Supervisor',
+                                      'slackId': None,
                                       'username': 'testSupervisor10'}
 
         supervisorResult = self.user_service.create_user(supervisor_user_data)
@@ -141,6 +143,7 @@ class TestUserService(unittest.TestCase):
             "username": "testHiwi10",
             "role": "Hiwi",
             "password": "test_password",
+            'slackId': None,
             "supervisor": "testSupervisor1",
             "accountCreation": None,
             "lastLogin": None
@@ -167,6 +170,7 @@ class TestUserService(unittest.TestCase):
                 "instituteName": "Info Institute"
             },
             "accountCreation": None,
+            'slackId': None,
             "lastLogin": None
         }
         result_missing_supervisor = self.user_service.create_user(missing_supervisor_data)
@@ -181,6 +185,7 @@ class TestUserService(unittest.TestCase):
                              "vacationMinutes": 0,
                              "overtimeMinutes": 0},
             "username": "testHiwi10",
+            'slackId': None,
             "supervisor": "",
             "role": "Hiwi",
             "password": "test_password",
@@ -208,6 +213,7 @@ class TestUserService(unittest.TestCase):
             "username": "testHiwi10",
             "supervisor": "testHiwi2",
             "role": "Hiwi",
+            'slackId': None,
             "password": "test_password",
             "personalInfo": {
                 "firstName": "Test",
@@ -233,6 +239,7 @@ class TestUserService(unittest.TestCase):
                              "overtimeMinutes": 0},
             "username": "testHiwi10",
             "role": "Hiwi",
+            'slackId': None,
             "supervisor": "testSupervisor1",
             "password": "test_password",
             "personalInfo": {
@@ -258,6 +265,7 @@ class TestUserService(unittest.TestCase):
                              "overtimeMinutes": 0},
             "username": "testHiwi10",
             "role": "Hiwi",
+            'slackId': None,
             "supervisor": "testSupervisor1",
             "personalInfo": {
                 "firstName": "Test",
@@ -283,6 +291,7 @@ class TestUserService(unittest.TestCase):
             "username": "testHiwi1",
             "password": "test_password",
             "role": "Hiwi",
+            'slackId': None,
             "supervisor": "testSupervisor1",
             "personalInfo": {
                 "firstName": "Test",
@@ -307,6 +316,7 @@ class TestUserService(unittest.TestCase):
                              "overtimeMinutes": 0},
             "username": "testHiwi10",
             "role": "Hiwi",
+            'slackId': None,
             "supervisor": "testSupervisor1",
             "password": "test_password",
             "personalInfo": {
@@ -331,6 +341,7 @@ class TestUserService(unittest.TestCase):
                                                  'lastName': 'Hiwi',
                                                  'personalNumber': '6381215'},
                                 'role': 'Hiwi',
+                                'slackId': None,
                                 'supervisor': 'testSupervisor1',
                                 'timesheets': [],
                                 'username': 'testHiwi10'}
@@ -346,7 +357,7 @@ class TestUserService(unittest.TestCase):
         self.assertIsNotNone(created_user_data['accountCreation'])
         created_user_data.pop('accountCreation')
         self.assertEqual(hiwi_data_to_compare, created_user_data)
-        self.user_service.delete_user(hiwi_user_data["username"])
+        deletion_result = self.user_service.delete_user("testHiwi10")
 
 
     def test_add_remove_overtime_minutes(self):
@@ -493,9 +504,8 @@ class TestUserService(unittest.TestCase):
         self.assertTrue(result.is_successful)
         self.assertEqual(result.status_code, 200)
         updated_user_data = self.user_repository.find_by_username(test_user_data["username"])
-        self.assertNotEqual(untouched_user_data, updated_user_data)
         self.assertEqual(updated_user_data["personalInfo"]["email"], "updatedInTest@gmail.com")
-        self.user_service.update_user(untouched_user_data)
+        result = self.user_service.update_user(untouched_user_data)
 
     def test_delete_user(self):
         """
@@ -561,11 +571,12 @@ class TestUserService(unittest.TestCase):
         """
         data_to_compare = {
             "username": "testAdmin1",
+            'slackId': 'U07BENARPHB',
             "role": "Admin",
             "personalInfo": {
                 "firstName": "Nico",
                 "lastName": "Admin",
-                "email": "test@gmail1.com",
+                "email": "test@gmail.com",
                 "personalNumber": "6981211",
                 "instituteName": "Info Institute"
             },

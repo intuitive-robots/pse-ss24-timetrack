@@ -5,7 +5,7 @@ import ListIconCardButton from "../input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg";
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg";
 import {useAuth} from "../../context/AuthContext";
-import {approveTimesheet, getTimesheetByMonthYear, requestChange, signTimesheet} from "../../services/TimesheetService";
+import {approveTimesheet, getTimesheetByMonthYear} from "../../services/TimesheetService";
 import {isValidTimesheetStatus, statusMapping} from "../status/StatusMapping";
 import {isValidRole} from "../auth/roles";
 import QuickActionButton from "../input/QuickActionButton";
@@ -17,6 +17,7 @@ import {usePopup} from "../popup/PopupContext";
 import ProgressCard from "../charts/ProgressCard";
 import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 import MonthDisplay from "../display/MonthDisplay";
+import {getContractInfo} from "../../services/UserService";
 
 const TimesheetViewer = () => {
 
@@ -30,6 +31,8 @@ const TimesheetViewer = () => {
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
+
+    const [targetHours, setTargetHours] = useState<number>(80);
 
     const validateMonth = (monthString: string | undefined) => {
         if (monthString) {
@@ -66,6 +69,14 @@ const TimesheetViewer = () => {
                 .catch(error => {
                     setTimesheet(null);
                     console.error('Failed to fetch timesheet for given month and year:', error);
+                });
+
+            getContractInfo(username)
+                .then(contractInfo => {
+                    setTargetHours(contractInfo.workingHours);
+                })
+                .catch(error => {
+                    console.error('Failed to fetch contract info:', error);
                 });
         }
     }, [username, month, year]);
@@ -148,7 +159,7 @@ const TimesheetViewer = () => {
             <div className="absolute right-10">
                 <ProgressCard currentValue={totalHoursInDecimal()}
                               unit={"h"}
-                              targetValue={80} //TODO: remove hardcoded target value, get from user
+                              targetValue={targetHours} //TODO: remove hardcoded target value, get from user
                               label={"Total hours working"}/>
             </div>
 

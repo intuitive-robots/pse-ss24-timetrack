@@ -53,6 +53,10 @@ class TestFileRepository(unittest.TestCase):
         self.file_repository.upload_image(test_file, test_username, test_file_type)
         test_file.close()
 
+        # Test for no username
+        response_no_username = self.file_repository.get_image(None, FileType.PROFILE_PICTURE)
+        self.assertIsNone(response_no_username)
+
         image = self.file_repository.get_image(test_username, FileType.PROFILE_PICTURE)
         self.assertIsNotNone(image)
         metadata = self.file_repository.get_image_metadata(test_username, FileType.PROFILE_PICTURE)
@@ -67,6 +71,12 @@ class TestFileRepository(unittest.TestCase):
         test_username = "testAdmin"
         self.file_repository.upload_image(test_file, test_username, test_file_type)
         test_file.close()
+
+        # Test for no gridfs id
+        response_no_gridfs_id = self.file_repository.delete_image(None)
+        self.assertEqual("Failed to delete image: no file could be deleted because none matched None", response_no_gridfs_id.message)
+        self.assertEqual(False, response_no_gridfs_id.is_successful)
+        self.assertEqual(500, response_no_gridfs_id.status_code)
 
         metadata = self.file_repository.get_image_metadata(test_username, FileType.PROFILE_PICTURE)
         result = self.file_repository.delete_image(metadata["gridfsId"])

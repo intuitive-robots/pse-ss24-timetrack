@@ -5,7 +5,8 @@ from model.user.user import User
 
 class Secretary(User):
     def __init__(self, username: str, password_hash: str,
-             personal_info: PersonalInfo, current_timesheet_ids=None, is_archived=False):
+             personal_info: PersonalInfo, current_timesheet_ids=None, is_archived=False, slack_id: str = None):
+
         """
         Initializes a new instance of the Secretary class, which extends the User class.
 
@@ -15,7 +16,7 @@ class Secretary(User):
         :param personal_info: An instance of PersonalInfo containing the Secretary's personal information.
 
         """
-        super().__init__(username, password_hash, personal_info, UserRole.SECRETARY, is_archived=is_archived)
+        super().__init__(username, password_hash, personal_info, UserRole.SECRETARY, is_archived=is_archived, slack_id=slack_id)
         self.currentTimesheetIds = current_timesheet_ids if current_timesheet_ids is not None else []
 
     def to_dict(self):

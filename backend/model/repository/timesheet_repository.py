@@ -113,7 +113,6 @@ class TimesheetRepository:
         except PyMongoError as e:
             return None
 
-
     def get_timesheets(self):
         """
         Retrieves all Timesheet objects from the database
@@ -125,7 +124,6 @@ class TimesheetRepository:
             return list(timesheets)
         except PyMongoError as e:
             return None
-
 
     def get_timesheets_by_status(self, status: TimesheetStatus):
         """
@@ -175,7 +173,6 @@ class TimesheetRepository:
             return list(timesheets)
         except PyMongoError as e:
             return None
-
 
     def get_timesheets_by_username(self, username: str):
         """
@@ -317,5 +314,3 @@ class TimesheetRepository:
         except PyMongoError as e:
             return RequestResult(False, f"Timesheet deletion failed: {str(e)}", 500)
         return RequestResult(False, "Timesheet deletion failed", 500)
-
-

@@ -10,7 +10,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const {isAuthenticated, isLoading} = useAuth();
 
   if (isLoading) {
-    console.log("Loading authentication status");
+    // console.log("Loading authentication status");
     return <div></div>;
   }
 

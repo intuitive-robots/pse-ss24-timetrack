@@ -26,4 +26,5 @@ class SupervisorFactory(UserFactory):
             personal_info=personal_info,
             hiwis=hiwis,
             is_archived=user_data['isArchived']
+            slack_id=user_data.get('slackId')
         )

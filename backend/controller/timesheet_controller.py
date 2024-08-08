@@ -228,6 +228,8 @@ class TimesheetController(MethodView):
             return jsonify('No username provided'), 400
         if self.user_service.is_archived(username):
             return jsonify('User is archived'), 400
+        if check_access(roles=[UserRole.HIWI]) and username != get_jwt_identity():
+            return jsonify('Hiwis can only access their own timesheets'), 403
         result = self.timesheet_service.get_highest_priority_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code

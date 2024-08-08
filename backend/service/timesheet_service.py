@@ -1,6 +1,7 @@
 import math
 
 from bson import ObjectId
+from flask_jwt_extended import jwt_required
 
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
@@ -8,6 +9,7 @@ from model.request_result import RequestResult
 from model.time_entry import TimeEntry
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
+from service.notification_service import NotificationService
 from service.user_service import UserService
 
 
@@ -24,6 +26,7 @@ class TimesheetService:
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.user_service = UserService()
         self.time_entry_repository = TimeEntryRepository.get_instance()
+        self.notification_service = NotificationService()
 
     def ensure_timesheet_exists(self, username: str, month: int, year: int):
         """
@@ -66,6 +69,7 @@ class TimesheetService:
             return RequestResult(True, "Total time updated", 200)
         return RequestResult(False, "Failed to update total time", 500)
 
+    @jwt_required()
     def sign_timesheet(self, timesheet_id: str):
         """
         Method used by the Hiwi to sign his timesheet.
@@ -81,45 +85,81 @@ class TimesheetService:
             return RequestResult(False, "Timesheet not found", 404)
         if timesheet_data['status'] in (TimesheetStatus.WAITING_FOR_APPROVAL.value, TimesheetStatus.COMPLETE.value):
             return RequestResult(False, "Timesheet already signed", 409)
+        hiwi_data = self.user_service.get_profile(timesheet_data["username"])
+        if hiwi_data is None:
+            return RequestResult(False, "HiWi not found", 404)
+        supervisor_username = hiwi_data.supervisor
+        if supervisor_username is None:
+            return RequestResult(False, "Supervisor not found", 404)
+        hiwi_full_name = hiwi_data.personal_info.first_name + " " + hiwi_data.personal_info.last_name
+        notification_result = self.notification_service.send_notification({"receiver": supervisor_username,
+                                                                           "message_type": "Timesheet Status Change",
+                                                                           "message":
+                                                                               f"Signed Timesheet: \n"
+                                                                               f"{hiwi_full_name} signed timesheet \n"
+                                                                               f"{timesheet_data['month']}/"
+                                                                               f"{timesheet_data['year']}"})
+
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.WAITING_FOR_APPROVAL)
 
+    @jwt_required()
     def approve_timesheet(self, timesheet_id: str):
         """
-        Method used by the supervisor to sign a timesheet.
+        Method used by the supervisor to sign a timesheet_data.
         This sets the status to approved.
 
-        :param timesheet_id: The ID of the timesheet to approve.
+        :param timesheet_id: The ID of the timesheet_data to approve.
         :type timesheet_id: str
         :return: The result of the approval operation.
         :rtype: RequestResult
         """
-        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-        if timesheet is None:
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
-        if timesheet['status'] == 'Complete':
+        if timesheet_data['status'] == 'Complete':
             return RequestResult(False, "Timesheet already approved", 409)
-        if timesheet['status'] != 'Waiting for Approval':
+        if timesheet_data['status'] != 'Waiting for Approval':
             return RequestResult(False, "Timesheet cannot be approved", 400)
-
+        notification_result = self.notification_service.send_notification({"receiver": timesheet_data["username"],
+                                                                           "message_type": "Timesheet Status Change",
+                                                                           "message": f"Timesheet approved and "
+                                                                                      f"marked as completed: \n"
+                                                                                      f"{timesheet_data['month']}/"
+                                                                                      f"{timesheet_data['year']}"})
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
 
+    @jwt_required()
     def request_change(self, timesheet_id: str):
         """
-        Method used by the supervisor to request changes to a timesheet.
+        Method used by the supervisor to request changes to a timesheet_data.
         This sets the status to change requested.
 
-        :param timesheet_id: The ID of the timesheet to request changes for.
+        :param timesheet_id: The ID of the timesheet_data to request changes for.
         :type timesheet_id: str
         :return: The result of the request change operation.
         :rtype: RequestResult
         """
-        timesheet = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
-        if timesheet is None:
+        timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+        if timesheet_data is None:
             return RequestResult(False, "Timesheet not found", 404)
-        if timesheet['status'] == 'Complete':
+        if timesheet_data['status'] == 'Complete':
             return RequestResult(False, "Timesheet already approved", 409)
-        if timesheet['status'] != 'Waiting for Approval':
-            return RequestResult(False, "HiWi didn't submitted the timesheet", 400)
+        if timesheet_data['status'] != 'Waiting for Approval':
+            return RequestResult(False, "HiWi didn't submitted the timesheet_data", 400)
+        hiwi_data = self.user_service.get_profile(timesheet_data["username"])
+        if hiwi_data is None:
+            return RequestResult(False, "HiWi not found", 404)
+        supervisor = self.user_service.get_profile(hiwi_data.supervisor)
+        if supervisor is None:
+            return RequestResult(False, "Supervisor not found", 404)
+        supervisor_full_name = supervisor.personal_info.first_name + " " + supervisor.personal_info.last_name
+
+        notification_result = self.notification_service.send_notification({"receiver": timesheet_data["username"],
+                                                                           "message_type": "Timesheet Status Change",
+                                                                           "message": f"Change Requested: \n"
+                                                                                      f"{supervisor_full_name} requested changes to your timesheet \n:"
+                                                                                      f"{timesheet_data['month']}/"
+                                                                                      f"{timesheet_data['year']}"})
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.REVISION)
 
     def _set_timesheet_status(self, timesheet_id: str, status: TimesheetStatus):
@@ -174,13 +214,15 @@ class TimesheetService:
             total_minutes += time_entry.get_duration()
         hiwi = self.user_service.get_profile(timesheet_data["username"])
         monthly_working_hours = hiwi.contract_info.working_hours
-        previous_overtime = self.get_previous_overtime(timesheet_data["username"], timesheet_data["month"], timesheet_data["year"])
+        previous_overtime = self.get_previous_overtime(timesheet_data["username"], timesheet_data["month"],
+                                                       timesheet_data["year"])
         overtime_minutes = total_minutes - (monthly_working_hours * 60) + previous_overtime
         timesheet_data["overtime"] = overtime_minutes
         if timesheet_data["status"] != TimesheetStatus.COMPLETE.value:
             self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
             return RequestResult(True, "", 200, overtime_minutes)
         return RequestResult(False, "Overtime can't be edited when Timesheet is complete", 409)
+
     def get_previous_overtime(self, username: str, current_month: int, current_year: int):
         """
         Retrieves the overtime from the previous month for a Hiwi.
@@ -219,6 +261,22 @@ class TimesheetService:
             if not update_result.is_successful:
                 return update_result
         return result
+
+    def delete_timesheets_by_username(self, username: str):
+        """
+        Deletes all timesheets for a given username.
+
+        :param username: The username of the Hiwi
+        :return: The result of the delete operation
+        """
+        timesheets_data = self.timesheet_repository.get_timesheets_by_username(username)
+        if timesheets_data is None or len(timesheets_data) == 0:
+            return RequestResult(True, "No timesheets to delete", 200)
+        for timesheet_data in timesheets_data:
+            result = self.delete_timesheet_by_id(timesheet_data["_id"])
+            if not result.is_successful:
+                return result
+        return RequestResult(True, "Timesheets deleted", 200)
 
     def get_timesheet_by_id(self, timesheet_id: str):
         """
@@ -315,6 +373,8 @@ class TimesheetService:
             self._get_status_priority(timesheet.status), timesheet.year, timesheet.month))
         if sorted_timesheets is None or len(sorted_timesheets) == 0:
             return RequestResult(False, "No timesheets found", 404)
+        if sorted_timesheets[0].status == TimesheetStatus.COMPLETE:
+            return RequestResult(True, "", 200, sorted_timesheets[-1])
         return RequestResult(True, "", 200, sorted_timesheets[0])
 
     def _get_status_priority(self, status: TimesheetStatus): #pragma: no cover
