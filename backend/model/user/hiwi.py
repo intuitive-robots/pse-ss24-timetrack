@@ -9,7 +9,7 @@ from model.user.user import User
 
 class Hiwi(User):
     def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo,
-                 supervisor: str, contract_info: ContractInfo, slack_id: str = None, timesheets=[]):
+                 supervisor: str, contract_info: ContractInfo, timesheets=[], is_archived=False, slack_id: str = None):
         """
         Initializes a new instance of the Hiwi class, which extends the User class.
 
@@ -19,8 +19,8 @@ class Hiwi(User):
         :param supervisor: The username of the Hiwi's supervisor.
         :param contract_info: An instance of ContractInfo containing details about the Hiwi's contract.
         """
+        super().__init__(username, password_hash, personal_info, UserRole.HIWI, is_archived=is_archived, slack_id = slack_id)
 
-        super().__init__(username, password_hash, personal_info, UserRole.HIWI, slack_id)
         self.supervisor = supervisor
         self.timesheets = timesheets
         self.contract_info = contract_info

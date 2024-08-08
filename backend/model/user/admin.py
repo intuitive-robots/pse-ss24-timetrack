@@ -4,7 +4,8 @@ from model.user.user import User
 
 
 class Admin(User):
-    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole, slack_id: str = None):
+    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole, is_archived=False, slack_id: str = None):
+
         """
         Initializes a new instance of the Admin class, which extends the User class.
 
@@ -13,7 +14,7 @@ class Admin(User):
         :param personal_info: An instance of PersonalInfo containing the Admin's personal information.
 
         """
-        super().__init__(username, password_hash, personal_info, UserRole.ADMIN, slack_id)
+        super().__init__(username, password_hash, personal_info, UserRole.ADMIN, is_archived=is_archived, slack_id=slack_id)
 
 
     def to_dict(self):

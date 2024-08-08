@@ -67,9 +67,8 @@ class UserService:
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
 
-        #TODO: AccountCreation and LastLogin are also required fields, which should not be the case.
         for key in User.dict_keys():
-            if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin', 'slackId']:
+            if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin', 'isArchived', 'slackId']:
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
         result = self.user_validator.is_valid(user_data)  # check if field format is valid
         if result.status == ValidationStatus.FAILURE:
@@ -96,7 +95,7 @@ class UserService:
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
             if not result_supervisor_update.is_successful:
                 return result_supervisor_update
-            return RequestResult(True, "HiWi created successfully", status_code=201)
+            return RequestResult(True, "Hiwi created successfully", status_code=201)
         return self.user_repository.create_user(user)
     def _calculate_vacation_minutes(self, monthly_working_hours: int):
         """
@@ -118,6 +117,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['isArchived']:
+            return RequestResult(False, "User is archived", status_code=400)
         if 'contractInfo' not in user_data:
             return RequestResult(False, "User has no contract information", status_code=400)
         user_data['contractInfo']['overtimeMinutes'] += minutes
@@ -135,6 +136,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['isArchived']:
+            return RequestResult(False, "User is archived", status_code=400)
         if 'contractInfo' not in user_data:
             return RequestResult(False, "User has no contract information", status_code=400)
         user_data['contractInfo']['overtimeMinutes'] -= minutes
@@ -152,6 +155,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['isArchived']:
+            return RequestResult(False, "User is archived", status_code=400)
         if 'contractInfo' not in user_data:
             return RequestResult(False, "User has no contract information", status_code=400)
         if minutes is not None:
@@ -174,6 +179,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['isArchived']:
+            return RequestResult(False, "User is archived", status_code=400)
         if 'contractInfo' not in user_data:
             return RequestResult(False, "User has no contract information", status_code=400)
         if minutes is not None:
@@ -197,8 +204,10 @@ class UserService:
         existing_user_data = self.user_repository.find_by_username(user_data['username'])
         if not existing_user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if existing_user_data['isArchived']:
+            return RequestResult(False, "User is archived", status_code=400)
         existing_supervisor = existing_user_data.get('supervisor', None)
-        updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash"])
+        updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash", "isArchived"])
 
         # Validate the updated user data
         validation_result = self.user_validator.is_valid(updated_user_data)
@@ -208,7 +217,7 @@ class UserService:
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)
-        if updated_user.role == UserRole.HIWI.value and user_data['supervisor'] != existing_supervisor:
+        if updated_user.role == UserRole.HIWI and user_data['supervisor'] != existing_supervisor:
             update_supervisor_result = self._update_supervisor(user_data['username'], existing_supervisor,
                                                                user_data['supervisor'])
             if not update_supervisor_result.is_successful:
@@ -239,6 +248,8 @@ class UserService:
             return RequestResult(False, "New supervisor not found", status_code=404)
         if new_supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
+        if new_supervisor_data['isArchived']:
+            return RequestResult(False, "New supervisor is archived", status_code=400)
         supervisor_data['hiwis'].remove(hiwi_username)
         result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
         if not result_supervisor_update.is_successful:
@@ -262,10 +273,12 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+          
         if user_data['role'] == 'Supervisor':
             if user_data['hiwis']:
                 return RequestResult(False, "Supervisor has Hiwis assigned", status_code=400)
-        if user_data['role'] == 'Hiwi':
+              
+        if user_data['role'] == 'Hiwi' and not user_data['isArchived']:
             supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
             supervisor_data['hiwis'].remove(user_data['username'])
             result_supervisor_update = self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
@@ -290,6 +303,53 @@ class UserService:
             return file_result
         return self.user_repository.delete_user(username)
 
+    def archive_user(self, username: str):
+        """
+        Archives a user in the system identified by their username.
+
+        :param username: The username of the user to be archived.
+        :return: A RequestResult object containing the result of the archive operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if user_data['isArchived']:
+            return RequestResult(False, "User is already archived", status_code=400)
+        if user_data['role'] == 'Supervisor' and len(user_data['hiwis']) > 0:
+            return RequestResult(False, "Supervisor has Hiwis assigned", status_code=400)
+        if user_data['role'] == 'Hiwi':
+            supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
+            supervisor = Supervisor.from_dict(supervisor_data)
+            supervisor.remove_hiwi(user_data['username'])
+            result_supervisor_update = self.user_repository.update_user(supervisor)
+            if not result_supervisor_update.is_successful:
+                return result_supervisor_update
+        user_data['isArchived'] = True
+        user = UserFactory.get_factory(user_data['role']).create_user(user_data)
+        return self.user_repository.update_user(user)
+
+    def unarchive_user(self, username: str):
+        """
+        Unarchives a user in the system identified by their username.
+
+        :param username: The username of the user to be unarchived.
+        :return: A RequestResult object containing the result of the unarchive operation.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return RequestResult(False, "User not found", status_code=404)
+        if not user_data['isArchived']:
+            return RequestResult(False, "User is not archived", status_code=400)
+        if user_data['role'] == 'Hiwi':
+            supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
+            supervisor = Supervisor.from_dict(supervisor_data)
+            supervisor.add_hiwi(user_data['username'])
+            result_supervisor_update = self.user_repository.update_user(supervisor)
+            if not result_supervisor_update.is_successful:
+                return result_supervisor_update
+        user_data['isArchived'] = False
+        user = UserFactory.get_factory(user_data['role']).create_user(user_data)
+        return self.user_repository.update_user(user)
 
     def get_users(self) -> list[User]:
         """
@@ -300,7 +360,20 @@ class UserService:
         """
         users_data = self.user_repository.get_users()
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
+        users = [user for user in users if not user.is_archived()]
 
+        return users
+
+    def get_archived_users(self) -> list[User]:
+        """
+        Retrieves a list of all archived users in the system.
+
+        :return: A list of User model instances representing all archived users in the system.
+        :rtype: list[User]
+        """
+        users_data = self.user_repository.get_users()
+        users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
+        users = [user for user in users if user.is_archived]
         return users
 
     def get_users_by_role(self, role: str):
@@ -316,7 +389,7 @@ class UserService:
             return RequestResult(False, "Role not found", status_code=404, data=[])
         users_data = self.user_repository.get_users_by_role(parsedRole)
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
-
+        users = [user for user in users if not user.is_archived]
         return RequestResult(True, "", status_code=200, data=users)
 
     def get_profile(self, username: str) -> User:
@@ -328,6 +401,8 @@ class UserService:
         :rtype: User
         """
         user_data = self.user_repository.find_by_username(username)
+        if user_data['isArchived']:
+            return None
         return UserFactory.create_user_if_factory_exists(user_data)
 
     def get_contract_info(self, username: str):
@@ -351,11 +426,13 @@ class UserService:
 
         :param str username: The username of the Supervisor whose Hiwis are being requested.
         :return: A list of Hiwi model instances representing the Supervisor's Hiwis.
-        :rtype: list[Hiwi]
+        :rtype: RequestResult
         """
         supervisor_data = self.user_repository.find_by_username(username)
         if not supervisor_data:
             return RequestResult(False, "Supervisor not found", status_code=404)
+        if supervisor_data['isArchived']:
+            return RequestResult(False, "Supervisor is archived", status_code=400)
         if supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
 
@@ -380,6 +457,9 @@ class UserService:
         supervisor_data = self.user_repository.find_by_username(hiwi_data['supervisor'])
         if not supervisor_data:
             return RequestResult(False, "Supervisor not found", status_code=404)
+        #TODO: is return message "supervisor is archived" too much info?
+        if supervisor_data['isArchived']:
+            return RequestResult(False, "Supervisor is archived", status_code=400)
         if only_name:
             relevant_supervisor_data = {'firstName': supervisor_data['personalInfo']['firstName'],
                                         'lastName': supervisor_data['personalInfo']['lastName']}
@@ -401,5 +481,18 @@ class UserService:
         supervisors = list(filter(None, map(UserFactory.create_user_if_factory_exists, supervisors_data)))
         if not supervisors:
             return RequestResult(False, "No Supervisors found", status_code=404)
+        supervisors = [supervisor for supervisor in supervisors if not supervisor.is_archived]
         sorted_supervisors = sorted(supervisors, key=lambda x: x.personal_info.last_name)
         return RequestResult(True, "", status_code=200, data=sorted_supervisors)
+
+    def is_archived(self, username: str):
+        """
+        Checks if the user is archived.
+
+        :return: True if the user is archived, False otherwise.
+        """
+        user_data = self.user_repository.find_by_username(username)
+        if not user_data:
+            return False
+        user = UserFactory.create_user_if_factory_exists(user_data)
+        return user.is_archived
