@@ -6,9 +6,10 @@ import {NotificationMessage} from "../../interfaces/Message";
 interface NotificationsListProps {
     notifications: NotificationMessage[];
     limit?: number;
+    onRemove: (id: string) => void;
 }
 
-const NotificationsList: React.FC<NotificationsListProps> = ({ notifications, limit}) => {
+const NotificationsList: React.FC<NotificationsListProps> = ({ notifications, limit, onRemove}) => {
     const limitedNotifications = limit ? notifications.slice(0, limit) : notifications;
 
     return (
@@ -17,6 +18,7 @@ const NotificationsList: React.FC<NotificationsListProps> = ({ notifications, li
                 <div key={index}>
                     <NotificationItem
                         notification={notification}
+                        onRemove={() => onRemove(notification._id)}
                     />
                     <HorizontalSeparator/>
                 </div>

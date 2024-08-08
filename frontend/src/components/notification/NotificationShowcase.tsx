@@ -32,6 +32,7 @@ export const NotificationShowcase = () => {
             const notificationService = new NotificationService();
             try {
                 const unreadExist = await notificationService.doesUnreadMessagesExist();
+                console.log(unreadExist);
                 setHasUnreadMessages(unreadExist);
             } catch (error) {
                 console.error('Failed to check for unread messages:', error);
@@ -45,6 +46,16 @@ export const NotificationShowcase = () => {
     const toggleOverlay = () => {
         setIsOpen(!isOpen);
         setHasUnreadMessages(false);
+    };
+
+    const handleRemoveNotification = async (id: string) => {
+        const notificationService = new NotificationService();
+        try {
+            await notificationService.deleteNotification(id);
+            setNotifications(prevNotifications => prevNotifications.filter(notification => notification._id !== id));
+        } catch (error) {
+            console.error('Failed to delete notification', error);
+        }
     };
 
     return (
@@ -68,7 +79,7 @@ export const NotificationShowcase = () => {
                         </div>
                         <HorizontalSeparator/>
                     </div>
-                    <NotificationsList notifications={notifications} limit={5}/>
+                    <NotificationsList notifications={notifications} limit={5} onRemove={handleRemoveNotification}/>
                 </div>
             )}
         </div>

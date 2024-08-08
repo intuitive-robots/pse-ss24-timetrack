@@ -36,4 +36,23 @@ export class NotificationService {
         }
     }
 
+    /**
+     * Deletes a notification by its ID.
+     *
+     * @param {string} notificationId - The ID of the notification to delete.
+     * @returns {Promise<string>} A promise that resolves to a success message.
+     */
+    public async deleteNotification(notificationId: string): Promise<string> {
+        try {
+            const response = await axiosInstance.delete<string>('notification/delete', {
+                params: { id: notificationId }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Failed to delete notification', error);
+            handleAxiosError(error);
+            throw new Error('Failed to delete notification');
+        }
+    }
+
 }
