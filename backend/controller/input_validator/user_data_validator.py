@@ -20,8 +20,8 @@ class UserDataValidator(InputValidator):
         self.field_patterns = {
             'username': r'^[a-zA-Z0-9]+$',  # Only letters
             'password': r'.{8,}',  # At least 8 characters
-            'firstName': r'^[a-zA-Z]{2,15}$',  # Only letters, 2-15 characters long
-            'lastName': r'^[a-zA-Z]{2,20}$',  # Only letters, 2-20 characters long
+            'firstName': r'^[\p{L}]{2,15}$',  # Unicode letters, 2-15 characters long
+            'lastName': r'^[\p{L}]{2,20}$',  # Unicode letters, 2-20 characters long
             'email': r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
             'personalNumber': r'^\d{4,10}$',  # 4 to 10 digits
             'instituteName': r'^[a-zA-Z\s]{2,40}$'  # Only letters and spaces, 2-20 characters long
