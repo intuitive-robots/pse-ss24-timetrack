@@ -3,7 +3,7 @@ import React from 'react';
 export const SlackIcon = () => {
     return (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_1272_47)">
+            <g clipPath="url(#clip0_1272_47)">
                 <path
                     d="M3.78975 11.3691C3.78975 12.4154 2.9415 13.2636 1.89525 13.2636C0.84825 13.2636 0 12.4154 0 11.3691C0 10.3229 0.84825 9.47461 1.8945 9.47461H3.789L3.78975 11.3691Z"
                     fill="#454545"/>

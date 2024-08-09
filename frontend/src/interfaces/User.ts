@@ -13,4 +13,5 @@ export interface User {
   lastLogin?: string;
   supervisor?: string;
   slackId?: string;
+  isArchived?: boolean;
 }
