@@ -97,9 +97,9 @@ class NotificationRepository:
         try:
             unread_message = self.db.notifications.find_one({"receiver": receiver, "read": False})
             if unread_message is not None:
-                return RequestResult(True, "Unread message found", 200)
+                return RequestResult(True, "Unread message found", 200, data=True)
             else:
-                return RequestResult(False, "No unread message found", 404)
+                return RequestResult(False, "No unread message found", 200, data=False)
         except PyMongoError as e:
             return RequestResult(False, str(e), 500)
 
