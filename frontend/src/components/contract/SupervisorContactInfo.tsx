@@ -54,7 +54,6 @@ const UserContactInfo: React.FC = () => {
                     name={isLoading ? "" : supervisor.firstName}
                     lastName={isLoading ? "" : supervisor.lastName}
                     role={isLoading ? Roles.Supervisor : (supervisor.role || "N/A")}
-                    profileImageUrl={isLoading ? ProfilePicture : (supervisor.profileImageUrl || ProfilePicture)}
                     loading={isLoading}
                 />
                 <div className="flex flex-row gap-3">

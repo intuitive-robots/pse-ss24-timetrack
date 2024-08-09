@@ -82,8 +82,8 @@ const ProfileBar: React.FC = (): React.ReactElement => {
                     name={user ? user.personalInfo.firstName : "Max"}
                     lastName={user ? user.personalInfo.lastName : "Muster"}
                     role={user ? role || "N/A" : "Loading"}
-                    profileImageUrl={user ? user.profileImageUrl || ProfilePicture : ProfilePicture}
                     loading={user === null || isLoading}
+                    isProfileBar={true}
                 />
             </div>
 
