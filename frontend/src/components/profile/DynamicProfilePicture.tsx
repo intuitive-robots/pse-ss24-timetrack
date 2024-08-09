@@ -12,7 +12,7 @@ interface DynamicProfilePictureProps {
 const DynamicProfilePicture: React.FC<DynamicProfilePictureProps> = ({
     firstName,
     lastName,
-    size = 48,
+    size = 45,
     backgroundColor,
     textColor = '#FFFFFF'
 }) => {

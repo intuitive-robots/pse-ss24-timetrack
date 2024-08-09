@@ -67,6 +67,8 @@ class UserService:
         user_data['passwordHash'] = SecurityUtils.hash_password(user_data['password'])
         del user_data['password']  # Remove the plain text password from the data
 
+        user_data['isArchived'] = False
+
         for key in User.dict_keys():
             if key not in user_data.keys() and key not in ['accountCreation', 'lastLogin', 'isArchived', 'slackId']:
                 return RequestResult(False, f"Missing required field: {key}", status_code=400)
