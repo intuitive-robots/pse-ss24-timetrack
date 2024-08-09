@@ -4,7 +4,7 @@ import IconButton from "./navbar/IconButton";
 import UserInfo from "./UserInfo";
 import {EditUserIcon} from "../assets/iconComponents/EditUserIcon";
 import {ViewUserIcon} from "../assets/iconComponents/ViewUserIcon";
-import {RemoveUserIcon} from "../assets/iconComponents/RemoveUserIcon";
+import {RemoveIcon} from "../assets/iconComponents/RemoveIcon";
 import {LockUserIcon} from "../assets/iconComponents/LockUserIcon";
 
 interface UserCardProps {
@@ -45,7 +45,7 @@ const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageU
               onClick={() => onLock()}
           />
           <IconButton
-              icon={<RemoveUserIcon/>}
+              icon={<RemoveIcon className="text-[#B083FF]"/>}
               onClick={() => onDelete()}
               bgColor="bg-purple-100"
               hover="hover:bg-purple-200"

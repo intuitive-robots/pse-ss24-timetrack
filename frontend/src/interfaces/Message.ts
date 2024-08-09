@@ -1,7 +1,11 @@
-export interface Message {
+export interface NotificationMessage {
+  _id: string;
   receiver: string;
   sender: string;
   message: string;
   messageType: string;
-  creationDate: Date;
+  timestamp: string;
+  read: boolean;
+  sent: boolean;
+  messageData: any;
 }

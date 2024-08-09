@@ -1,9 +1,9 @@
 import React from 'react';
 import ListIconCardButton from "../input/ListIconCardButton";
 import EditDocumentIcon from "../../assets/images/edit_document.svg"
-import RemoveIcon from "../../assets/images/remove_icon.svg"
 import IconButton from "../navbar/IconButton";
 import CalendarDay from "../calendar/CalendarDay";
+import {RemoveIcon} from "../../assets/iconComponents/RemoveIcon";
 
 
 interface TimeEntryTileProps {
@@ -53,7 +53,7 @@ const TimeEntryTile: React.FC<TimeEntryTileProps> = ({
                 )}
                 {onDelete && (
                     <IconButton
-                        icon={RemoveIcon}
+                        icon={<RemoveIcon className="text-[#B083FF]"/>}
                         onClick={onDelete}
                         bgColor="bg-purple-100"
                         hover="hover:bg-purple-200"
