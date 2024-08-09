@@ -42,6 +42,24 @@ const deleteUser = async (username: string) => {
 };
 
 /**
+ * Archives a user by their username.
+ *
+ * @param {string} username - The username of the user to be deleted.
+ * @returns {Promise<any>} The response data from the backend.
+ */
+const archiveUser = async (username: string) => {
+  try {
+    const response = await axiosInstance.delete('/user/getArchivedUsers', {
+      data: { username }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Deleting user failed', error);
+    handleAxiosError(error);
+  }
+};
+
+/**
  * Creates a new user with provided user details.
  * @param userData The data of the user to be created.
  * @returns The response data from the backend.

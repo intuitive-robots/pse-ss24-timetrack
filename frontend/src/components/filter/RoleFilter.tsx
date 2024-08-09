@@ -5,7 +5,7 @@ import {Roles} from "../auth/roles";
 
 const RoleFilter: React.FC<{ onRoleChange: (role: string) => void }> = ({ onRoleChange }) => {
   const [activeRole, setActiveRole] = useState<string>("View all");
-  const filterRoles = ["View all", ...Object.values(Roles)];
+  const filterRoles = ["View all", ...Object.values(Roles), "Archived"];
 
   const handleRoleClick = (role: string) => {
     setActiveRole(role);

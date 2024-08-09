@@ -6,5 +6,8 @@
  * @returns The appropriate form of the noun based on the count.
  */
 export const getPluralForm = (count: number, singular: string, plural: string): string => {
+    if (singular === "Archived") {
+        plural = "Archived Users";
+    }
     return count === 1 ? singular : plural;
 };

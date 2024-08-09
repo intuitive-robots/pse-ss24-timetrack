@@ -6,7 +6,7 @@ import { User } from "../../interfaces/User";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
 import { usePopup } from "../../components/popup/PopupContext";
-import { deleteUser } from "../../services/UserService";
+import { deleteUser , archiveUser } from "../../services/UserService";
 import RoleFilter from "../../components/filter/RoleFilter";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
@@ -19,6 +19,7 @@ interface RoleCounts {
     Supervisor: number;
     Secretary: number;
     Admin: number;
+    Archived: number;
 }
 
 const AdminHomePage = (): React.ReactElement => {
@@ -58,7 +59,7 @@ const AdminHomePage = (): React.ReactElement => {
 
     const confirmDeleteUser = async (username: string) => {
         try {
-            await deleteUser(username);
+            await archiveUser(username);
             closePopup();
             setUsers(prev => prev.filter(u => u.username !== username));
         } catch (error) {
@@ -69,6 +70,7 @@ const AdminHomePage = (): React.ReactElement => {
 
     const confirmLockUser = async (username: string) => {
         try {
+            await deleteUser(username);
             closePopup();
         } catch (error) {
             console.error('Failed to Lock user:', error);
@@ -104,6 +106,8 @@ const AdminHomePage = (): React.ReactElement => {
     useEffect(() => {
         if (activeRole === "View all") {
             setFilteredUsers(users.filter(user => !user.username.startsWith('test')));
+        } else if (activeRole === "Archived") {
+            setFilteredUsers(users.filter(user => user.isArchived && !user.username.startsWith('test')));
         } else {
             setFilteredUsers(users.filter(user => user.role === activeRole && !user.username.startsWith('test')));
         }
@@ -115,7 +119,7 @@ const AdminHomePage = (): React.ReactElement => {
 
     const generateHeader = () => {
         if (activeRole === "View all") {
-            const initialCounts: RoleCounts = { Hiwi: 0, Supervisor: 0, Secretary: 0, Admin: 0 };
+            const initialCounts: RoleCounts = { Hiwi: 0, Supervisor: 0, Secretary: 0, Admin: 0, Archived: 0 };
             const roleCounts = users.reduce((acc, user) => {
                 if (user.role in acc) {
                     acc[user.role as keyof RoleCounts]++;
@@ -127,7 +131,7 @@ const AdminHomePage = (): React.ReactElement => {
             const employeeNoun = getPluralForm(totalEmployees, 'employee', 'employees');
             const verb = totalEmployees === 1 ? 'is' : 'are';
 
-            return `There ${verb} ${totalEmployees} ${employeeNoun}, including ${roleCounts.Hiwi} HiWi${roleCounts.Hiwi === 1 ? '' : 's'}, ${roleCounts.Supervisor} Supervisor${roleCounts.Supervisor === 1 ? '' : 's'}, ${roleCounts.Secretary} Secretary${roleCounts.Secretary === 1 ? '' : 's'}, and ${roleCounts.Admin} Admin${roleCounts.Admin === 1 ? '' : 's'}.`;
+            return `There ${verb} ${totalEmployees} ${employeeNoun}, including ${roleCounts.Hiwi} HiWi${roleCounts.Hiwi === 1 ? '' : 's'}, ${roleCounts.Supervisor} Supervisor${roleCounts.Supervisor === 1 ? '' : 's'}, ${roleCounts.Secretary} Secretary${roleCounts.Secretary === 1 ? '' : 's'}, ${roleCounts.Admin} Admin${roleCounts.Admin === 1 ? '' : 's'}, and ${roleCounts.Archived} Archived${roleCounts.Archived === 1 ? ' User' : ' Users'}.`;
         } else {
             const count = filteredUsers.length;
             const roleNoun = getPluralForm(count, activeRole, activeRole + 's');
