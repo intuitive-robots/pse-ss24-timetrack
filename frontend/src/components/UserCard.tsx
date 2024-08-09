@@ -45,7 +45,7 @@ const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageU
               onClick={() => onLock()}
           />
           <IconButton
-              icon={<RemoveIcon/>}
+              icon={<RemoveIcon className="text-[#B083FF]"/>}
               onClick={() => onDelete()}
               bgColor="bg-purple-100"
               hover="hover:bg-purple-200"
