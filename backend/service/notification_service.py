@@ -1,4 +1,5 @@
 import copy
+from datetime import datetime
 
 import requests
 from flask_jwt_extended import get_jwt_identity
@@ -6,15 +7,17 @@ from flask_jwt_extended import get_jwt_identity
 from model.notification.message_type import MessageType
 from model.notification.notification_message import NotificationMessage
 from model.repository.notification_repository import NotificationRepository
+from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
 from model.request_result import RequestResult
 
 
 class NotificationService:
     def __init__(self):
-        self.SLACK_TOKEN = "xoxb-7391548519795-7490974089332-yGD8ins3aFpjSER7TD3lZdlp" # TODO: Move to environment variable
+        self.SLACK_TOKEN = "xoxb-7391548519795-7490974089332-yGD8ins3aFpjSER7TD3lZdlp"  # TODO: Move to environment variable
         self.notification_repository = NotificationRepository.get_instance()
         self.user_repository = UserRepository.get_instance()
+        self.timesheet_repository = TimesheetRepository.get_instance()
 
     def send_notification(self, notification_data: dict):
         if notification_data is None:
@@ -22,7 +25,8 @@ class NotificationService:
 
         #TODO: Replace this with a validation strategy
 
-        notification_data["sender"] = get_jwt_identity()
+        if notification_data.get("sender") != "system":
+            notification_data["sender"] = get_jwt_identity()
         if notification_data.get("receiver") is None:
             return RequestResult(False, "Receiver is not specified", 400)
         if notification_data.get("message_type") is None:
@@ -36,11 +40,15 @@ class NotificationService:
         receiver_data = self.user_repository.find_by_username(notification.receiver)
         if receiver_data is None:
             return RequestResult(False, "Receiver not found", 404)
-        sender_data = self.user_repository.find_by_username(notification.sender)
-        if sender_data is None:
-            return RequestResult(False, "Sender not found", 404)
-        sender_full_name = sender_data.get("personalInfo").get("firstName") + " " + sender_data.get("personalInfo").get(
-            "lastName")
+        if str(notification.sender) != "system":
+            sender_data = self.user_repository.find_by_username(notification.sender)
+            if sender_data is None:
+                return RequestResult(False, "Sender not found", 404)
+            sender_full_name = sender_data.get("personalInfo").get("firstName") + " " + sender_data.get("personalInfo").get(
+                "lastName")
+        else:
+            sender_full_name = "System"
+            sender_data = None
         if notification.message is None:
             notification.message = self._message_builder(MessageType(notification.message_type), sender_full_name,
                                                          notification.message_data)
@@ -86,9 +94,12 @@ class NotificationService:
         if receiver_data.get("slackId") is None:
             return RequestResult(False, "Receiver does not have a Slack ID", 400)
         receiver_slack_id = receiver_data.get("slackId")
-
-        if sender_data.get("slackId") is None:
+        if notification.sender != "system" and sender_data is None:
+            return RequestResult(False, "Sender not found", 404)
+        elif notification.sender != "system" and sender_data.get("slackId") is None:
             return RequestResult(False, "Sender does not have a Slack ID", 400)
+
+
 
         slack_body = {
             "text": notification.message,
@@ -127,3 +138,28 @@ class NotificationService:
             return RequestResult(False, "You are not authorized to delete this notification", 403)
 
         return self.notification_repository.delete_notification_by_id(notification_id)
+
+    def send_scheduled_reminders(self):
+        """
+        Sends reminders to users who have not submitted their timesheets.
+        """
+        previous_month = datetime.now().month - 1 if datetime.now().month > 1 else 12
+        previous_year = datetime.now().year if previous_month != 12 else datetime.now().year - 1
+        day_in_month = datetime.now().day
+        users = self.user_repository.get_users()
+        for user in users:
+            if user.get('role') == "Hiwi":
+                timesheet = self.timesheet_repository.get_timesheet(user.get('username'), previous_month, previous_year)
+                if timesheet is not None:
+                    if ((timesheet.get('status') == "Not Submitted" or timesheet.get('status') == "Revision")
+                            and day_in_month > 5):  # After 5 days a reminder is sent
+                        notification_data = {
+                            "receiver": user.get('username'),
+                            "sender": "system",
+                            "message_type": "Reminder",
+                            "message": f"Reminder:\nTimesheet incomplete!\n"
+                                       f"Timesheet not complete for {previous_month}/{previous_year}"
+                        }
+                        result = self.send_notification(notification_data)
+
+        return RequestResult(True, "Reminders sent successfully", 200)

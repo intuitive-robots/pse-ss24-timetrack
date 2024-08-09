@@ -27,8 +27,13 @@ class NotificationController(MethodView):
 
     @jwt_required()
     def does_unread_messages_exist(self):
+        """
+        Checks if there are any unread messages for the current user.
+        """
         result = self.notification_service.does_unread_message_exist()
         return jsonify(result.message), result.status_code
+
+
 
 
     @jwt_required()

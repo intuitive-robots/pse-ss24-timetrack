@@ -21,8 +21,10 @@ from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 from model.user.user import User
 from model.work_entry import WorkEntry
+from service.notification_service import NotificationService
 from utils.security_utils import SecurityUtils
 from service.timesheet_service import TimesheetService
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
@@ -103,6 +105,10 @@ document_blueprint.add_url_rule('/generateDocument', view_func=document_view, me
 document_blueprint.add_url_rule('/generateMultipleDocuments', view_func=document_view, methods=['GET'])
 app.register_blueprint(document_blueprint, url_prefix='/document')
 
+scheduler = BackgroundScheduler()
+notification_service = NotificationService()
+scheduler.add_job(func=notification_service.send_scheduled_reminders, trigger="interval", days=1)
+scheduler.start()
 
 @app.route('/')
 def home():
