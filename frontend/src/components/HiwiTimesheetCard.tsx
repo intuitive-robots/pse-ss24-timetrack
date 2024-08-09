@@ -23,7 +23,6 @@ const HiwiTimesheetCard: React.FC<HiwiCardProps> = ({ name, role, profileImageUr
               name={name}
               lastName={lastName}
               role={role}
-              profileImageUrl={profileImageUrl}
           />
           <div className="flex ml-auto gap-8">
               <ListIconCardButton

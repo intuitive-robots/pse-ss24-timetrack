@@ -171,7 +171,7 @@ const SecretaryHomePage: React.FC = () => {
             <h2 className="text-md font-medium text-subtitle mt-1">There are {hiwis.length} hiwis registered.</h2>
 
 
-            <div className="flex flex-col gap-2 w-full h-full justify-between mt-3">
+            <div className="flex flex-col gap-2 w-full h-full mb-6 justify-between mt-3">
                 <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Waiting]}/>
                 <SecretaryTimesheetListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
             </div>

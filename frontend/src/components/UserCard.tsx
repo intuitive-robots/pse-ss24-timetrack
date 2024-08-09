@@ -26,7 +26,6 @@ const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageU
               name={name}
               lastName={lastName}
               role={role}
-              profileImageUrl={profileImageUrl}
           />
           <div className="flex ml-auto gap-5">
               <ListIconCardButton
