@@ -33,22 +33,22 @@ class NotificationMessage:
                 "receiver": self.receiver,
                 "sender": self.sender,
                 "message": self.message,
-                "message_type": self.message_type.value,
+                "messageType": self.message_type.value,
                 "timestamp": self.timestamp,
                 "read": self.read,
                 "sent": self.sent,
-                "message_data": self.message_data
+                "messageData": self.message_data
             }
         return {
             "_id": str(self.message_id),
             "receiver": self.receiver,
             "sender": self.sender,
             "message": self.message,
-            "message_type": self.message_type.value,
+            "messageType": self.message_type.value,
             "timestamp": self.timestamp,
             "read": self.read,
             "sent": self.sent,
-            "message_data": self.message_data
+            "messageData": self.message_data
         }
 
     def from_dict(data: dict):
@@ -57,11 +57,11 @@ class NotificationMessage:
         receiver = data.get("receiver")
         sender = data.get("sender")
         message = data.get("message")
-        message_type = data.get("message_type")
+        message_type = data.get("message_type", data.get("messageType", ""))
         message_id = data.get("_id")
         timestamp = data.get("timestamp", datetime.datetime.now())
         read = data.get("read", False)
         sent = data.get("sent", False)
-        message_data = data.get("message_data")
+        message_data = data.get("message_data", data.get("messageData", ""))
         return NotificationMessage(receiver, sender, message, MessageType(message_type), timestamp, read, sent,
                                    message_id, message_data)
