@@ -17,11 +17,11 @@ interface UserCardProps {
   onView: () => void;
   onEdit: () => void;
   onArchive: () => void;
-  onUnlock: () => void;
+  onActivate: () => void;
   onDelete: () => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, isArchived, lastName, onView, onEdit, onDelete, onArchive, onUnlock }) => {
+const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, isArchived, lastName, onView, onEdit, onDelete, onArchive, onActivate }) => {
   return (
       <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
           <UserInfo
@@ -45,7 +45,7 @@ const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageU
           <ListIconCardButton
             iconSrc={<LockUserIcon />}
             label="Activate"
-            onClick={() => onUnlock()}
+            onClick={() => onActivate()}
           />
         ) : (
           <ListIconCardButton

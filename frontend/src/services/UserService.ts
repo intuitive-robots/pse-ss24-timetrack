@@ -44,7 +44,7 @@ const deleteUser = async (username: string) => {
 /**
  * Archives a user by their username.
  *
- * @param {string} username - The username of the user to be deleted.
+ * @param {string} username - The username of the user to be archived.
  * @returns {Promise<any>} The response data from the backend.
  */
 const archiveUser = async (username: string) => {
@@ -58,12 +58,12 @@ const archiveUser = async (username: string) => {
 };
 
 /**
- * Archives a user by their username.
+ * Activates a user by their username.
  *
- * @param {string} username - The username of the user to be deleted.
+ * @param {string} username - The username of the user to be activated.
  * @returns {Promise<any>} The response data from the backend.
  */
-const unarchiveUser = async (username: string) => {
+const activateUser = async (username: string) => {
   try {
     const response = await axiosInstance.post('/user/unarchiveUser', username);
     return response.data;
@@ -182,4 +182,4 @@ const getArchivedUsers = async (): Promise<User[]> => {
     }
 };
 
-export { getHiwis, getUsersByRole, deleteUser, archiveUser, unarchiveUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser, getContractInfo, getArchivedUsers };
+export { getHiwis, getUsersByRole, deleteUser, archiveUser, activateUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser, getContractInfo, getArchivedUsers };

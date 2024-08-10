@@ -6,7 +6,7 @@ import {User} from "../../interfaces/User";
 import {useAuth} from "../../context/AuthContext";
 import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
 import {usePopup} from "../../components/popup/PopupContext";
-import {archiveUser, getArchivedUsers, unarchiveUser} from "../../services/UserService";
+import {archiveUser, getArchivedUsers, activateUser} from "../../services/UserService";
 import RoleFilter from "../../components/filter/RoleFilter";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
@@ -27,6 +27,7 @@ const AdminHomePage = (): React.ReactElement => {
     const { openPopup, closePopup } = usePopup();
 
     const [users, setUsers] = useState<User[]>([]);
+    const [archivedUsers, setArchivedUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [activeRole, setActiveRole] = useState<string>("View all");
     const [searchUtils, setSearchUtils] = useState<SearchUtils<User> | null>(null);
@@ -50,19 +51,19 @@ const AdminHomePage = (): React.ReactElement => {
                 title={"Archive User"}
                 description={"Are you sure you want to lock this user?"}
                 note={"NOTE: This action will not remove any user data"}
-                onConfirm={() => confirmLockUser(username)}
+                onConfirm={() => confirmArchiveUser(username)}
                 onCancel={closePopup}
             />
         );
     };
 
-    const handleUnlockUser = (username: string) => {
+    const handleActivateUser = (username: string) => {
         openPopup(
             <ConfirmationPopup
-                title={"Unlock User"}
-                description={"Are you sure you want to unlock this user?"}
+                title={"Activate User"}
+                description={"Are you sure you want to activate this user?"}
                 note={"NOTE: This action will not remove any user data"}
-                onConfirm={() => confirmUnlockUser(username)}
+                onConfirm={() => confirmActivateUser(username)}
                 onCancel={closePopup}
             />
         );
@@ -79,24 +80,26 @@ const AdminHomePage = (): React.ReactElement => {
         }
     };
 
-    const confirmLockUser = async (username: string) => {
+    const confirmArchiveUser = async (username: string) => {
         try {
             await archiveUser(username);
             closePopup();
-            await fetchUsers();
+            fetchUsers();
+            fetchArchivedUsers();
         } catch (error) {
-            console.error('Failed to Lock user:', error);
+            console.error('Failed to Archive user:', error);
             closePopup();
         }
     };
 
-    const confirmUnlockUser = async (username: string) => {
+    const confirmActivateUser = async (username: string) => {
         try {
-            await unarchiveUser(username);
+            await activateUser(username);
             closePopup();
-            await fetchUsers();
+            fetchUsers();
+            fetchArchivedUsers();
         } catch (error) {
-            console.error('Failed to Unlock user:', error);
+            console.error('Failed to Activate user:', error);
             closePopup();
         }
     };
@@ -118,7 +121,7 @@ const AdminHomePage = (): React.ReactElement => {
     const fetchArchivedUsers = async () => {
         try {
             const fetchedArchivedUsers = await getArchivedUsers();
-            setFilteredUsers(fetchedArchivedUsers);
+            setArchivedUsers(fetchedArchivedUsers);
         } catch (error) {
             console.error('Failed to fetch users', error);
         }
@@ -126,6 +129,7 @@ const AdminHomePage = (): React.ReactElement => {
 
     useEffect(() => {
         fetchUsers();
+        fetchArchivedUsers();
     }, []);
 
     useEffect(() => {
@@ -139,7 +143,7 @@ const AdminHomePage = (): React.ReactElement => {
         if (activeRole === "View all") {
             setFilteredUsers(users.filter(user => !user.username.startsWith('test') && !user.isArchived));
         } else if (activeRole === "Archived") {
-            fetchArchivedUsers();
+            setFilteredUsers(archivedUsers);
         } else {
             setFilteredUsers(users.filter(user => user.role === activeRole && !user.username.startsWith('test') && !user.isArchived));
         }
@@ -202,7 +206,7 @@ const AdminHomePage = (): React.ReactElement => {
                         onView={() => {openPopup(<ViewUserPopup userData={user}/>)}}
                         onEdit={() => {handleOnChange(user)}}
                         onArchive={() => {handleArchiveUser(user.username)}}
-                        onUnlock={() => {handleUnlockUser(user.username)}}
+                        onActivate={() => {handleActivateUser(user.username)}}
                         onDelete={() => handleDeleteUser(user.username)}
                     />
                 ))}

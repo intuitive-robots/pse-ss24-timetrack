@@ -1,6 +1,6 @@
 import copy
 
-import requests
+
 from flask_jwt_extended import get_jwt_identity
 
 from model.notification.message_type import MessageType
