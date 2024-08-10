@@ -39,6 +39,7 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
       <ConfirmationPopup
           title="Delete Time Entry"
           description="Are you sure you want to delete this time entry?"
+          primaryButtonText={"Delete Entry"}
           onConfirm={async () => {
               await confirmDelete(entryId);
               window.location.reload();

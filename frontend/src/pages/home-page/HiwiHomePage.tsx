@@ -19,6 +19,9 @@ import {StatusType} from "../../interfaces/StatusType";
 import {useSearch} from "../../context/SearchContext";
 import {SearchUtils} from "../../utils/SearchUtils";
 import {minutesToHours} from "date-fns";
+import PopupActionButton from "../../components/input/PopupActionButton";
+import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
+import {usePopup} from "../../components/popup/PopupContext";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -29,6 +32,8 @@ const HiwiHomePage = (): React.ReactElement => {
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
 
     const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
+
+    const {closePopup } = usePopup();
 
     const [filteredTimeEntries, setFilteredTimeEntries] = useState<TimeEntry[]>([]);
     const [searchUtils, setSearchUtils] = useState<SearchUtils<TimeEntry> | null>(null);
@@ -63,7 +68,6 @@ const HiwiHomePage = (): React.ReactElement => {
       if (user && user.username) {
         getTimesheetByMonthYear(user.username, month, year)
           .then(fetchedTimesheet => {
-            // console.log('Fetched timesheet:', fetchedTimesheet);
             setTimesheet(fetchedTimesheet);
           })
           .catch(error => {
@@ -163,10 +167,18 @@ const HiwiHomePage = (): React.ReactElement => {
 
 
         return timesheetStatus === "Pending" ? (
-            <QuickActionButton
-                icon={SignSheetIcon}
-                label="Sign Sheet"
-                onClick={handleSignTimesheet}/>
+            <PopupActionButton label={"Sign Sheet"}
+                               bgColor={"bg-purple-600"}
+                               icon={SignSheetIcon}
+                               popupComponent={<ConfirmationPopup
+                                   description={"Are you sure you want to sign this sheet"}
+                                   onCancel={closePopup}
+                                   onConfirm={handleSignTimesheet}
+                                   primaryButtonText={"Sign Sheet"}
+                                   confirmationType={"ACTION"}
+                                   title={"Sign Sheet"}
+                               />}
+            />
         ) : (
             <DocumentStatus status={timesheetStatus} />
         );
