@@ -108,7 +108,6 @@ const AdminHomePage = (): React.ReactElement => {
         try {
             const fetchedUsers = await getUsers();
             setUsers(fetchedUsers);
-            setFilteredUsers(fetchedUsers);
             setSearchUtils(new SearchUtils(fetchedUsers, {
                 keys: ["role", "username", "personalInfo.firstName", "personalInfo.lastName"],
                 threshold: 0.3
