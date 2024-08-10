@@ -42,6 +42,38 @@ const deleteUser = async (username: string) => {
 };
 
 /**
+ * Archives a user by their username.
+ *
+ * @param {string} username - The username of the user to be archived.
+ * @returns {Promise<any>} The response data from the backend.
+ */
+const archiveUser = async (username: string) => {
+  try {
+    const response = await axiosInstance.post('/user/archiveUser', username);
+    return response.data;
+  } catch (error) {
+    console.error('Archiving user failed', error);
+    handleAxiosError(error);
+  }
+};
+
+/**
+ * Activates a user by their username.
+ *
+ * @param {string} username - The username of the user to be activated.
+ * @returns {Promise<any>} The response data from the backend.
+ */
+const activateUser = async (username: string) => {
+  try {
+    const response = await axiosInstance.post('/user/unarchiveUser', username);
+    return response.data;
+  } catch (error) {
+    console.error('Unarchiving user failed', error);
+    handleAxiosError(error);
+  }
+};
+
+/**
  * Creates a new user with provided user details.
  * @param userData The data of the user to be created.
  * @returns The response data from the backend.
@@ -135,5 +167,19 @@ const getContractInfo = async (username: string): Promise<ContractInfo> => {
   }
 };
 
+/**
+ * Retrieves all archived users from the backend.
+ *
+ * @returns {Promise<User[]>} A promise that resolves to an array of User objects representing the archived users.
+ */
+const getArchivedUsers = async (): Promise<User[]> => {
+    try {
+        const response = await axiosInstance.get('/user/getArchivedUsers');
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching archived users:', error.response?.data || error.message);
+        throw new Error(error.response?.data || "Failed to fetch archived users.");
+    }
+};
 
-export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser, getContractInfo };
+export { getHiwis, getUsersByRole, deleteUser, archiveUser, activateUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser, getContractInfo, getArchivedUsers };

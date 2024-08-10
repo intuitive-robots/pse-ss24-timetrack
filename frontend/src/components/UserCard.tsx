@@ -13,13 +13,15 @@ interface UserCardProps {
   lastName: string;
   role: string;
   profileImageUrl: string;
+  isArchived?: boolean;
   onView: () => void;
   onEdit: () => void;
-  onLock: () => void;
+  onArchive: () => void;
+  onActivate: () => void;
   onDelete: () => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, lastName, onView, onEdit, onDelete, onLock }) => {
+const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, isArchived, lastName, onView, onEdit, onDelete, onArchive, onActivate }) => {
   return (
       <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
           <UserInfo
@@ -38,11 +40,19 @@ const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageU
               label="Edit"
               onClick={() => onEdit()}
           />
-              <ListIconCardButton
-              iconSrc={<LockUserIcon/>}
-              label="Lock"
-              onClick={() => onLock()}
+              {isArchived ? (
+          <ListIconCardButton
+            iconSrc={<LockUserIcon />}
+            label="Activate"
+            onClick={() => onActivate()}
           />
+        ) : (
+          <ListIconCardButton
+            iconSrc={<LockUserIcon />}
+            label="Archive"
+            onClick={() => onArchive()}
+          />
+        )}
           <IconButton
               icon={<RemoveIcon className="text-[#B083FF]"/>}
               onClick={() => onDelete()}
