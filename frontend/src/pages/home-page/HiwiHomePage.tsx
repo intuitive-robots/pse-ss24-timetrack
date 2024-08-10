@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useAuth} from "../../context/AuthContext";
 import {getHighestPriorityTimesheet, getTimesheetByMonthYear, signTimesheet} from "../../services/TimesheetService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
@@ -63,19 +63,35 @@ const HiwiHomePage = (): React.ReactElement => {
         initializeMonthAndYear();
     }, [user]);
 
-    useEffect(() => {
+    // useEffect(() => {
+    //   if (user && user.username) {
+    //     getTimesheetByMonthYear(user.username, month, year)
+    //       .then(fetchedTimesheet => {
+    //         setTimesheet(fetchedTimesheet);
+    //       })
+    //       .catch(error => {
+    //           setTimesheet(null);
+    //           console.error('Failed to fetch timesheet for given month and year:', error);
+    //       });
+    //   }
+    // }, [user, month, year]);
 
-      if (user && user.username) {
-        getTimesheetByMonthYear(user.username, month, year)
-          .then(fetchedTimesheet => {
-            setTimesheet(fetchedTimesheet);
-          })
-          .catch(error => {
-              setTimesheet(null);
-              console.error('Failed to fetch timesheet for given month and year:', error);
-          });
-      }
+    const reloadTimesheet = useCallback(() => {
+        if (user && user.username) {
+            getTimesheetByMonthYear(user.username, month, year)
+                .then(fetchedTimesheet => {
+                    setTimesheet(fetchedTimesheet);
+                })
+                .catch(error => {
+                    setTimesheet(null);
+                    console.error('Failed to fetch timesheet for given month and year:', error);
+                });
+        }
     }, [user, month, year]);
+
+    useEffect(() => {
+        reloadTimesheet();
+    }, [reloadTimesheet]);
 
     useEffect(() => {
         if (timesheet == null) {
@@ -145,7 +161,9 @@ const HiwiHomePage = (): React.ReactElement => {
         if (timesheet) {
             try {
                 const result = await signTimesheet(timesheet._id);
-                window.location.reload();
+                reloadTimesheet();
+                closePopup();
+                // window.location.reload();
             } catch (error) {
                 console.error('Error signing timesheet:', error);
                 alert('Failed to sign the timesheet');
@@ -249,7 +267,7 @@ const HiwiHomePage = (): React.ReactElement => {
                 </span>,
             </h1>
 
-            <TimeEntryListView entries={filteredTimeEntries ?? []} interactable={isStatusInteractable()}/>
+            <TimeEntryListView entries={filteredTimeEntries ?? []} interactable={isStatusInteractable()} reloadTimesheet={reloadTimesheet} />
 
             <div className="w-fit ml-auto absolute right-14 bottom-10">
                 {getStatusOrButton()}
