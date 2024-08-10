@@ -99,7 +99,7 @@ class NotificationRepository:
             if unread_message is not None:
                 return RequestResult(True, "Unread message found", 200, data=True)
             else:
-                return RequestResult(False, "No unread message found", 200, data=False)
+                return RequestResult(True, "No unread message found", 200, data=False)
         except PyMongoError as e:
             return RequestResult(False, str(e), 500)
 
