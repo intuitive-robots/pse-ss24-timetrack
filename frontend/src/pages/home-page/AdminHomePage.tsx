@@ -146,7 +146,7 @@ const AdminHomePage = (): React.ReactElement => {
         } else {
             setFilteredUsers(users.filter(user => user.role === activeRole && !user.username.startsWith('test') && !user.isArchived));
         }
-    }, [activeRole, users]);
+    }, [activeRole, users, archivedUsers]);
 
     const handleOnChange = (user: User) => {
         openPopup(<EditUserPopup userData={user}/>, fetchUsers);
