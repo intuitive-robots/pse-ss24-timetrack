@@ -18,10 +18,10 @@ import ProgressCard from "../charts/ProgressCard";
 import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 import MonthDisplay from "../display/MonthDisplay";
 import {getContractInfo} from "../../services/UserService";
+import {handleMonthChange} from "../../utils/handleMonthChange";
 
 const TimesheetViewer = () => {
 
-    const navigate = useNavigate();
     const {openPopup} = usePopup();
 
     const {username, monthString, yearString} = useParams();
@@ -56,7 +56,6 @@ const TimesheetViewer = () => {
     useEffect(() => {
         setMonth(validateMonth(monthString));
         setYear(validateYear(yearString));
-        // console.log(month, year)
     }, [monthString, yearString]);
 
     useEffect(() => {
@@ -80,31 +79,6 @@ const TimesheetViewer = () => {
                 });
         }
     }, [username, month, year]);
-
-
-    const handleMonthChange = (direction: string) => {
-        let newMonth = month;
-        let newYear = year;
-
-        if (direction === 'next') {
-          if (month === 12) {
-            newMonth = 1;
-            newYear += 1;
-          } else {
-            newMonth += 1;
-          }
-        } else if (direction === 'prev') {
-          if (month === 1) {
-            newMonth = 12;
-            newYear -= 1;
-          } else {
-            newMonth -= 1;
-          }
-        }
-        setMonth(newMonth);
-        setYear(newYear);
-        navigate(`/app/timesheet/${username}/${newMonth}/${newYear}`);
-    };
 
     const handleApproveTimesheet = async () => {
         if (timesheet) {
@@ -131,7 +105,6 @@ const TimesheetViewer = () => {
                     label="Request Change"
                     onClick={() => {
                         openPopup(<RequestChangePopup username={username} timesheet={timesheet}/>);
-                        // handleRequestChangeTimesheet();
                     }}
                     textColor="text-purple-600"
                     bgColor="bg-white"
@@ -159,7 +132,7 @@ const TimesheetViewer = () => {
             <div className="absolute right-10">
                 <ProgressCard currentValue={totalHoursInDecimal()}
                               unit={"h"}
-                              targetValue={targetHours} //TODO: remove hardcoded target value, get from user
+                              targetValue={targetHours}
                               label={"Total hours working"}/>
             </div>
 
@@ -171,14 +144,14 @@ const TimesheetViewer = () => {
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
-                        onClick={() => handleMonthChange('prev')}
+                        onClick={() => handleMonthChange('prev', month, year, setMonth, setYear)}
                     />
                     <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
                         orientation={"right"}
-                        onClick={() => handleMonthChange('next')}
+                        onClick={() => handleMonthChange('next', month, year, setMonth, setYear)}
                         disabled={month === currentMonth && year === currentYear}
                     />
                 </div>
@@ -190,8 +163,6 @@ const TimesheetViewer = () => {
             <h1 className="text-2xl font-bold text-headline mt-4"> {username}'s
                 <span className="text2xl font-semibold text-subtitle ml-2">Timesheet</span>
             </h1>
-            {/*<h1 className="text-3xl font-bold text-headline mt-4">Hello Nico,</h1>*/}
-            {/*<h2 className="text-md font-medium text-subtitle mt-1">This is {username}'s timesheet</h2>*/}
             <TimesheetEntryView timesheet={timesheet}/>
 
             <div className="absolute right-14 bottom-10">

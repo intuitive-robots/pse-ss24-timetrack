@@ -13,6 +13,7 @@ import {Roles} from "../../components/auth/roles";
 import SecretaryTimesheetListView from "../../components/timesheet/SecretaryTimesheetListView";
 import {useAuth} from "../../context/AuthContext";
 import MonthDisplay from "../../components/display/MonthDisplay";
+import {handleMonthChange} from "../../utils/handleMonthChange";
 
 
 
@@ -116,33 +117,6 @@ const SecretaryHomePage: React.FC = () => {
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
 
-
-    const handleMonthChange = (direction: string) => {
-        let newMonth = month;
-        let newYear = year;
-
-        if (direction === 'next') {
-            if (month === 12) {
-                newMonth = 1;
-                newYear = year + 1;
-            } else {
-                newMonth = month + 1;
-            }
-        } else if (direction === 'prev') {
-            if (month === 1) {
-                newMonth = 12;
-                newYear = year - 1;
-            } else {
-                newMonth = month - 1;
-            }
-        }
-        localStorage.setItem('selectedMonth', newMonth.toString());
-        localStorage.setItem('selectedYear', newYear.toString());
-
-        setMonth(newMonth);
-        setYear(newYear);
-    };
-
     return (
         <div className="px-6 py-6">
             <div className="flex flex-row gap-8 items-center">
@@ -150,14 +124,14 @@ const SecretaryHomePage: React.FC = () => {
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
-                        onClick={() => handleMonthChange('prev')}
+                        onClick={() => handleMonthChange('prev', month, year, setMonth, setYear)}
                     />
                     <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
                         orientation={"right"}
-                        onClick={() => handleMonthChange('next')}
+                        onClick={() => handleMonthChange('next', month, year, setMonth, setYear)}
                         disabled={month === currentMonth && year === currentYear}
                     />
                 </div>

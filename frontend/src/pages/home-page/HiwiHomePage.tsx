@@ -5,7 +5,6 @@ import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
-import QuickActionButton from "../../components/input/QuickActionButton";
 import {TimeEntry} from "../../interfaces/TimeEntry";
 import TimeEntryListView from "../../components/timesheet/TimeEntryListView";
 import {getEntriesByTimesheetId} from "../../services/TimeEntryService";
@@ -22,6 +21,7 @@ import {minutesToHours} from "date-fns";
 import PopupActionButton from "../../components/input/PopupActionButton";
 import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
 import {usePopup} from "../../components/popup/PopupContext";
+import {handleMonthChange} from "../../utils/handleMonthChange";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -62,19 +62,6 @@ const HiwiHomePage = (): React.ReactElement => {
 
         initializeMonthAndYear();
     }, [user]);
-
-    // useEffect(() => {
-    //   if (user && user.username) {
-    //     getTimesheetByMonthYear(user.username, month, year)
-    //       .then(fetchedTimesheet => {
-    //         setTimesheet(fetchedTimesheet);
-    //       })
-    //       .catch(error => {
-    //           setTimesheet(null);
-    //           console.error('Failed to fetch timesheet for given month and year:', error);
-    //       });
-    //   }
-    // }, [user, month, year]);
 
     const reloadTimesheet = useCallback(() => {
         if (user && user.username) {
@@ -130,40 +117,12 @@ const HiwiHomePage = (): React.ReactElement => {
         return Number((minutes / 60).toFixed(2));
     };
 
-
-    const handleMonthChange = (direction: string) => {
-        let newMonth = month;
-        let newYear = year;
-
-        if (direction === 'next') {
-            if (month === 12) {
-                newMonth = 1;
-                newYear = year + 1;
-            } else {
-                newMonth = month + 1;
-            }
-        } else if (direction === 'prev') {
-            if (month === 1) {
-                newMonth = 12;
-                newYear = year - 1;
-            } else {
-                newMonth = month - 1;
-            }
-        }
-        localStorage.setItem('selectedMonth', newMonth.toString());
-        localStorage.setItem('selectedYear', newYear.toString());
-
-        setMonth(newMonth);
-        setYear(newYear);
-    };
-
     const handleSignTimesheet = async () => {
         if (timesheet) {
             try {
                 const result = await signTimesheet(timesheet._id);
                 reloadTimesheet();
                 closePopup();
-                // window.location.reload();
             } catch (error) {
                 console.error('Error signing timesheet:', error);
                 alert('Failed to sign the timesheet');
@@ -245,14 +204,14 @@ const HiwiHomePage = (): React.ReactElement => {
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
-                        onClick={() => handleMonthChange('prev')}
+                        onClick={() => handleMonthChange('prev', month, year, setMonth, setYear)}
                     />
                     <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
                         orientation={"right"}
-                        onClick={() => handleMonthChange('next')}
+                        onClick={() => handleMonthChange('next', month, year, setMonth, setYear)}
                         disabled={month === currentMonth && year === currentYear}
                     />
                 </div>

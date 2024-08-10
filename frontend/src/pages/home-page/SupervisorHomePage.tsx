@@ -17,6 +17,7 @@ import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import ProgressCard from "../../components/charts/ProgressCard";
+import {handleMonthChange} from "../../utils/handleMonthChange";
 
 
 
@@ -116,106 +117,12 @@ const SupervisorHomePage = (): React.ReactElement => {
             });
         }
     }, [hiwis, month, year]);
-    /*
-    useEffect(() => {
-        if (hiwis && hiwis.length > 0) {
-            Promise.all(hiwis.map(hiwi =>
-                getTimesheetByMonthYear(hiwi.username, month, year)
-                    .then(timesheet => timesheet)
-                    .catch(error => {
-                        console.error(`Failed to fetch timesheet for ${hiwi.username}:`, error);
-                        return null;
-                    })
-            )).then(fetchedTimesheets => {
-                const validTimesheets = fetchedTimesheets
-                    .map(timesheet => {
-                        if (!timesheet) return null;
-                        const timesheetStatus = timesheet.status;
-                        if (!isValidTimesheetStatus(timesheetStatus)) return null;
-                        return {
-                            ...timesheet,
-                            status: statusMapping[Roles.Supervisor][timesheetStatus],
-                        } as Timesheet;
-                    });
-                setTimesheets(validTimesheets);
-
-                const openTimesheets = validTimesheets.filter(timesheet => timesheet && ['Pending'].includes(timesheet.status));
-                setOpenTimesheetsCount(openTimesheets.length);
-
-                console.debug("timesheets set: " + fetchedTimesheets.map(timesheet => console.debug(timesheet))); // TODO Debug
-            });
-        }
-    }, [hiwis, month, year]);
-    */
-//     useEffect(() => {
-//     const fetchHiwisAndTimesheets = async () => {
-//         if (user) {
-//             try {
-//                 const fetchedHiwis: User[] = await getHiwis();
-//                 setHiwis(fetchedHiwis);
-//
-//                 const fetchedTimesheets = await Promise.all(fetchedHiwis.map(async (hiwi) => {
-//                     try {
-//                         return await getTimesheetByMonthYear(hiwi.username, month, year);
-//                     } catch (error) {
-//                         console.error(`Failed to fetch timesheet for ${hiwi.username}:`, error);
-//                         return null;
-//                     }
-//                 }));
-//
-//                 const validTimesheets = fetchedTimesheets.filter(timesheet => timesheet && isValidTimesheetStatus(timesheet.status));
-//                 setTimesheets(validTimesheets);
-//
-//                 const openTimesheets = validTimesheets.filter(timesheet => timesheet && ['Not Submitted', 'Revision'].includes(timesheet.status));
-//                 setOpenTimesheetsCount(openTimesheets.length);
-//             } catch (error) {
-//                 console.error('Failed to fetch hiwis or timesheets:', error);
-//             }
-//         }
-//     };
-//
-//     fetchHiwisAndTimesheets();
-// }, [user, month, year]);
-
-
-
 
     const filteredTimesheets = timesheets
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
 
-
-    // TODO: duplicate code with HiwiHomepage.tsx
-    const handleMonthChange = (direction: string) => {
-        let newMonth = month;
-        let newYear = year;
-
-        if (direction === 'next') {
-            if (month === 12) {
-                newMonth = 1;
-                newYear = year + 1;
-            } else {
-                newMonth = month + 1;
-            }
-        } else if (direction === 'prev') {
-            if (month === 1) {
-                newMonth = 12;
-                newYear = year - 1;
-            } else {
-                newMonth = month - 1;
-            }
-        }
-        localStorage.setItem('selectedMonth', newMonth.toString());
-        localStorage.setItem('selectedYear', newYear.toString());
-
-        setMonth(newMonth);
-        setYear(newYear);
-    };
-
     const handleCheckTimesheet = (hiwi: User, month: number, year: number) => {
-        // console.log("check timesheet");
-        // console.log("Params on call:", { month, year });
-
         let monthString = month.toString();
         let yearString = year.toString();
 
@@ -240,14 +147,14 @@ const SupervisorHomePage = (): React.ReactElement => {
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
-                        onClick={() => handleMonthChange('prev')}
+                        onClick={() => handleMonthChange('prev', month, year, setMonth, setYear)}
                     />
                     <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
                         orientation={"right"}
-                        onClick={() => handleMonthChange('next')}
+                        onClick={() => handleMonthChange('next', month, year, setMonth, setYear)}
                         disabled={month === currentMonth && year === currentYear}
                     />
                 </div>
