@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useAuth} from "../../context/AuthContext";
 import {getHighestPriorityTimesheet, getTimesheetByMonthYear, signTimesheet} from "../../services/TimesheetService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import SignSheetIcon from "../../assets/images/sign_icon.svg";
-import QuickActionButton from "../../components/input/QuickActionButton";
 import {TimeEntry} from "../../interfaces/TimeEntry";
 import TimeEntryListView from "../../components/timesheet/TimeEntryListView";
 import {getEntriesByTimesheetId} from "../../services/TimeEntryService";
@@ -19,6 +18,10 @@ import {StatusType} from "../../interfaces/StatusType";
 import {useSearch} from "../../context/SearchContext";
 import {SearchUtils} from "../../utils/SearchUtils";
 import {minutesToHours} from "date-fns";
+import PopupActionButton from "../../components/input/PopupActionButton";
+import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
+import {usePopup} from "../../components/popup/PopupContext";
+import {handleMonthChange} from "../../utils/handleMonthChange";
 
 /**
  * HiwiHomePage component serves as the main landing page for the application.
@@ -29,6 +32,8 @@ const HiwiHomePage = (): React.ReactElement => {
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
 
     const [timeEntries, setTimeEntries] = useState<TimeEntry[] | null>(null);
+
+    const {closePopup } = usePopup();
 
     const [filteredTimeEntries, setFilteredTimeEntries] = useState<TimeEntry[]>([]);
     const [searchUtils, setSearchUtils] = useState<SearchUtils<TimeEntry> | null>(null);
@@ -58,20 +63,22 @@ const HiwiHomePage = (): React.ReactElement => {
         initializeMonthAndYear();
     }, [user]);
 
-    useEffect(() => {
-
-      if (user && user.username) {
-        getTimesheetByMonthYear(user.username, month, year)
-          .then(fetchedTimesheet => {
-            // console.log('Fetched timesheet:', fetchedTimesheet);
-            setTimesheet(fetchedTimesheet);
-          })
-          .catch(error => {
-              setTimesheet(null);
-              console.error('Failed to fetch timesheet for given month and year:', error);
-          });
-      }
+    const reloadTimesheet = useCallback(() => {
+        if (user && user.username) {
+            getTimesheetByMonthYear(user.username, month, year)
+                .then(fetchedTimesheet => {
+                    setTimesheet(fetchedTimesheet);
+                })
+                .catch(error => {
+                    setTimesheet(null);
+                    console.error('Failed to fetch timesheet for given month and year:', error);
+                });
+        }
     }, [user, month, year]);
+
+    useEffect(() => {
+        reloadTimesheet();
+    }, [reloadTimesheet]);
 
     useEffect(() => {
         if (timesheet == null) {
@@ -110,38 +117,12 @@ const HiwiHomePage = (): React.ReactElement => {
         return Number((minutes / 60).toFixed(2));
     };
 
-
-    const handleMonthChange = (direction: string) => {
-        let newMonth = month;
-        let newYear = year;
-
-        if (direction === 'next') {
-            if (month === 12) {
-                newMonth = 1;
-                newYear = year + 1;
-            } else {
-                newMonth = month + 1;
-            }
-        } else if (direction === 'prev') {
-            if (month === 1) {
-                newMonth = 12;
-                newYear = year - 1;
-            } else {
-                newMonth = month - 1;
-            }
-        }
-        localStorage.setItem('selectedMonth', newMonth.toString());
-        localStorage.setItem('selectedYear', newYear.toString());
-
-        setMonth(newMonth);
-        setYear(newYear);
-    };
-
     const handleSignTimesheet = async () => {
         if (timesheet) {
             try {
                 const result = await signTimesheet(timesheet._id);
-                window.location.reload();
+                reloadTimesheet();
+                closePopup();
             } catch (error) {
                 console.error('Error signing timesheet:', error);
                 alert('Failed to sign the timesheet');
@@ -163,10 +144,18 @@ const HiwiHomePage = (): React.ReactElement => {
 
 
         return timesheetStatus === "Pending" ? (
-            <QuickActionButton
-                icon={SignSheetIcon}
-                label="Sign Sheet"
-                onClick={handleSignTimesheet}/>
+            <PopupActionButton label={"Sign Sheet"}
+                               bgColor={"bg-purple-600"}
+                               icon={SignSheetIcon}
+                               popupComponent={<ConfirmationPopup
+                                   description={"Are you sure you want to sign this sheet"}
+                                   onCancel={closePopup}
+                                   onConfirm={handleSignTimesheet}
+                                   primaryButtonText={"Sign Sheet"}
+                                   confirmationType={"ACTION"}
+                                   title={"Sign Sheet"}
+                               />}
+            />
         ) : (
             <DocumentStatus status={timesheetStatus} />
         );
@@ -215,14 +204,14 @@ const HiwiHomePage = (): React.ReactElement => {
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
-                        onClick={() => handleMonthChange('prev')}
+                        onClick={() => handleMonthChange('prev', month, year, setMonth, setYear)}
                     />
                     <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
                         orientation={"right"}
-                        onClick={() => handleMonthChange('next')}
+                        onClick={() => handleMonthChange('next', month, year, setMonth, setYear)}
                         disabled={month === currentMonth && year === currentYear}
                     />
                 </div>
@@ -237,7 +226,7 @@ const HiwiHomePage = (): React.ReactElement => {
                 </span>,
             </h1>
 
-            <TimeEntryListView entries={filteredTimeEntries ?? []} interactable={isStatusInteractable()}/>
+            <TimeEntryListView entries={filteredTimeEntries ?? []} interactable={isStatusInteractable()} reloadTimesheet={reloadTimesheet} />
 
             <div className="w-fit ml-auto absolute right-14 bottom-10">
                 {getStatusOrButton()}

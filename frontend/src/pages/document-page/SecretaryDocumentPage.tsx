@@ -10,12 +10,12 @@ import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
 import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
-import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import SecretaryDocumentListView from "../../components/timesheet/SecretaryDocumentListView";
 import QuickActionButton from "../../components/input/QuickActionButton";
 import DownloadIcon from "../../assets/images/download_icon_white.svg";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import {handleDownloadMultipleDocuments} from "../../services/DocumentService";
+import {handleMonthChange} from "../../utils/handleMonthChange";
 
 
 const SecretaryDocumentPage: React.FC = () => {
@@ -79,7 +79,7 @@ const SecretaryDocumentPage: React.FC = () => {
              })
          }
     }, [hiwis]);
-    //console.log("supervisors: " + supervisors.map(s => s.lastName));
+
     useEffect(() => {
         if (hiwis && hiwis.length > 0) {
             Promise.all(hiwis.map(async (hiwi) => {
@@ -118,34 +118,6 @@ const SecretaryDocumentPage: React.FC = () => {
         ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
         : [];
 
-
-    // TODO: duplicate code with HiwiHomepage.tsx
-    const handleMonthChange = (direction: string) => {
-        let newMonth = month;
-        let newYear = year;
-
-        if (direction === 'next') {
-            if (month === 12) {
-                newMonth = 1;
-                newYear = year + 1;
-            } else {
-                newMonth = month + 1;
-            }
-        } else if (direction === 'prev') {
-            if (month === 1) {
-                newMonth = 12;
-                newYear = year - 1;
-            } else {
-                newMonth = month - 1;
-            }
-        }
-        localStorage.setItem('selectedMonth', newMonth.toString());
-        localStorage.setItem('selectedYear', newYear.toString());
-
-        setMonth(newMonth);
-        setYear(newYear);
-    };
-
     const handleDownloadAll = async () => {
         const completeTimesheets = timesheets.filter(sheet => sheet.status === StatusType.Complete);
         const timesheetIds = completeTimesheets.map(sheet => sheet._id);
@@ -169,14 +141,14 @@ const SecretaryDocumentPage: React.FC = () => {
                     <ListIconCardButton
                         iconSrc={LeftNavbarIcon}
                         label={"Before"}
-                        onClick={() => handleMonthChange('prev')}
+                        onClick={() => handleMonthChange('prev', month, year, setMonth, setYear)}
                     />
                     <MonthDisplay month={month} year={year}/>
                     <ListIconCardButton
                         iconSrc={RightNavbarIcon}
                         label={"Next"}
                         orientation={"right"}
-                        onClick={() => handleMonthChange('next')}
+                        onClick={() => handleMonthChange('next', month, year, setMonth, setYear)}
                         disabled={month === currentMonth && year === currentYear}
                     />
                 </div>
