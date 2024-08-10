@@ -44,10 +44,10 @@ const AdminHomePage = (): React.ReactElement => {
         );
     };
 
-    const handleLockUser = (username: string) => {
+    const handleArchiveUser = (username: string) => {
         openPopup(
             <ConfirmationPopup
-                title={"Lock User"}
+                title={"Archive User"}
                 description={"Are you sure you want to lock this user?"}
                 note={"NOTE: This action will not remove any user data"}
                 onConfirm={() => confirmLockUser(username)}
@@ -201,7 +201,7 @@ const AdminHomePage = (): React.ReactElement => {
                         isArchived={user.isArchived}
                         onView={() => {openPopup(<ViewUserPopup userData={user}/>)}}
                         onEdit={() => {handleOnChange(user)}}
-                        onLock={() => {handleLockUser(user.username)}}
+                        onArchive={() => {handleArchiveUser(user.username)}}
                         onUnlock={() => {handleUnlockUser(user.username)}}
                         onDelete={() => handleDeleteUser(user.username)}
                     />
