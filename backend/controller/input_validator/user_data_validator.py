@@ -64,10 +64,8 @@ class UserDataValidator(InputValidator):
                 pattern = self.field_patterns[field_key]
                 if field_key in user_data['personalInfo'] and not re.match(pattern,
                                                                            user_data['personalInfo'][field_key]):
-                    print(f"Invalid or missing personal info field: {field_key}.")
                     return ValidationResult(ValidationStatus.FAILURE,
                                             f"Invalid or missing personal info field: {field_key}.")
-        print(f"Invalid or missing personal info field:.")
         return ValidationResult(ValidationStatus.SUCCESS, "User data is valid.")
 
     def validate_role(self, role: str):
