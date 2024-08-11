@@ -28,6 +28,8 @@ class NotificationController(MethodView):
     @jwt_required()
     def does_unread_messages_exist(self):
         result = self.notification_service.does_unread_message_exist()
+        if not result.is_successful:
+            return jsonify(result.message), result.status_code
         return jsonify(result.data), result.status_code
 
 
