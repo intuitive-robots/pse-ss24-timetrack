@@ -169,7 +169,7 @@ class TimeEntryService:
         updated_time_entry.set_id(ObjectId(entry_id))
         if not updated_time_entry:
             return RequestResult(False, "Failed to construct updated time entry", status_code=500)
-        existing_start_date = datetime.datetime.fromisoformat(str(existing_entry_data['startTime'].replace('Z', "")))
+        existing_start_date = datetime.datetime.fromisoformat(str(existing_entry_data['startTime']))
         updated_start_date = updated_time_entry.start_time
         if existing_start_date.month != updated_start_date.month or existing_start_date.year != updated_start_date.year:
             return RequestResult(False, "Cannot update time entry to a different month or year", status_code=400)
