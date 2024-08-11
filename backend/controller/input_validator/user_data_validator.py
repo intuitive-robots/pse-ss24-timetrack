@@ -1,10 +1,10 @@
-import re
 
 from controller.input_validator.input_validator import InputValidator
 from controller.input_validator.validation_result import ValidationResult
 from controller.input_validator.validation_status import ValidationStatus
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
+import regex as re
 
 
 class UserDataValidator(InputValidator):
@@ -64,8 +64,10 @@ class UserDataValidator(InputValidator):
                 pattern = self.field_patterns[field_key]
                 if field_key in user_data['personalInfo'] and not re.match(pattern,
                                                                            user_data['personalInfo'][field_key]):
+                    print(f"Invalid or missing personal info field: {field_key}.")
                     return ValidationResult(ValidationStatus.FAILURE,
                                             f"Invalid or missing personal info field: {field_key}.")
+        print(f"Invalid or missing personal info field:.")
         return ValidationResult(ValidationStatus.SUCCESS, "User data is valid.")
 
     def validate_role(self, role: str):

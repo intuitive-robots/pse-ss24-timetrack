@@ -1,5 +1,7 @@
 import os
 from datetime import datetime
+
+import pytz
 from fillpdf import fillpdfs
 
 from model.vacation_entry import VacationEntry
@@ -116,9 +118,12 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         else:
             formatted_data[f"Tätigkeit Stichwort ProjektRow{i + 1}"] = "Urlaub"
 
-        formatted_data[f"ttmmjjRow{i + 1}"] = time_entry.start_time.strftime("%d.%m.%y")
-        formatted_data[f"hhmmRow{i + 1}"] = time_entry.start_time.strftime("%H:%M")
-        formatted_data[f"hhmmRow{i + 1}_2"] = time_entry.end_time.strftime("%H:%M")
+        berlin_tz = pytz.timezone('Europe/Berlin')
+        start_time_berlin = time_entry.start_time.replace(tzinfo=pytz.utc).astimezone(berlin_tz)
+        end_time_berlin = time_entry.end_time.replace(tzinfo=pytz.utc).astimezone(berlin_tz)
+        formatted_data[f"ttmmjjRow{i + 1}"] = start_time_berlin.strftime("%d.%m.%y")
+        formatted_data[f"hhmmRow{i + 1}"] = start_time_berlin.strftime("%H:%M")
+        formatted_data[f"hhmmRow{i + 1}_2"] = end_time_berlin.strftime("%H:%M")
         formatted_data[f"hhmmRow{i + 1}_4"] = time_entry.get_duration_hhmm()
         return formatted_data
 

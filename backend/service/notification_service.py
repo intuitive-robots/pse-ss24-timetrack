@@ -143,9 +143,9 @@ class NotificationService:
         """
         Sends reminders to users who have not submitted their timesheets.
         """
-        previous_month = datetime.now().month - 1 if datetime.now().month > 1 else 12
-        previous_year = datetime.now().year if previous_month != 12 else datetime.now().year - 1
-        day_in_month = datetime.now().day
+        previous_month = datetime.utcnow().month - 1 if datetime.utcnow().month > 1 else 12
+        previous_year = datetime.utcnow().year if previous_month != 12 else datetime.utcnow().year - 1
+        day_in_month = datetime.utcnow().day
         users = self.user_repository.get_users()
         for user in users:
             if user.get('role') == "Hiwi":

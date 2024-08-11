@@ -56,7 +56,7 @@ class TimeEntryService:
         """
         entry_data['entryType'] = entry_type.value
         if entry_data.get('timesheetId') is None:
-            start_date = datetime.datetime.fromisoformat(entry_data['startTime'])
+            start_date = datetime.datetime.fromisoformat(entry_data['startTime'].replace('Z', ""))
             result = self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
             timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
             entry_data['timesheetId'] = str(timesheet_id)
@@ -169,7 +169,7 @@ class TimeEntryService:
         updated_time_entry.set_id(ObjectId(entry_id))
         if not updated_time_entry:
             return RequestResult(False, "Failed to construct updated time entry", status_code=500)
-        existing_start_date = datetime.datetime.fromisoformat(str(existing_entry_data['startTime']))
+        existing_start_date = datetime.datetime.fromisoformat(str(existing_entry_data['startTime'].replace('Z', "")))
         updated_start_date = updated_time_entry.start_time
         if existing_start_date.month != updated_start_date.month or existing_start_date.year != updated_start_date.year:
             return RequestResult(False, "Cannot update time entry to a different month or year", status_code=400)

@@ -9,7 +9,7 @@ db = initialize_db()
 
 class User:
     def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole, 
-                 account_creation: datetime.datetime= datetime.datetime.now(), is_archived: bool = False, slack_id: str = None):
+                 account_creation: datetime.datetime= datetime.datetime.utcnow(), is_archived: bool = False, slack_id: str = None):
         """
         Initializes a new User object with basic details.
 

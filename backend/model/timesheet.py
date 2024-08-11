@@ -23,7 +23,7 @@ class Timesheet:
 
     def __init__(self, username: str, month: int, year: int,
                  timesheet_id=None, status=TimesheetStatus.NOT_SUBMITTED, total_time=0.0,
-                 overtime=0.0, last_signature_change=datetime.now()):
+                 overtime=0.0, last_signature_change=datetime.utcnow()):
         """
         Initializes a new Timesheet object with the given parameters.
 
@@ -72,7 +72,7 @@ class Timesheet:
             status=TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED)),
             total_time=timesheet_dict.get("totalTime", 0.0),
             overtime=timesheet_dict.get("overtime", 0.0),
-            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.now())
+            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.utcnow())
         )
         return timesheet
 

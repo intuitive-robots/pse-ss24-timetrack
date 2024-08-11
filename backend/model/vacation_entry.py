@@ -66,10 +66,10 @@ class VacationEntry(TimeEntry):
         end_datetime = data['endTime']
 
         if isinstance(start_datetime, str):
-            start_datetime = datetime.fromisoformat(data['startTime'])
+            start_datetime = datetime.fromisoformat(data['startTime'].replace('Z', ""))
 
         if isinstance(end_datetime, str):
-            end_datetime = datetime.fromisoformat(data['endTime'])
+            end_datetime = datetime.fromisoformat(data['endTime'].replace('Z', ""))
         time_entry_id = data.get('_id', None)
         timesheet_id = data['timesheetId']
 
@@ -90,7 +90,7 @@ class VacationEntry(TimeEntry):
         :return: A list of string keys that represent the attributes of a VacationEntry object.
         :rtype: list[str]
         """
-        dummy_start_time = datetime.now()
+        dummy_start_time = datetime.utcnow()
         dummy_end_time = dummy_start_time + timedelta(hours=1)
         dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time)
         return list(dummy_entry.to_dict().keys())
