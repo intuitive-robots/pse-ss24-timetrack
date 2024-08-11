@@ -2,7 +2,7 @@ import copy
 from datetime import datetime
 
 import requests
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from model.notification.message_type import MessageType
 from model.notification.notification_message import NotificationMessage
@@ -19,12 +19,10 @@ class NotificationService:
         self.user_repository = UserRepository.get_instance()
         self.timesheet_repository = TimesheetRepository.get_instance()
 
+    @jwt_required()
     def send_notification(self, notification_data: dict):
         if notification_data is None:
             return RequestResult(False, "Notification data is empty", 400)
-
-        #TODO: Replace this with a validation strategy
-
         if notification_data.get("sender") != "system":
             notification_data["sender"] = get_jwt_identity()
         if notification_data.get("receiver") is None:
@@ -56,10 +54,12 @@ class NotificationService:
         if result.is_successful:
             notification_id = result.data.get("id")
             notification.set_message_id(notification_id)
+            result.data = notification
         # Define when a Slack message should be sent
         if (notification.message_type.value == MessageType.TIMESHEET_STATUS_CHANGE.value or
                 notification.message_type.value == MessageType.REMINDER.value):
             slack_result = self._send_slack_message(notification, receiver_data, sender_data)
+            slack_result.data = notification
             if not slack_result.is_successful:
                 slack_result.message = f"{slack_result.message} - In-App Message sent successfully"
                 return slack_result
@@ -67,6 +67,7 @@ class NotificationService:
                 return slack_result
         return result
 
+    @jwt_required()
     def read_all_notifications(self):
         """
         Retrieves all notifications for the current user.
@@ -98,9 +99,6 @@ class NotificationService:
             return RequestResult(False, "Sender not found", 404)
         elif notification.sender != "system" and sender_data.get("slackId") is None:
             return RequestResult(False, "Sender does not have a Slack ID", 400)
-
-
-
         slack_body = {
             "text": notification.message,
             "channel": receiver_slack_id
@@ -128,6 +126,7 @@ class NotificationService:
         elif message_type == MessageType.REMINDER:
             return f"Reminder \n You have a pending timesheet. Please submit it as soon as possible"
 
+    @jwt_required()
     def delete_notification(self, notification_id: str):
         if notification_id is None:
             return RequestResult(False, "Notification ID is empty", 400)
@@ -136,7 +135,6 @@ class NotificationService:
             return RequestResult(False, "Notification not found", 404)
         if not notification.receiver == get_jwt_identity():  # Only the receiver can delete the notification
             return RequestResult(False, "You are not authorized to delete this notification", 403)
-
         return self.notification_repository.delete_notification_by_id(notification_id)
 
     def send_scheduled_reminders(self):
