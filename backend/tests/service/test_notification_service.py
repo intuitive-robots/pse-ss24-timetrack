@@ -67,6 +67,17 @@ class TestNotificationService(unittest.TestCase):
                 self.assertEqual("Invalid message type", result.message)
                 notification_data["message_type"] = message_type
 
+                notification_data["receiver"] = "Invalid"
+                result = self.notification_service.send_notification(notification_data)
+                self.assertFalse(result.is_successful)
+                self.assertEqual("Receiver not found", result.message)
+                notification_data["receiver"] = "testHiwi1"
+
+                notification_data["sender"] = "System"
+                result = self.notification_service.send_notification(notification_data)
+                self.assertTrue(result.is_successful)
+                self.notification_repository.delete_notification_by_id(result.data.message_id)
+
 
                 notification_data = None
                 result = self.notification_service.send_notification(notification_data)

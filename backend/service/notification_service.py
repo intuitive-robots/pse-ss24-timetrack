@@ -40,8 +40,6 @@ class NotificationService:
             return RequestResult(False, "Receiver not found", 404)
         if str(notification.sender) != "system":
             sender_data = self.user_repository.find_by_username(notification.sender)
-            if sender_data is None:
-                return RequestResult(False, "Sender not found", 404)
             sender_full_name = sender_data.get("personalInfo").get("firstName") + " " + sender_data.get("personalInfo").get(
                 "lastName")
         else:
