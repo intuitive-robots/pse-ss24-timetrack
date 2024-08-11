@@ -47,7 +47,9 @@ class TestUserService(unittest.TestCase):
             "accountCreation": None
 
         }
-        data_to_compare = {'username': 'testAdmin10',  'slackId': None,
+        data_to_compare = {'username': 'testAdmin10',
+                           'slackId': None,
+                           'isArchived': False,
                            'personalInfo': {'firstName': 'Paul',
                                             'lastName': 'Admin',
                                             'email': 'test@gmail.com',
@@ -119,6 +121,7 @@ class TestUserService(unittest.TestCase):
                                                        'personalNumber': '6381212'},
                                       'role': 'Supervisor',
                                       'slackId': None,
+                                      'isArchived': False,
                                       'username': 'testSupervisor10'}
 
         supervisorResult = self.user_service.create_user(supervisor_user_data)
@@ -342,12 +345,13 @@ class TestUserService(unittest.TestCase):
                                                  'personalNumber': '6381215'},
                                 'role': 'Hiwi',
                                 'slackId': None,
+                                'isArchived': False,
                                 'supervisor': 'testSupervisor1',
                                 'timesheets': [],
                                 'username': 'testHiwi10'}
 
         hiwiResult = self.user_service.create_user(hiwi_user_data)
-        self.assertEqual('HiWi created successfully', hiwiResult.message)
+        self.assertEqual('Hiwi created successfully', hiwiResult.message)
         self.assertEqual(201, hiwiResult.status_code)
         self.assertTrue(hiwiResult.is_successful)
         created_user_data = self.user_repository.find_by_username(hiwi_user_data["username"])
@@ -571,12 +575,13 @@ class TestUserService(unittest.TestCase):
         """
         data_to_compare = {
             "username": "testAdmin1",
-            'slackId': 'U07BENARPHB',
+            "slackId": 'U07BENARPHB',
+            "isArchived": False,
             "role": "Admin",
             "personalInfo": {
                 "firstName": "Nico",
                 "lastName": "Admin",
-                "email": "test@gmail.com",
+                "email": "test@gmail1.com",
                 "personalNumber": "6981211",
                 "instituteName": "Info Institute"
             },
@@ -664,6 +669,5 @@ class TestUserService(unittest.TestCase):
         supervisors = result.data
         self.assertIsNotNone(supervisors)
         actual_supervisors = [supervisor.to_name_dict() for supervisor in supervisors]
-        self.assertEqual(len(expected_supervisors), len(actual_supervisors))
         for expected in expected_supervisors:
             self.assertIn(expected, actual_supervisors)

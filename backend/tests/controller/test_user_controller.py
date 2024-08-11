@@ -142,6 +142,43 @@ class TestUserController(unittest.TestCase):
         user_data = self.user_repository.find_by_username("testAdmin10")
         self.assertIsNone(user_data)
 
+    def test_archive_user(self):
+        """
+        Test the archive_user method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+
+        # Test for no json
+        no_json_response = self.client.post('/user/archiveUser',
+                                              headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_json_response.status_code)
+        self.assertEqual('Request data must be in JSON format', no_json_response.json)
+
+        self.user_service.unarchive_user("testArchivedUser")
+        response = self.client.post('/user/archiveUser', json={"username": "testArchivedUser"},
+                                              headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(self.user_service.is_archived("testArchivedUser"))
+        self.user_service.archive_user("testArchivedUser")
+
+    def test_unarchive_user(self):
+        """
+        Test the unarchive_user method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+
+        # Test for no json
+        no_json_response = self.client.post('/user/unarchiveUser',
+                                            headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_json_response.status_code)
+        self.assertEqual('Request data must be in JSON format', no_json_response.json)
+
+        response = self.client.post('/user/unarchiveUser', json={"username": "testArchivedUser"},
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(200, response.status_code)
+        self.assertFalse(self.user_service.is_archived("testArchivedUser"))
+        self.user_service.archive_user("testArchivedUser")
+
     def test_logout(self):
         """
         Test the logout method of the UserController class.
@@ -165,6 +202,12 @@ class TestUserController(unittest.TestCase):
         self.assertEqual(400, no_json_response.status_code)
         self.assertEqual('Request data must be in JSON format', no_json_response.json)
 
+        # Test for archived user
+        archive_response = self.client.post('/user/resetPassword', json={"username": "testArchivedUser", "password": "test"},
+                                            headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, archive_response.status_code)
+        self.assertEqual('Password of archived user cannot be reset', archive_response.json)
+
         response = self.client.post('/user/resetPassword', json={"username": "testAdmin1", "password": "test"},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 200)
@@ -186,6 +229,21 @@ class TestUserController(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['username'], "testAdmin1")
 
+    def test_get_contract_info(self):
+        """
+        Test the get_contract_info method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+        # Test for no json
+        no_json_response = self.client.get('/user/getContractInfo',
+                                            headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, no_json_response.status_code)
+
+        response = self.client.get('/user/getContractInfo?username=testHiwi1',
+                                   headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(12.4, response.json['hourlyWage'])
+
     def test_get_users(self):
         """
         Test the get_users method of the UserController class.
@@ -196,6 +254,17 @@ class TestUserController(unittest.TestCase):
         self.assertIsNotNone(response.json)
         self.assertIsInstance(response.json, list)
         self.assertGreaterEqual(len(response.json), 1)
+
+    def test_get_archived_users(self):
+        """
+        Test the get_archived_users method of the UserController class.
+        """
+        access_token = self.authenticate("testAdmin1", "test_password")
+
+        response = self.client.get('/user/getArchivedUsers', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 200)
+        archived_users = [user['username'] for user in response.json]
+        self.assertTrue("testArchivedUser" in archived_users)
 
     def test_get_users_by_role_admin(self):
         """
@@ -273,6 +342,11 @@ class TestUserController(unittest.TestCase):
         access_token = self.authenticate("testHiwi1", "test_password")
         file = open("../resources/testProfilePic.jpg", "rb")
 
+        # Test for archived user
+        archived_response = self.client.get('/user/getFile?username=testArchivedUser&fileType=Signature',
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, archived_response.status_code)
+
         response = self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 201)
@@ -302,6 +376,11 @@ class TestUserController(unittest.TestCase):
         """
         access_token = self.authenticate("testHiwi1", "test_password")
         file = open("../resources/testProfilePic.jpg", "rb")
+        # Test for archived user
+        archived_response = self.client.delete('/user/deleteFile?username=testArchivedUser&fileType=Signature',
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(400, archived_response.status_code)
+
         response = self.client.post('/user/uploadFile?username=testHiwi1&fileType=Signature', data={"file": file},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 201)

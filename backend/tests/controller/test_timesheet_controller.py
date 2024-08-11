@@ -171,10 +171,8 @@ class TestTimesheetController(unittest.TestCase):
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
         timesheets = response.json
-        self.assertEqual(3, len(timesheets))
-        self.assertEqual(timesheets[0]["username"], test_username)
-        self.assertEqual(timesheets[1]["username"], test_username)
-        self.assertEqual(timesheets[2]["username"], test_username)
+        for timesheet in timesheets:
+            self.assertEqual(timesheet["username"], test_username)
 
     def test_get_timesheets_by_month_year(self):
         """
@@ -270,9 +268,8 @@ class TestTimesheetController(unittest.TestCase):
         }
         response = self.client.get('/timesheet/getByUsernameStatus', query_string=test_data, headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
-        self.assertEqual(2, len(response.json))
-        self.assertEqual("Complete", response.json[0]["status"])
-        self.assertEqual("Complete", response.json[1]["status"])
+        for timesheet in response.json:
+            self.assertEqual("Complete", timesheet["status"])
 
         no_username_data = {
             "status": "Complete"

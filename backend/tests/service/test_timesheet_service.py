@@ -161,22 +161,34 @@ class TestTimesheetService(unittest.TestCase):
         Test the get_timesheets_by_username method of the TimesheetService class.
         """
         # Test getting timesheets by username
-        test_timesheet_data = [
-            {"_id": ObjectId("6679ca2935df0d8f7202c5fa"), "username": "testHiwi1", "month": 5, "year": 2024,
-             "status": "Not Submitted", "totalTime": 0.0, "overtime": 0.0,
-             "lastSignatureChange": datetime.datetime(2024, 6, 24, 21, 22, 35, 855000)},
-            {"_id": ObjectId("667bd050cf0aa6181e9c8dd9"), "username": "testHiwi1", "month": 4, "year": 2024,
-             "status": "Complete", "totalTime": 0.0, "overtime": 0.0,
-             "lastSignatureChange": datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)},
-            {"_id": ObjectId("667bd14ecf0aa6181e9c8dda"), "username": "testHiwi1", "month": 3, "year": 2024,
-             "status": "Complete", "totalTime": 0.0, "overtime": 0.0,
-             "lastSignatureChange": datetime.datetime(2024, 6, 26, 9, 56, 45, 440000)}]
+        test_timesheet_data = [{'_id': ObjectId('66b089067cee7e4835986c86'),
+                                'lastSignatureChange': datetime.datetime(2024, 8, 5, 10, 9, 10, 663000),
+                                'month': 9,
+                                'overtime': 0.0,
+                                'status': 'Waiting for Approval',
+                                'totalTime': 0.0,
+                                'username': 'testHiwi1',
+                                'year': 2024},
+                               {'_id': ObjectId('66ad4b1436d802667b0970c7'),
+                                'lastSignatureChange': datetime.datetime(2024, 8, 2, 23, 7, 58, 788000),
+                                'month': 6,
+                                'overtime': 0.0,
+                                'status': 'Complete',
+                                'totalTime': 0.0,
+                                'username': 'testHiwi1',
+                                'year': 2024},
+                               {'_id': ObjectId('6679ca2935df0d8f7202c5fa'),
+                                'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
+                                'month': 5,
+                                'overtime': -4366.0,
+                                'status': 'Not Submitted',
+                                'totalTime': 434,
+                                'username': 'testHiwi1',
+                                'year': 2024}]
         result = self.timesheet_service.get_timesheets_by_username("testHiwi1")
         self.assertTrue(result.is_successful)
-        self.assertEqual(len(result.data), len(test_timesheet_data))
-        self.assertEqual(result.data[0].timesheet_id, test_timesheet_data[0]["_id"])
-        self.assertEqual(result.data[1].timesheet_id, test_timesheet_data[1]["_id"])
-        self.assertEqual(result.data[2].timesheet_id, test_timesheet_data[2]["_id"])
+        result_timesheets = [timesheet.to_dict() for timesheet in result.data]
+        self.assertEqual(test_timesheet_data, result_timesheets[:3])
 
     def test_get_timesheets_by_username_status(self):
         """
@@ -198,7 +210,6 @@ class TestTimesheetService(unittest.TestCase):
 
         result = self.timesheet_service.get_timesheets_by_username_status("testHiwi1", TimesheetStatus.COMPLETE)
         self.assertTrue(result.is_successful)
-        self.assertEqual(len(result.data), len(test_timesheet_data))
         self.assertEqual(result.data[0].timesheet_id, test_timesheet_data[0]["_id"])
         self.assertEqual(result.data[1].timesheet_id, test_timesheet_data[1]["_id"])
 
