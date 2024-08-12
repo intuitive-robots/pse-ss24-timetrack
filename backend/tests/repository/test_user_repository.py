@@ -36,6 +36,7 @@ class TestUserRepository(unittest.TestCase):
             },
             "accountCreation": None,
             "lastLogin": None,
+            "isArchived": False,
             "slackId": None
         }
 
@@ -87,6 +88,7 @@ class TestUserRepository(unittest.TestCase):
             "supervisor": "testSupervisor1",
             "lastLogin": None,
             "timesheets": [],
+            "isArchived": False,
             "slackId": None
         }
 

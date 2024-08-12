@@ -219,7 +219,7 @@ class UserService:
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)
-        if updated_user.role == UserRole.HIWI and user_data['supervisor'] != existing_supervisor:
+        if updated_user.role == UserRole.HIWI and existing_user_data['supervisor'] != existing_supervisor:
             update_supervisor_result = self._update_supervisor(user_data['username'], existing_supervisor,
                                                                user_data['supervisor'])
             if not update_supervisor_result.is_successful:
@@ -403,8 +403,11 @@ class UserService:
         :rtype: User
         """
         user_data = self.user_repository.find_by_username(username)
+        if user_data is None:
+            return None
         if user_data.get('timesheets'):
             user_data['timesheets'] = [str(timesheet_id) for timesheet_id in user_data['timesheets']]
+
         if user_data['isArchived']:
             return None
         return UserFactory.create_user_if_factory_exists(user_data)

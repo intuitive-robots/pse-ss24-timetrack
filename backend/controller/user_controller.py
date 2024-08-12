@@ -148,7 +148,8 @@ class UserController(MethodView):
             return jsonify('User is archived'), 400
         if not request.is_json:
             return jsonify('Request data must be in JSON format'), 400
-        username = request.get_json()
+        data = request.get_json()
+        username = data.get('username')
         result = self.user_service.archive_user(username)
         return jsonify(result.message), result.status_code
 
@@ -164,7 +165,8 @@ class UserController(MethodView):
             return jsonify('User is archived'), 400
         if not request.is_json:
             return jsonify('Request data must be in JSON format'), 400
-        username = request.get_json()
+        data = request.get_json()
+        username = data.get('username')
         result = self.user_service.unarchive_user(username)
         return jsonify(result.message), result.status_code
 

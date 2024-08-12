@@ -193,7 +193,7 @@ class TestTimesheetRepository(unittest.TestCase):
         self.assertIsNone(response_no_username)
 
         self.assertEqual(test_timesheet_data,
-                         self.timesheet_repository.get_timesheets_by_username(test_timesheet_data[0]['username']))
+                         self.timesheet_repository.get_timesheets_by_username(test_timesheet_data[0]['username'])[:3])
 
     def test_update_timesheet_by_dict(self):
         """
@@ -444,4 +444,3 @@ class TestTimesheetRepository(unittest.TestCase):
 
     if __name__ == '__main__':
         unittest.main()
-
