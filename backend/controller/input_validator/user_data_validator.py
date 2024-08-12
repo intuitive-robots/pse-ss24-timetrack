@@ -1,10 +1,10 @@
-import re
 
 from controller.input_validator.input_validator import InputValidator
 from controller.input_validator.validation_result import ValidationResult
 from controller.input_validator.validation_status import ValidationStatus
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
+import regex as re
 
 
 class UserDataValidator(InputValidator):

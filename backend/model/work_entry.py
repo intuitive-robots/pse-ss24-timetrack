@@ -99,10 +99,10 @@ class WorkEntry(TimeEntry):
         end_datetime = data['endTime']
 
         if isinstance(start_datetime, str):
-            start_datetime = datetime.fromisoformat(data['startTime'])
+            start_datetime = datetime.fromisoformat(data['startTime'].replace('Z', ""))
 
         if isinstance(end_datetime, str):
-            end_datetime = datetime.fromisoformat(data['endTime'])
+            end_datetime = datetime.fromisoformat(data['endTime'].replace('Z', ""))
         time_entry_id = data.get('_id', None)
         timesheet_id = data['timesheetId']
         break_time = data.get('breakTime', 0)
@@ -127,7 +127,7 @@ class WorkEntry(TimeEntry):
         :return: A list of string keys that represent the attributes of a WorkEntry object.
         :rtype: list[str]
         """
-        dummy_start_time = datetime.now()
+        dummy_start_time = datetime.utcnow()
         dummy_end_time = dummy_start_time + timedelta(hours=1)
         dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, 0, "", "")
         return list(dummy_entry.to_dict().keys())

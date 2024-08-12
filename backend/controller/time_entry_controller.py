@@ -144,5 +144,7 @@ class TimeEntryController(MethodView):
         if self.timesheet_service.is_user_archived_by_timesheet_id(timesheet_id):
             return jsonify('User of timesheet is archived'), 400
         time_entries = self.time_entry_service.get_entries_of_timesheet(timesheet_id)
+        if not time_entries.is_successful:
+            return jsonify(time_entries.message), time_entries.status_code
         time_entries_data = [entry.to_str_dict() for entry in time_entries.data]
         return jsonify(time_entries_data), 200
