@@ -95,7 +95,7 @@ class TimeEntryService:
             self.user_service.remove_vacation_minutes(username, time_entry.get_duration())
         self.user_service.add_overtime_minutes(username, time_entry.get_duration())
 
-        result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_and_vacation_time(time_entry.timesheet_id)
         if not result.is_successful:
             return result
 
@@ -197,7 +197,7 @@ class TimeEntryService:
             elif update_entry.get_duration() > existing_entry.get_duration():
                 self.user_service.remove_overtime_minutes(get_jwt_identity(), update_entry.get_duration() - existing_entry.get_duration())
             return repo_result
-        result = self.timesheet_service.set_total_time(updated_time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_and_vacation_time(updated_time_entry.timesheet_id)
         if not result.is_successful:
             return result
         if validation_result.status == ValidationStatus.WARNING:
@@ -233,7 +233,7 @@ class TimeEntryService:
         self.user_service.remove_overtime_minutes(get_jwt_identity(), time_entry.get_duration())
         self.timesheet_service.calculate_overtime(time_entry_data['timesheetId'])
 
-        result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_and_vacation_time(time_entry.timesheet_id)
         if not result.is_successful and delete_result.is_successful:
             result.message = "Time entry deleted, but total hours could not be updated."
             return result

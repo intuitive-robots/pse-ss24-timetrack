@@ -44,12 +44,12 @@ class TestTimesheetService(unittest.TestCase):
 
     def test_set_total_time(self):
         # Test invalid timesheet id
-        result_invalid_timesheet_id = self.timesheet_service.set_total_time("666666666666666666666666")
+        result_invalid_timesheet_id = self.timesheet_service.set_total_and_vacation_time("666666666666666666666666")
         self.assertEqual("Timesheet not found", result_invalid_timesheet_id.message)
         self.assertFalse(result_invalid_timesheet_id.is_successful)
         self.assertEqual(404, result_invalid_timesheet_id.status_code)
 
-        result = self.timesheet_service.set_total_time(ObjectId('6679ca2935df0d8f7202c5fa'))
+        result = self.timesheet_service.set_total_and_vacation_time(ObjectId('6679ca2935df0d8f7202c5fa'))
         self.assertEqual("Total time updated", result.message)
         self.assertTrue(result.is_successful)
         self.assertEqual(200, result.status_code)

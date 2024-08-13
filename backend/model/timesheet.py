@@ -18,12 +18,11 @@ class Timesheet:
         total_time (float): Total hours recorded in the timesheet.
         overtime (float): Total overtime hours recorded in the timesheet.
         last_signature_change (datetime): Timestamp of the last signature or approval change.
-        time_entry_ids (list[ObjectId]): List of ObjectIds corresponding to the time entries included in the timesheet.
     """
 
     def __init__(self, username: str, month: int, year: int,
                  timesheet_id=None, status=TimesheetStatus.NOT_SUBMITTED, total_time=0.0,
-                 overtime=0.0, last_signature_change=datetime.utcnow()):
+                 overtime=0.0, last_signature_change=datetime.utcnow(), vacation_minutes=0.0):
         """
         Initializes a new Timesheet object with the given parameters.
 
@@ -43,6 +42,8 @@ class Timesheet:
         :type overtime: float
         :param last_signature_change: The datetime of the last signature update, defaults to current time.
         :type last_signature_change: datetime
+        :param vacation_minutes: The total vacation minutes in this timesheet, defaults to 0.0.
+        :type vacation_minutes: float
         """
         self.timesheet_id = timesheet_id
         self.username = username
@@ -52,6 +53,7 @@ class Timesheet:
         self.total_time = total_time
         self.overtime = overtime
         self.last_signature_change = last_signature_change
+        self.vacation_minutes = vacation_minutes
 
     @staticmethod
     def from_dict(timesheet_dict: dict):
@@ -72,7 +74,8 @@ class Timesheet:
             status=TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED)),
             total_time=timesheet_dict.get("totalTime", 0.0),
             overtime=timesheet_dict.get("overtime", 0.0),
-            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.utcnow())
+            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.utcnow()),
+            vacation_minutes=timesheet_dict.get("vacationMinutes", 0.0)
         )
         return timesheet
 
@@ -100,7 +103,8 @@ class Timesheet:
                 "status": str(self.status),
                 "totalTime": self.total_time,
                 "overtime": self.overtime,
-                "lastSignatureChange": self.last_signature_change
+                "lastSignatureChange": self.last_signature_change,
+                "vacationMinutes": self.vacation_minutes
             }
         return {
             "_id": self.timesheet_id,
@@ -110,7 +114,8 @@ class Timesheet:
             "status": str(self.status),
             "totalTime": self.total_time,
             "overtime": self.overtime,
-            "lastSignatureChange": self.last_signature_change
+            "lastSignatureChange": self.last_signature_change,
+            "vacationMinutes": self.vacation_minutes
         }
 
     def to_str_dict(self):
@@ -128,5 +133,6 @@ class Timesheet:
             "status": str(self.status),
             "totalTime": self.total_time,
             "overtime": self.overtime,
-            "lastSignatureChange": self.last_signature_change
+            "lastSignatureChange": self.last_signature_change,
+            "vacationMinutes": self.vacation_minutes
         }
