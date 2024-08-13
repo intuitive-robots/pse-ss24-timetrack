@@ -1,6 +1,8 @@
 import datetime
 import uuid
 
+from bson import ObjectId
+
 from model.notification.message_type import MessageType
 
 
@@ -22,7 +24,7 @@ class NotificationMessage:
         self.message_data = message_data
 
     def set_message_id(self, message_id):
-        self.message_id = message_id
+        self.message_id = ObjectId(message_id)
 
     def send_message(self):
         pass

@@ -36,8 +36,6 @@ class NotificationController(MethodView):
         return jsonify(result.data), result.status_code
 
 
-
-
     @jwt_required()
     def read_all_notifications(self):
         result = self.notification_service.read_all_notifications()
