@@ -80,6 +80,7 @@ class NotificationService:
                 if not notification.read:
                     notification.read = True
                     self.notification_repository.update_notification(notification)
+            read_result.data = sorted(read_result.data, key=lambda x: x.timestamp, reverse=True)
             return RequestResult(True, "Notifications retrieved successfully", 200, data=read_result.data)
         return read_result
 
