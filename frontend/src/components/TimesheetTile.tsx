@@ -12,15 +12,14 @@ interface TimesheetTileProps {
   projectName: string;
   description: string;
   totalTime: string;
-  vacationDays: number;
+  vacationMinutes: string;
   overtime: string;
   status: StatusType;
   onDownload: () => void;
 }
 
-const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, description, totalTime, vacationDays, overtime, status, onDownload}) => {
+const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, description, totalTime, vacationMinutes, overtime, status, onDownload}) => {
 
-    const vacationDaysString = vacationDays.toString() + " days";
 
     return (
         <div
@@ -42,7 +41,7 @@ const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, 
             {/*</div>*/}
 
             <ListTileInfo
-                items={[totalTime, vacationDaysString, overtime]}
+                items={[totalTime, vacationMinutes, overtime]}
                 gap={"lg:gap-20 gap-8 transition-all"}
             />
 

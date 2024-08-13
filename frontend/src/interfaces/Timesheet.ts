@@ -8,8 +8,7 @@ export interface Timesheet {
     status: StatusType;
     totalTime: number;
     overtime: number;
+    vacationMinutes?: number;
     lastSignatureChange: string;
     projectName: string;
 }
-// projectName,
-// getHiwiByUsername: first name, last name, supervisor, profilePicture of hiwi
