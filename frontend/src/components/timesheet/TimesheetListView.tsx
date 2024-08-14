@@ -30,7 +30,7 @@ const TimesheetListView: React.FC<TimesheetListProps> = ({ sheets }) => {
                     year={sheet.year}
                     totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
                     overtime={minutesToHourMinuteFormatted(sheet.overtime)}
-                    projectName={sheet.lastSignatureChange ? formatDate(sheet.lastSignatureChange) : 'No date'} //TODO: Add correct project name
+                    projectName={sheet.lastSignatureChange ? formatDate(sheet.lastSignatureChange) : 'No date'}
                     vacationMinutes={sheet.vacationMinutes ? minutesToHourMinuteFormatted(sheet.vacationMinutes) : "0h"}
                     status={(role && isValidRole(role) && sheet.status && isValidTimesheetStatus(sheet.status)) ? statusMapping[role][sheet.status]: StatusType.Pending}
                     description={"Last Status Change"}
