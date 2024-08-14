@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import HiwiTimesheetCard from "../../components/HiwiTimesheetCard";
-import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import StatusFilter from "../../components/status/StatusFilter";
 import {StatusType} from "../../interfaces/StatusType";
 import {Timesheet} from "../../interfaces/Timesheet";
@@ -8,7 +7,6 @@ import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 import {useAuth} from "../../context/AuthContext";
 import {getHiwis} from "../../services/UserService";
-import MonthTimespan from "../../components/timesheet/MonthTimespan";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
@@ -123,13 +121,8 @@ const SupervisorHomePage = (): React.ReactElement => {
         : [];
 
     const handleCheckTimesheet = (hiwi: User, month: number, year: number) => {
-        let monthString = month.toString();
-        let yearString = year.toString();
-
-
         const path = `/app/timesheet/${hiwi.username.replace(/\s+/g, '-')}/${month}/${year}`;
         navigate(path);
-
     };
 
 
@@ -185,17 +178,13 @@ const SupervisorHomePage = (): React.ReactElement => {
                                     name={hiwi.personalInfo.firstName}
                                     lastName={hiwi.personalInfo.lastName}
                                     role={hiwi.role}
-                                    profileImageUrl={ProfilePlaceholder} // TODO: hiwi.profileImageUrl
                                     status={timesheet.status}
-                                    onCheck={() => handleCheckTimesheet(hiwi, month, year)} // TODO
+                                    onCheck={() => handleCheckTimesheet(hiwi, month, year)}
                                 />
                             ) : null;
                         })}
                     </div>
                 ) : (
-                    // <div className="p-4 bg-red-100 text-red-700 rounded shadow">
-                    //     Keine HiWis gefunden.
-                    // </div>
                     <div/>
                 )}
             </div>
