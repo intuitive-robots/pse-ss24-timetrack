@@ -8,12 +8,16 @@ import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import {createVacationEntry} from "../../services/TimeEntryService";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import {validateCreateVacationEntry} from "../validation/InputValidation";
+import {useAuth} from "../../context/AuthContext";
+import {minutesToHourMinuteFormatted} from "../../utils/TimeUtils";
 
 const AddVacationPopup: React.FC = () => {
     const { closePopup } = usePopup();
 
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [duration, setDuration] = useState('');
+
+    const {user} = useAuth();
 
     const handleSubmit = async () => {
         if (!validateCreateVacationEntry(selectedDate, duration).valid) {
@@ -59,10 +63,21 @@ const AddVacationPopup: React.FC = () => {
 
             <HorizontalSeparator />
 
+            {user && user.contractInfo && (
+                <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm w-fit h-fit">
+                    <h2 className="text-md text-[#C1C1C1] font-semibold mb-1">Available Vacation</h2>
+                    <p className="text-2xl font-bold text-[#343434] ml-1">
+                        {minutesToHourMinuteFormatted(user.contractInfo.vacationMinutes ?? 0)}
+                    </p>
+                </div>
+            )}
+
+            <HorizontalSeparator/>
+
             <form className="space-y-6">
                 <div className="flex flex-col gap-5">
                     <div>
-                        <h2 className="text-md font-semibold mb-1.5">{"Vacation Date"}</h2>
+                    <h2 className="text-md font-semibold mb-1.5">{"Vacation Date"}</h2>
                         <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
                     </div>
                     <div>
