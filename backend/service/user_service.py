@@ -459,12 +459,10 @@ class UserService:
         if not hiwi_data:
             return RequestResult(False, "Hiwi not found", status_code=404)
         if hiwi_data['role'] != 'Hiwi':
-            print(hiwi_data['role'])
             return RequestResult(False, "User is not a Hiwi", status_code=400)
         supervisor_data = self.user_repository.find_by_username(hiwi_data['supervisor'])
         if not supervisor_data:
             return RequestResult(False, "Supervisor not found", status_code=404)
-        #TODO: is return message "supervisor is archived" too much info?
         if supervisor_data['isArchived']:
             return RequestResult(False, "Supervisor is archived", status_code=400)
         if only_name:

@@ -136,7 +136,6 @@ class TestTimesheetService(unittest.TestCase):
         """
         Test the get_timesheet_by_id method of the TimesheetService class.
         """
-        print(self.timesheet_repository.get_timesheet_by_id("6679ca2935df0d8f7202c5fa"))
         # Test getting a timesheet by ID
         test_timesheet_data = {"_id": ObjectId("6679ca2935df0d8f7202c5fa"),
                                "username": "testHiwi1",

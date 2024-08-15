@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 
 from bson import ObjectId
 from flask_jwt_extended import jwt_required
@@ -187,7 +188,13 @@ class TimesheetService:
         :param status: The new status of the timesheet
         :return: The result of the status update operation
         """
-        return self.timesheet_repository.set_timesheet_status(timesheet_id, status)
+        result = self.timesheet_repository.set_timesheet_status(timesheet_id, status)
+        if result.is_successful:
+            timesheet_data = self.timesheet_repository.get_timesheet_by_id(timesheet_id)
+            timesheet = Timesheet.from_dict(timesheet_data)
+            timesheet.last_signature_change = datetime.utcnow()
+            self.timesheet_repository.update_timesheet(timesheet)
+        return result
 
     def _create_timesheet(self, username: str, month: int, year: int):
         """
