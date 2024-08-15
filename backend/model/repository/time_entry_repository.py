@@ -10,7 +10,6 @@ from model.time_entry import TimeEntry
 from pymongo.errors import PyMongoError
 
 
-
 class TimeEntryRepository:
     """
     Repository class for managing TimeEntry objects in a MongoDB database via GridFS. Handles the operations for
