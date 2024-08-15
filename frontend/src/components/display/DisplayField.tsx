@@ -15,7 +15,7 @@ const DisplayField: React.FC<DisplayFieldProps> = ({ label, value, icon }) => {
         <div className="flex-shrink-0">
           {icon}
         </div>
-        <div className="input-field flex-1 outline-none p-2 text-gray-700 truncate">
+        <div className="input-field flex-1 outline-none p-2 text-[#494949] truncate">
           {value}
         </div>
       </div>
