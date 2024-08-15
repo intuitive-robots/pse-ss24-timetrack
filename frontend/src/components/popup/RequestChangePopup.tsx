@@ -44,7 +44,7 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
     return (
         <div className="">
             <div className="flex flex-row gap-4 items-center mb-2">
-                <RoundedIconBox iconSrc={RequestChangeIcon}/>
+                <RoundedIconBox icon={RequestChangeIcon}/>
                 <div className="flex flex-col">
                     <h2 className="text-2xl font-bold">Request Change</h2>
                     <p className="text-lg font-medium text-[#707070]">Request changes to {username}'s

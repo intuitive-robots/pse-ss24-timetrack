@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { usePopup } from "./PopupContext";
-import VacationIcon from "../../assets/images/vacation_icon.svg";
 import DialogButton from "../input/DialogButton";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
@@ -10,6 +9,7 @@ import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import {validateCreateVacationEntry} from "../validation/InputValidation";
 import {useAuth} from "../../context/AuthContext";
 import {minutesToHourMinuteFormatted} from "../../utils/TimeUtils";
+import {VacationIcon} from "../../assets/iconComponents/VacationIcon";
 
 const AddVacationPopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -52,9 +52,9 @@ const AddVacationPopup: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 min-w-[30rem]">
             <div className="flex flex-row gap-4">
-                <RoundedIconBox iconSrc={VacationIcon} width={"w-[60px]"} height={"h-[60px] p-3.5"} />
+                <RoundedIconBox icon={<VacationIcon/>} width={"w-[60px]"} height={"h-[60px] p-3.5"} />
                 <div className="flex flex-col gap-[1px]">
                     <h2 className="text-2xl font-bold">Add Vacation Entry</h2>
                     <p className="text-lg font-medium text-[#707070]">Fill in the fields below to add a vacation entry</p>
