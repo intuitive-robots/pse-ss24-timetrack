@@ -16,6 +16,7 @@ class BreakLengthStrategy(TimeEntryStrategy):
     MIN_PER_HOUR = 60
 
     WORK_DURATION_THRESHOLDS = [
+        (2, 0),  # Up to 2 hours, no break required
         (6, 15),  # Up to 6 hours, 15 minutes break (default minimum)
         (9, 30),  # More than 6 hours up to 9 hours, 30 minutes break
         (float('inf'), 45)  # More than 9 hours, 45 minutes break
@@ -44,7 +45,7 @@ class BreakLengthStrategy(TimeEntryStrategy):
         if not hasattr(entry, 'break_time') or entry.break_time is None:
             return ValidationResult(ValidationStatus.FAILURE, "Break time information is missing or invalid.")
 
-        work_duration_hours = entry.get_duration() / (self.MIN_PER_HOUR * 60)
+        work_duration_hours = entry.get_duration() / self.MIN_PER_HOUR
 
         required_break_length = self.DEFAULT_MINIMUM_BREAK_LENGTH
         for hours_threshold, break_length in self.WORK_DURATION_THRESHOLDS:
