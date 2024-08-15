@@ -9,7 +9,10 @@ from model.repository.time_entry_repository import TimeEntryRepository
 from model.time_entry import TimeEntry
 from model.request_result import RequestResult
 from model.time_entry_type import TimeEntryType
+from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
+from model.time_entry_validator.holiday_strategy import HolidayStrategy
 from model.time_entry_validator.time_entry_validator import TimeEntryValidator
+from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 from model.timesheet_status import TimesheetStatus
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
@@ -35,7 +38,14 @@ class TimeEntryService:
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.timesheet_service = TimesheetService()
         self.entry_input_validator = TimeEntryDataValidator()
-        self.entry_validator = TimeEntryValidator()
+
+        self.work_entry_validator = TimeEntryValidator()
+        self.vacation_entry_validator = TimeEntryValidator()
+        self.work_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        self.work_entry_validator.add_validation_rule(BreakLengthStrategy())
+        self.work_entry_validator.add_validation_rule(HolidayStrategy())
+        self.vacation_entry_validator.add_validation_rule(HolidayStrategy())
+
         self.user_service = UserService()
 
         self.entry_type_mapping = {
@@ -78,7 +88,7 @@ class TimeEntryService:
         time_entry = entry_class.from_dict(entry_data)
 
         # Validate the entry through strategy pattern
-        strategy_validation_results = self.entry_validator.validate_entry(time_entry)
+        strategy_validation_results = self._strategy_validate(time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
@@ -109,6 +119,27 @@ class TimeEntryService:
                                      status_code=200, data={"_id": entry_creation_result.data["_id"]})
         return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200,
                              data={"_id": entry_creation_result.data["_id"]})
+
+    def _strategy_validate(self, entry: TimeEntry):
+        """
+        Validates a time entry using the strategy pattern.
+
+        :param entry: The time entry to validate.
+        :type entry: TimeEntry
+        :return: A list of ValidationResult objects containing the results of the validation.
+        :rtype: list[ValidationResult]
+        """
+        entry_validator = None
+        if entry.entry_type == TimeEntryType.WORK_ENTRY:
+            entry_validator = self.work_entry_validator
+        elif entry.entry_type == TimeEntryType.VACATION_ENTRY:
+            entry_validator = self.vacation_entry_validator
+
+        if entry_validator is not None:
+            strategy_validation_results = entry_validator.validate_entry(entry)
+            return strategy_validation_results
+        return []
+
 
     def create_work_entry(self, entry_data: dict, username: str) -> RequestResult:
         """
@@ -175,7 +206,8 @@ class TimeEntryService:
             return RequestResult(False, "Cannot update time entry to a different month or year", status_code=400)
 
         # Validate the updated entry through strategy pattern
-        strategy_validation_results = self.entry_validator.validate_entry(updated_time_entry)
+
+        strategy_validation_results = self._strategy_validate(updated_time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)

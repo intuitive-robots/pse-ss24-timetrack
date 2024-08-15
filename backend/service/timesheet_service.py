@@ -3,10 +3,14 @@ import math
 from bson import ObjectId
 from flask_jwt_extended import jwt_required
 
+from controller.input_validator.validation_status import ValidationStatus
 from model.repository.time_entry_repository import TimeEntryRepository
 from model.repository.timesheet_repository import TimesheetRepository
 from model.request_result import RequestResult
 from model.time_entry import TimeEntry
+from model.time_sheet_validator.before_signed_timesheets_strategy import BeforeSignedTimesheetsStrategy
+from model.time_sheet_validator.timesheet_validator import TimesheetValidator
+from model.time_sheet_validator.weekly_working_hours_strategy import WeeklyHoursStrategy
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
 from service.notification_service import NotificationService
@@ -27,6 +31,9 @@ class TimesheetService:
         self.user_service = UserService()
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.notification_service = NotificationService()
+        self.timesheet_validator = TimesheetValidator()
+        self.timesheet_validator.add_validation_rule(BeforeSignedTimesheetsStrategy())
+        self.timesheet_validator.add_validation_rule(WeeklyHoursStrategy())
 
     def ensure_timesheet_exists(self, username: str, month: int, year: int):
         """
@@ -90,10 +97,17 @@ class TimesheetService:
             return RequestResult(False, "Timesheet already signed", 409)
         hiwi_data = self.user_service.get_profile(timesheet_data["username"])
         if hiwi_data is None:
-            return RequestResult(False, "HiWi not found", 404)
+            return RequestResult(False, "Hiwi not found", 404)
         supervisor_username = hiwi_data.supervisor
         if supervisor_username is None:
             return RequestResult(False, "Supervisor not found", 404)
+        timesheet = Timesheet.from_dict(timesheet_data)
+        if timesheet is None:
+            return RequestResult(False, "Failed to parse timesheet", 500)
+        validation_result = self.timesheet_validator.validate_timesheet(timesheet)
+        for result in validation_result:
+            if result.status == ValidationStatus.FAILURE:
+                return RequestResult(False, result.message, 400)
         hiwi_full_name = hiwi_data.personal_info.first_name + " " + hiwi_data.personal_info.last_name
         notification_result = self.notification_service.send_notification({"receiver": supervisor_username,
                                                                            "message_type": "Timesheet Status Change",

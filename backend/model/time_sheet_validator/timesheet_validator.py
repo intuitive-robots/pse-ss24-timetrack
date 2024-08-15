@@ -1,3 +1,5 @@
+from model.repository.time_entry_repository import TimeEntryRepository
+from model.time_entry import TimeEntry
 from model.time_sheet_validator.timesheet_strategy import TimesheetStrategy
 from model.timesheet import Timesheet
 
@@ -17,10 +19,10 @@ class TimesheetValidator:
         specific validation strategies.
         """
         self.validationRules = []
-        self.time_entry_service = None  # TODO: Add a TimeEntryService attribute
+        self.time_entry_repository = TimeEntryRepository()
         self.contract_info = None  # TODO: Add a ContractInfo object for working hours validation
 
-    def addValidationRule(self, rule: TimesheetStrategy):
+    def add_validation_rule(self, rule: TimesheetStrategy):
         """
         Adds a new validation rule to the validator.
 
@@ -33,7 +35,7 @@ class TimesheetValidator:
         """
         self.validationRules.append(rule)
 
-    def removeValidationRule(self, rule: TimesheetStrategy):
+    def remove_validation_rule(self, rule: TimesheetStrategy):
         """
         Removes a validation rule from the validator.
 
@@ -45,7 +47,7 @@ class TimesheetValidator:
         """
         self.validationRules.remove(rule)
 
-    def validateTimesheet(self, timesheet: Timesheet):
+    def validate_timesheet(self, timesheet: Timesheet):
         """
         Validates a given `Timesheet` object against all registered validation strategies to assess its compliance
         with each of the configured rules.
@@ -62,7 +64,8 @@ class TimesheetValidator:
             related to the timesheet, which are necessary for certain validations. The availability of this service
             and its proper function must be ensured before validation.
         """
-        time_entries = self.time_entry_service.get_Entries_of_Timesheet(timesheet)  # TODO Make sure that method exists
+        time_entries = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet.timesheet_id)
+        time_entries = [TimeEntry.from_dict(time_entry) for time_entry in time_entries]
 
         results = []
         for rule in self.validationRules:
