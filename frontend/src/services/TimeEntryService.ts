@@ -1,5 +1,5 @@
 import axiosInstance from "./AxiosInstance";
-import {TimeEntry, VacationEntry} from "../interfaces/TimeEntry";
+import {TimeEntry} from "../interfaces/TimeEntry";
 import axios from "axios";
 
 /**
@@ -15,8 +15,7 @@ const createWorkEntry = async (entryData: Record<string, any>) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Creating work entry failed');
-    throw error;
+    handleAxiosError(error);
   }
 };
 
@@ -33,8 +32,7 @@ const createVacationEntry = async (entryData: Record<string, any>) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Creating vacation entry failed');
-    throw error;
+    handleAxiosError(error);
   }
 };
 
@@ -69,8 +67,7 @@ const deleteTimeEntry = async (timeEntryId: string) => {
         });
     return response.data;
   } catch (error) {
-    console.error('Deleting time entry failed');
-    throw error;
+    handleAxiosError(error);
   }
 };
 

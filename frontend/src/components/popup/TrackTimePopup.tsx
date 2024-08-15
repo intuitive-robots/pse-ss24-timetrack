@@ -18,7 +18,6 @@ const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
 
     const [activity, setActivity] = useState('');
-    const [activityType, setActivityType] = useState('');
     const [project, setProject] = useState('');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [startTime, setStartTime] = useState('');
@@ -31,6 +30,8 @@ const TrackTimePopup: React.FC = () => {
         label: role,
         value: role
     }));
+
+    const [activityType, setActivityType] = useState(activityTypeOptions[0].value);
 
     const handleSubmit = async () => {
         const result = createTimeEntryValidation(activity, project, selectedDate, startTime, endTime, breakTime);
@@ -66,10 +67,13 @@ const TrackTimePopup: React.FC = () => {
         const entryData = {
             activity,
             projectName: project,
+            activityType: activityType,
             startTime: `${formattedStartTime}`,
             endTime: `${formattedEndTime}`,
             breakTime: breakTime,
         };
+
+        console.log('Entry data:', entryData)
 
         try {
             const createdEntry = await createWorkEntry(entryData);
