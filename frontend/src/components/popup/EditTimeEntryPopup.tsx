@@ -12,6 +12,7 @@ import {createTimeEntryValidation} from "../validation/InputValidation";
 import {BreakIcon} from "../../assets/iconComponents/BreakIcon";
 import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
 import {TrackTimeIcon} from "../../assets/iconComponents/TrackTimeIcon";
+import Dropdown from "../input/Dropdown";
 
 interface EditTimeEntryPopupProps {
     entryData: TimeEntry;
@@ -25,6 +26,13 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
     const [startTime, setStartTime] = useState<string>(new Date(entryData.startTime).toLocaleTimeString());
     const [endTime, setEndTime] = useState<string>(new Date(entryData.endTime).toLocaleTimeString());
     const [breakTime, setBreakTime] = useState<number>(entryData.breakTime);
+
+    const activityTypeOptions = ["Projektbesprechung", "Projektarbeit"].map(role => ({
+        label: role,
+        value: role
+    }));
+
+    const [activityType, setActivityType] = useState(entryData.activityType || activityTypeOptions[0].value);
 
     const handleSubmit = async () => {
         const result = createTimeEntryValidation(activity, project, selectedDate, startTime, endTime, breakTime);
@@ -51,6 +59,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
             ...entryData,
             activity,
             projectName: project,
+            activityType: activityType,
             startTime: formattedStartTime,
             endTime: formattedEndTime,
             breakTime: breakTime,
@@ -97,6 +106,12 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
                         value={project}
                         onChange={setProject}
                     />
+                </div>
+
+                <div className="w-7/12">
+                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType}
+                              icon={<ActivityIcon/>}
+                              options={activityTypeOptions}/>
                 </div>
 
                 <div className="flex flex-col gap-1.5">

@@ -73,8 +73,6 @@ const TrackTimePopup: React.FC = () => {
             breakTime: breakTime,
         };
 
-        console.log('Entry data:', entryData)
-
         try {
             const createdEntry = await createWorkEntry(entryData);
             console.log('Work entry created:', createdEntry);
