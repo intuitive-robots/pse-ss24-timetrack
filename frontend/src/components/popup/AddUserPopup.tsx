@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import { usePopup } from "./PopupContext";
 import DialogButton from "../input/DialogButton";
 import ShortInputField from "../input/ShortInputField";
-import UserIcon from "../../assets/images/username_icon.svg";
 import StepIndicator from "./StepIndicator";
 import Dropdown from "../input/Dropdown";
 import {Roles} from "../auth/roles";
@@ -15,6 +14,7 @@ import {SalaryIcon} from "../../assets/iconComponents/SalaryIcon";
 import {BriefcaseIcon} from "../../assets/iconComponents/BriefcaseIcon";
 import {SupervisorIcon} from "../../assets/iconComponents/SupervisorIcon";
 import {RoleIcon} from "../../assets/iconComponents/RoleIcon";
+import {UserIcon} from "../../assets/iconComponents/UserIcon";
 import {NameIcon} from "../../assets/iconComponents/NameIcon";
 import {PasswordIcon} from "../../assets/iconComponents/PasswordIcon";
 
@@ -197,7 +197,7 @@ const AddUserPopup: React.FC = () => {
             <div className="mt-4 space-y-4">
                 {step === 1 && (
                     <>
-                        <ShortInputField title="Username" value={formData.username} onChange={handleChange('username')} icon={UserIcon} type="text" size={"medium"} />
+                        <ShortInputField title="Username" value={formData.username} onChange={handleChange('username')} icon={<UserIcon/>} type="text" size={"medium"} />
                         <div className="flex items-center gap-4">
                             <ShortInputField title="Password" type="text" value={formData.password} onChange={handleChange('password')} icon={<PasswordIcon/>} size="medium"/>
                             <button onClick={generateRandomPassword} className="px-4 py-2 mt-8 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Generate</button>
