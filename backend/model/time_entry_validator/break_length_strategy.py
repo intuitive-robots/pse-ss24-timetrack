@@ -16,8 +16,7 @@ class BreakLengthStrategy(TimeEntryStrategy):
     MIN_PER_HOUR = 60
 
     WORK_DURATION_THRESHOLDS = [
-        (2, 0),  # Up to 2 hours, no break required
-        (6, 15),  # Up to 6 hours, 15 minutes break (default minimum)
+        (6, 0),  # Up to 6 hours, 0 minutes break
         (9, 30),  # More than 6 hours up to 9 hours, 30 minutes break
         (float('inf'), 45)  # More than 9 hours, 45 minutes break
     ]
