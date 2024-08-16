@@ -210,7 +210,7 @@ class TimesheetService:
         result = self.timesheet_repository.create_timesheet(Timesheet(username, month, year))
         if result.is_successful:
             hiwi = self.user_service.get_profile(username)
-            hiwi.add_timesheet(result.data["_id"])
+
             update_result = self.user_service.update_user(hiwi.to_dict())
             monthly_working_hours = hiwi.contract_info.working_hours
             self.user_service.remove_overtime_minutes(username, monthly_working_hours * 60)
