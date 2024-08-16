@@ -183,7 +183,9 @@ class DocumentService:
         if supervisor_signature_stream is None:
             return RequestResult(False, "Failed to get supervisor signature.", status_code=400)
         document = DocumentData(month, year, user.personal_info, user.contract_info, self._time_format(previous_overtime), signature_stream,
-                            supervisor_signature_stream, self._time_format(timesheet.overtime), time_entries)
+                                supervisor_signature_stream, self._time_format(timesheet.overtime), time_entries,
+                                "00:00",
+                                timesheet.last_signature_change)
         return RequestResult(True, "Document data gathered successfully.", 200, document)
 
     def _time_format(self, minutes: int):
