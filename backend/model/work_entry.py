@@ -88,7 +88,7 @@ class WorkEntry(TimeEntry):
         Returns the activity and project name as a string.
         :return: The activity and project name as a string.
         """
-        return f"{str(self.activity_type.value)} - {self.project_name}"
+        return f"{self.activity_type.value} - {self.project_name}"
 
     @classmethod
     def from_dict(cls, data: dict):
