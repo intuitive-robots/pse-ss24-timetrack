@@ -10,7 +10,6 @@ import {Roles} from "./auth/roles";
 import {getSupervisor} from "../services/UserService";
 
 interface SecretaryTimesheetTileProps {
-  key: string;
   totalTime: string;
   vacationDays: number;
   overtime: string;
@@ -20,7 +19,6 @@ interface SecretaryTimesheetTileProps {
   firstName: string;
   lastName: string;
   //supervisorName: string;
-  profileImageUrl: string;
 }
 
 const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTime,
@@ -30,7 +28,6 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
                                                          firstName,
                                                          lastName,
                                                            //supervisorName,
-                                                         profileImageUrl,
                                                          vacationDays
 }) => {
     const vacationDaysString = vacationDays.toString() + " days";
@@ -59,7 +56,6 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
                   firstName={firstName}
                   lastName={lastName}
                   supervisor={supervisorName}
-                  profileImageUrl={profileImageUrl}
               />
           </div>
 

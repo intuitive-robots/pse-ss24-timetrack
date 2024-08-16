@@ -16,17 +16,20 @@ export interface DocumentRequestParams {
 async function generateDocument(params: DocumentRequestParams): Promise<string | undefined> {
   try {
     const response = await axiosInstance.get('document/generateDocument', {
-      params,
-      responseType: 'blob'
+        params,
+        responseType: 'blob',
+        validateStatus: function (status) {
+            return (status >= 200 && status < 300) || (status >= 400 && status < 500);
+          }
     });
 
     if (response.status === 200 && response.data) {
       return window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+    } else {
+      const errorText = await new Response(response.data).text();
+      throw new Error(`Document generation failed: ${errorText}`);
     }
-    return response.data;
-     // throw new Error(response);
   } catch (error: any) {
-    console.error('Document generation failed', error);
     handleAxiosError(error);
   }
 }
@@ -74,8 +77,7 @@ const handleDownload = async (username: string, month: number, year: number) => 
             window.URL.revokeObjectURL(documentUrl);
         }
     } catch (error) {
-        console.error('Failed to download document:', error);
-        alert('Failed to download document');
+        alert(`Failed to download document ${error}`);
     }
 };
 
