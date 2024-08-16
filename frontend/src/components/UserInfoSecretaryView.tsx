@@ -6,7 +6,6 @@ interface UserInfoSecretaryProps {
     firstName: string;
     lastName: string;
     supervisor: string;
-    profileImageUrl: string;
 }
 
 /**
@@ -20,7 +19,6 @@ const UserInfoSecretaryView: React.FC<UserInfoSecretaryProps> = ({
                                                                      firstName,
                                                                      lastName,
                                                                      supervisor,
-                                                                     profileImageUrl
                                                                  }: UserInfoSecretaryProps): React.ReactElement => {
     return (
         <div className="flex items-center space-x-3 z-50 py-1">

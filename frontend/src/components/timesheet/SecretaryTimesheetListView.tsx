@@ -26,7 +26,6 @@ const SecretaryTimesheetListView: React.FC<SecretaryTimesheetListViewProps> = ({
                   firstName={hiwi?.personalInfo.firstName ?? ""}
                   lastName={hiwi?.personalInfo.lastName ?? ""}
                   supervisor={hiwi?.supervisor ?? ""}
-                  profileImageUrl={ProfilePlaceholder}
               />
               <div className="flex h-full">
                 <StatusLabel status={timesheet.status}/>
