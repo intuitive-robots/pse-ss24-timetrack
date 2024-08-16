@@ -44,10 +44,6 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     });
 
     const [supervisors, setSupervisors] = useState<any[]>([]);
-    const roleOptions = Object.values(Roles).map(role => ({
-        label: role,
-        value: role
-    }));
 
     useEffect(() => {
         const fetchSupervisors = async () => {
@@ -61,9 +57,23 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     }, []);
 
     const handleChange = (field: keyof EditFormData) => (value: string) => {
-        setFormData(prevState => ({ ...prevState, [field]: value }));
-        console.log(formData);
-    };
+    let formattedValue: any = value;
+
+    if (field === 'hourlyWage' || field === 'workingTime' || field === 'personalNumber') {
+        formattedValue = value.replace(/,/g, '.');
+        const numericValue = parseFloat(formattedValue);
+        if (!isNaN(numericValue)) {
+            formattedValue = numericValue;
+        } else {
+            formattedValue = 0;
+        }
+    }
+
+    setFormData(prevState => ({
+        ...prevState,
+        [field]: formattedValue
+    }));
+};
 
     const handleNext = () => {
         if (step < 3) {
@@ -102,7 +112,7 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
         try {
             const updatedUser: User = {
                 ...userData,
-                ...formData,
+                // ...formData,
                 personalInfo: {
                     ...userData.personalInfo,
                     firstName: formData.firstName,

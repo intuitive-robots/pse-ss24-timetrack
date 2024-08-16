@@ -10,9 +10,9 @@ import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import Dropdown from "../input/Dropdown";
 import {createTimeEntryValidation} from "../validation/InputValidation";
 import {wait} from "@testing-library/user-event/dist/utils";
-import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
 import {BreakIcon} from "../../assets/iconComponents/BreakIcon";
 import {TrackTimeIcon} from "../../assets/iconComponents/TrackTimeIcon";
+import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -72,6 +72,8 @@ const TrackTimePopup: React.FC = () => {
             endTime: `${formattedEndTime}`,
             breakTime: breakTime,
         };
+
+        console.log(entryData);
 
         try {
             const createdEntry = await createWorkEntry(entryData);

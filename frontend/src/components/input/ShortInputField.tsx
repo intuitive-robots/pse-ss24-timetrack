@@ -32,6 +32,31 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
     }
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+    if (type === 'number' && value === 0) {
+      onChange('');
+    }
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (type === 'number' && (value === '' || value === '-')) {
+      onChange('0');
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (type === 'number') {
+      if (/^-?\d*\.?\d*$/.test(newValue)) {
+        onChange(newValue);
+      }
+    } else {
+      onChange(newValue);
+    }
+  };
+
   return (
     <div className="input-container">
       {title && <h2 className="text-md font-semibold mb-1.5">{title}</h2>}
@@ -43,12 +68,13 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
         )}
         <input
           type={type}
+          inputMode={type === 'number' ? 'decimal' : 'none'}
           className="input-field flex-1 outline-none p-2"
           placeholder={placeholder}
-          value={value}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChange={(e) => onChange(e.target.value)}
+          value={value === 0 && isFocused ? '' : value}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onChange={handleChange}
         />
         {suffix && <span className="suffix text-gray-500 p-2">{suffix}</span>}
       </div>

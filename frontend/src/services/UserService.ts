@@ -95,7 +95,6 @@ const createUser = async (userData: User): Promise<any> => {
  */
 const updateUser = async (userData: User): Promise<any> => {
     try {
-        console.log(userData);
         const response = await axiosInstance.post(`/user/updateUser`, userData);
         return response.data;
     } catch (error) {
