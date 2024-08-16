@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from flask_jwt_extended import get_jwt_identity, jwt_required
+
 from controller.factory.user_factory import UserFactory
 from controller.input_validator.user_data_validator import UserDataValidator
 from controller.input_validator.validation_status import ValidationStatus
@@ -259,6 +261,7 @@ class UserService:
         new_supervisor_data['hiwis'].append(hiwi_username)
         return self.user_repository.update_user(Supervisor.from_dict(new_supervisor_data))
 
+    @jwt_required()
     def delete_user(self, username: str):
         """
         Deletes a user from the system identified by their username.
@@ -272,6 +275,10 @@ class UserService:
         timesheet_service = TimesheetService()
         time_entry_service = TimeEntryService()
         file_service = service.file_service.FileService()
+
+        if username == get_jwt_identity():
+            return RequestResult(False, "You cannot delete yourself", status_code=400)
+
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
