@@ -49,7 +49,7 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (type === 'number') {
-      if (/^-?\d*\.?\d*$/.test(newValue)) {
+      if (/^\d*\.?\d*$/.test(newValue)) {
         onChange(newValue);
       }
     } else {
