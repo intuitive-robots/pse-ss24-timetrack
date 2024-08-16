@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { usePopup } from "./PopupContext";
-import VacationIcon from "../../assets/images/vacation_icon.svg";
 import DialogButton from "../input/DialogButton";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
@@ -9,6 +8,7 @@ import { updateTimeEntry } from "../../services/TimeEntryService";
 import {VacationEntry} from "../../interfaces/TimeEntry";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import {validateCreateVacationEntry} from "../validation/InputValidation";
+import {VacationIcon} from "../../assets/iconComponents/VacationIcon";
 
 interface EditVacationEntryPopupProps {
     entryData: VacationEntry;
@@ -56,7 +56,7 @@ const EditVacationEntryPopup: React.FC<EditVacationEntryPopupProps> = ({ entryDa
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-4">
-                <RoundedIconBox iconSrc={VacationIcon} width={"w-[60px]"} height={"h-[60px] p-3.5"} />
+                <RoundedIconBox icon={<VacationIcon/>} width={"w-[60px]"} height={"h-[60px] p-3.5"} />
                 <div className="flex flex-col gap-[1px]">
                     <h2 className="text-2xl font-bold">Edit Vacation Entry</h2>
                     <p className="text-lg font-medium text-[#707070]">Update the fields below to edit the vacation entry</p>

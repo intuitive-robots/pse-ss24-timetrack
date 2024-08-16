@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { usePopup } from "./PopupContext";
 import DialogButton from "../input/DialogButton";
 import ShortInputField from "../input/ShortInputField";
-import TrackTimeIcon from "../../assets/images/add_track_time.svg";
-import ActivityIcon from "../../assets/images/activity_icon.svg";
-import BreakIcon from "../../assets/images/coffee_icon.svg";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
@@ -12,6 +9,10 @@ import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import {TimeEntry} from "../../interfaces/TimeEntry";
 import {updateTimeEntry} from "../../services/TimeEntryService";
 import {createTimeEntryValidation} from "../validation/InputValidation";
+import {BreakIcon} from "../../assets/iconComponents/BreakIcon";
+import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
+import {TrackTimeIcon} from "../../assets/iconComponents/TrackTimeIcon";
+import Dropdown from "../input/Dropdown";
 
 interface EditTimeEntryPopupProps {
     entryData: TimeEntry;
@@ -25,6 +26,13 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
     const [startTime, setStartTime] = useState<string>(new Date(entryData.startTime).toLocaleTimeString());
     const [endTime, setEndTime] = useState<string>(new Date(entryData.endTime).toLocaleTimeString());
     const [breakTime, setBreakTime] = useState<number>(entryData.breakTime);
+
+    const activityTypeOptions = ["Projektbesprechung", "Projektarbeit"].map(role => ({
+        label: role,
+        value: role
+    }));
+
+    const [activityType, setActivityType] = useState(entryData.activityType || activityTypeOptions[0].value);
 
     const handleSubmit = async () => {
         const result = createTimeEntryValidation(activity, project, selectedDate, startTime, endTime, breakTime);
@@ -51,6 +59,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
             ...entryData,
             activity,
             projectName: project,
+            activityType: activityType,
             startTime: formattedStartTime,
             endTime: formattedEndTime,
             breakTime: breakTime,
@@ -70,7 +79,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-4">
-                <RoundedIconBox iconSrc={TrackTimeIcon} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
+                <RoundedIconBox icon={<TrackTimeIcon/>} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
                 <div className="flex flex-col gap-[1px]">
                     <h2 className="text-2xl font-bold">Edit Time Entry</h2>
                     <p className="text-lg font-medium text-[#707070]">Update the fields below to edit the entry</p>
@@ -82,7 +91,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
             <form className="space-y-6">
                 <div className="flex flex-row gap-4">
                     <ShortInputField
-                        icon={ActivityIcon}
+                        icon={<ActivityIcon/>}
                         title="Activity"
                         type="text"
                         placeholder="Activity"
@@ -90,13 +99,19 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
                         onChange={setActivity}
                     />
                     <ShortInputField
-                        icon={ActivityIcon}
+                        icon={<ActivityIcon/>}
                         type="text"
                         title="Project"
                         placeholder="Project"
                         value={project}
                         onChange={setProject}
                     />
+                </div>
+
+                <div className="w-7/12">
+                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType}
+                              icon={<ActivityIcon/>}
+                              options={activityTypeOptions}/>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -110,7 +125,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
                 </div>
 
                 <ShortInputField
-                    icon={BreakIcon}
+                    icon={<BreakIcon/>}
                     type="number"
                     title={"Break Time"}
                     placeholder="15"

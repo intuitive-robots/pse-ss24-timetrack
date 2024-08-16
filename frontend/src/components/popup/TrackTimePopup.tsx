@@ -1,9 +1,6 @@
 import React, {useState} from 'react';
 import {usePopup} from "./PopupContext";
 import ShortInputField from "../input/ShortInputField";
-import TrackTimeIcon from "../../assets/images/add_track_time.svg";
-import ActivityIcon from "../../assets/images/activity_icon.svg";
-import BreakIcon from "../../assets/images/coffee_icon.svg";
 import DialogButton from "../input/DialogButton";
 import {createWorkEntry} from "../../services/TimeEntryService";
 import RoundedIconBox from "../../shared/RoundedIconBox";
@@ -13,12 +10,14 @@ import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import Dropdown from "../input/Dropdown";
 import {createTimeEntryValidation} from "../validation/InputValidation";
 import {wait} from "@testing-library/user-event/dist/utils";
+import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
+import {BreakIcon} from "../../assets/iconComponents/BreakIcon";
+import {TrackTimeIcon} from "../../assets/iconComponents/TrackTimeIcon";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
 
     const [activity, setActivity] = useState('');
-    const [activityType, setActivityType] = useState('');
     const [project, setProject] = useState('');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [startTime, setStartTime] = useState('');
@@ -32,7 +31,8 @@ const TrackTimePopup: React.FC = () => {
         value: role
     }));
 
-    /*TODO: add activity type */
+    const [activityType, setActivityType] = useState(activityTypeOptions[0].value);
+
     const handleSubmit = async () => {
         const result = createTimeEntryValidation(activity, project, selectedDate, startTime, endTime, breakTime);
         if (!result.valid) {
@@ -67,6 +67,7 @@ const TrackTimePopup: React.FC = () => {
         const entryData = {
             activity,
             projectName: project,
+            activityType: activityType,
             startTime: `${formattedStartTime}`,
             endTime: `${formattedEndTime}`,
             breakTime: breakTime,
@@ -86,7 +87,7 @@ const TrackTimePopup: React.FC = () => {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-4">
-                <RoundedIconBox iconSrc={TrackTimeIcon} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
+                <RoundedIconBox icon={<TrackTimeIcon/>} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
                 <div className="flex flex-col gap-[1px]">
                     <h2 className="text-2xl font-bold">Create Time Entry</h2>
                     <p className="text-lg font-medium text-[#707070]">Fill in the fields below to add a Working
@@ -100,7 +101,7 @@ const TrackTimePopup: React.FC = () => {
             <form className="space-y-6">
                 <div className="flex flex-row gap-4">
                     <ShortInputField
-                        icon={ActivityIcon}
+                        icon={<ActivityIcon/>}
                         title="Activity"
                         type="text"
                         placeholder="Activity"
@@ -108,7 +109,7 @@ const TrackTimePopup: React.FC = () => {
                         onChange={setActivity}
                     />
                     <ShortInputField
-                        icon={ActivityIcon}
+                        icon={<ActivityIcon/>}
                         type="text"
                         title="Project"
                         placeholder="Project"
@@ -117,7 +118,7 @@ const TrackTimePopup: React.FC = () => {
                     />
                 </div>
                 <div className="w-7/12">
-                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType} icon={ActivityIcon}
+                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType} icon={<ActivityIcon/>}
                               options={activityTypeOptions}/>
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -136,7 +137,7 @@ const TrackTimePopup: React.FC = () => {
                 </div>
 
                 <ShortInputField
-                    icon={BreakIcon}
+                    icon={<BreakIcon/>}
                     type="number"
                     title={"Break Time"}
                     placeholder="15"
