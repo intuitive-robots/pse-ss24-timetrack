@@ -20,17 +20,18 @@ async function generateDocument(params: DocumentRequestParams): Promise<string |
         responseType: 'blob',
         validateStatus: function (status) {
             return (status >= 200 && status < 300) || (status >= 400 && status < 500);
-          }
+        }
     });
 
     if (response.status === 200 && response.data) {
       return window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
     } else {
       const errorText = await new Response(response.data).text();
-      throw new Error(`Document generation failed: ${errorText}`);
+      throw new Error(`${errorText}`);
     }
   } catch (error: any) {
-    handleAxiosError(error);
+      console.error('Failed to generate document:', error.message);
+      throw new Error(`${error.message}`);
   }
 }
 
@@ -43,15 +44,21 @@ async function generateMultipleDocumentsByTimesheetIds(timesheetIds: string[]): 
   const queryString = timesheetIds.map(id => `timesheetIds=${encodeURIComponent(id)}`).join('&');
   try {
     const response = await axiosInstance.get(`document/generateMultipleDocuments?${queryString}`, {
-      responseType: 'blob'
+        responseType: 'blob',
+        validateStatus: function (status) {
+            return (status >= 200 && status < 300) || (status >= 400 && status < 500);
+        }
     });
 
     if (response.status === 200 && response.data) {
       return window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
+    } else {
+      const errorText = await new Response(response.data).text();
+      throw new Error(`${errorText}`);
     }
   } catch (error: any) {
     console.error('Failed to generate multiple documents', error);
-    throw new Error('Failed to generate multiple documents.');
+    throw new Error(`${error.message}`);
   }
 }
 
@@ -63,8 +70,6 @@ async function generateMultipleDocumentsByTimesheetIds(timesheetIds: string[]): 
  */
 const handleDownload = async (username: string, month: number, year: number) => {
     if (!username) return;
-    console.log("Downloading document for", username, month, year);
-
     try {
         const documentUrl = await generateDocument({ username, month, year });
         if (documentUrl) {
@@ -76,8 +81,8 @@ const handleDownload = async (username: string, month: number, year: number) => 
             document.body.removeChild(link);
             window.URL.revokeObjectURL(documentUrl);
         }
-    } catch (error) {
-        alert(`Failed to download document ${error}`);
+    } catch (error: any) {
+        alert(`Failed to download document ${error.message}`);
     }
 };
 
@@ -92,8 +97,6 @@ const handleDownloadMultipleDocuments = async (month: number, year: number, time
         alert('No timesheets selected for download.');
         return;
     }
-    console.log("Downloading documents for timesheet IDs:", timesheetIds);
-
     try {
         const documentsUrl = await generateMultipleDocumentsByTimesheetIds(timesheetIds);
         if (documentsUrl) {
@@ -105,9 +108,8 @@ const handleDownloadMultipleDocuments = async (month: number, year: number, time
             document.body.removeChild(link);
             window.URL.revokeObjectURL(documentsUrl);
         }
-    } catch (error) {
-        console.error('Failed to download multiple documents:', error);
-        alert('Failed to download multiple documents');
+    } catch (error: any) {
+        alert(`Failed to download multiple documents ${error.message}`);
     }
 };
 
