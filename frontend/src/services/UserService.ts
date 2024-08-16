@@ -2,6 +2,7 @@ import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
 import {handleAxiosError} from "../utils/AxiosUtils";
 import {ContractInfo} from "../interfaces/ContractInfo";
+import {data} from "browserslist";
 
 const getHiwis = async () => {
   try {
@@ -49,7 +50,9 @@ const deleteUser = async (username: string) => {
  */
 const archiveUser = async (username: string) => {
   try {
-    const response = await axiosInstance.post('/user/archiveUser', username);
+    const response = await axiosInstance.post('/user/archiveUser', {
+      username
+    });
     return response.data;
   } catch (error) {
     console.error('Archiving user failed', error);
@@ -65,7 +68,9 @@ const archiveUser = async (username: string) => {
  */
 const activateUser = async (username: string) => {
   try {
-    const response = await axiosInstance.post('/user/unarchiveUser', username);
+    const response = await axiosInstance.post('/user/unarchiveUser', {
+      username
+    });
     return response.data;
   } catch (error) {
     console.error('Unarchiving user failed', error);
