@@ -6,7 +6,7 @@ import {User} from "../../interfaces/User";
 import {useAuth} from "../../context/AuthContext";
 import ConfirmationPopup from "../../components/popup/ConfirmationPopup";
 import {usePopup} from "../../components/popup/PopupContext";
-import {archiveUser, getArchivedUsers, activateUser} from "../../services/UserService";
+import {archiveUser, getArchivedUsers, activateUser, deleteUser} from "../../services/UserService";
 import RoleFilter from "../../components/filter/RoleFilter";
 import {getPluralForm} from "../../utils/TextUtils";
 import EditUserPopup from "../../components/popup/EditUserPopup";
@@ -71,7 +71,7 @@ const AdminHomePage = (): React.ReactElement => {
 
     const confirmDeleteUser = async (username: string) => {
         try {
-            await archiveUser(username);
+            await deleteUser(username);
             closePopup();
             setUsers(prev => prev.filter(u => u.username !== username));
         } catch (error) {

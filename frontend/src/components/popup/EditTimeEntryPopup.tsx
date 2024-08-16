@@ -10,9 +10,9 @@ import {TimeEntry} from "../../interfaces/TimeEntry";
 import {updateTimeEntry} from "../../services/TimeEntryService";
 import {createTimeEntryValidation} from "../validation/InputValidation";
 import {BreakIcon} from "../../assets/iconComponents/BreakIcon";
-import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
 import {TrackTimeIcon} from "../../assets/iconComponents/TrackTimeIcon";
 import Dropdown from "../input/Dropdown";
+import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
 
 interface EditTimeEntryPopupProps {
     entryData: TimeEntry;
