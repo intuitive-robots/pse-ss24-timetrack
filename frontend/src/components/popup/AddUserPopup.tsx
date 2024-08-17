@@ -50,27 +50,41 @@ const AddUserPopup: React.FC = () => {
     });
 
     const [supervisors, setSupervisors] = useState<any[]>([]);
-    const roleOptions = Object.values(Roles).map(role => ({
-        label: role,
-        value: role
-    }));
+    const [roleOptions, setRoleOptions] = useState(
+        Object.values(Roles).map(role => ({
+            label: role,
+            value: role
+        }))
+    );
 
 
     useEffect(() => {
         const fetchSupervisors = async () => {
-            const fetchedSupervisors: any[] = await getSupervisors();
-            const supervisorOptions = fetchedSupervisors.map(sup => ({
-                label: `${sup.firstName} ${sup.lastName}`,
-                value: sup.username
-            }));
-            setSupervisors(supervisorOptions);
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                supervisor: prevFormData.supervisor || supervisorOptions[0].value
-            }));
+            try {
+                const fetchedSupervisors: any[] = await getSupervisors();
+                const supervisorOptions = fetchedSupervisors.map(sup => ({
+                        label: `${sup.firstName} ${sup.lastName}`,
+                        value: sup.username
+                    }));
+                    setSupervisors(supervisorOptions);
+                    setFormData(prevFormData => ({
+                        ...prevFormData,
+                        supervisor: prevFormData.supervisor || supervisorOptions[0].value
+                    }));
+            } catch (error) {
+                setRoleOptions(prevOptions =>
+                        prevOptions.filter(option => option.value !== Roles.Hiwi)
+                );
+                setFormData(prevFormData => ({
+                        ...prevFormData,
+                        role: Roles.Supervisor
+                    }));
+                console.error("Error fetching supervisors:", error);
+            }
         };
+
         fetchSupervisors();
-}, []);
+    }, []);
 
 
     const creationSteps = ['Personal Information', 'Contact Details'];
