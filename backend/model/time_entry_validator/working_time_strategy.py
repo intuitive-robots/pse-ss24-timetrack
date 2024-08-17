@@ -14,8 +14,8 @@ class WorkingTimeStrategy(TimeEntryStrategy):
     time regulations and wish to enforce compliance through time entry validations.
     """
 
-    BUSINESS_START = datetime.time(8, 0)  # 8:00 AM
-    BUSINESS_END = datetime.time(18, 0)  # 6:00 PM
+    BUSINESS_START = datetime.time(6, 0)  # 8:00 AM (6:00 AM UTC)
+    BUSINESS_END = datetime.time(16, 0)  # 6:00 PM (4:00 PM UTC)
 
     MAX_WORKING_HOURS = 8
     FAILURE_WORKING_HOURS = 10
