@@ -220,7 +220,4 @@ def check_mongodb_connection():
 
 
 if __name__ == '__main__':
-    setup_service = SetupService()
-    setup_service.run_setup()
-
     app.run(debug=True)
