@@ -11,9 +11,11 @@ const SupervisorEmployeesPage: React.FC = () => {
     useEffect(() => {
         getHiwis().then(hiwis => {
             setHiwis(hiwis);
+            setIsLoading(false);
         }).catch(error => {
             console.error("Failed to fetch hiwis:", error);
-        }).finally(() => setIsLoading(false));
+            setIsLoading(true);
+        });
     }, []);
 
     return (
