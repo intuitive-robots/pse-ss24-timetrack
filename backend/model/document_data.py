@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import gridfs
 from numpy import uint32
 import calendar
@@ -14,7 +16,7 @@ class DocumentData:
     def __init__(self, month: int, year: int,
                  personal_info: PersonalInfo, contract_info: ContractInfo,
                  overtime_from_previous_month, signature, supervisor_signature, overtime,
-                 time_entries=[], urlaub_anteilig="00:00"):
+                 time_entries=[], urlaub_anteilig="00:00", last_signature_changed=datetime.now()):
         """
         Initializes a new DocumentData object with the given parameters.
         """
@@ -28,6 +30,7 @@ class DocumentData:
         self.supervisor_signature = supervisor_signature
         self.urlaub_anteilig = urlaub_anteilig
         self.overtime = overtime
+        self.last_signature_changed = last_signature_changed
 
 
 
