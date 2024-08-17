@@ -214,9 +214,7 @@ class TimesheetService:
             update_result = self.user_service.update_user(hiwi.to_dict())
             monthly_working_hours = hiwi.contract_info.working_hours
             self.user_service.remove_overtime_minutes(username, monthly_working_hours * 60)
-            if not update_result.is_successful:
-                self.timesheet_repository.delete_timesheet(result.data["_id"])
-                return update_result
+            
             return RequestResult(True, "Timesheet created", 201, {"_id": result.data["_id"]})
         return RequestResult(False, "Failed to create timesheet", 500)
 
