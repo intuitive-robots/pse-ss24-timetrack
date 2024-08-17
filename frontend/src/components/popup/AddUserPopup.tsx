@@ -218,7 +218,7 @@ const AddUserPopup: React.FC = () => {
                         <ShortInputField title="Slack-ID" value={formData.slackId} onChange={handleChange('slackId')}
                                          icon={<SlackIcon/>} type="text"/>
                         <ShortInputField title="Personal Number (SAP-ID)" value={formData.personalNumber} size={"medium"}
-                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number"/>
+                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number" allowLeadingZero={true}/>
                     </>
                 )}
                 {step === 3 && formData.role === Roles.Hiwi && (

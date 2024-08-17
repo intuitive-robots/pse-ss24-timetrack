@@ -175,7 +175,7 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
                         <ShortInputField title="E-Mail" value={formData.email} onChange={handleChange('email')}
                                          icon={<MailIcon/>} type="text"/>
                         <ShortInputField title="Personal Number" value={formData.personalNumber} size={"medium"}
-                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number"/>
+                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number" allowLeadingZero={true}/>
                     </>
                 )}
                 {step === 3 && formData.role === Roles.Hiwi && (

@@ -9,6 +9,7 @@ interface ShortInputFieldProps {
   value: string | number;
   onChange: (value: string) => void;
   size?: string;
+  allowLeadingZero?: boolean;
 }
 
 const ShortInputField: React.FC<ShortInputFieldProps> = ({
@@ -18,7 +19,7 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
   suffix,
   placeholder,
   value,
-  onChange, size
+  onChange, size, allowLeadingZero = false
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -47,10 +48,17 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
+    let newValue = e.target.value;
+
     if (type === 'number') {
-      if (/^\d*\.?\d*$/.test(newValue)) {
-        onChange(newValue);
+      if (allowLeadingZero) {
+        if (/^\d*\.?\d*$/.test(newValue)) {
+          onChange(newValue);
+        }
+      } else {
+        if (/^(?!0\d)\d*\.?\d*$/.test(newValue)) {
+          onChange(newValue);
+        }
       }
     } else {
       onChange(newValue);
