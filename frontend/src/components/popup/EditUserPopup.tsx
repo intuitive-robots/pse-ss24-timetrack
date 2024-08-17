@@ -46,6 +46,10 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     const [supervisors, setSupervisors] = useState<any[]>([]);
 
     useEffect(() => {
+        if (userData.role !== Roles.Hiwi) {
+            return;
+        }
+
         const fetchSupervisors = async () => {
             const fetchedSupervisors: any[] = await getSupervisors();
             setSupervisors(fetchedSupervisors.map(sup => ({
@@ -112,7 +116,6 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
         try {
             const updatedUser: User = {
                 ...userData,
-                // ...formData,
                 personalInfo: {
                     ...userData.personalInfo,
                     firstName: formData.firstName,
