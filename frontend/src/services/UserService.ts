@@ -73,7 +73,7 @@ const activateUser = async (username: string) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Unarchiving user failed', error);
+    console.error('Activating user failed', error);
     handleAxiosError(error);
   }
 };

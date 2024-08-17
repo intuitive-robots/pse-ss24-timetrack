@@ -63,7 +63,7 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     const handleChange = (field: keyof EditFormData) => (value: string) => {
     let formattedValue: any = value;
 
-    if (field === 'hourlyWage' || field === 'workingTime' || field === 'personalNumber') {
+    if (field === 'hourlyWage' || field === 'workingTime') {
         formattedValue = value.replace(/,/g, '.');
         const numericValue = parseFloat(formattedValue);
         if (!isNaN(numericValue)) {
@@ -174,7 +174,7 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
                         </div>
                         <ShortInputField title="E-Mail" value={formData.email} onChange={handleChange('email')}
                                          icon={<MailIcon/>} type="text"/>
-                        <ShortInputField title="Personal Number" value={formData.personalNumber} size={"medium"}
+                        <ShortInputField title="Personal Number (SAP-ID)" value={formData.personalNumber} size={"medium"}
                                          onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number" allowLeadingZero={true}/>
                     </>
                 )}

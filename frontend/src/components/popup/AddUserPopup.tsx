@@ -132,7 +132,7 @@ const AddUserPopup: React.FC = () => {
     const handleChange = (field: keyof FormData) => (value: string) => {
         let formattedValue: any = value;
 
-        if (field === 'hourlyWage' || field === 'workingTime' || field === 'personalNumber') {
+        if (field === 'hourlyWage' || field === 'workingTime') {
             formattedValue = parseFloat(value);
             if (isNaN(formattedValue)) {
                 formattedValue = 0;

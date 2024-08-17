@@ -87,7 +87,7 @@ const AdminHomePage = (): React.ReactElement => {
             fetchUsers();
             fetchArchivedUsers();
         } catch (error) {
-            console.error('Failed to Archive user:', error);
+            alert(`Failed to Archive user ${error}`);
             closePopup();
         }
     };
@@ -99,7 +99,7 @@ const AdminHomePage = (): React.ReactElement => {
             fetchUsers();
             fetchArchivedUsers();
         } catch (error) {
-            console.error('Failed to Activate user:', error);
+            alert(`Failed to Activate user ${error}`);
             closePopup();
         }
     };
@@ -200,7 +200,6 @@ const AdminHomePage = (): React.ReactElement => {
                         name={user.personalInfo.firstName}
                         lastName={user.personalInfo.lastName}
                         role={user.role}
-                        profileImageUrl={ProfilePlaceholder}
                         isArchived={user.isArchived}
                         onView={() => {openPopup(<ViewUserPopup userData={user}/>)}}
                         onEdit={() => {handleOnChange(user)}}
