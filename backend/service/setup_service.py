@@ -29,7 +29,7 @@ class SetupService:
         :return: bool - True if an admin already existed, False if a new admin was created.
         """
         admins = self.user_repository.get_users_by_role(UserRole.ADMIN)
-        if not admins or admins.count() == 0:
+        if not admins:
             print("No admin user found, creating default admin...")
             self.create_default_admin()
             return False
@@ -57,7 +57,7 @@ class SetupService:
         if not result.is_successful:
             print(f"Failed to create default admin user: {result.message}")
             return
-        print(f"Default admin user {admin_data.get('username', '')} was initialized successfully.")
+        print(f"\033[32mDefault admin user {admin_data.get('username', '')} was initialized successfully.\033[0m")
 
     def ensure_slack_token_exists(self) -> bool:
         """
@@ -100,7 +100,7 @@ class SetupService:
         admin_collection = self.db[self.ADMIN_COLLECTION]
         slack_token_entry = admin_collection.find_one({}, {"_id": 0, "slackToken": 1})
         if slack_token_entry and slack_token_entry.get("slackToken") == "":
-            print("Slack Token is not set. Please change the token within the administration section in the database.")
+            print("\033[33mSlack Token is not set. Please change the token within the administration section in the database.\033[0m")
 
 
     def create_default_slack_token(self):
@@ -110,7 +110,7 @@ class SetupService:
         """
         admin_collection = self.db[self.ADMIN_COLLECTION]
         admin_collection.insert_one({"slackToken": ""})
-        print("Default SlackToken entry created.")
+        print("\033[32mDefault SlackToken entry created.\033[0m")
 
 
     def run_setup(self):
@@ -121,9 +121,10 @@ class SetupService:
         """
         admin_exists = self.ensure_admin_exists()
         admin_collection_initialized = self.initialize_admin_collection()
-        self.check_slack_token()
 
         if admin_exists and admin_collection_initialized:
-            print("Clockwise is initialized and ready to use.")
+            print("\033[32mClockwise is initialized and ready to use.\033[0m")
         else:
-            print("Setup process completed with necessary adjustments.")
+            print("\033[32mSetup process completed with necessary adjustments.\033[0m")
+
+        self.check_slack_token()
