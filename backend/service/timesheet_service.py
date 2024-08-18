@@ -53,6 +53,11 @@ class TimesheetService:
         timesheet = self.timesheet_repository.get_timesheet(username, month, year)
         if timesheet is not None:
             return RequestResult(True, "Timesheet already exists", 200)
+        user = self.user_service.get_profile(username)
+        if user is None:
+            return RequestResult(False, "User not found", 404)
+        if user.account_creation > datetime(year, month, 1):
+            return RequestResult(False, "User account was created after the timesheet month", 400)
         creation_result = self._create_timesheet(username, month, year)
         if creation_result.status_code == 201:
             return RequestResult(True, "Timesheet created", 201)
