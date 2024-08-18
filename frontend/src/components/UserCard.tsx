@@ -12,7 +12,6 @@ interface UserCardProps {
   username?: string;
   lastName: string;
   role: string;
-  profileImageUrl: string;
   isArchived?: boolean;
   onView: () => void;
   onEdit: () => void;
@@ -21,7 +20,7 @@ interface UserCardProps {
   onDelete: () => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ username, name, role, profileImageUrl, isArchived, lastName, onView, onEdit, onDelete, onArchive, onActivate }) => {
+const UserCard: React.FC<UserCardProps> = ({ username, name, role, isArchived, lastName, onView, onEdit, onDelete, onArchive, onActivate }) => {
   return (
       <div className="flex items-center p-4 shadow-card-shadow border-1.7 border-card-gray rounded-lg mb-4">
           <UserInfo

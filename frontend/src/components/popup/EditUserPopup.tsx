@@ -46,6 +46,10 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     const [supervisors, setSupervisors] = useState<any[]>([]);
 
     useEffect(() => {
+        if (userData.role !== Roles.Hiwi) {
+            return;
+        }
+
         const fetchSupervisors = async () => {
             const fetchedSupervisors: any[] = await getSupervisors();
             setSupervisors(fetchedSupervisors.map(sup => ({
@@ -59,7 +63,7 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     const handleChange = (field: keyof EditFormData) => (value: string) => {
     let formattedValue: any = value;
 
-    if (field === 'hourlyWage' || field === 'workingTime' || field === 'personalNumber') {
+    if (field === 'hourlyWage' || field === 'workingTime') {
         formattedValue = value.replace(/,/g, '.');
         const numericValue = parseFloat(formattedValue);
         if (!isNaN(numericValue)) {
@@ -112,7 +116,6 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
         try {
             const updatedUser: User = {
                 ...userData,
-                // ...formData,
                 personalInfo: {
                     ...userData.personalInfo,
                     firstName: formData.firstName,
@@ -171,8 +174,8 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
                         </div>
                         <ShortInputField title="E-Mail" value={formData.email} onChange={handleChange('email')}
                                          icon={<MailIcon/>} type="text"/>
-                        <ShortInputField title="Personal Number" value={formData.personalNumber} size={"medium"}
-                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number"/>
+                        <ShortInputField title="Personal Number (SAP-ID)" value={formData.personalNumber} size={"medium"}
+                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number" allowLeadingZero={true}/>
                     </>
                 )}
                 {step === 3 && formData.role === Roles.Hiwi && (

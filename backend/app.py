@@ -25,10 +25,15 @@ from service.notification_service import NotificationService
 from utils.security_utils import SecurityUtils
 from service.timesheet_service import TimesheetService
 from apscheduler.schedulers.background import BackgroundScheduler
+from service.setup_service import SetupService
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
 db = initialize_db()
+
+setup_service = SetupService()
+setup_service.run_setup()
+
 
 app.config["JWT_SECRET_KEY"] = secrets.token_bytes(32)  # Generates a random secret key
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
