@@ -174,8 +174,7 @@ class TimesheetService:
 
         self.notification_service.send_notification({"receiver": timesheet_data["username"],
                                                                            "message_type": "Timesheet Status Change",
-                                                                           "message": f"Change Requested: \n"
-                                                                                      f"{supervisor_full_name} requested changes to your timesheet: "
+                                                                           "message": f"{supervisor_full_name} requests changes to your timesheet: "
                                                                                       f"{timesheet_data['month']}/"
                                                                                       f"{timesheet_data['year']} \n"
                                                                                       f"Message: {change_message}"})
