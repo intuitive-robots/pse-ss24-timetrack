@@ -26,8 +26,10 @@ class WeekendStrategy(TimeEntryStrategy):
         """
         day_of_week = entry.start_time.weekday()  # 5 = Saturday, 6 = Sunday
         if day_of_week == 5:  # Saturday
-            return ValidationResult(ValidationStatus.FAILURE, "Entry date is on a weekend: Saturday.")
+            return ValidationResult(ValidationStatus.FAILURE,
+                                    "Working on weekends is not allowed by institute policy: Saturday.")
         elif day_of_week == 6:  # Sunday
-            return ValidationResult(ValidationStatus.FAILURE, "Entry date is on a weekend: Sunday.")
+            return ValidationResult(ValidationStatus.FAILURE,
+                                    "Working on weekends is not allowed by institute policy: Sunday.")
 
         return ValidationResult(ValidationStatus.SUCCESS, "Entry date is a weekday.")
