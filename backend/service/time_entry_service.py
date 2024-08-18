@@ -13,6 +13,7 @@ from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
 from model.time_entry_validator.holiday_strategy import HolidayStrategy
 from model.time_entry_validator.time_entry_validator import TimeEntryValidator
 from model.time_entry_validator.vacation_time_strategy import VacationTimeStrategy
+from model.time_entry_validator.weekend_strategy import WeekendStrategy
 from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 from model.timesheet_status import TimesheetStatus
 from model.vacation_entry import VacationEntry
@@ -42,14 +43,17 @@ class TimeEntryService:
 
         self.work_entry_validator = TimeEntryValidator()
         self.vacation_entry_validator = TimeEntryValidator()
+
         self.work_entry_validator.add_validation_rule(WorkingTimeStrategy())
         self.work_entry_validator.add_validation_rule(BreakLengthStrategy())
         self.work_entry_validator.add_validation_rule(HolidayStrategy())
+        self.work_entry_validator.add_validation_rule(WeekendStrategy())
+
         self.vacation_entry_validator.add_validation_rule(HolidayStrategy())
         self.vacation_entry_validator.add_validation_rule(VacationTimeStrategy())
+        self.vacation_entry_validator.add_validation_rule(WeekendStrategy())
 
         self.user_service = UserService()
-
         self.entry_type_mapping = {
             TimeEntryType.WORK_ENTRY: WorkEntry,
             TimeEntryType.VACATION_ENTRY: VacationEntry
