@@ -113,7 +113,6 @@ class TimesheetService:
         notification_result = self.notification_service.send_notification({"receiver": supervisor_username,
                                                                            "message_type": "Timesheet Status Change",
                                                                            "message":
-                                                                               f"Signed Timesheet: \n"
                                                                                f"{hiwi_full_name} signed timesheet \n"
                                                                                f"{timesheet_data['month']}/"
                                                                                f"{timesheet_data['year']}"})
