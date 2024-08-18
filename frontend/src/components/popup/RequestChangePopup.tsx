@@ -4,8 +4,8 @@ import {requestChange} from "../../services/TimesheetService";
 import {Timesheet} from "../../interfaces/Timesheet";
 import DialogButton from "../input/DialogButton";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
-import RequestChangeIcon from '../../assets/images/request_change.svg'
 import RoundedIconBox from "../../shared/RoundedIconBox";
+import {RequestChangeIcon} from "../../assets/iconComponents/RequestChangeIcon";
 
 interface RequestChangePopupProps {
   username: string | undefined;
@@ -44,7 +44,7 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
     return (
         <div className="">
             <div className="flex flex-row gap-4 items-center mb-2">
-                <RoundedIconBox icon={RequestChangeIcon}/>
+                <RoundedIconBox icon={<RequestChangeIcon/>} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
                 <div className="flex flex-col">
                     <h2 className="text-2xl font-bold">Request Change</h2>
                     <p className="text-lg font-medium text-[#707070]">Request changes to {username}'s
