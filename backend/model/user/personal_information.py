@@ -17,7 +17,6 @@ class PersonalInfo:
         self.email = email
         self.personal_number = personal_number
         self.institute_name = institute_name
-        self.profile_picture = None
 
     @staticmethod
     def from_dict(data: dict):
