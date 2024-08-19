@@ -93,6 +93,8 @@ class NotificationService:
         return self.notification_repository.does_unread_message_exist(receiver)
 
     def _send_slack_message(self, notification: NotificationMessage, receiver_data: dict, sender_data: dict):
+        if self.SLACK_TOKEN == "":
+            return RequestResult(False, "Slack integration not set up", 404)
         if receiver_data.get("slackId") is None:
             return RequestResult(False, "Receiver does not have a Slack ID", 400)
         receiver_slack_id = receiver_data.get("slackId")
