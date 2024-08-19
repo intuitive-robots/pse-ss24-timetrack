@@ -32,7 +32,6 @@ export const NotificationShowcase = () => {
             const notificationService = new NotificationService();
             try {
                 const unreadExist = await notificationService.doesUnreadMessagesExist();
-                console.log(unreadExist);
                 setHasUnreadMessages(unreadExist);
             } catch (error) {
                 console.error('Failed to check for unread messages:', error);
