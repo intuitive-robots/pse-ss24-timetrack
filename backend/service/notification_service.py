@@ -96,8 +96,7 @@ class NotificationService:
         receiver_slack_id = receiver_data.get("slackId")
         if notification.sender != "system" and sender_data is None:
             return RequestResult(False, "Sender not found", 404)
-        elif notification.sender != "system" and sender_data.get("slackId") is None:
-            return RequestResult(False, "Sender does not have a Slack ID", 400)
+
         slack_body = {
             "text": notification.message,
             "channel": receiver_slack_id

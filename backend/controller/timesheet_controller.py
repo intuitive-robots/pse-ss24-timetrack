@@ -145,12 +145,15 @@ class TimesheetController(MethodView):
         if not request.is_json:
             return jsonify('Request data must be in JSON format'), 400
         request_data = request.get_json()
-        timesheet_id = request_data['_id']
+        timesheet_id = request_data.get('_id')
         if timesheet_id is None:
             return jsonify('No timesheet ID provided'), 400
+        change_message = request_data.get('message')
+        if change_message is None:
+            return jsonify('No change message provided'), 400
         if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
             return jsonify('No signature has been uploaded.'), 400
-        result = self.timesheet_service.request_change(timesheet_id)
+        result = self.timesheet_service.request_change(timesheet_id, change_message)
         return jsonify(result.message), result.status_code
 
     @jwt_required()

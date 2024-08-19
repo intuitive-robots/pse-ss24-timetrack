@@ -44,11 +44,11 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
                     <SubmissionReminderIcon/>
                 </div>
                 <div className="flex flex-col gap-1">
-                    <div className="flex flex-row items-center">
+                    <div className="flex flex-row items-center justify-between w-full">
                         <p className="text-wrap text-sm font-medium text-[#ABABAB]">
                             {notification.message}
                         </p>
-                        <div className="ml-auto pr-1 cursor-pointer text-[#ABABAB] hover:text-gray-500"
+                        <div className="pr-1 cursor-pointer text-[#ABABAB] hover:text-gray-500"
                              onClick={onRemove}
                         >
                             <RemoveIcon className="w-3"/>

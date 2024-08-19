@@ -120,7 +120,6 @@ class TimesheetService:
         notification_result = self.notification_service.send_notification({"receiver": supervisor_username,
                                                                            "message_type": "Timesheet Status Change",
                                                                            "message":
-                                                                               f"Signed Timesheet: \n"
                                                                                f"{hiwi_full_name} signed timesheet \n"
                                                                                f"{timesheet_data['month']}/"
                                                                                f"{timesheet_data['year']}"})
@@ -154,7 +153,7 @@ class TimesheetService:
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.COMPLETE)
 
     @jwt_required()
-    def request_change(self, timesheet_id: str):
+    def request_change(self, timesheet_id: str, change_message: str):
         """
         Method used by the supervisor to request changes to a timesheet_data.
         This sets the status to change requested.
@@ -170,7 +169,7 @@ class TimesheetService:
         if timesheet_data['status'] == 'Complete':
             return RequestResult(False, "Timesheet already approved", 409)
         if timesheet_data['status'] != 'Waiting for Approval':
-            return RequestResult(False, "HiWi didn't submitted the timesheet_data", 400)
+            return RequestResult(False, "HiWi didn't submitted the timesheet", 400)
         hiwi_data = self.user_service.get_profile(timesheet_data["username"])
         if hiwi_data is None:
             return RequestResult(False, "HiWi not found", 404)
@@ -179,12 +178,12 @@ class TimesheetService:
             return RequestResult(False, "Supervisor not found", 404)
         supervisor_full_name = supervisor.personal_info.first_name + " " + supervisor.personal_info.last_name
 
-        notification_result = self.notification_service.send_notification({"receiver": timesheet_data["username"],
+        self.notification_service.send_notification({"receiver": timesheet_data["username"],
                                                                            "message_type": "Timesheet Status Change",
-                                                                           "message": f"Change Requested: \n"
-                                                                                      f"{supervisor_full_name} requested changes to your timesheet \n:"
+                                                                           "message": f"{supervisor_full_name} requests changes to your timesheet: "
                                                                                       f"{timesheet_data['month']}/"
-                                                                                      f"{timesheet_data['year']}"})
+                                                                                      f"{timesheet_data['year']} \n"
+                                                                                      f"Message: {change_message}"})
         return self._set_timesheet_status(timesheet_id, TimesheetStatus.REVISION)
 
     def _set_timesheet_status(self, timesheet_id: str, status: TimesheetStatus):

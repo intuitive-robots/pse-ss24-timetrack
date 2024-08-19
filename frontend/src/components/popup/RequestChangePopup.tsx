@@ -4,8 +4,8 @@ import {requestChange} from "../../services/TimesheetService";
 import {Timesheet} from "../../interfaces/Timesheet";
 import DialogButton from "../input/DialogButton";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
-import RequestChangeIcon from '../../assets/images/request_change.svg'
 import RoundedIconBox from "../../shared/RoundedIconBox";
+import {RequestChangeIcon} from "../../assets/iconComponents/RequestChangeIcon";
 
 interface RequestChangePopupProps {
   username: string | undefined;
@@ -25,14 +25,9 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
             return;
         }
 
-        const entryData = {
-            description: description,
-        };
-        console.log(entryData)
 
         try {
-            const result = await requestChange(timesheet._id);
-            console.log('Change requested:', result);
+            const result = await requestChange(timesheet._id, description);
             closePopup();
             window.location.reload();
         } catch (error) {
@@ -44,7 +39,7 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
     return (
         <div className="">
             <div className="flex flex-row gap-4 items-center mb-2">
-                <RoundedIconBox icon={RequestChangeIcon}/>
+                <RoundedIconBox icon={<RequestChangeIcon/>} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
                 <div className="flex flex-col">
                     <h2 className="text-2xl font-bold">Request Change</h2>
                     <p className="text-lg font-medium text-[#707070]">Request changes to {username}'s
@@ -61,6 +56,7 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
                         className="mt-1 block w-full text-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                         placeholder="Describe the changes you request."
                         value={description}
+                        maxLength={35}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={3}
                     />
