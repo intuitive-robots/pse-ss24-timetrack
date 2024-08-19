@@ -4,6 +4,7 @@ from datetime import datetime
 import requests
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
+from db import initialize_db
 from model.notification.message_type import MessageType
 from model.notification.notification_message import NotificationMessage
 from model.repository.notification_repository import NotificationRepository
@@ -14,7 +15,8 @@ from model.request_result import RequestResult
 
 class NotificationService:
     def __init__(self):
-        self.SLACK_TOKEN = "xoxb-7391548519795-7490974089332-yGD8ins3aFpjSER7TD3lZdlp"  # TODO: Move to environment variable
+        db = initialize_db()
+        self.SLACK_TOKEN = db.administration.find_one({}, {"_id": 0, "slackToken": 1}).get("slackToken", "")
         self.notification_repository = NotificationRepository.get_instance()
         self.user_repository = UserRepository.get_instance()
         self.timesheet_repository = TimesheetRepository.get_instance()
@@ -91,6 +93,8 @@ class NotificationService:
         return self.notification_repository.does_unread_message_exist(receiver)
 
     def _send_slack_message(self, notification: NotificationMessage, receiver_data: dict, sender_data: dict):
+        if self.SLACK_TOKEN == "":
+            return RequestResult(False, "Slack integration not set up", 404)
         if receiver_data.get("slackId") is None:
             return RequestResult(False, "Receiver does not have a Slack ID", 400)
         receiver_slack_id = receiver_data.get("slackId")
