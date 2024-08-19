@@ -56,6 +56,7 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
                         className="mt-1 block w-full text-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                         placeholder="Describe the changes you request."
                         value={description}
+                        maxLength={35}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={3}
                     />
