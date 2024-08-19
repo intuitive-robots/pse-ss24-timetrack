@@ -7,6 +7,7 @@ from model.user.role import UserRole
 from service.auth_service import check_access
 from service.file_service import FileService
 from service.timesheet_service import TimesheetService
+from service.user_service import UserService
 
 timesheet_blueprint = Blueprint('timesheet', __name__)
 
@@ -23,6 +24,7 @@ class TimesheetController(MethodView):
         """
         self.timesheet_service = TimesheetService()
         self.file_service = FileService()
+        self.user_service = UserService()
 
     def get(self):
         """
@@ -75,10 +77,12 @@ class TimesheetController(MethodView):
         if request_data is None:
             return jsonify('Request data is missing'), 400
         username = request_data.get('username')
-        month = request_data['month']
+        month = request_data.get('month')
         year = request_data.get('year')
         if not username:
             return jsonify('No username provided'), 400
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
         if not month:
             return jsonify('No month provided'), 400
         if not year:
@@ -94,12 +98,14 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if self.user_service.is_archived(get_jwt_identity()):
+            return jsonify('User is archived'), 400
         if not request.is_json:
             return jsonify('Request data must be in JSON format'), 400
         request_data = request.get_json()
         timesheet_id = request_data['_id']
         if timesheet_id is None:
-            return jsonify( 'No timesheet ID provided'), 400
+            return jsonify('No timesheet ID provided'), 400
         if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
             return jsonify('No signature has been uploaded.'), 400
         result = self.timesheet_service.sign_timesheet(timesheet_id)
@@ -113,8 +119,10 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if self.user_service.is_archived(get_jwt_identity()):
+            return jsonify('User is archived'), 400
         if not request.is_json:
-            return jsonify( 'Request data must be in JSON format'), 400
+            return jsonify('Request data must be in JSON format'), 400
         request_data = request.get_json()
         timesheet_id = request_data['_id']
         if timesheet_id is None:
@@ -132,15 +140,20 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing the status message and status code.
         """
+        if self.user_service.is_archived(get_jwt_identity()):
+            return jsonify('User is archived'), 400
         if not request.is_json:
             return jsonify('Request data must be in JSON format'), 400
         request_data = request.get_json()
-        timesheet_id = request_data['_id']
+        timesheet_id = request_data.get('_id')
         if timesheet_id is None:
             return jsonify('No timesheet ID provided'), 400
+        change_message = request_data.get('message')
+        if change_message is None:
+            return jsonify('No change message provided'), 400
         if not self.file_service.does_file_exist(get_jwt_identity(), FileType.SIGNATURE):
             return jsonify('No signature has been uploaded.'), 400
-        result = self.timesheet_service.request_change(timesheet_id)
+        result = self.timesheet_service.request_change(timesheet_id, change_message)
         return jsonify(result.message), result.status_code
 
     @jwt_required()
@@ -150,11 +163,12 @@ class TimesheetController(MethodView):
 
         :return: JSON response containing a list of timesheets or an error message.
         """
-
         request_data = request.args
         username = request_data.get('username')
         if username is None:
             return jsonify('No username provided'), 400
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
         result = self.timesheet_service.get_timesheets_by_username(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -170,15 +184,19 @@ class TimesheetController(MethodView):
 
         request_data = request.args
         username = request_data.get('username')
+
+        if username is None:
+            return jsonify('No username provided'), 400
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
+        if request_data.get('month') is None:
+            return jsonify('No month provided'), 400
+        if request_data.get('year') is None:
+            return jsonify('No year provided'), 400
         month = int(request_data.get('month'))
         year = int(request_data.get('year'))
         print(username, month, year)
-        if username is None:
-            return jsonify('No username provided'), 400
-        if month is None:
-            return jsonify('No month provided'), 400
-        if year is None:
-            return jsonify('No year provided'), 400
+
         result = self.timesheet_service.get_timesheet(username, month, year)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -194,6 +212,8 @@ class TimesheetController(MethodView):
         username = request.args.get('username')
         if username is None:
             return jsonify('No username provided'), 400
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
         result = self.timesheet_service.get_current_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -209,6 +229,10 @@ class TimesheetController(MethodView):
         username = request.args.get('username')
         if username is None:
             return jsonify('No username provided'), 400
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
+        if check_access(roles=[UserRole.HIWI]) and username != get_jwt_identity():
+            return jsonify('Hiwis can only access their own timesheets'), 403
         result = self.timesheet_service.get_highest_priority_timesheet(username)
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
@@ -228,6 +252,8 @@ class TimesheetController(MethodView):
         status = request_data.get('status')
         if username is None:
             return jsonify('No username provided'), 400
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
         if status is None:
             return jsonify('No status provided'), 400
         #TODO: changes status in timesheet service to string and convert there

@@ -20,6 +20,7 @@ class HiwiFactory(UserFactory):
         personal_info = None
         contract_info = None
         supervisor = None
+        is_archived = False
         timesheets = []
 
         if 'personalInfo' in user_data:
@@ -28,10 +29,14 @@ class HiwiFactory(UserFactory):
             contract_info = ContractInfo.from_dict(user_data['contractInfo'])
         if 'supervisor' in user_data:
             supervisor = user_data['supervisor']
+        if 'isArchived' in user_data:
+            is_archived = user_data['isArchived']
         return Hiwi(
             username=user_data['username'],
             password_hash=user_data['passwordHash'],
             personal_info=personal_info,
             supervisor=supervisor,
             contract_info=contract_info,
+            is_archived=is_archived,
+            slack_id=user_data.get('slackId')
         )

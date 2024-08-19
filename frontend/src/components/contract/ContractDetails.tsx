@@ -5,7 +5,7 @@ import {useAuth} from "../../context/AuthContext";
 const ContractDetails = () => {
     const {user, isLoading} = useAuth();
     const team = user?.personalInfo?.instituteName || "Not Available";
-    const startDate = "Feb 5th, 2024"; //TODO: Get from user object
+    const startDate = "Coming Soon"; //TODO: Get from user object
     const workingTime = `${user?.contractInfo?.workingHours || "80"}h per Month`;
     const hourlyWage = user?.contractInfo?.hourlyWage !== undefined
         ? `${user.contractInfo.hourlyWage.toFixed(2)} €`

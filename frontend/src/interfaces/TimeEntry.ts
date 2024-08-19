@@ -1,6 +1,7 @@
 export interface TimeEntry {
     _id: string;
     activity: string;
+    activityType: string;
     breakTime: number;
     startTime: string;
     endTime: string;

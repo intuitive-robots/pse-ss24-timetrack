@@ -13,6 +13,7 @@ import {TimeLineIcon} from "../../assets/iconComponents/TimeLineIcon";
 interface TimeEntryListProps {
     entries: TimeEntry[];
     interactable?: boolean;
+    reloadTimesheet?: () => void;
 }
 
 const formatTime = (dateString: string) => {
@@ -20,7 +21,7 @@ const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('de-DE', options);
 };
 
-const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable = true}) => {
+const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable = true, reloadTimesheet}) => {
 
     const calculateWorkTime = (startTime: string, endTime: string, breakTime: number) => {
         const start = new Date(startTime);
@@ -39,9 +40,12 @@ const TimeEntryListView: React.FC<TimeEntryListProps> = ({ entries, interactable
       <ConfirmationPopup
           title="Delete Time Entry"
           description="Are you sure you want to delete this time entry?"
+          primaryButtonText={"Delete Entry"}
           onConfirm={async () => {
               await confirmDelete(entryId);
-              window.location.reload();
+              if (reloadTimesheet) {
+                  reloadTimesheet();
+              }
           }}
           onCancel={closePopup}
       />

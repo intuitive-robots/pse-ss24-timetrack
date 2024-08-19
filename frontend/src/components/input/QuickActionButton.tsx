@@ -1,6 +1,4 @@
 import React from 'react';
-import SignSheetIcon from "images/sign_icon.svg";
-import DocumentStatus from "../status/DocumentStatus";
 
 interface QuickActionButtonProps {
   label: string;

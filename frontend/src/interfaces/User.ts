@@ -6,10 +6,11 @@ export interface User {
   username: string;
   password?: string;
   role: string;
-  profileImageUrl?: string;
   personalInfo: PersonalInfo;
   contractInfo?: ContractInfo;
   accountCreation?: string;
   lastLogin?: string;
   supervisor?: string;
+  slackId?: string;
+  isArchived?: boolean;
 }

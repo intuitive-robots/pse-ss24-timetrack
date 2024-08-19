@@ -9,7 +9,7 @@ from model.user.user import User
 
 class Hiwi(User):
     def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo,
-                 supervisor: str, contract_info: ContractInfo, timesheets=[]):
+                 supervisor: str, contract_info: ContractInfo, is_archived=False, slack_id: str = None):
         """
         Initializes a new instance of the Hiwi class, which extends the User class.
 
@@ -19,22 +19,12 @@ class Hiwi(User):
         :param supervisor: The username of the Hiwi's supervisor.
         :param contract_info: An instance of ContractInfo containing details about the Hiwi's contract.
         """
+        super().__init__(username, password_hash, personal_info, UserRole.HIWI, is_archived=is_archived,
+                         slack_id = slack_id)
 
-        super().__init__(username, password_hash, personal_info, UserRole.HIWI)
         self.supervisor = supervisor
-        self.timesheets = timesheets
         self.contract_info = contract_info
 
-    def add_timesheet(self, timesheet_id: ObjectId):
-        """
-        Adds a timesheet entry to the list of timesheets.
-
-        :param timesheet: The timesheet to be added.
-        """
-        self.timesheets.append(timesheet_id)
-
-    def remove_timesheet(self, timesheet_id: ObjectId):
-        self.timesheets.remove(timesheet_id)
 
     def update_contract_info(self, hourly_wage, working_hours, vacation_hours):
         """
@@ -55,7 +45,6 @@ class Hiwi(User):
         user_dict = super().to_dict()
         user_dict.update({
             "supervisor": self.supervisor,
-            "timesheets": [ts for ts in self.timesheets],
             "contractInfo": self.contract_info.to_dict() if self.contract_info is not None else {},
         })
         return user_dict
@@ -75,6 +64,5 @@ class Hiwi(User):
         supervisor = data['supervisor']
         contract_info = ContractInfo.from_dict(data['contractInfo'])
         hiwi = cls(user.username, user.password_hash, user.personal_info, supervisor, contract_info)
-        hiwi.timesheets = [Timesheet.from_dict(ts) for ts in data['timesheets']]
         return hiwi
 

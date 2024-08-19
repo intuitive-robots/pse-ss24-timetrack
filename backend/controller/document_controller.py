@@ -45,15 +45,17 @@ class DocumentController(MethodView):
 
         """
         request_data = request.args
-        month = int(request_data.get('month'))
-        year = int(request_data.get('year'))
         username = request_data.get('username')
         if not username:
             return jsonify('No username provided'), 400
-        if not year:
+        if self.user_service.is_archived(username):
+            return jsonify('User is archived'), 400
+        if not request_data.get('year'):
             return jsonify('No year provided'), 400
-        if not month:
+        if not request_data.get('month'):
             return jsonify('No month provided'), 400
+        month = int(request_data.get('month'))
+        year = int(request_data.get('year'))
 
         result = self.document_service.generate_document(month, year, username, get_jwt_identity())
         if result.status_code != 200:
@@ -74,7 +76,6 @@ class DocumentController(MethodView):
             # Step 5: Return the response object
             return response
         return jsonify('Failed to generate document'), 500
-
     @jwt_required()
     def generate_multiple_documents(self):
         """
@@ -84,6 +85,9 @@ class DocumentController(MethodView):
 
         request_data = request.args
         usernames = request_data.getlist('usernames')
+        for username in usernames:
+            if self.user_service.is_archived(username):
+                return jsonify('A user is archived'), 400
         timesheet_ids = request_data.getlist('timesheetIds')
         start_date_str = request_data.get('startDate')
         end_date_str = request_data.get('endDate')
@@ -101,7 +105,6 @@ class DocumentController(MethodView):
         elif start_date_str and end_date_str and username:
             start_date = datetime.strptime(start_date_str, '%d-%m-%y')
             end_date = datetime.strptime(end_date_str, '%d-%m-%y')
-
             result = self.document_service.generate_document_in_date_range(start_date, end_date, username,
                                                                            get_jwt_identity())
         else:
@@ -109,7 +112,6 @@ class DocumentController(MethodView):
 
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
-
         return send_file(result.data, as_attachment=True, download_name='documents.zip')
 
     def _dispatch_request(self, endpoint_mapping):
@@ -125,4 +127,3 @@ class DocumentController(MethodView):
             if request_path.endswith(path):
                 return func()
         return jsonify('Endpoint not found'), 404
-

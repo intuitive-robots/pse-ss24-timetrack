@@ -1,6 +1,8 @@
 import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
 import {handleAxiosError} from "../utils/AxiosUtils";
+import {ContractInfo} from "../interfaces/ContractInfo";
+import {data} from "browserslist";
 
 const getHiwis = async () => {
   try {
@@ -41,6 +43,42 @@ const deleteUser = async (username: string) => {
 };
 
 /**
+ * Archives a user by their username.
+ *
+ * @param {string} username - The username of the user to be archived.
+ * @returns {Promise<any>} The response data from the backend.
+ */
+const archiveUser = async (username: string) => {
+  try {
+    const response = await axiosInstance.post('/user/archiveUser', {
+      username
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Archiving user failed', error);
+    handleAxiosError(error);
+  }
+};
+
+/**
+ * Activates a user by their username.
+ *
+ * @param {string} username - The username of the user to be activated.
+ * @returns {Promise<any>} The response data from the backend.
+ */
+const activateUser = async (username: string) => {
+  try {
+    const response = await axiosInstance.post('/user/unarchiveUser', {
+      username
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Activating user failed', error);
+    handleAxiosError(error);
+  }
+};
+
+/**
  * Creates a new user with provided user details.
  * @param userData The data of the user to be created.
  * @returns The response data from the backend.
@@ -62,7 +100,6 @@ const createUser = async (userData: User): Promise<any> => {
  */
 const updateUser = async (userData: User): Promise<any> => {
     try {
-        console.log(userData);
         const response = await axiosInstance.post(`/user/updateUser`, userData);
         return response.data;
     } catch (error) {
@@ -115,5 +152,38 @@ const getSupervisors = async (): Promise<User[]> => {
     }
 };
 
+/**
+ * Fetches contract information for a specific user.
+ *
+ * @param {string} username - The username of the user whose contract information is to be fetched.
+ * @returns {Promise<ContractInfo>} The response data from the backend containing the contract information.
+ */
+const getContractInfo = async (username: string): Promise<ContractInfo> => {
+  try {
+    const response = await axiosInstance.get('user/getContractInfo', {
+      params: { username }
+    });
+    return response.data as ContractInfo;
+  } catch (error) {
+    console.error('Fetching contract information failed', error);
+    handleAxiosError(error);
+    throw error;
+  }
+};
 
-export { getHiwis, getUsersByRole, deleteUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser };
+/**
+ * Retrieves all archived users from the backend.
+ *
+ * @returns {Promise<User[]>} A promise that resolves to an array of User objects representing the archived users.
+ */
+const getArchivedUsers = async (): Promise<User[]> => {
+    try {
+        const response = await axiosInstance.get('/user/getArchivedUsers');
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching archived users:', error.response?.data || error.message);
+        throw new Error(error.response?.data || "Failed to fetch archived users.");
+    }
+};
+
+export { getHiwis, getUsersByRole, deleteUser, archiveUser, activateUser, createUser, getSupervisor, getHiwiSupervisor, getSupervisors, updateUser, getContractInfo, getArchivedUsers };

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 interface ShortInputFieldProps {
-  icon: string;
+  icon: string | React.ReactNode;
   type: 'text' | 'number' | 'time';
   title?: string;
   suffix?: string;
@@ -9,6 +9,7 @@ interface ShortInputFieldProps {
   value: string | number;
   onChange: (value: string) => void;
   size?: string;
+  allowLeadingZero?: boolean;
 }
 
 const ShortInputField: React.FC<ShortInputFieldProps> = ({
@@ -18,8 +19,10 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
   suffix,
   placeholder,
   value,
-  onChange, size
+  onChange, size, allowLeadingZero = false
 }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
   const getWidthClass = (size: string | undefined) => {
     if (!size) return 'w-fit';
     switch (size) {
@@ -30,17 +33,56 @@ const ShortInputField: React.FC<ShortInputFieldProps> = ({
     }
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+    if (type === 'number' && value === 0) {
+      onChange('');
+    }
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (type === 'number' && (value === '' || value === '-')) {
+      onChange('0');
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = e.target.value;
+
+    if (type === 'number') {
+      if (allowLeadingZero) {
+        if (/^\d*\.?\d*$/.test(newValue)) {
+          onChange(newValue);
+        }
+      } else {
+        if (/^(?!0\d)\d*\.?\d*$/.test(newValue)) {
+          onChange(newValue);
+        }
+      }
+    } else {
+      onChange(newValue);
+    }
+  };
+
   return (
     <div className="input-container">
       {title && <h2 className="text-md font-semibold mb-1.5">{title}</h2>}
-      <div className={`input-wrapper flex items-center border border-gray-300 rounded-md overflow-hidden px-4 gap-1 ${getWidthClass(size)}`}>
-        <img src={icon} alt="Icon" className=""/>
+      <div className={`input-wrapper flex items-center border ${isFocused ? 'border-purple-500' : 'border-gray-300'} rounded-md overflow-hidden px-4 gap-1 ${getWidthClass(size)}`}>
+         {typeof icon === 'string' ? (
+          <img src={icon} alt="Icon" className=""/>
+        ) : (
+          <span className="icon-component">{icon}</span>
+        )}
         <input
           type={type}
+          inputMode={type === 'number' ? 'decimal' : 'none'}
           className="input-field flex-1 outline-none p-2"
           placeholder={placeholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          value={value === 0 && isFocused ? '' : value}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onChange={handleChange}
         />
         {suffix && <span className="suffix text-gray-500 p-2">{suffix}</span>}
       </div>

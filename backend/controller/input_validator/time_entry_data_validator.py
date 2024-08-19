@@ -42,25 +42,21 @@ class TimeEntryDataValidator(InputValidator):
 
         if 'entryType' not in time_entry_data or not TimeEntryType.get_type_by_value(time_entry_data['entryType']):
             return ValidationResult(ValidationStatus.FAILURE, "Invalid or unspecified entry type.")
-
         entry_class = self._get_entry_class(time_entry_data['entryType'])
         if not entry_class:
             return ValidationResult(ValidationStatus.FAILURE, "Invalid entry type specified.")
-
         required_keys = entry_class.dict_keys()
         required_keys.remove('_id')
 
         missing_keys = [key for key in required_keys if key not in time_entry_data]
         if missing_keys:
             return ValidationResult(ValidationStatus.FAILURE, f"Missing required fields: {', '.join(missing_keys)}")
-
         # Check each field with a regex pattern if specified
         for field, pattern in self.field_patterns.items():
             if not isinstance(pattern, str):
                 continue
             if field in time_entry_data and not re.match(pattern, str(time_entry_data[field])):
                 return ValidationResult(ValidationStatus.FAILURE, f"Invalid {field}.")
-
         date_fields = ['startTime', 'endTime']
         for field in date_fields:
             try:
@@ -68,7 +64,6 @@ class TimeEntryDataValidator(InputValidator):
                     time_entry_data[field] = datetime.fromisoformat(time_entry_data[field].rstrip('Z'))
             except ValueError:
                 return ValidationResult(ValidationStatus.FAILURE, f"Invalid datetime format in {field}.")
-
         if 'startTime' in time_entry_data and 'endTime' in time_entry_data:
             if not (isinstance(time_entry_data['startTime'], datetime) and isinstance(time_entry_data['endTime'],
                                                                                       datetime)):
@@ -76,11 +71,9 @@ class TimeEntryDataValidator(InputValidator):
                                         "DateTime objects required for startTime and endTime.")
             if time_entry_data['startTime'] >= time_entry_data['endTime']:
                 return ValidationResult(ValidationStatus.FAILURE, "Start time must be earlier than end time.")
-
         not_required_fields = [field for field in time_entry_data if field not in required_keys and field != '_id']
         if not_required_fields:
             return ValidationResult(ValidationStatus.WARNING, f"Skipped fields: {', '.join(not_required_fields)}")
-
         return ValidationResult(ValidationStatus.SUCCESS, "Time entry data is valid.")
 
     def _get_entry_class(self, entry_type_value):
@@ -95,7 +88,6 @@ class TimeEntryDataValidator(InputValidator):
         elif entry_type_value == TimeEntryType.VACATION_ENTRY.value:
             return VacationEntry
         return None
-
     def _validate_entry_type(self, entry_type_value):
         """
         Validates that the provided entry type value represents a valid TimeEntryType.

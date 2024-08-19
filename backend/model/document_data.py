@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import gridfs
 from numpy import uint32
 import calendar
@@ -14,7 +16,7 @@ class DocumentData:
     def __init__(self, month: int, year: int,
                  personal_info: PersonalInfo, contract_info: ContractInfo,
                  overtime_from_previous_month, signature, supervisor_signature, overtime,
-                 time_entries=[], urlaub_anteilig="00:00"):
+                 time_entries=[], urlaub_anteilig="00:00", last_signature_changed=datetime.now()):
         """
         Initializes a new DocumentData object with the given parameters.
         """
@@ -28,6 +30,7 @@ class DocumentData:
         self.supervisor_signature = supervisor_signature
         self.urlaub_anteilig = urlaub_anteilig
         self.overtime = overtime
+        self.last_signature_changed = last_signature_changed
 
 
 
@@ -36,7 +39,9 @@ class DocumentData:
         Calculates the total number of working hours in a month.
         :return: The total number of working hours in a month.
         """
-        duration_minutes = round(sum(entry.get_duration() for entry in self.time_entries), 2)
+        if not self.time_entries:
+            return f"{0:02d}:{0:02d}"
+        duration_minutes = round(sum(entry.get_duration() for entry in self.time_entries), 2) or 0
         hours, minutes = divmod(duration_minutes, 60)
         duration_str = f"{int(hours):02d}:{int(minutes):02d}"
         return duration_str

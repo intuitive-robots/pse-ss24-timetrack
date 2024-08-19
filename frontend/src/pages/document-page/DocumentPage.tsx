@@ -72,7 +72,7 @@ const DocumentPage: React.FC = () => {
                             <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
                                 <p>Work</p>
                                 <div className="w-20"/>
-                                <p>Vacation days</p>
+                                <p>Vacation time</p>
                                 <div className="w-16"/>
                                 <p>Overtime</p>
                             </div>

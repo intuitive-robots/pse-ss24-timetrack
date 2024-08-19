@@ -2,15 +2,21 @@ import React, {useEffect, useState} from 'react';
 import { usePopup } from "./PopupContext";
 import DialogButton from "../input/DialogButton";
 import ShortInputField from "../input/ShortInputField";
-import ActivityIcon from "../../assets/images/activity_icon.svg";
-import PasswordIcon from "../../assets/images/password_icon.svg";
-import NameIcon from "../../assets/images/name_icon.svg";
-import UserIcon from "../../assets/images/username_icon.svg";
 import StepIndicator from "./StepIndicator";
 import Dropdown from "../input/Dropdown";
 import {Roles} from "../auth/roles";
 import {User} from "../../interfaces/User";
 import {createUser, getSupervisors} from "../../services/UserService";
+import {MailIcon} from "../../assets/iconComponents/MailIcon";
+import {SlackIcon} from "../../assets/iconComponents/SlackIcon";
+import {IdIcon} from "../../assets/iconComponents/IdIcon";
+import {SalaryIcon} from "../../assets/iconComponents/SalaryIcon";
+import {BriefcaseIcon} from "../../assets/iconComponents/BriefcaseIcon";
+import {SupervisorIcon} from "../../assets/iconComponents/SupervisorIcon";
+import {RoleIcon} from "../../assets/iconComponents/RoleIcon";
+import {UserIcon} from "../../assets/iconComponents/UserIcon";
+import {NameIcon} from "../../assets/iconComponents/NameIcon";
+import {PasswordIcon} from "../../assets/iconComponents/PasswordIcon";
 
 interface FormData {
     username: string;
@@ -23,6 +29,7 @@ interface FormData {
     supervisor: string;
     email: string;
     personalNumber: string;
+    slackId: string;
 }
 
 const AddUserPopup: React.FC = () => {
@@ -38,31 +45,46 @@ const AddUserPopup: React.FC = () => {
         workingTime: 0,
         supervisor: '',
         email: '',
-        personalNumber: ''
+        personalNumber: '',
+        slackId: ''
     });
 
     const [supervisors, setSupervisors] = useState<any[]>([]);
-    const roleOptions = Object.values(Roles).map(role => ({
-        label: role,
-        value: role
-    }));
+    const [roleOptions, setRoleOptions] = useState(
+        Object.values(Roles).map(role => ({
+            label: role,
+            value: role
+        }))
+    );
 
 
     useEffect(() => {
         const fetchSupervisors = async () => {
-            const fetchedSupervisors: any[] = await getSupervisors();
-            const supervisorOptions = fetchedSupervisors.map(sup => ({
-                label: `${sup.firstName} ${sup.lastName}`,
-                value: sup.username
-            }));
-            setSupervisors(supervisorOptions);
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                supervisor: prevFormData.supervisor || supervisorOptions[0].value
-            }));
+            try {
+                const fetchedSupervisors: any[] = await getSupervisors();
+                const supervisorOptions = fetchedSupervisors.map(sup => ({
+                        label: `${sup.firstName} ${sup.lastName}`,
+                        value: sup.username
+                    }));
+                    setSupervisors(supervisorOptions);
+                    setFormData(prevFormData => ({
+                        ...prevFormData,
+                        supervisor: prevFormData.supervisor || supervisorOptions[0].value
+                    }));
+            } catch (error) {
+                setRoleOptions(prevOptions =>
+                        prevOptions.filter(option => option.value !== Roles.Hiwi)
+                );
+                setFormData(prevFormData => ({
+                        ...prevFormData,
+                        role: Roles.Supervisor
+                    }));
+                console.error("Error fetching supervisors:", error);
+            }
         };
+
         fetchSupervisors();
-}, []);
+    }, []);
 
 
     const creationSteps = ['Personal Information', 'Contact Details'];
@@ -110,7 +132,7 @@ const AddUserPopup: React.FC = () => {
     const handleChange = (field: keyof FormData) => (value: string) => {
         let formattedValue: any = value;
 
-        if (field === 'hourlyWage' || field === 'workingTime' || field === 'personalNumber') {
+        if (field === 'hourlyWage' || field === 'workingTime') {
             formattedValue = parseFloat(value);
             if (isNaN(formattedValue)) {
                 formattedValue = 0;
@@ -167,7 +189,8 @@ const AddUserPopup: React.FC = () => {
                 },
                 supervisor: formData.supervisor,
                 accountCreation: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
+                lastLogin: new Date().toISOString(),
+                slackId: formData.slackId
             };
 
             console.log(newUser);
@@ -188,40 +211,42 @@ const AddUserPopup: React.FC = () => {
             <div className="mt-4 space-y-4">
                 {step === 1 && (
                     <>
-                        <ShortInputField title="Username" value={formData.username} onChange={handleChange('username')} icon={UserIcon} type="text" size={"medium"} />
+                        <ShortInputField title="Username" value={formData.username} onChange={handleChange('username')} icon={<UserIcon/>} type="text" size={"medium"} />
                         <div className="flex items-center gap-4">
-                            <ShortInputField title="Password" type="text" value={formData.password} onChange={handleChange('password')} icon={PasswordIcon} size="medium"/>
+                            <ShortInputField title="Password" type="text" value={formData.password} onChange={handleChange('password')} icon={<PasswordIcon/>} size="medium"/>
                             <button onClick={generateRandomPassword} className="px-4 py-2 mt-8 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Generate</button>
                         </div>
-                        <Dropdown title="Role" value={formData.role} onChange={handleChange('role')} icon={ActivityIcon} options={roleOptions} />
+                        <Dropdown title="Role" value={formData.role} onChange={handleChange('role')} icon={<RoleIcon/>} options={roleOptions} />
                     </>
                 )}
                 {step === 2 && (
                     <>
                         <div className="flex flex-row gap-6">
                             <ShortInputField title="First Name" value={formData.firstName} size={"medium"}
-                                         onChange={handleChange('firstName')} icon={NameIcon} type="text"/>
+                                         onChange={handleChange('firstName')} icon={<NameIcon/>} type="text"/>
                             <ShortInputField title="Last Name" value={formData.lastName} onChange={handleChange('lastName')} size={"medium"}
-                                             icon={NameIcon} type="text"/>
+                                             icon={<NameIcon/>} type="text"/>
                         </div>
                         <ShortInputField title="E-Mail" value={formData.email} onChange={handleChange('email')}
-                                         icon={ActivityIcon} type="text"/>
+                                         icon={<MailIcon/>} type="text"/>
+                        <ShortInputField title="Slack-ID" value={formData.slackId} onChange={handleChange('slackId')}
+                                         icon={<SlackIcon/>} type="text"/>
                         <ShortInputField title="Personal Number (SAP-ID)" value={formData.personalNumber} size={"medium"}
-                                         onChange={handleChange('personalNumber')} icon={ActivityIcon} type="number"/>
+                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number" allowLeadingZero={true}/>
                     </>
                 )}
                 {step === 3 && formData.role === Roles.Hiwi && (
                     <>
                         <ShortInputField title="Hourly Wage" type="number" value={formData.hourlyWage}
-                                         onChange={handleChange('hourlyWage')} icon={ActivityIcon}/>
+                                         onChange={handleChange('hourlyWage')} icon={<SalaryIcon/>}/>
                         <ShortInputField title="Monthly Working Hours" value={formData.workingTime}
-                                         onChange={handleChange('workingTime')} icon={ActivityIcon} type="number" />
+                                         onChange={handleChange('workingTime')} icon={<BriefcaseIcon/>} type="number" />
                         <Dropdown
                             title="Supervisor"
                             value={formData.supervisor}
                             onChange={handleChange('supervisor')}
                             options={supervisors}
-                            icon={ActivityIcon}
+                            icon={<SupervisorIcon/>}
                             width={"w-56"}
                         />
                     </>

@@ -9,7 +9,12 @@ from model.repository.time_entry_repository import TimeEntryRepository
 from model.time_entry import TimeEntry
 from model.request_result import RequestResult
 from model.time_entry_type import TimeEntryType
+from model.time_entry_validator.break_length_strategy import BreakLengthStrategy
+from model.time_entry_validator.holiday_strategy import HolidayStrategy
 from model.time_entry_validator.time_entry_validator import TimeEntryValidator
+from model.time_entry_validator.vacation_time_strategy import VacationTimeStrategy
+from model.time_entry_validator.weekend_strategy import WeekendStrategy
+from model.time_entry_validator.working_time_strategy import WorkingTimeStrategy
 from model.timesheet_status import TimesheetStatus
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
@@ -35,16 +40,26 @@ class TimeEntryService:
         self.time_entry_repository = TimeEntryRepository.get_instance()
         self.timesheet_service = TimesheetService()
         self.entry_input_validator = TimeEntryDataValidator()
-        self.entry_validator = TimeEntryValidator()
+
+        self.work_entry_validator = TimeEntryValidator()
+        self.vacation_entry_validator = TimeEntryValidator()
+
+        self.work_entry_validator.add_validation_rule(WorkingTimeStrategy())
+        self.work_entry_validator.add_validation_rule(BreakLengthStrategy())
+        self.work_entry_validator.add_validation_rule(HolidayStrategy())
+        self.work_entry_validator.add_validation_rule(WeekendStrategy())
+
+        self.vacation_entry_validator.add_validation_rule(HolidayStrategy())
+        self.vacation_entry_validator.add_validation_rule(VacationTimeStrategy())
+        self.vacation_entry_validator.add_validation_rule(WeekendStrategy())
+
         self.user_service = UserService()
-
-
         self.entry_type_mapping = {
             TimeEntryType.WORK_ENTRY: WorkEntry,
             TimeEntryType.VACATION_ENTRY: VacationEntry
         }
 
-    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str):
+    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str): #pragma: no cover
         """
         General method to handle addition of work or vacation time entries.
 
@@ -57,7 +72,7 @@ class TimeEntryService:
         """
         entry_data['entryType'] = entry_type.value
         if entry_data.get('timesheetId') is None:
-            start_date = datetime.datetime.fromisoformat(entry_data['startTime'])
+            start_date = datetime.datetime.fromisoformat(entry_data['startTime'].replace('Z', ""))
             result = self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
             timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
             entry_data['timesheetId'] = str(timesheet_id)
@@ -79,7 +94,7 @@ class TimeEntryService:
         time_entry = entry_class.from_dict(entry_data)
 
         # Validate the entry through strategy pattern
-        strategy_validation_results = self.entry_validator.validate_entry(time_entry)
+        strategy_validation_results = self._strategy_validate(time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
@@ -96,7 +111,7 @@ class TimeEntryService:
             self.user_service.remove_vacation_minutes(username, time_entry.get_duration())
         self.user_service.add_overtime_minutes(username, time_entry.get_duration())
 
-        result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_and_vacation_time(time_entry.timesheet_id)
         if not result.is_successful:
             return result
 
@@ -110,6 +125,27 @@ class TimeEntryService:
                                      status_code=200, data={"_id": entry_creation_result.data["_id"]})
         return RequestResult(True, f"{entry_type.name} entry added successfully", status_code=200,
                              data={"_id": entry_creation_result.data["_id"]})
+
+    def _strategy_validate(self, entry: TimeEntry):
+        """
+        Validates a time entry using the strategy pattern.
+
+        :param entry: The time entry to validate.
+        :type entry: TimeEntry
+        :return: A list of ValidationResult objects containing the results of the validation.
+        :rtype: list[ValidationResult]
+        """
+        entry_validator = None
+        if entry.entry_type == TimeEntryType.WORK_ENTRY:
+            entry_validator = self.work_entry_validator
+        elif entry.entry_type == TimeEntryType.VACATION_ENTRY:
+            entry_validator = self.vacation_entry_validator
+
+        if entry_validator is not None:
+            strategy_validation_results = entry_validator.validate_entry(entry)
+            return strategy_validation_results
+        return []
+
 
     def create_work_entry(self, entry_data: dict, username: str) -> RequestResult:
         """
@@ -176,13 +212,13 @@ class TimeEntryService:
             return RequestResult(False, "Cannot update time entry to a different month or year", status_code=400)
 
         # Validate the updated entry through strategy pattern
-        strategy_validation_results = self.entry_validator.validate_entry(updated_time_entry)
+
+        strategy_validation_results = self._strategy_validate(updated_time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
-
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
-        if not repo_result.is_successful:
+        if not repo_result.is_successful: #pragma: no cover
             self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
 
             if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
@@ -199,7 +235,7 @@ class TimeEntryService:
             elif update_entry.get_duration() > existing_entry.get_duration():
                 self.user_service.remove_overtime_minutes(get_jwt_identity(), update_entry.get_duration() - existing_entry.get_duration())
             return repo_result
-        result = self.timesheet_service.set_total_time(updated_time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_and_vacation_time(updated_time_entry.timesheet_id)
         if not result.is_successful:
             return result
         if validation_result.status == ValidationStatus.WARNING:
@@ -235,12 +271,29 @@ class TimeEntryService:
         self.user_service.remove_overtime_minutes(get_jwt_identity(), time_entry.get_duration())
         self.timesheet_service.calculate_overtime(time_entry_data['timesheetId'])
 
-        result = self.timesheet_service.set_total_time(time_entry.timesheet_id)
+        result = self.timesheet_service.set_total_and_vacation_time(time_entry.timesheet_id)
         if not result.is_successful and delete_result.is_successful:
             result.message = "Time entry deleted, but total hours could not be updated."
             return result
-
         return delete_result
+
+    def delete_time_entries_by_timesheet_id(self, timesheet_id: str) -> RequestResult:
+        """
+        Deletes all time entries of a user that is being deleted.
+
+        :param timesheet_id: The id of the timesheet for which to delete all time entries.
+        :type timesheet_id: str
+        :return: A RequestResult object containing the result of the delete operation.
+        :rtype: RequestResult
+        """
+        time_entries = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
+        for entry in time_entries:
+            entry_id = str(entry['_id'])
+            delete_result = self.time_entry_repository.delete_time_entry(entry_id)
+            if not delete_result.is_successful:
+                return delete_result
+
+        return RequestResult(True, "All time entries deleted successfully", status_code=200)
 
     def get_entries_of_timesheet(self, timesheet_id: str):
         """
@@ -256,7 +309,7 @@ class TimeEntryService:
         entries_data = self.time_entry_repository.get_time_entries_by_timesheet_id(timesheet_id)
 
         if not entries_data:
-            RequestResult(is_successful=False, message="No entries found", status_code=404)
+            return RequestResult(is_successful=False, message="No entries found", status_code=404)
         time_entries = []
         for entry_data in entries_data:
             entry_type = TimeEntryType.get_type_by_value(entry_data['entryType'])

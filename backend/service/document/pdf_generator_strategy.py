@@ -1,5 +1,7 @@
 import os
 from datetime import datetime
+
+import pytz
 from fillpdf import fillpdfs
 
 from model.vacation_entry import VacationEntry
@@ -37,6 +39,10 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
 
         if not os.path.exists(self.TEMP_DIR):
             os.makedirs(self.TEMP_DIR)
+
+        if document_data.time_entries is None:
+            document_data.time_entries = []
+
         data_dict = self._prepare_data_dict(document_data)
         vacation_minutes = 0
         for i in range(len(document_data.time_entries)):
@@ -112,9 +118,12 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
         else:
             formatted_data[f"Tätigkeit Stichwort ProjektRow{i + 1}"] = "Urlaub"
 
-        formatted_data[f"ttmmjjRow{i + 1}"] = time_entry.start_time.strftime("%d.%m.%y")
-        formatted_data[f"hhmmRow{i + 1}"] = time_entry.start_time.strftime("%H:%M")
-        formatted_data[f"hhmmRow{i + 1}_2"] = time_entry.end_time.strftime("%H:%M")
+        berlin_tz = pytz.timezone('Europe/Berlin')
+        start_time_berlin = time_entry.start_time.replace(tzinfo=pytz.utc).astimezone(berlin_tz)
+        end_time_berlin = time_entry.end_time.replace(tzinfo=pytz.utc).astimezone(berlin_tz)
+        formatted_data[f"ttmmjjRow{i + 1}"] = start_time_berlin.strftime("%d.%m.%y")
+        formatted_data[f"hhmmRow{i + 1}"] = start_time_berlin.strftime("%H:%M")
+        formatted_data[f"hhmmRow{i + 1}_2"] = end_time_berlin.strftime("%H:%M")
         formatted_data[f"hhmmRow{i + 1}_4"] = time_entry.get_duration_hhmm()
         return formatted_data
 
@@ -144,8 +153,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
             "Urlaub anteilig": "",
             "Übertrag vom Vormonat": document_data.overtime_from_previous_month,
             "Übertrag in den Folgemonat": document_data.overtime,
-            "Ich bestätige die Richtigkeit der Angaben": datetime.now().strftime("%d.%m.%Y, "),
-            "undefined": datetime.now().strftime("%d.%m.%Y, ")
+            "Ich bestätige die Richtigkeit der Angaben": document_data.last_signature_changed.strftime("%d.%m.%Y, "),
+            "undefined": document_data.last_signature_changed.strftime("%d.%m.%Y, ")
         }
         return data_dict
 
@@ -177,6 +186,8 @@ class PDFGeneratorStrategy(DocumentGeneratorStrategy):
             return RequestResult(False, "No data provided", 400)
 
         for document_data in documents:
+            if not document_data:
+                return RequestResult(False, "No data provided", 400)
             result = self.generate_document(document_data)
             if result.status_code != 200:
                 return RequestResult(False, "Some of the documents couldn't be generated",

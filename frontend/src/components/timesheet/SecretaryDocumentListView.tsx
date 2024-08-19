@@ -2,7 +2,6 @@ import React from 'react';
 import {Timesheet} from "../../interfaces/Timesheet";
 import {useAuth} from "../../context/AuthContext";
 import {Roles} from "../auth/roles";
-import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import SecretaryTimesheetTile from '../SecretaryTimesheetTile';
 import {handleDownload} from "../../services/DocumentService";
 import {User} from "../../interfaces/User";
@@ -24,32 +23,32 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                 {sheets.map((sheet, index) => {
                     let hiwi = hiwis.find(h => h.username === sheet.username) || null;
 
+                    const key = `${sheet._id}-${index}`;
+
                     return hiwi ? (
                         <SecretaryTimesheetTile
-                        key={sheet._id}
-                        totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
-                        overtime={minutesToHourMinuteFormatted(sheet.overtime)}
-                        vacationDays={0}
-                        status={sheet.status}
-                         onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
-                        username={sheet.username}
-                        firstName={hiwi.personalInfo.firstName}
-                        lastName={hiwi.personalInfo.lastName}
-                        profileImageUrl={ProfilePlaceholder} // TODO: profileImage of Hiwi by username
+                            key={key}
+                            totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
+                            overtime={minutesToHourMinuteFormatted(sheet.overtime)}
+                            vacationDays={0}
+                            status={sheet.status}
+                             onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
+                            username={sheet.username}
+                            firstName={hiwi.personalInfo.firstName}
+                            lastName={hiwi.personalInfo.lastName}
                         />
                     ) : (
                         <SecretaryTimesheetTile
-                        key={sheet._id}
-                        totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
-                        overtime={minutesToHourMinuteFormatted(sheet.overtime)}
-                        vacationDays={0}
-                        status={sheet.status}
-                        onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
-                        username={sheet.username}
-                        firstName={"FirstName"}
-                        lastName={"LastName"}
-                        profileImageUrl={ProfilePlaceholder} // TODO: profileImage of Hiwi by username
-                    />
+                            key={key}
+                            totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
+                            overtime={minutesToHourMinuteFormatted(sheet.overtime)}
+                            vacationDays={0}
+                            status={sheet.status}
+                            onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
+                            username={sheet.username}
+                            firstName={"FirstName"}
+                            lastName={"LastName"}
+                        />
                     );
 
 

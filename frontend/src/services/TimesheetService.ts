@@ -36,12 +36,17 @@ const approveTimesheet = async (timesheetId: string) => {
 
 /**
  * Requests a change to the current timesheet.
+ * @param timesheetId - The ID of the timesheet for which a change is requested.
+ * @param description - A message describing the requested change.
  * @returns The response data from the timesheet change request.
  * @throws An error if the request fails.
  */
-const requestChange = async (timesheetId: string) => {
+const requestChange = async (timesheetId: string, description: string) => {
   try {
-    const response = await axiosInstance.patch('/timesheet/requestChange', {"_id": timesheetId});
+    const response = await axiosInstance.patch('/timesheet/requestChange', {
+      "_id": timesheetId,
+      "message": description
+    });
     return response.data;
   } catch (error) {
     console.error('Requesting timesheet change failed');

@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { usePopup } from "./PopupContext";
 import DialogButton from "../input/DialogButton";
 import ShortInputField from "../input/ShortInputField";
-import ActivityIcon from "../../assets/images/activity_icon.svg";
-import NameIcon from "../../assets/images/name_icon.svg";
 import StepIndicator from "./StepIndicator";
 import Dropdown from "../input/Dropdown";
 import { Roles } from "../auth/roles";
@@ -11,6 +9,12 @@ import {User} from "../../interfaces/User";
 import {getSupervisors, updateUser} from "../../services/UserService";
 import DisplayField from "../display/DisplayField";
 import {UserIcon} from "../../assets/iconComponents/UserIcon";
+import {NameIcon} from "../../assets/iconComponents/NameIcon";
+import {MailIcon} from "../../assets/iconComponents/MailIcon";
+import {IdIcon} from "../../assets/iconComponents/IdIcon";
+import {SalaryIcon} from "../../assets/iconComponents/SalaryIcon";
+import {BriefcaseIcon} from "../../assets/iconComponents/BriefcaseIcon";
+import {SupervisorIcon} from "../../assets/iconComponents/SupervisorIcon";
 
 interface EditFormData {
     username: string;
@@ -40,12 +44,12 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     });
 
     const [supervisors, setSupervisors] = useState<any[]>([]);
-    const roleOptions = Object.values(Roles).map(role => ({
-        label: role,
-        value: role
-    }));
 
     useEffect(() => {
+        if (userData.role !== Roles.Hiwi) {
+            return;
+        }
+
         const fetchSupervisors = async () => {
             const fetchedSupervisors: any[] = await getSupervisors();
             setSupervisors(fetchedSupervisors.map(sup => ({
@@ -57,9 +61,23 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
     }, []);
 
     const handleChange = (field: keyof EditFormData) => (value: string) => {
-        setFormData(prevState => ({ ...prevState, [field]: value }));
-        console.log(formData);
-    };
+    let formattedValue: any = value;
+
+    if (field === 'hourlyWage' || field === 'workingTime') {
+        formattedValue = value.replace(/,/g, '.');
+        const numericValue = parseFloat(formattedValue);
+        if (!isNaN(numericValue)) {
+            formattedValue = numericValue;
+        } else {
+            formattedValue = 0;
+        }
+    }
+
+    setFormData(prevState => ({
+        ...prevState,
+        [field]: formattedValue
+    }));
+};
 
     const handleNext = () => {
         if (step < 3) {
@@ -98,7 +116,6 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
         try {
             const updatedUser: User = {
                 ...userData,
-                ...formData,
                 personalInfo: {
                     ...userData.personalInfo,
                     firstName: formData.firstName,
@@ -151,28 +168,28 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
                     <>
                         <div className="flex flex-row gap-6">
                             <ShortInputField title="First Name" value={formData.firstName} size={"medium"}
-                                         onChange={handleChange('firstName')} icon={NameIcon} type="text"/>
+                                         onChange={handleChange('firstName')} icon={<NameIcon/>} type="text"/>
                             <ShortInputField title="Last Name" value={formData.lastName} onChange={handleChange('lastName')} size={"medium"}
-                                             icon={NameIcon} type="text"/>
+                                             icon={<NameIcon/>} type="text"/>
                         </div>
                         <ShortInputField title="E-Mail" value={formData.email} onChange={handleChange('email')}
-                                         icon={ActivityIcon} type="text"/>
-                        <ShortInputField title="Personal Number" value={formData.personalNumber} size={"medium"}
-                                         onChange={handleChange('personalNumber')} icon={ActivityIcon} type="number"/>
+                                         icon={<MailIcon/>} type="text"/>
+                        <ShortInputField title="Personal Number (SAP-ID)" value={formData.personalNumber} size={"medium"}
+                                         onChange={handleChange('personalNumber')} icon={<IdIcon/>} type="number" allowLeadingZero={true}/>
                     </>
                 )}
                 {step === 3 && formData.role === Roles.Hiwi && (
                     <>
                         <ShortInputField title="Hourly Wage" type="number" value={formData.hourlyWage}
-                                         onChange={handleChange('hourlyWage')} icon={ActivityIcon}/>
+                                         onChange={handleChange('hourlyWage')} icon={<SalaryIcon/>}/>
                         <ShortInputField title="Monthly Working Hours" value={formData.workingTime}
-                                         onChange={handleChange('workingTime')} icon={ActivityIcon} type="number" />
+                                         onChange={handleChange('workingTime')} icon={<BriefcaseIcon/>} type="number" />
                         <Dropdown
                             title="Supervisor"
                             value={formData.supervisor}
                             onChange={handleChange('supervisor')}
                             options={supervisors}
-                            icon={ActivityIcon}
+                            icon={<SupervisorIcon/>}
                             width={"w-56"}
                         />
                     </>

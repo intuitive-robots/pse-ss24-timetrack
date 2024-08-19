@@ -8,8 +8,8 @@ db = initialize_db()
 
 
 class User:
-
-    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole, account_creation: datetime.datetime= datetime.datetime.now()):
+    def __init__(self, username: str, password_hash: str, personal_info: PersonalInfo, role: UserRole, 
+                 account_creation: datetime.datetime= datetime.datetime.utcnow(), is_archived: bool = False, slack_id: str = None):
         """
         Initializes a new User object with basic details.
 
@@ -18,12 +18,14 @@ class User:
         :param personal_info: An instance of PersonalInfo containing the user's personal details.
         :param role: UserRole enum indicating the user's role within the system.
         """
+        self.is_archived = is_archived
         self.username = username
         self.password_hash = password_hash
         self.personal_info = personal_info
         self.role = role
         self.account_creation = account_creation
         self.last_login = None
+        self.slack_id = slack_id
 
     def is_admin(self):
         """
@@ -46,9 +48,11 @@ class User:
         personal_info_data = user_data["personalInfo"]
         role = UserRole.get_role_by_value(user_data["role"])
         account_creation = user_data.get("accountCreation")
+        slack_id = user_data.get("slackId")
         personal_info = PersonalInfo.from_dict(personal_info_data)
+        is_archived = user_data.get("isArchived")
 
-        return User(username, password_hash, personal_info, role, account_creation)
+        return User(username, password_hash, personal_info, role, account_creation, is_archived, slack_id)
 
     def to_dict(self):
         """
@@ -63,6 +67,8 @@ class User:
             "role": str(self.role),
             "accountCreation": self.account_creation,
             "lastLogin": self.last_login,
+            "slackId": self.slack_id,
+            "isArchived": self.is_archived
         }
 
     @classmethod
@@ -72,5 +78,5 @@ class User:
 
         :return: A list of keys representing the user's data fields.
         """
-        dummy_user = cls("username", "password_hash", PersonalInfo("", "", "", "", ""), UserRole.ADMIN)
+        dummy_user = cls("username", "password_hash", PersonalInfo("", "", "", "", ""), UserRole.ADMIN, is_archived=False, slack_id = "")
         return list(dummy_user.to_dict().keys())

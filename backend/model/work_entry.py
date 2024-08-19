@@ -1,6 +1,7 @@
 import math
 from datetime import datetime, timedelta
 
+from model.activity_type import ActivityType
 from model.time_entry import TimeEntry
 from model.time_entry_type import TimeEntryType
 
@@ -18,7 +19,7 @@ class WorkEntry(TimeEntry):
 
     def __init__(self, timesheet_id: str,
                  start_time: datetime, end_time: datetime, break_time: float,
-                 activity: str, project_name: str, time_entry_id=None):
+                 activity: str, project_name: str, time_entry_id=None, activity_type=None):
         """
         Initializes a new WorkEntry object with specified timesheet ID, start and end times, break time, activity, and project name.
 
@@ -36,12 +37,15 @@ class WorkEntry(TimeEntry):
         :type project_name: str
         :param time_entry_id: Optional unique identifier for the time entry itself.
         :type time_entry_id: str, optional
+        :param activity_type: The type of activity performed during the work entry.
+        :type activity_type: ActivityType, optional
         """
         super().__init__(timesheet_id, start_time, end_time, TimeEntryType.WORK_ENTRY, time_entry_id=time_entry_id)
 
         self.break_time = break_time
         self.activity = activity
         self.project_name = project_name
+        self.activity_type = activity_type
 
         # self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())
         # self.time_entry_validator.add_validation_rule(HolidayStrategy())
@@ -58,7 +62,8 @@ class WorkEntry(TimeEntry):
         data.update({
             "breakTime": self.break_time,
             "activity": self.activity,
-            "projectName": self.project_name
+            "projectName": self.project_name,
+            "activityType": self.activity_type.value if self.activity_type else None
         })
         return data
 
@@ -73,7 +78,8 @@ class WorkEntry(TimeEntry):
         data.update({
             "breakTime": self.break_time,
             "activity": self.activity,
-            "projectName": self.project_name
+            "projectName": self.project_name,
+            "activityType": self.activity_type.value if self.activity_type else None
         })
         return data
 
@@ -82,7 +88,10 @@ class WorkEntry(TimeEntry):
         Returns the activity and project name as a string.
         :return: The activity and project name as a string.
         """
-        return f"{self.activity} - {self.project_name}"
+        if self.activity_type:
+            return f"{self.activity_type.value} - {self.project_name}"
+        else:
+            return self.project_name
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -99,15 +108,19 @@ class WorkEntry(TimeEntry):
         end_datetime = data['endTime']
 
         if isinstance(start_datetime, str):
-            start_datetime = datetime.fromisoformat(data['startTime'])
+            start_datetime = datetime.fromisoformat(data['startTime'].replace('Z', ""))
 
         if isinstance(end_datetime, str):
-            end_datetime = datetime.fromisoformat(data['endTime'])
+            end_datetime = datetime.fromisoformat(data['endTime'].replace('Z', ""))
         time_entry_id = data.get('_id', None)
         timesheet_id = data['timesheetId']
         break_time = data.get('breakTime', 0)
         activity = data.get('activity', '')
         project_name = data.get('projectName', '')
+        if 'activityType' in data:
+            activity_type = ActivityType.get_type_by_value(data['activityType'])
+        else:
+            activity_type = None
 
         return cls(
             time_entry_id=time_entry_id,
@@ -116,7 +129,8 @@ class WorkEntry(TimeEntry):
             end_time=end_datetime,
             break_time=break_time,
             activity=activity,
-            project_name=project_name
+            project_name=project_name,
+            activity_type=activity_type
         )
 
     @classmethod
@@ -127,7 +141,7 @@ class WorkEntry(TimeEntry):
         :return: A list of string keys that represent the attributes of a WorkEntry object.
         :rtype: list[str]
         """
-        dummy_start_time = datetime.now()
+        dummy_start_time = datetime.utcnow()
         dummy_end_time = dummy_start_time + timedelta(hours=1)
         dummy_entry = cls("dummy_timesheet_id", dummy_start_time, dummy_end_time, 0, "", "")
         return list(dummy_entry.to_dict().keys())
