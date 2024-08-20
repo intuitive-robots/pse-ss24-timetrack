@@ -1,10 +1,10 @@
 """ This is the main python module where we call the run method of the flask app."""
 
 import secrets
-from datetime import timedelta, datetime
-from flask import Flask, jsonify
+from datetime import timedelta
+from flask import Flask
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, jwt_required
+from flask_jwt_extended import JWTManager
 from auth import init_auth_routes
 
 from controller.document_controller import DocumentController, document_blueprint
@@ -12,18 +12,8 @@ from controller.notification_controller import NotificationController, notificat
 from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
-from db import initialize_db, check_db_connection
-from model.repository.time_entry_repository import TimeEntryRepository
-from model.repository.timesheet_repository import TimesheetRepository
-from model.repository.user_repository import UserRepository
-from model.timesheet import Timesheet
-from model.user.personal_information import PersonalInfo
-from model.user.role import UserRole
-from model.user.user import User
-from model.work_entry import WorkEntry
+from db import initialize_db
 from service.notification_service import NotificationService
-from utils.security_utils import SecurityUtils
-from service.timesheet_service import TimesheetService
 from apscheduler.schedulers.background import BackgroundScheduler
 from service.setup_service import SetupService
 
@@ -121,4 +111,4 @@ def home():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=5000)

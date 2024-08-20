@@ -1,3 +1,5 @@
+import os
+
 from pymongo import MongoClient
 
 db = None
@@ -12,7 +14,9 @@ def initialize_db():
     global client
     # TODO: Hard coding is usually not a good idea. We could use environment variables instead, when we have time.
     # TODO: For deployment, we should change the IP to localhost
-    client = MongoClient('158.180.40.137', 27017, username='admin', password='TimeTracking123!')
+    #client = MongoClient('158.180.40.137', 27017, username='admin', password='TimeTracking123!')
+    db_host = os.getenv('DB_HOST', 'localhost') # Get the DB_HOST environment variable or use 'localhost' as default
+    client = MongoClient(db_host, 27017, username='admin', password='TimeTracking123!')
     db = client.timetracking_db
     #TODO: Return Db if not none
     return db
