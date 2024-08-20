@@ -32,14 +32,6 @@ const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, 
                 </div>
             </div>
 
-            {/*<div className="flex flex-row">*/}
-            {/*    <p className="text-md font-semibold text-[#3B3B3B]">{totalTimeString}</p>*/}
-            {/*    <div className="w-[50px]"/>*/}
-            {/*    <p className="text-md font-semibold text-[#3B3B3B]">{vacationDaysString}</p>*/}
-            {/*    <div className="w-[33px]"/>*/}
-            {/*    <p className="text-md font-semibold text-[#3B3B3B]">{overtimeString}</p>*/}
-            {/*</div>*/}
-
             <ListTileInfo
                 items={[totalTime, vacationMinutes, overtime]}
                 gap={"lg:gap-20 gap-8 transition-all"}

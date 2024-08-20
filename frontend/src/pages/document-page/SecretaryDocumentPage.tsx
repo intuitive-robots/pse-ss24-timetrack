@@ -24,6 +24,7 @@ const SecretaryDocumentPage: React.FC = () => {
     const [hiwis, setHiwis] = useState<User[]>([]);
     const [supervisors, setSupervisors] = useState<any[]>([]);
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
+    const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
@@ -114,9 +115,24 @@ const SecretaryDocumentPage: React.FC = () => {
     }, [hiwis, month, year]);
 
 
-  const filteredTimesheets = timesheets
-        ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
-        : [];
+  useEffect(() => {
+        const filterAndSortTimesheets = () => {
+            let filteredSheets = filter
+                ? timesheets.filter(timesheet => timesheet && timesheet.status === filter)
+                : timesheets;
+
+            // Sort: Non-"NoTimesheet" statuses first
+            filteredSheets = filteredSheets.sort((a, b) => {
+                if (a.status === statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet]) return 1;
+                if (b.status === statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet]) return -1;
+                return 0;
+            });
+
+            setFilteredTimesheets(filteredSheets);
+        };
+
+        filterAndSortTimesheets();
+    }, [filter, timesheets]);
 
     const handleDownloadAll = async () => {
         const completeTimesheets = timesheets.filter(sheet => sheet.status === StatusType.Complete);
