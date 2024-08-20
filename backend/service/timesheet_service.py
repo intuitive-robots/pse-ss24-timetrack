@@ -109,9 +109,18 @@ class TimesheetService:
         supervisor_username = hiwi_data.supervisor
         if supervisor_username is None:
             return RequestResult(False, "Supervisor not found", 404)
+        if timesheet_data['totalTime'] is None:
+            return RequestResult(False, "Total time not found", 404)
+        total_time = timesheet_data['totalTime']
+        contract_data = self.user_service.get_contract_info(timesheet_data["username"])
+        if contract_data.is_successful is False:
+            return RequestResult(False, "Contract data for hiwi not found.", 404)
+        if total_time / contract_data.data.working_hours < 0.8:
+            return RequestResult(False, "Less than 80% of expected working hours entered in timesheet.", 404)
         timesheet = Timesheet.from_dict(timesheet_data)
         if timesheet is None:
             return RequestResult(False, "Failed to parse timesheet", 500)
+
         validation_result = self.timesheet_validator.validate_timesheet(timesheet)
         for result in validation_result:
             if result.status == ValidationStatus.FAILURE:
