@@ -18,10 +18,17 @@ ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
 
 # Build the React app for production
 RUN npm run build
-RUN npm install -g serve
+
+
+# Step 2: Serve the built app using a lightweight web server (nginx)
+FROM nginx:stable-alpine
+
+# Copy the built React app from the build stage to nginx's default serving directory
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose port 80 to the outside world
 EXPOSE 80
 
 # Start nginx when the container starts
-CMD ["serve", "-s", "build", "-l", "80"]
+CMD ["nginx", "-g", "daemon off;"]

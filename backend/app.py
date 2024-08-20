@@ -2,7 +2,9 @@
 
 import secrets
 from datetime import timedelta
-from flask import Flask
+from logging.handlers import RotatingFileHandler
+
+from flask import Flask, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from auth import init_auth_routes
@@ -15,11 +17,14 @@ from controller.user_controller import UserController, user_blueprint
 from db import initialize_db
 from service.notification_service import NotificationService
 from apscheduler.schedulers.background import BackgroundScheduler
+import logging
 from service.setup_service import SetupService
+
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
 db = initialize_db()
+
 
 setup_service = SetupService()
 setup_service.run_setup()
