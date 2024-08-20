@@ -14,38 +14,47 @@ import {TimeLineIcon} from "../../assets/iconComponents/TimeLineIcon";
 const DocumentPage: React.FC = () => {
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
+    const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
     const { user } = useAuth();
 
      useEffect(() => {
-    if (user && user.username) {
-      getTimesheets(user.username)
-        .then(sheets => {
-          const validTimesheets = sheets
-                .filter((timesheet): timesheet is Timesheet => timesheet !== null)
-                    .map(timesheet => {
-                        if (!isValidTimesheetStatus(timesheet.status)) {
+        if (user && user.username) {
+          getTimesheets(user.username)
+            .then(sheets => {
+              const validTimesheets = sheets
+                    .filter((timesheet): timesheet is Timesheet => timesheet !== null)
+                        .map(timesheet => {
+                            if (!isValidTimesheetStatus(timesheet.status)) {
+                                return {
+                                  ...timesheet,
+                                    status: StatusType.Error,
+                                } as Timesheet;
+                            }
                             return {
-                              ...timesheet,
-                                status: StatusType.Error,
+                                ...timesheet,
+                                status: statusMapping[Roles.Hiwi][timesheet.status],
                             } as Timesheet;
-                        }
-                        return {
-                            ...timesheet,
-                            status: statusMapping[Roles.Hiwi][timesheet.status],
-                        } as Timesheet;
-                      });
-                setTimesheets(validTimesheets);
-        }).catch(error => {
-          console.error('Failed to load timesheets:', error);
-          setTimesheets([]);
-        });
-    }
-  }, [user]);
+                          });
+                    setTimesheets(validTimesheets);
+                    setFilteredTimesheets(validTimesheets);
+            }).catch(error => {
+              console.error('Failed to load timesheets:', error);
+              setTimesheets([]);
+            });
+        }
+      }, [user]);
 
-     console.log("status: " + filter);
-  const filteredTimesheets = timesheets
-    ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
-    : [];
+
+    useEffect(() => {
+        if (!filter) {
+            setFilteredTimesheets(timesheets);
+            console.log(timesheets.map(timesheet => timesheet.status));
+            return;
+        }
+        console.log(timesheets.map(timesheet => timesheet.status));
+        const filteredSheets = timesheets.filter(timesheet => timesheet.status === filter);
+        setFilteredTimesheets(filteredSheets);
+    }, [filter, timesheets]);
 
     return (
         <div className="px-6 py-6">
