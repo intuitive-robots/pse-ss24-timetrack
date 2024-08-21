@@ -1,5 +1,5 @@
 import copy
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -62,6 +62,8 @@ class NotificationService:
             slack_result.data = notification
             if not slack_result.is_successful:
                 slack_result.message = f"{slack_result.message} - In-App Message sent successfully"
+                slack_result.is_successful = True
+                slack_result.status_code = 200
                 return slack_result
             else:
                 return slack_result
@@ -86,6 +88,7 @@ class NotificationService:
             return RequestResult(True, "Notifications retrieved successfully", 200, data=read_result.data)
         return read_result
 
+    @jwt_required()
     def does_unread_message_exist(self):
         receiver = get_jwt_identity()
         if receiver is None:
@@ -143,9 +146,9 @@ class NotificationService:
         """
         Sends reminders to users who have not submitted their timesheets.
         """
-        previous_month = datetime.utcnow().month - 1 if datetime.utcnow().month > 1 else 12
-        previous_year = datetime.utcnow().year if previous_month != 12 else datetime.utcnow().year - 1
-        day_in_month = datetime.utcnow().day
+        previous_month = datetime.now(timezone.utc).month - 1 if datetime.now(timezone.utc).month > 1 else 12
+        previous_year = datetime.now(timezone.utc).year if previous_month != 12 else datetime.now(timezone.utc).year - 1
+        day_in_month = datetime.now(timezone.utc).day
         users = self.user_repository.get_users()
         for user in users:
             if user.get('role') == "Hiwi":

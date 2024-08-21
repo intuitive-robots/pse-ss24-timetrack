@@ -63,6 +63,6 @@ class Hiwi(User):
         user = super().from_dict(data)
         supervisor = data['supervisor']
         contract_info = ContractInfo.from_dict(data['contractInfo'])
-        hiwi = cls(user.username, user.password_hash, user.personal_info, supervisor, contract_info)
+        hiwi = cls(user.username, user.password_hash, user.personal_info, supervisor, contract_info, user.is_archived, user.slack_id)
         return hiwi
 
