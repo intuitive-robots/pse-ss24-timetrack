@@ -112,10 +112,11 @@ class TimesheetService:
         if timesheet_data['totalTime'] is None:
             return RequestResult(False, "Total time not found", 404)
         total_time = timesheet_data['totalTime']
-        contract_data = self.user_service.get_contract_info(timesheet_data["username"])
-        if contract_data.is_successful is False:
+        contract_data = hiwi_data.contract_info
+        #print("percentage: " + str(total_time / (contract_data.working_hours*60)))
+        if contract_data is None:
             return RequestResult(False, "Contract data for hiwi not found.", 404)
-        if total_time / contract_data.data.working_hours < 0.8:
+        if total_time / (contract_data.working_hours*60) < 0.8:
             return RequestResult(False, "Less than 80% of expected working hours entered in timesheet.", 404)
         timesheet = Timesheet.from_dict(timesheet_data)
         if timesheet is None:
