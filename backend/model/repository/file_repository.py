@@ -60,7 +60,8 @@ class FileRepository:
             }
             self.db.file_metadata.insert_one(metadata)
 
-            return RequestResult(True, f"Image uploaded successfully with GridFS ID: {file_id}", 201)
+            return RequestResult(True, f"Image uploaded successfully with GridFS ID: {file_id}", 201,
+                                 {"gridfsId": file_id})
         except PyMongoError as e:
             return RequestResult(False, f"Failed to upload image: {str(e)}", 500)
 
