@@ -16,21 +16,19 @@ class TestUserRepository(unittest.TestCase):
     Test the UserRepository class.
     """
 
-    def setUp(self):
-        self.user_repository = UserRepository.get_instance()
-
-    def test_create_user(self):
-        """
-        Test the create_user method of the UserRepository class.
-        """
-        test_user_data = {
-            "username": "testAdmin10",
+    @classmethod  # This decorator is used to define a
+    # class method that is called before
+    # tests in an individual class are run.
+    def setUp(cls):
+        cls.user_repository = UserRepository.get_instance()
+        cls.test_user_data = {
+            "username": "testAdminUserRepo",
             "role": "Admin",
             "passwordHash": "test_password_hash",
             "personalInfo": {
                 "firstName": "Test",
                 "lastName": "Admin",
-                "email": "test@gmail1.com",
+                "email": "test@gmail.com",
                 "personalNumber": "6381212",
                 "instituteName": "Info Institute"
             },
@@ -39,30 +37,46 @@ class TestUserRepository(unittest.TestCase):
             "isArchived": False,
             "slackId": None
         }
+        cls.user_repository.create_user(User.from_dict(cls.test_user_data))
 
-        # Test for no user
-        response_no_user = self.user_repository.create_user(None)
-        self.assertEqual("User object is None", response_no_user.message)
-        self.assertEqual(False, response_no_user.is_successful)
-        self.assertEqual(400, response_no_user.status_code)
+    @classmethod
+    def tearDown(cls):
+        cls.user_repository.delete_user("testAdminUserRepo")
+        cls.user_repository.delete_user("testAdminUserRepo2")
 
-        # Test for user already existing
-        test_hiwi_one = self.user_repository.find_by_username("testHiwi1")
-        response_no_user = self.user_repository.create_user(User.from_dict(test_hiwi_one))
-        self.assertEqual("User already exists", response_no_user.message)
-        self.assertEqual(False, response_no_user.is_successful)
-        self.assertEqual(409, response_no_user.status_code)
+    def test_create_user_none(self):
+        """
+        Test the create_user method of the UserRepository class for None user.
+        """
+        response = self.user_repository.create_user(None)
+        self.assertEqual("User object is None", response.message)
+        self.assertEqual(False, response.is_successful)
+        self.assertEqual(400, response.status_code)
 
-        # Test create_user method
+    def test_create_user_already_exists(self):
+        """
+        Test the create_user method of the UserRepository class for an already existing user.
+        """
+        test_admin_data = self.user_repository.find_by_username("testAdminUserRepo")
+        response_existing_user = self.user_repository.create_user(User.from_dict(test_admin_data))
+        self.assertEqual("User already exists", response_existing_user.message)
+        self.assertEqual(False, response_existing_user.is_successful)
+        self.assertEqual(409, response_existing_user.status_code)
+
+    def test_create_user(self):
+        """
+        Test the create_user method of the UserRepository class.
+        """
+        test_user_data = self.test_user_data
+        test_user_data["username"] = "testAdminUserRepo2"
         test_user = User.from_dict(test_user_data)
-        self.user_repository.create_user(test_user)
-        created_user_data = self.user_repository.find_by_username("testAdmin10")
+        result = self.user_repository.create_user(test_user)
+        self.assertEqual(True, result.is_successful)
+        self.assertEqual(201, result.status_code)
+        created_user_data = self.user_repository.find_by_username("testAdminUserRepo2")
         created_user_data.pop("_id")
-        created_user_data.pop("accountCreation")
-        test_user_data.pop("accountCreation")
-
         self.assertEqual(test_user_data, created_user_data)
-        self.user_repository.delete_user("testAdmin10")
+
 
     def test_create_user_hiwi(self):
         """
