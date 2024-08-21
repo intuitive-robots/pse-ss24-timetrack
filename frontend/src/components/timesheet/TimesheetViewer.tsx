@@ -117,7 +117,7 @@ const TimesheetViewer = () => {
                         hover="hover:bg-purple-200"
                         border="border-2 border-purple-600"/>
                 </div>
-                <div>
+                <div className="flex items-center">
                     {/*<QuickActionButton
                         icon={SignSheetIcon}
                         label="Sign Sheet"
@@ -125,15 +125,16 @@ const TimesheetViewer = () => {
                     <PopupActionButton label={"Sign Sheet"}
                        bgColor={"bg-purple-600"}
                        icon={SignSheetIcon}
-                       popupComponent={<ConfirmationPopup
-                       description={"Are you sure you want to sign this sheet"}
-                       onCancel={closePopup}
-                       onConfirm={handleApproveTimesheet}
-                       primaryButtonText={"Sign Sheet"}
-                       confirmationType={"ACTION"}
-                       title={"Sign Sheet"}
-                       />}
-                    />
+                       popupComponent={
+                        <ConfirmationPopup
+                            description={"Are you sure you want to sign this sheet"}
+                            onCancel={closePopup}
+                            onConfirm={handleApproveTimesheet}
+                            primaryButtonText={"Sign Sheet"}
+                            confirmationType={"ACTION"}
+                            title={"Sign Sheet"}
+                       />
+                    }/>
                 </div>
             </div>
         ) : (
