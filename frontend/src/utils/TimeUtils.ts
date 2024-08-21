@@ -9,17 +9,17 @@ export function minutesToHoursFormatted(minutes: number): number {
 }
 
 export function minutesToHourMinuteFormatted(totalMinutes: number): string {
-    console.log(totalMinutes);
     if (totalMinutes === 0) {
-        return "0h"
+        return "0h";
     }
 
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = Math.abs(totalMinutes % 60);
+    const sign = totalMinutes < 0 ? "-" : ""; // Store sign
+    const absTotalMinutes = Math.abs(totalMinutes);
 
-    console.log(hours, minutes);
+    const hours = Math.floor(absTotalMinutes / 60);
+    const minutes = absTotalMinutes % 60;
 
-    return `${hours}h ${minutes}m`;
+    return `${sign}${hours}h ${minutes}m`;
 }
 
 /**
