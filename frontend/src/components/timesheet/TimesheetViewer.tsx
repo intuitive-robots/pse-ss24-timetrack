@@ -5,7 +5,7 @@ import ListIconCardButton from "../input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg";
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg";
 import {useAuth} from "../../context/AuthContext";
-import {approveTimesheet, getTimesheetByMonthYear} from "../../services/TimesheetService";
+import {approveTimesheet, getTimesheetByMonthYear, signTimesheet} from "../../services/TimesheetService";
 import {isValidTimesheetStatus, statusMapping} from "../status/StatusMapping";
 import {isValidRole} from "../auth/roles";
 import QuickActionButton from "../input/QuickActionButton";
@@ -19,6 +19,8 @@ import {minutesToHoursFormatted} from "../../utils/TimeUtils";
 import MonthDisplay from "../display/MonthDisplay";
 import {getContractInfo} from "../../services/UserService";
 import {handleMonthChange} from "../../utils/handleMonthChange";
+import ConfirmationPopup from "../popup/ConfirmationPopup";
+import PopupActionButton from "../input/PopupActionButton";
 
 const TimesheetViewer = () => {
 
@@ -28,6 +30,7 @@ const TimesheetViewer = () => {
 
     const [timesheet, setTimesheet] = useState<Timesheet | null>(null);
     const { role} = useAuth();
+    const {closePopup } = usePopup();
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
@@ -85,6 +88,8 @@ const TimesheetViewer = () => {
             try {
                 const result = await approveTimesheet(timesheet._id);
                 window.location.reload();
+                {/* reloadTimesheet();*/}
+                closePopup();
             } catch (error) {
                 console.error('Error approving timesheet:', error);
                 alert('Failed to approve the timesheet');
@@ -100,20 +105,36 @@ const TimesheetViewer = () => {
         const mappedStatus = statusMapping[role][timesheetStatus];
 
         return ["Waiting for Approval"].includes(timesheetStatus) ? (
-            <div className="flex flex-row gap-6 justify-end">
-                <QuickActionButton
-                    label="Request Change"
-                    onClick={() => {
-                        openPopup(<RequestChangePopup username={username} timesheet={timesheet}/>);
-                    }}
-                    textColor="text-purple-600"
-                    bgColor="bg-white"
-                    hover="hover:bg-purple-200"
-                    border="border-2 border-purple-600"/>
-                <QuickActionButton
-                    icon={SignSheetIcon}
-                    label="Sign Sheet"
-                    onClick={handleApproveTimesheet}/>
+            <div className="flex flex-row gap-6 justify-end items-center w-full">
+                <div className="flex-1">
+                    <QuickActionButton
+                        label="Request Change"
+                        onClick={() => {
+                            openPopup(<RequestChangePopup username={username} timesheet={timesheet}/>);
+                        }}
+                        textColor="text-purple-600"
+                        bgColor="bg-white"
+                        hover="hover:bg-purple-200"
+                        border="border-2 border-purple-600"/>
+                </div>
+                <div>
+                    {/*<QuickActionButton
+                        icon={SignSheetIcon}
+                        label="Sign Sheet"
+                        onClick={handleApproveTimesheet}/>*/}
+                    <PopupActionButton label={"Sign Sheet"}
+                       bgColor={"bg-purple-600"}
+                       icon={SignSheetIcon}
+                       popupComponent={<ConfirmationPopup
+                       description={"Are you sure you want to sign this sheet"}
+                       onCancel={closePopup}
+                       onConfirm={handleApproveTimesheet}
+                       primaryButtonText={"Sign Sheet"}
+                       confirmationType={"ACTION"}
+                       title={"Sign Sheet"}
+                       />}
+                    />
+                </div>
             </div>
         ) : (
             <DocumentStatus status={mappedStatus} />
