@@ -60,6 +60,7 @@ class TestAuthService(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.user_repository.delete_user("AdminAuthService")
+        cls.user_repository.delete_user("SupervisorAuthService")
 
     def test_create_token(self):
         """

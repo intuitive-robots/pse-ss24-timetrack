@@ -76,6 +76,12 @@ class TestNotificationController(unittest.TestCase):
     def tearDown(self):
         self.db.notifications.delete_many({"message": "Testing"})
 
+    @classmethod
+    def tearDownClass(cls):
+        db = initialize_db()
+        db.users.delete_many({"username": "HiwiNotificationController"})
+        db.users.delete_many({"username": "AdminNotificationController"})
+
     def _authenticate(self, username, password):
         """
         Authenticate the user.
