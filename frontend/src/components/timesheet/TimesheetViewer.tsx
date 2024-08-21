@@ -86,13 +86,12 @@ const TimesheetViewer = () => {
     const handleApproveTimesheet = async () => {
         if (timesheet) {
             try {
-                const result = await approveTimesheet(timesheet._id);
+                await approveTimesheet(timesheet._id);
                 window.location.reload();
-                {/* reloadTimesheet();*/}
                 closePopup();
             } catch (error) {
                 console.error('Error approving timesheet:', error);
-                alert('Failed to approve the timesheet');
+                alert('Failed to approve the timesheet' + error);
             }
         }
     };
@@ -117,11 +116,7 @@ const TimesheetViewer = () => {
                         hover="hover:bg-purple-200"
                         border="border-2 border-purple-600"/>
                 </div>
-                <div className="flex items-center">
-                    {/*<QuickActionButton
-                        icon={SignSheetIcon}
-                        label="Sign Sheet"
-                        onClick={handleApproveTimesheet}/>*/}
+                <div className="">
                     <PopupActionButton label={"Sign Sheet"}
                        bgColor={"bg-purple-600"}
                        icon={SignSheetIcon}
