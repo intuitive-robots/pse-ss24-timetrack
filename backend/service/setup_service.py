@@ -103,7 +103,8 @@ class SetupService:
         slack_token_entry = admin_collection.find_one({}, {"_id": 0, "slackToken": 1})
         if slack_token_entry and slack_token_entry.get("slackToken") == "":
             print(
-                "\033[33mSlack Token is not set. Please change the token within the administration section in the database.\033[0m")
+                "\033[33mSlack Token is not set. Please change the token within the administration section in the "
+                "database.\033[0m")
 
     def create_default_slack_token(self):
         """
