@@ -4,7 +4,6 @@ from bson import ObjectId
 
 from app import app
 from db import initialize_db
-from model.notification.message_type import MessageType
 from model.notification.notification_message import NotificationMessage
 from model.repository.notification_repository import NotificationRepository
 from model.repository.user_repository import UserRepository
@@ -74,7 +73,8 @@ class TestNotificationService(unittest.TestCase):
         hiwi_user = Hiwi.from_dict(cls.hiwi_user_data)
         cls.user_repository.create_user(hiwi_user)
 
-        cls.notification_data = {
+    def setUp(self):
+        self.notification_data = {
             "receiver": "HiwiUserService",
             "sender": "AdminUserService",
             "message": "Test Notification Service",
@@ -243,7 +243,6 @@ class TestNotificationService(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(False, response.data)
 
-
     def test_delete_notification_not_found(self):
         """
         Test deleting a notification that does not exist
@@ -254,6 +253,7 @@ class TestNotificationService(unittest.TestCase):
                 response = self.notification_service.delete_notification(ObjectId("666c020f7a409003113fedf9"))
                 self.assertEqual(response.status_code, 404)
                 self.assertEqual("Notification not found", response.message)
+
     def test_delete_notification(self):
         """
         Test deleting a notification by the receiver.
@@ -291,7 +291,6 @@ class TestNotificationService(unittest.TestCase):
                 response = self.notification_service.delete_notification(None)
                 self.assertEqual(response.status_code, 400)
                 self.assertEqual("Notification ID is empty", response.message)
-
 
     def test_send_scheduled_reminders(self):
         with self.app.app_context():
