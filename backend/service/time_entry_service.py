@@ -74,12 +74,15 @@ class TimeEntryService:
         if entry_data.get('timesheetId') is None:
             start_date = datetime.datetime.fromisoformat(entry_data['startTime'].replace('Z', ""))
             result = self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
+            if not result.is_successful:
+                return RequestResult(False, result.message, result.status_code)
+
             timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
             entry_data['timesheetId'] = str(timesheet_id)
 
         timesheet_status = self.timesheet_service.get_timesheet_status(entry_data['timesheetId']).data
         if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
-            return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=400)
+            return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=409)
 
         # Validate input data
         data_validation_result = self.entry_input_validator.is_valid(entry_data)
@@ -89,7 +92,7 @@ class TimeEntryService:
         # Select the appropriate class based on entry_type and create a time entry instance
         entry_class = self.entry_type_mapping.get(entry_type)
         if not entry_class:
-            return RequestResult(False, "Invalid entry type specified", status_code=400)
+            return RequestResult(False, "Invalid entry type specified", status_code=422)
 
         time_entry = entry_class.from_dict(entry_data)
 
