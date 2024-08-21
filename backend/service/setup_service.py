@@ -1,3 +1,5 @@
+import time
+import random
 from db import initialize_db
 from model.user.role import UserRole
 from model.repository.user_repository import UserRepository
@@ -100,8 +102,8 @@ class SetupService:
         admin_collection = self.db[self.ADMIN_COLLECTION]
         slack_token_entry = admin_collection.find_one({}, {"_id": 0, "slackToken": 1})
         if slack_token_entry and slack_token_entry.get("slackToken") == "":
-            print("\033[33mSlack Token is not set. Please change the token within the administration section in the database.\033[0m")
-
+            print(
+                "\033[33mSlack Token is not set. Please change the token within the administration section in the database.\033[0m")
 
     def create_default_slack_token(self):
         """
@@ -112,13 +114,16 @@ class SetupService:
         admin_collection.insert_one({"slackToken": ""})
         print("\033[32mDefault SlackToken entry created.\033[0m")
 
-
     def run_setup(self):
         """
         Executes the setup process by ensuring the existence of an admin user
         and initializing the administration collection in the database.
         If everything is already correctly set up, it prints a message indicating so.
         """
+        random_delay = random.uniform(0.1, 2.0)
+        print(f"Waiting for {random_delay:.2f} seconds to avoid race conditions.")
+        time.sleep(random_delay)
+
         admin_exists = self.ensure_admin_exists()
         admin_collection_initialized = self.initialize_admin_collection()
 
