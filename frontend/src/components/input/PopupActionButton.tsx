@@ -12,6 +12,7 @@ interface PopupActionButtonProps {
   border?: string;
   primary?: boolean;
   secondary?: boolean;
+  disabled?: boolean;
 }
 
 /**
@@ -28,11 +29,13 @@ const PopupActionButton: React.FC<PopupActionButtonProps> = ({
   bgColor,
   hover, border = 'none',
   primary = false,
-  secondary = false
+  secondary = false,
+    disabled = false,
 }: PopupActionButtonProps): React.ReactElement => {
   const { openPopup } = usePopup();
 
   const handleOpenPopup = () => {
+    if (disabled) return;
     openPopup(popupComponent);
   };
 

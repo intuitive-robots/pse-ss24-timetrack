@@ -174,6 +174,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
                   label={buttons[0].label}
                   popupComponent={buttons[0].popup}
                   primary={true}
+                  disabled={buttons[0].disabled || false}
               />
           )}
           {buttons.length > 1 && (
@@ -182,6 +183,7 @@ const NavigationBar: React.FC = (): React.ReactElement => {
                   label={buttons[1].label}
                   popupComponent={buttons[1].popup}
                   secondary={true}
+                  disabled={buttons[1].disabled || false}
               />
           )}
         </div>
