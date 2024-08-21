@@ -3,12 +3,12 @@ import unittest
 
 from bson import ObjectId
 
+from db import initialize_db
 from model.repository.user_repository import UserRepository
 from model.user.hiwi import Hiwi
 from model.user.personal_information import PersonalInfo
 from model.user.role import UserRole
 from model.user.user import User
-from service.user_service import UserService
 
 
 class TestUserRepository(unittest.TestCase):
@@ -19,8 +19,9 @@ class TestUserRepository(unittest.TestCase):
     @classmethod  # This decorator is used to define a
     # class method that is called before
     # tests in an individual class are run.
-    def setUp(cls):
+    def setUpClass(cls):
         cls.user_repository = UserRepository.get_instance()
+        cls.db = initialize_db()
         cls.test_user_data = {
             "username": "testAdminUserRepo",
             "role": "Admin",
@@ -37,12 +38,13 @@ class TestUserRepository(unittest.TestCase):
             "isArchived": False,
             "slackId": None
         }
-        cls.user_repository.create_user(User.from_dict(cls.test_user_data))
+        cls.db.users.insert_one(cls.test_user_data)
+        cls.test_user_data.pop("_id")
 
     @classmethod
-    def tearDown(cls):
-        cls.user_repository.delete_user("testAdminUserRepo")
-        cls.user_repository.delete_user("testAdminUserRepo2")
+    def tearDownClass(cls):
+        cls.db.users.delete_one({"username": "testAdminUserRepo"})
+        cls.db.users.delete_one({"username": "testAdminUserRepo2"})
 
     def test_create_user_none(self):
         """
@@ -76,7 +78,7 @@ class TestUserRepository(unittest.TestCase):
         created_user_data = self.user_repository.find_by_username("testAdminUserRepo2")
         created_user_data.pop("_id")
         self.assertEqual(test_user_data, created_user_data)
-
+        self.user_repository.delete_user("testAdminUserRepo2")
 
     def test_create_user_hiwi(self):
         """
