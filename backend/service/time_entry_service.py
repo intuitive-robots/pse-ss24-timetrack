@@ -74,6 +74,9 @@ class TimeEntryService:
         if entry_data.get('timesheetId') is None:
             start_date = datetime.datetime.fromisoformat(entry_data['startTime'].replace('Z', ""))
             result = self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
+            if not result.is_successful:
+                return RequestResult(False, result.message, result.status_code)
+
             timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
             entry_data['timesheetId'] = str(timesheet_id)
 
