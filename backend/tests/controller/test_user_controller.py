@@ -1,3 +1,4 @@
+import os.path
 import unittest
 
 from app import app
@@ -16,7 +17,10 @@ class TestUserController(unittest.TestCase):
         cls.user_repository = UserRepository.get_instance()
         cls.user_service = UserService()
         cls.user_repository = UserRepository.get_instance()
-        cls.file = open("../resources/testProfilePic.jpg", "rb")
+        file_path = "../resources/testProfilePic.jpg"
+        if not os.path.exists(file_path):
+            file_path = "tests/resources/testProfilePic.jpg"
+        cls.file = open(file_path, "rb")
         cls.admin_user_data = {
             "username": "AdminUserController",
             "role": "Admin",
@@ -37,7 +41,10 @@ class TestUserController(unittest.TestCase):
         cls.user_repository.create_user(admin_user)
 
     def setUp(self):
-        self.file = open("../resources/testProfilePic.jpg", "rb")
+        file_path = "../resources/testProfilePic.jpg"
+        if not os.path.exists(file_path):
+            file_path = "tests/resources/testProfilePic.jpg"
+        self.file = open(file_path, "rb")
         self.test_admin_user_data = {
             "username": "testAdminUserController",
             "role": "Admin",

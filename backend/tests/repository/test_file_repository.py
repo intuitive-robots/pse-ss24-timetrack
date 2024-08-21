@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from model.file.FileType import FileType
@@ -12,9 +13,15 @@ class TestFileRepository(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.file_repository = FileRepository.get_instance()
-        cls.test_file = open("../resources/testProfilePic.jpg", "rb")
+        file_path = "../resources/testProfilePic.jpg"
+        if not os.path.exists(file_path):
+            file_path = "tests/resources/testProfilePic.jpg"
+        cls.test_file = open(file_path, "rb")
         cls.test_file_type = FileType.PROFILE_PICTURE
-        cls.updated_file = open("../resources/updateTest.jpg", "rb")
+        updated_file_path = "../resources/testProfilePic.jpg"
+        if not os.path.exists(updated_file_path):
+            updated_file_path = "tests/resources/testProfilePic.jpg"
+        cls.updated_file = open(updated_file_path, "rb")
         cls.created_files = []
 
     @classmethod
