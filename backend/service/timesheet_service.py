@@ -59,7 +59,7 @@ class TimesheetService:
 
         account_creation_month_year = datetime(year=user.account_creation.year, month=user.account_creation.month, day=1)
         if account_creation_month_year > datetime(year, month, 1):
-            return RequestResult(False, "User account was created after the timesheet month", 400)
+            return RequestResult(False, "User account was created after the timesheet month", 422)
         creation_result = self._create_timesheet(username, month, year)
         if creation_result.status_code == 201:
             return RequestResult(True, "Timesheet created", 201)

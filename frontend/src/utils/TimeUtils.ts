@@ -9,12 +9,16 @@ export function minutesToHoursFormatted(minutes: number): number {
 }
 
 export function minutesToHourMinuteFormatted(totalMinutes: number): string {
+    console.log(totalMinutes);
     if (totalMinutes === 0) {
         return "0h"
     }
 
     const hours = Math.floor(totalMinutes / 60);
     const minutes = Math.abs(totalMinutes % 60);
+
+    console.log(hours, minutes);
+
     return `${hours}h ${minutes}m`;
 }
 

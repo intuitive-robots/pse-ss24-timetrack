@@ -188,7 +188,7 @@ const SecretaryDocumentPage: React.FC = () => {
                         <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
                             <p>Work</p>
                             <div className="w-12"/>
-                            <p>Vacation days</p>
+                            <p>Vacation time</p>
                             <div className="w-8"/>
                             <p>Overtime</p>
                         </div>
