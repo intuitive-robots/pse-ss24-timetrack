@@ -11,6 +11,7 @@ interface ButtonConfig {
   label: string;
   action: () => void;
   popup: ReactElement;
+  disabled?: boolean;
 }
 
 type ButtonConfigurations = {
@@ -46,7 +47,8 @@ export const buttonConfigurations: ButtonConfigurations  = {
       icon: <TrackTimeActionIcon/>,
       label: "Add Project",
       action: () => console.log("Add Project"),
-      popup: <TrackTimePopup/>
+      popup: <div/>,
+      disabled: true
     },
   ],
   Secretary: [

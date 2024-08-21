@@ -34,7 +34,7 @@ const TimesheetTile: React.FC<TimesheetTileProps> = ({month, year, projectName, 
 
             <ListTileInfo
                 items={[totalTime, vacationMinutes, overtime]}
-                gap={"lg:gap-20 gap-8 transition-all"}
+                gap={"lg:gap-[4.25rem] gap-8 transition-all"}
             />
 
             <div className="flex flex-row gap-5">

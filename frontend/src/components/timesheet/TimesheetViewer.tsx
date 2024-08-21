@@ -87,7 +87,7 @@ const TimesheetViewer = () => {
                 window.location.reload();
             } catch (error) {
                 console.error('Error approving timesheet:', error);
-                alert('Failed to approve the timesheet');
+                alert('Failed to approve the timesheet' + error);
             }
         }
     };

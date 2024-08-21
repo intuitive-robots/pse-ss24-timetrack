@@ -82,7 +82,7 @@ class TimeEntryService:
 
         timesheet_status = self.timesheet_service.get_timesheet_status(entry_data['timesheetId']).data
         if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
-            return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=400)
+            return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=409)
 
         # Validate input data
         data_validation_result = self.entry_input_validator.is_valid(entry_data)
@@ -92,7 +92,7 @@ class TimeEntryService:
         # Select the appropriate class based on entry_type and create a time entry instance
         entry_class = self.entry_type_mapping.get(entry_type)
         if not entry_class:
-            return RequestResult(False, "Invalid entry type specified", status_code=400)
+            return RequestResult(False, "Invalid entry type specified", status_code=422)
 
         time_entry = entry_class.from_dict(entry_data)
 
