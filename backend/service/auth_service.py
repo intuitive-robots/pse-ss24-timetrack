@@ -83,7 +83,8 @@ class AuthenticationService:
         user = UserFactory.create_user_if_factory_exists(user_data)
         if user and SecurityUtils.check_password(password, user.password_hash):
             access_token = self.create_token(username, user.role)
-            set_last_login_result = self.user_repository.set_last_login(username, datetime.datetime.utcnow())
+            set_last_login_result = self.user_repository.set_last_login(username, datetime.datetime.now(
+                datetime.timezone.utc))
             if not set_last_login_result.is_successful:
                 return RequestResult(True, "Authentication successful without storing the lastLogin value.",
                                      data={'accessToken': access_token},
