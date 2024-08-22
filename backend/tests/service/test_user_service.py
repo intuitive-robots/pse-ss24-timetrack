@@ -1,11 +1,18 @@
 import unittest
+from datetime import datetime, timedelta, timezone
 
 from app import app
+from db import initialize_db
+from model.repository.time_entry_repository import TimeEntryRepository
+from model.repository.timesheet_repository import TimesheetRepository
 from model.repository.user_repository import UserRepository
+from model.time_entry import TimeEntry
 from model.user.hiwi import Hiwi
 from model.user.role import UserRole
 from model.user.supervisor import Supervisor
 from model.user.user import User
+from service.time_entry_service import TimeEntryService
+from service.timesheet_service import TimesheetService
 from service.user_service import UserService
 from utils.security_utils import SecurityUtils
 
@@ -18,6 +25,17 @@ class TestUserService(unittest.TestCase):
         cls.client = app.test_client()
         cls.user_service = UserService()
         cls.user_repository = UserRepository.get_instance()
+        cls.timesheet_service = TimesheetService()
+        cls.time_entry_repository = TimeEntryRepository()
+        cls.db = initialize_db()
+
+        cls.time_entry_data = {
+                                    'startTime': datetime.now(timezone.utc) - timedelta(hours=2),
+                                    'endTime': datetime.now(timezone.utc) ,
+                                    'entryType': 'Work Entry',
+                                    'breakTime': 22,
+                                    'activity': 'timeEntry1 of Hiwi1',
+                                    'projectName': 'Testing'}
 
         cls.test_admin_user_data = {
             "username": "AdminUserService",
@@ -64,6 +82,12 @@ class TestUserService(unittest.TestCase):
         cls.user_repository.delete_user("testSupervisorUserService")
         cls.user_repository.delete_user("testHiwiUserService")
         cls.user_repository.delete_user("SupervisorUserService")
+        timesheet_repository = TimesheetRepository.get_instance()
+        timesheet_id = timesheet_repository.get_timesheet_id("testHiwiUserService", datetime.now().month, datetime.now().year)
+        timesheet_repository.delete_timesheet(timesheet_id)
+        cls.db.timeEntries.delete_many({'projectName': 'Testing'})
+
+
 
     def tearDown(self):
         self.user_repository.delete_user("testSupervisorUserService")
@@ -85,7 +109,7 @@ class TestUserService(unittest.TestCase):
             "accountCreation": None,
             "slackId": None
         }
-        self.supervisor_user_data = {
+        self.test_supervisor_user_data = {
             "username": "testSupervisorUserService",
             "role": "Supervisor",
             "password": "test_password",
@@ -132,6 +156,15 @@ class TestUserService(unittest.TestCase):
         response = self.client.post('/user/login', json=user)
         return response.json['accessToken']
 
+    def test_create_user_invalid_role(self):
+        """
+        Test the create_user method of the UserService class with invalid role.
+        """
+        self.test_admin_user_data['role'] = 'Test'
+        result_invalid_role = self.user_service.create_user(self.test_admin_user_data)
+        self.assertEqual(result_invalid_role.status_code, 400)
+        self.assertFalse(result_invalid_role.is_successful)
+        self.assertEqual("Invalid or unspecified user role.", result_invalid_role.message)
     def test_create_user_admin(self):
         """
         Test the create_user method of the UserService class for an admin user.
@@ -151,12 +184,31 @@ class TestUserService(unittest.TestCase):
                 self.assertEqual(self.test_admin_user_data, created_user_data)
                 self.user_service.delete_user(self.test_admin_user_data["username"])
 
+    def test_create_user_missing_required_field(self):
+        """
+        Test the create_user method of the UserService class with missing required field.
+        """
+        self.test_admin_user_data.pop('username')
+        result_missing_field = self.user_service.create_user(self.test_admin_user_data)
+        self.assertEqual(result_missing_field.status_code, 400)
+        self.assertFalse(result_missing_field.is_successful)
+        self.assertEqual("Missing required field: username", result_missing_field.message)
+    def test_create_user_invalid_user_role(self):
+        """
+        Test the create_user method of the UserService class for an invalid user role.
+        """
+        self.test_admin_user_data['role'] = 'Test'
+        result_invalid_role = self.user_service.create_user(self.test_admin_user_data)
+        self.assertEqual(result_invalid_role.status_code, 400)
+        self.assertFalse(result_invalid_role.is_successful)
+        self.assertEqual("Invalid or unspecified user role.", result_invalid_role.message)
+
     def test_create_user_supervisor_without_pwd(self):
         """
         Test the create_user method of the UserService class for a Supervisor user without password.
         """
-        self.supervisor_user_data.pop('password')
-        result_no_password = self.user_service.create_user(self.supervisor_user_data)
+        self.test_supervisor_user_data.pop('password')
+        result_no_password = self.user_service.create_user(self.test_supervisor_user_data)
         self.assertEqual(result_no_password.status_code, 400)
         self.assertFalse(result_no_password.is_successful)
 
@@ -167,17 +219,17 @@ class TestUserService(unittest.TestCase):
         with self.app.app_context():
             access_token = self._authenticate('AdminUserService', 'test_password')
             with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
-                supervisor_result = self.user_service.create_user(self.supervisor_user_data)
+                supervisor_result = self.user_service.create_user(self.test_supervisor_user_data)
                 self.assertEqual(supervisor_result.status_code, 201)
                 self.assertTrue(supervisor_result.is_successful)
-                created_user_data = self.user_repository.find_by_username(self.supervisor_user_data["username"])
+                created_user_data = self.user_repository.find_by_username(self.test_supervisor_user_data["username"])
                 created_user_data.pop('_id')
                 self.assertIsNotNone(created_user_data['accountCreation'])
                 created_user_data.pop('accountCreation')
                 created_user_data.pop('hiwis')
-                self.supervisor_user_data.pop('accountCreation')
-                self.assertEqual(self.supervisor_user_data, created_user_data)
-                self.user_service.delete_user(self.supervisor_user_data["username"])
+                self.test_supervisor_user_data.pop('accountCreation')
+                self.assertEqual(self.test_supervisor_user_data, created_user_data)
+                self.user_service.delete_user(self.test_supervisor_user_data["username"])
 
     def test_create_user_hiwi_missing_field(self):
         """
@@ -262,7 +314,7 @@ class TestUserService(unittest.TestCase):
             access_token = self._authenticate('AdminUserService', 'test_password')
             with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
 
-                supervisor_creation_result = self.user_service.create_user(self.supervisor_user_data)
+                supervisor_creation_result = self.user_service.create_user(self.test_supervisor_user_data)
                 self.hiwi_user_data['passwordHash'] = SecurityUtils.hash_password(self.hiwi_user_data['password'])
                 result = self.user_repository.create_user(User.from_dict(self.hiwi_user_data))
                 self.assertEqual(result.status_code, 201)
@@ -281,7 +333,7 @@ class TestUserService(unittest.TestCase):
         with self.app.app_context():
             access_token = self._authenticate('AdminUserService', 'test_password')
             with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
-                supervisor_creation_result = self.user_service.create_user(self.supervisor_user_data)
+                supervisor_creation_result = self.user_service.create_user(self.test_supervisor_user_data)
                 self.assertEqual(supervisor_creation_result.status_code, 201)
                 self.assertTrue(supervisor_creation_result.is_successful)
                 hiwi_result = self.user_service.create_user(self.hiwi_user_data)
@@ -307,6 +359,32 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(404, result_add_invalid_user.status_code)
         self.assertEqual("User not found", result_add_invalid_user.message)
 
+    def test_add_overtime_minutes_no_contract_info(self):
+        """
+        Test the add_overtime_minutes method of the UserService class for a user with no contract info.
+        """
+        with self.app.app_context():
+            access_token = self._authenticate('AdminUserService', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                result_add_no_contract_info = self.user_service.add_overtime_minutes("AdminUserService", 10)
+                self.assertEqual(False, result_add_no_contract_info.is_successful)
+                self.assertEqual(400, result_add_no_contract_info.status_code)
+                self.assertEqual("User has no contract information", result_add_no_contract_info.message)
+
+    def test_add_overtime_minutes_user_archived(self):
+        """
+        Test the add_overtime_minutes method of the UserService class for an archived user.
+        """
+        with self.app.app_context():
+            access_token = self._authenticate('AdminUserService', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+                hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+                self.user_service.archive_user("testHiwiUserService")
+                result_add = self.user_service.add_overtime_minutes("testHiwiUserService", 10)
+                self.assertEqual(False, result_add.is_successful)
+                self.assertEqual(400, result_add.status_code)
+                self.assertEqual("User is archived", result_add.message)
     def test_add_overtime_minutes(self):
         """
         Test the add_overtime_minutes method of the UserService class.
@@ -332,6 +410,27 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(404, result_remove_invalid_user.status_code)
         self.assertEqual("User not found", result_remove_invalid_user.message)
 
+    def test_remove_overtime_minutes_no_contract_info(self):
+        """
+        Test the remove_overtime_minutes method of the UserService class for a user with no contract info.
+        """
+        result_remove_no_contract_info = self.user_service.remove_overtime_minutes("AdminUserService", 10)
+        self.assertEqual(False, result_remove_no_contract_info.is_successful)
+        self.assertEqual(400, result_remove_no_contract_info.status_code)
+        self.assertEqual("User has no contract information", result_remove_no_contract_info.message)
+
+    def test_remove_overtime_minutes_user_archived(self):
+        """
+        Test the remove_overtime_minutes method of the UserService class for an archived user.
+        """
+        self.hiwi_user_data['contractInfo']['overtimeMinutes'] = 10
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.user_service.archive_user("testHiwiUserService")
+        result_remove = self.user_service.remove_overtime_minutes("testHiwiUserService", 10)
+        self.assertEqual(False, result_remove.is_successful)
+        self.assertEqual(400, result_remove.status_code)
+        self.assertEqual("User is archived", result_remove.message)
     def test_remove_overtime_minutes(self):
         """
         Test the remove_overtime_minutes method of the UserService class.
@@ -356,6 +455,27 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(404, result_add_invalid_user.status_code)
         self.assertEqual("User not found", result_add_invalid_user.message)
 
+    def test_add_vacation_minutes_no_contract_info(self):
+        """
+        Test the add_vacation_minutes method of the UserService class for a user with no contract info.
+        """
+        result_add_no_contract_info = self.user_service.add_vacation_minutes("AdminUserService", 10)
+        self.assertEqual(False, result_add_no_contract_info.is_successful)
+        self.assertEqual(400, result_add_no_contract_info.status_code)
+        self.assertEqual("User has no contract information", result_add_no_contract_info.message)
+
+    def test_add_vacation_minutes_user_archived(self):
+        """
+        Test the add_vacation_minutes method of the UserService class for an archived user.
+        """
+        self.hiwi_user_data['contractInfo']['vacationMinutes'] = 10
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.user_service.archive_user("testHiwiUserService")
+        result_add = self.user_service.add_vacation_minutes("testHiwiUserService", 10)
+        self.assertEqual(False, result_add.is_successful)
+        self.assertEqual(400, result_add.status_code)
+        self.assertEqual("User is archived", result_add.message)
     def test_add_vacation_minutes(self):
         """
         Test the add_vacation_minutes method of the UserService class.
@@ -378,6 +498,28 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(False, result_remove_invalid_user.is_successful)
         self.assertEqual(404, result_remove_invalid_user.status_code)
         self.assertEqual("User not found", result_remove_invalid_user.message)
+
+    def test_remove_vacation_minutes_no_contract_info(self):
+        """
+        Test the remove_vacation_minutes method of the UserService class for a user with no contract info.
+        """
+        result_remove_no_contract_info = self.user_service.remove_vacation_minutes("AdminUserService", 10)
+        self.assertEqual(False, result_remove_no_contract_info.is_successful)
+        self.assertEqual(400, result_remove_no_contract_info.status_code)
+        self.assertEqual("User has no contract information", result_remove_no_contract_info.message)
+
+    def test_remove_vacation_minutes_user_archived(self):
+        """
+        Test the remove_vacation_minutes method of the UserService class for an archived user.
+        """
+        self.hiwi_user_data['contractInfo']['vacationMinutes'] = 10
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.user_service.archive_user("testHiwiUserService")
+        result_remove = self.user_service.remove_vacation_minutes("testHiwiUserService", 10)
+        self.assertEqual(False, result_remove.is_successful)
+        self.assertEqual(400, result_remove.status_code)
+        self.assertEqual("User is archived", result_remove.message)
 
     def test_remove_vacation_minutes(self):
         """
@@ -416,7 +558,46 @@ class TestUserService(unittest.TestCase):
                 self.assertEqual(200, result_remove.status_code)
                 self.assertEqual("User updated successfully", result_remove.message)
 
+    def test_update_user_supervisor_of_hiwi(self):
+        """
+        Test the update_user method of the UserService class for a supervisor of a Hiwi user.
+        """
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.test_supervisor_user_data['hiwis'] = ['testHiwiUserService']
+        supervisor_creation_result = self.user_service.create_user(self.test_supervisor_user_data)
+        self.hiwi_user_data['supervisor'] = 'testSupervisorUserService'
+        result = self.user_service.update_user(self.hiwi_user_data)
+        self.assertEqual(True, result.is_successful)
+        self.assertEqual(200, result.status_code)
+        updated_user_data = self.user_repository.find_by_username(self.hiwi_user_data["username"])
+        self.assertEqual(updated_user_data["supervisor"], "testSupervisorUserService")
 
+    def test_update_user_archived(self):
+        """
+        Test the update_user method of the UserService class for an archived user.
+        """
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.user_service.archive_user("testHiwiUserService")
+        self.hiwi_user_data['personalInfo']['lastName'] = 'TestLastName'
+        result = self.user_service.update_user(self.hiwi_user_data)
+        self.assertEqual(False, result.is_successful)
+        self.assertEqual(400, result.status_code)
+        self.assertEqual("User is archived", result.message)
+
+    def test_update_user_invalid_data(self):
+        """
+        Test the update_user method of the UserService class with invalid data.
+        """
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.hiwi_user_data['contractInfo']['hourlyWage'] = -15
+        result_invalid_data = self.user_service.update_user(self.hiwi_user_data)
+        self.assertEqual(False, result_invalid_data.is_successful)
+        self.assertEqual(400, result_invalid_data.status_code)
+        self.assertEqual("Invalid hourlyWage in contractInfo. Must be a positive number.",
+                         result_invalid_data.message)
 
     def test_update_user_no_username(self):
         """
@@ -483,6 +664,60 @@ class TestUserService(unittest.TestCase):
                 self.assertEqual(False, result_invalid_username.is_successful)
                 self.assertEqual(404, result_invalid_username.status_code)
                 self.assertEqual("User not found", result_invalid_username.message)
+
+    def test_delete_user_self(self):
+        """
+        Test the delete_user method of the UserService class for a user deleting itself.
+        """
+        with self.app.app_context():
+            access_token = self._authenticate('AdminUserService', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                result = self.user_service.delete_user("AdminUserService")
+                self.assertEqual(False, result.is_successful)
+                self.assertEqual(400, result.status_code)
+                self.assertEqual("You cannot delete yourself", result.message)
+
+    def test_delete_user_supervisor_hiwis_assigned(self):
+        """
+        Test the delete_user method of the UserService class for a supervisor with assigned Hiwis.
+        """
+        with self.app.app_context():
+            access_token = self._authenticate('AdminUserService', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                supervisor_creation_result = self.user_service.create_user(self.test_supervisor_user_data)
+                self.hiwi_user_data['supervisor'] = 'testSupervisorUserService'
+                hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+                result = self.user_service.delete_user("testSupervisorUserService")
+                self.assertEqual(False, result.is_successful)
+                self.assertEqual(400, result.status_code)
+                self.assertEqual("Supervisor has Hiwis assigned", result.message)
+
+    def test_delete_user_hiwi_with_timesheets(self):
+        """
+        Test the delete_user method of the UserService class for a Hiwi user with timesheets.
+        """
+        with self.app.app_context():
+            access_token = self._authenticate('AdminUserService', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                supervisor_creation_result = self.user_service.create_user(self.test_supervisor_user_data)
+                hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+                current_month = datetime.now().month
+                current_year = datetime.now().year
+                self.timesheet_service.ensure_timesheet_exists("testHiwiUserService", current_month, current_year)
+                timesheet_id = self.timesheet_service.get_timesheet("testHiwiUserService", current_month, current_year).data.timesheet_id
+                self.time_entry_data["timesheetId"] = timesheet_id
+                time_entry_result = self.time_entry_repository.create_time_entry(TimeEntry.from_dict(self.time_entry_data))
+                result = self.user_service.delete_user("testHiwiUserService")
+                self.assertEqual(True, result.is_successful)
+                self.assertEqual(200, result.status_code)
+                self.assertIsNone(self.user_repository.find_by_username("testHiwiUserService"))
+                search_timesheet = self.timesheet_service.get_timesheet("testHiwiUserService", current_month, current_year)
+                self.assertEqual(False, search_timesheet.is_successful)
+                self.assertEqual(404, search_timesheet.status_code)
+                self.assertEqual("Timesheet not found", search_timesheet.message)
+
+
+
     def test_delete_user(self):
         """
         Test the delete_user method of the UserService class.
@@ -658,3 +893,94 @@ class TestUserService(unittest.TestCase):
         actual_supervisors = [supervisor.to_name_dict() for supervisor in supervisors]
         for expected in expected_supervisors:
             self.assertIn(expected, actual_supervisors)
+
+    def test_unarchive_user_invalid_username(self):
+        """
+        Test the unarchive_user method of the UserService class with invalid username.
+        """
+        result_invalid_username = self.user_service.unarchive_user("")
+        self.assertEqual(False, result_invalid_username.is_successful)
+        self.assertEqual(404, result_invalid_username.status_code)
+        self.assertEqual("User not found", result_invalid_username.message)
+
+    def test_unarchive_user_user_not_archived(self):
+        """
+        Test the unarchive_user method of the UserService class for a user that is not archived.
+        """
+        result_not_archived = self.user_service.unarchive_user("AdminUserService")
+        self.assertEqual(False, result_not_archived.is_successful)
+        self.assertEqual(400, result_not_archived.status_code)
+        self.assertEqual("User is not archived", result_not_archived.message)
+
+    def test_unarchive_user(self):
+        """
+        Test the unarchive_user method of the UserService class.
+        """
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.user_service.archive_user("testHiwiUserService")
+        result = self.user_service.unarchive_user("testHiwiUserService")
+        self.assertEqual(True, result.is_successful)
+        self.assertEqual(200, result.status_code)
+        self.assertFalse(self.user_repository.find_by_username("testHiwiUserService")['isArchived'])
+
+    def test_archive_user_invalid_username(self):
+        """
+        Test the archive_user method of the UserService class with invalid username.
+        """
+        result_invalid_username = self.user_service.archive_user("")
+        self.assertEqual(False, result_invalid_username.is_successful)
+        self.assertEqual(404, result_invalid_username.status_code)
+        self.assertEqual("User not found", result_invalid_username.message)
+
+    def test_archive_user_user_already_archived(self):
+        """
+        Test the archive_user method of the UserService class for a user that is already archived.
+        """
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        self.user_service.archive_user("testHiwiUserService")
+        result_archived = self.user_service.archive_user("testHiwiUserService")
+        self.assertEqual(False, result_archived.is_successful)
+        self.assertEqual(400, result_archived.status_code)
+        self.assertEqual("User is already archived", result_archived.message)
+
+    def test_get_archived_users(self):
+        """
+        Test the get_archived_users method of the UserService class.
+        """
+        result = self.user_service.get_archived_users()
+        self.assertIsNotNone(result)
+        archived_users = result
+        self.assertIsNotNone(archived_users)
+        self.assertIsInstance(archived_users, list)
+        for user in archived_users:
+            self.assertIsInstance(user, User)
+            self.assertTrue(user.isArchived)
+    def test_archive_user(self):
+        """
+        Test the archive_user method of the UserService class.
+        """
+        self.hiwi_user_data['supervisor'] = 'SupervisorUserService'
+        hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+        result = self.user_service.archive_user("testHiwiUserService")
+        self.assertEqual(True, result.is_successful)
+        self.assertEqual(200, result.status_code)
+        self.assertTrue(self.user_repository.find_by_username("testHiwiUserService")['isArchived'])
+
+    def test_get_contract_info(self):
+        """
+        Test the get_contract_info method of the UserService class.
+        """
+        with self.app.app_context():
+            access_token = self._authenticate('AdminUserService', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                supervisor_creation_result = self.user_service.create_user(self.test_supervisor_user_data)
+                hiwi_creation_result = self.user_service.create_user(self.hiwi_user_data)
+                result = self.user_service.get_contract_info("testHiwiUserService")
+                contract_info = result.data.to_dict()
+                contract_info.pop('overtimeMinutes')
+                contract_info.pop('vacationMinutes')
+                self.assertEqual(True, result.is_successful)
+                self.assertEqual(200, result.status_code)
+                self.assertEqual(self.hiwi_user_data['contractInfo'], contract_info)

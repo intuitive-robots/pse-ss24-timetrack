@@ -78,8 +78,6 @@ class UserService:
         if result.status == ValidationStatus.FAILURE:
             return RequestResult(False, result.message, status_code=400)
         user_factory = UserFactory.get_factory(user_data['role'])
-        if not user_factory:
-            return RequestResult(False, "Invalid user role specified", status_code=400)
         user = user_factory.create_user(user_data)
 
         if not user:
@@ -101,6 +99,7 @@ class UserService:
                 return result_supervisor_update
             return RequestResult(True, "Hiwi created successfully", status_code=201)
         return self.user_repository.create_user(user)
+
     def _calculate_vacation_minutes(self, monthly_working_hours: int):
         """
         Calculates the number of vacation hours based on the monthly working hours.
@@ -278,7 +277,6 @@ class UserService:
 
         if username == get_jwt_identity():
             return RequestResult(False, "You cannot delete yourself", status_code=400)
-
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
@@ -286,7 +284,6 @@ class UserService:
         if user_data['role'] == 'Supervisor':
             if user_data['hiwis']:
                 return RequestResult(False, "Supervisor has Hiwis assigned", status_code=400)
-              
         if user_data['role'] == 'Hiwi' and not user_data['isArchived']:
             supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
             supervisor_data['hiwis'].remove(user_data['username'])
@@ -370,7 +367,6 @@ class UserService:
         users_data = self.user_repository.get_users()
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
         users = [user for user in users if not user.is_archived]
-
         return users
 
     def get_archived_users(self) -> list[User]:

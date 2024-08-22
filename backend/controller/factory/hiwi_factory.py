@@ -21,7 +21,6 @@ class HiwiFactory(UserFactory):
         contract_info = None
         supervisor = None
         is_archived = False
-        timesheets = []
 
         if 'personalInfo' in user_data:
             personal_info = PersonalInfo.from_dict(user_data['personalInfo'])

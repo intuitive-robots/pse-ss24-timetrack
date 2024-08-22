@@ -281,7 +281,6 @@ class TimesheetService:
         result = self.timesheet_repository.delete_timesheet(timesheet_id)
         if result.is_successful:
             hiwi = self.user_service.get_profile(timesheet_data["username"])
-            hiwi.remove_timesheet(ObjectId(timesheet_id))
             monthly_working_hours = hiwi.contract_info.working_hours
             self.user_service.add_overtime_minutes(timesheet_data["username"], monthly_working_hours * 60)
             update_result = self.user_service.update_user(hiwi.to_dict())

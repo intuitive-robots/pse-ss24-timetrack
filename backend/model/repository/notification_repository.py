@@ -138,4 +138,3 @@ class NotificationRepository:
                 return RequestResult(False, "Notification not found", 404)
         except PyMongoError as e:
             return RequestResult(False, str(e), 500)
-
