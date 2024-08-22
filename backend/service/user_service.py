@@ -327,6 +327,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == UserRole.ADMIN.value:
+            return RequestResult(False, "Cannot archive admin user", status_code=403)
         if user_data['isArchived']:
             return RequestResult(False, "User is already archived", status_code=400)
         if user_data['role'] == 'Supervisor' and len(user_data['hiwis']) > 0:
@@ -352,6 +354,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == UserRole.ADMIN.value:
+            return RequestResult(False, "Cannot activate admin user", status_code=403)
         if not user_data['isArchived']:
             return RequestResult(False, "User is not archived", status_code=400)
         if user_data['role'] == 'Hiwi':
