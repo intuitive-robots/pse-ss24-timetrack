@@ -30,6 +30,8 @@ class HiwiFactory(UserFactory):
             supervisor = user_data['supervisor']
         if 'isArchived' in user_data:
             is_archived = user_data['isArchived']
+        if 'accountCreation' in user_data:
+            account_creation = user_data['accountCreation']
         return Hiwi(
             username=user_data['username'],
             password_hash=user_data['passwordHash'],
@@ -37,5 +39,6 @@ class HiwiFactory(UserFactory):
             supervisor=supervisor,
             contract_info=contract_info,
             is_archived=is_archived,
-            slack_id=user_data.get('slackId')
+            slack_id=user_data.get('slackId'),
+            account_creation=account_creation
         )
