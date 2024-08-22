@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import StatusFilter from "../../components/status/StatusFilter";
 import {StatusType} from "../../interfaces/StatusType";
-import {Timesheet} from "../../interfaces/Timesheet";
+import {defaultTimesheet, Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 import {getSupervisor, getUsersByRole} from "../../services/UserService";
@@ -16,6 +16,7 @@ import DownloadIcon from "../../assets/images/download_icon_white.svg";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import {handleDownloadMultipleDocuments} from "../../services/DocumentService";
 import {handleMonthChange} from "../../utils/handleMonthChange";
+import useDisableSearch from "../../components/hooks/useDisableSerach";
 
 
 const SecretaryDocumentPage: React.FC = () => {
@@ -32,24 +33,7 @@ const SecretaryDocumentPage: React.FC = () => {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
-    const defaultTimesheet = (
-        id: string,
-        username: string,
-        month: number,
-        year: number
-    ): Timesheet => {
-        return {
-            _id: id,
-            username: username,
-            month: month,
-            year: year,
-            status: statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet],
-            totalTime: 0,
-            overtime: 0,
-            lastSignatureChange: new Date().toISOString(),
-            projectName: 'default project',
-      };
-    };
+    useDisableSearch();
 
     useEffect(() => {
       const storedMonth = localStorage.getItem('selectedMonth');

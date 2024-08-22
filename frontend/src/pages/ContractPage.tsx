@@ -3,8 +3,11 @@ import HorizontalSeparator from "../shared/HorizontalSeparator";
 import ContractDetails from "../components/contract/ContractDetails";
 import SignatureUpload from "../components/contract/SignatureUpload";
 import SupervisorContactInfo from "../components/contract/SupervisorContactInfo";
+import useDisableSearch from "../components/hooks/useDisableSerach";
 
 const ContractPage = (): React.ReactElement => {
+
+    useDisableSearch();
 
     return (
         <div className="px-6 py-6">

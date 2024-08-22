@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import HiwiTimesheetCard from "../../components/HiwiTimesheetCard";
 import StatusFilter from "../../components/status/StatusFilter";
 import {StatusType} from "../../interfaces/StatusType";
-import {Timesheet} from "../../interfaces/Timesheet";
+import {defaultTimesheet, Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 import {useAuth} from "../../context/AuthContext";
@@ -10,12 +10,13 @@ import {getHiwis} from "../../services/UserService";
 import ListIconCardButton from "../../components/input/ListIconCardButton";
 import LeftNavbarIcon from "../../assets/images/nav_button_left.svg"
 import RightNavbarIcon from "../../assets/images/nav_button_right.svg"
-import {isValidTimesheetStatus, statusMapping, TimesheetStatus} from "../../components/status/StatusMapping";
+import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
 import {useNavigate} from "react-router-dom";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import ProgressCard from "../../components/charts/ProgressCard";
 import {handleMonthChange} from "../../utils/handleMonthChange";
+import useDisableSearch from "../../components/hooks/useDisableSerach";
 
 
 
@@ -38,25 +39,7 @@ const SupervisorHomePage = (): React.ReactElement => {
     const currentYear = new Date().getFullYear();
 
     const navigate = useNavigate();
-
-    const defaultTimesheet = (
-        id: string,
-        username: string,
-        month: number,
-        year: number
-    ): Timesheet => {
-        return {
-            _id: id,
-            username: username,
-            month: month,
-            year: year,
-            status: statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet],
-            totalTime: 0,
-            overtime: 0,
-            lastSignatureChange: new Date().toISOString(),
-            projectName: 'default project',
-      };
-    };
+    useDisableSearch();
 
     useEffect(() => {
       const storedMonth = localStorage.getItem('selectedMonth');
