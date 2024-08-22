@@ -184,6 +184,7 @@ class TimeEntryService:
         """
         return self._add_time_entry(entry_data, TimeEntryType.VACATION_ENTRY, username)
 
+    @jwt_required()
     def update_time_entry(self, entry_id: str, update_data: dict) -> RequestResult:
         """
         Updates an existing time entry in the system with the provided update data after validating the data.
