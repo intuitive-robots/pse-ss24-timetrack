@@ -1,5 +1,5 @@
 import React from 'react';
-import useDisableSearch from "../../components/hooks/useDisableSerach";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 const SecretaryAnalysisPage: React.FC = () => {
     useDisableSearch();

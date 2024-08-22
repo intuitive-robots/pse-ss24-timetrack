@@ -9,7 +9,7 @@ import StatusFilter from "../../components/status/StatusFilter";
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
 import {TimeLineIcon} from "../../assets/iconComponents/TimeLineIcon";
-import useDisableSearch from "../../components/hooks/useDisableSerach";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 
 const DocumentPage: React.FC = () => {

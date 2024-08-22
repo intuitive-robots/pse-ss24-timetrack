@@ -16,7 +16,7 @@ import DownloadIcon from "../../assets/images/download_icon_white.svg";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import {handleDownloadMultipleDocuments} from "../../services/DocumentService";
 import {handleMonthChange} from "../../utils/handleMonthChange";
-import useDisableSearch from "../../components/hooks/useDisableSerach";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 
 const SecretaryDocumentPage: React.FC = () => {

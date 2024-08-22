@@ -3,7 +3,7 @@ import HorizontalSeparator from "../shared/HorizontalSeparator";
 import ContractDetails from "../components/contract/ContractDetails";
 import SignatureUpload from "../components/contract/SignatureUpload";
 import SupervisorContactInfo from "../components/contract/SupervisorContactInfo";
-import useDisableSearch from "../components/hooks/useDisableSerach";
+import useDisableSearch from "../components/hooks/useDisableSearch";
 
 const ContractPage = (): React.ReactElement => {
 

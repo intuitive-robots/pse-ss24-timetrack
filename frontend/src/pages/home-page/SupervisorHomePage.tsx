@@ -16,7 +16,7 @@ import {useNavigate} from "react-router-dom";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import ProgressCard from "../../components/charts/ProgressCard";
 import {handleMonthChange} from "../../utils/handleMonthChange";
-import useDisableSearch from "../../components/hooks/useDisableSerach";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 
 
