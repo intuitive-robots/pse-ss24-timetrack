@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timezone
 
 from app import app
 from db import initialize_db
@@ -57,7 +58,9 @@ class TestDocumentController(unittest.TestCase):
         hiwi_user = Hiwi.from_dict(cls.hiwi_user_data)
         user_repository.create_user(hiwi_user)
         cls.timesheet_service = TimesheetService()
-        cls.timesheet_service.ensure_timesheet_exists("HiwiDocumentController", 6, 2024)
+        current_month = datetime.now(timezone.utc).month
+        current_year = datetime.now(timezone.utc).year
+        cls.timesheet_service.ensure_timesheet_exists("HiwiDocumentController", current_month , current_year)
 
     @classmethod
     def tearDownClass(cls):

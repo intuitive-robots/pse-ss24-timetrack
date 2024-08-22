@@ -1,3 +1,4 @@
+import os
 import unittest
 import datetime
 
@@ -208,7 +209,11 @@ class TestTimesheetController(unittest.TestCase):
         """
         access_token = self.authenticate('testHiwiTimesheetController', 'testPassword')
 
-        file = open('../resources/testProfilePic.jpg', 'rb')
+        file_path = "../resources/testProfilePic.jpg"
+        if not os.path.exists(file_path):
+            file_path = "tests/resources/testProfilePic.jpg"
+        file = open(file_path, 'rb')
+
         self.client.post('/user/uploadFile?username=testHiwiTimesheetController&fileType=Signature',
                          data={'file': file},
                          headers={'Authorization': f'Bearer {access_token}'})
@@ -238,8 +243,10 @@ class TestTimesheetController(unittest.TestCase):
         Test the approve_timesheet method of the TimesheetController class.
         """
         access_token = self.authenticate('testSupervisorTimesheetController', 'testPassword')
-
-        file = open('../resources/testProfilePic.jpg', 'rb')
+        file_path = "../resources/testProfilePic.jpg"
+        if not os.path.exists(file_path):
+            file_path = "tests/resources/testProfilePic.jpg"
+        file = open(file_path, 'rb')
         self.client.post('/user/uploadFile?username=testSupervisorTimesheetController&fileType=Signature',
                          data={'file': file},
                          headers={'Authorization': f'Bearer {access_token}'})
@@ -271,8 +278,10 @@ class TestTimesheetController(unittest.TestCase):
         Test the request_change method of the TimesheetController class.
         """
         access_token = self.authenticate('testSupervisorTimesheetController', 'testPassword')
-
-        file = open('../resources/testProfilePic.jpg', 'rb')
+        file_path = "../resources/testProfilePic.jpg"
+        if not os.path.exists(file_path):
+            file_path = "tests/resources/testProfilePic.jpg"
+        file = open(file_path, 'rb')
         self.client.post('/user/uploadFile?username=testSupervisorTimesheetController&fileType=Signature',
                          data={'file': file},
                          headers={'Authorization': f'Bearer {access_token}'})

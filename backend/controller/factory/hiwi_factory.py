@@ -21,6 +21,7 @@ class HiwiFactory(UserFactory):
         contract_info = None
         supervisor = None
         is_archived = False
+        account_creation = None
 
         if 'personalInfo' in user_data:
             personal_info = PersonalInfo.from_dict(user_data['personalInfo'])
@@ -32,6 +33,7 @@ class HiwiFactory(UserFactory):
             is_archived = user_data['isArchived']
         if 'accountCreation' in user_data:
             account_creation = user_data['accountCreation']
+
         return Hiwi(
             username=user_data['username'],
             password_hash=user_data['passwordHash'],

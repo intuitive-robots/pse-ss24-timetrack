@@ -19,31 +19,31 @@ class TestTimesheetRepository(unittest.TestCase):
 
     def setUp(self):
         self.test_april_timesheet_data = {'username': 'testHiwiTimesheetRepo',
-                                         'month': 4,
-                                         'year': 2024,
-                                         'status': 'Complete',
-                                         'totalTime': 0.0,
-                                         'overtime': 0.0,
-                                         'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
-                                         'vacationMinutes': 0.0}
+                                          'month': 4,
+                                          'year': 2024,
+                                          'status': 'Complete',
+                                          'totalTime': 0.0,
+                                          'overtime': 0.0,
+                                          'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
+                                          'vacationMinutes': 0.0}
 
         self.test_may_timesheet_data = {'username': 'testHiwiTimesheetRepo',
-                                       'month': 5,
-                                       'year': 2024,
-                                       'status': 'Waiting for Approval',
-                                       'totalTime': 0.0,
-                                       'overtime': 0.0,
-                                       'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
-                                       'vacationMinutes': 0.0}
-
-        self.test_june_timesheet_data = {'username': 'testHiwiTimesheetRepo',
-                                        'month': 6,
+                                        'month': 5,
                                         'year': 2024,
-                                        'status': 'Not Submitted',
+                                        'status': 'Waiting for Approval',
                                         'totalTime': 0.0,
                                         'overtime': 0.0,
                                         'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
                                         'vacationMinutes': 0.0}
+
+        self.test_june_timesheet_data = {'username': 'testHiwiTimesheetRepo',
+                                         'month': 6,
+                                         'year': 2024,
+                                         'status': 'Not Submitted',
+                                         'totalTime': 0.0,
+                                         'overtime': 0.0,
+                                         'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
+                                         'vacationMinutes': 0.0}
 
         self.db.timesheets.insert_one(self.test_april_timesheet_data)
         self.db.timesheets.insert_one(self.test_may_timesheet_data)
@@ -81,7 +81,7 @@ class TestTimesheetRepository(unittest.TestCase):
         Test the get_timesheet method of the TimesheetRepository class.
         """
         self.assertEqual(self.test_may_timesheet_data, self.timesheet_repository.
-                         get_timesheet(self.test_may_timesheet_data['username'],self.test_may_timesheet_data['month'],
+                         get_timesheet(self.test_may_timesheet_data['username'], self.test_may_timesheet_data['month'],
                                        self.test_may_timesheet_data['year']))
 
     def test_get_timesheet_no_username(self):
@@ -129,9 +129,15 @@ class TestTimesheetRepository(unittest.TestCase):
         Test the get_timesheets method of the TimesheetRepository class.
         """
         timesheets = self.timesheet_repository.get_timesheets()
-        for timesheet in timesheets:
-            self.assertIn(timesheet, [self.test_may_timesheet_data, self.test_april_timesheet_data,
-                                      self.test_june_timesheet_data])
+        sorted_test_timesheets = [
+            dict(sorted(self.test_may_timesheet_data.items())),
+            dict(sorted(self.test_april_timesheet_data.items())),
+            dict(sorted(self.test_june_timesheet_data.items()),)
+        ]
+
+        for sorted_test_timesheet in sorted_test_timesheets:
+            sorted_timesheet = dict(sorted(sorted_test_timesheet.items()))
+            self.assertIn(sorted_timesheet, timesheets)
 
     def test_get_timesheets_by_status(self):
         """
@@ -264,7 +270,8 @@ class TestTimesheetRepository(unittest.TestCase):
         test_invalid_timesheet_data = self.test_may_timesheet_data.copy()
         test_invalid_timesheet_data['_id'] = ObjectId('666666666666666666666666')
 
-        response_no_userdata = self.timesheet_repository.update_timesheet(Timesheet.from_dict(test_invalid_timesheet_data))
+        response_no_userdata = self.timesheet_repository.update_timesheet(
+            Timesheet.from_dict(test_invalid_timesheet_data))
         self.assertEqual("Timesheet not found", response_no_userdata.message)
         self.assertEqual(False, response_no_userdata.is_successful)
         self.assertEqual(404, response_no_userdata.status_code)
@@ -273,15 +280,18 @@ class TestTimesheetRepository(unittest.TestCase):
         """
         Test the set_timesheet_status method of the TimesheetRepository class.
         """
-        self.timesheet_repository.set_timesheet_status(str(self.test_june_timesheet_data['_id']), TimesheetStatus.COMPLETE)
-        self.assertEqual(str(TimesheetStatus.COMPLETE), self.db.timesheets.find_one({'_id': self.test_june_timesheet_data['_id']})['status'])
+        self.timesheet_repository.set_timesheet_status(str(self.test_june_timesheet_data['_id']),
+                                                       TimesheetStatus.COMPLETE)
+        self.assertEqual(str(TimesheetStatus.COMPLETE),
+                         self.db.timesheets.find_one({'_id': self.test_june_timesheet_data['_id']})['status'])
 
     def test_set_timesheet_status_no_data(self):
         """
         Test the set_timesheet_status method of the TimesheetRepository class with no data.
         """
         response_no_timesheet_data = self.timesheet_repository.set_timesheet_status(None, TimesheetStatus.COMPLETE)
-        self.assertEqual("Please provide a timesheet ID and status to update the timesheet status.", response_no_timesheet_data.message)
+        self.assertEqual("Please provide a timesheet ID and status to update the timesheet status.",
+                         response_no_timesheet_data.message)
         self.assertEqual(False, response_no_timesheet_data.is_successful)
         self.assertEqual(400, response_no_timesheet_data.status_code)
 
@@ -289,7 +299,8 @@ class TestTimesheetRepository(unittest.TestCase):
         """
         Test the set_timesheet_status method of the TimesheetRepository class.
         """
-        response_invalid_timesheet_data = self.timesheet_repository.set_timesheet_status("666666666666666666666666", TimesheetStatus.COMPLETE)
+        response_invalid_timesheet_data = self.timesheet_repository.set_timesheet_status("666666666666666666666666",
+                                                                                         TimesheetStatus.COMPLETE)
         self.assertEqual("Timesheet not found", response_invalid_timesheet_data.message)
         self.assertEqual(False, response_invalid_timesheet_data.is_successful)
         self.assertEqual(404, response_invalid_timesheet_data.status_code)

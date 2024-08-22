@@ -12,15 +12,7 @@ from controller.notification_controller import NotificationController, notificat
 from controller.time_entry_controller import TimeEntryController, time_entry_blueprint
 from controller.timesheet_controller import TimesheetController, timesheet_blueprint
 from controller.user_controller import UserController, user_blueprint
-from db import initialize_db, check_db_connection
-from model.repository.time_entry_repository import TimeEntryRepository
-from model.repository.timesheet_repository import TimesheetRepository
-from model.repository.user_repository import UserRepository
-from model.timesheet import Timesheet
-from model.user.personal_information import PersonalInfo
-from model.user.role import UserRole
-from model.user.user import User
-from model.work_entry import WorkEntry
+from db import initialize_db
 from service.notification_service import NotificationService
 from utils.security_utils import SecurityUtils
 from service.timesheet_service import TimesheetService

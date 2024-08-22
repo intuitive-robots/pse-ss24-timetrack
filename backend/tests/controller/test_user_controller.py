@@ -459,11 +459,11 @@ class TestUserController(unittest.TestCase):
         """
         access_token = self._authenticate("AdminUserController", "test_password")
 
-        response = self.client.post(f'/user/uploadFile?username={self.hiwi_user_data['username']}&fileType=Signature',
+        response = self.client.post(f'/user/uploadFile?username={self.hiwi_user_data["username"]}&fileType=Signature',
                                     data={"file": self.file},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 201)
-        self.client.delete(f'/user/deleteFile?username={self.hiwi_user_data['username']}&fileType=Signature',
+        self.client.delete(f'/user/deleteFile?username={self.hiwi_user_data["username"]}&fileType=Signature',
                            headers={"Authorization": f"Bearer {access_token}"})
 
     def test_get_user_file_unauthorized(self):
@@ -473,7 +473,7 @@ class TestUserController(unittest.TestCase):
         access_token = self._authenticate("AdminUserController", "test_password")
         hiwi_creation = self.user_service.create_user(self.hiwi_user_data)
 
-        unauthorized_response = self.client.get(f'/user/getFile?username={self.hiwi_user_data['username']}&fileType'
+        unauthorized_response = self.client.get(f'/user/getFile?username={self.hiwi_user_data["username"]}&fileType'
                                                 f'=Signature',
                                                 headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(403, unauthorized_response.status_code)
@@ -513,13 +513,13 @@ class TestUserController(unittest.TestCase):
         access_token = self._authenticate("AdminUserController", "test_password")
         supervisor_creation = self.user_service.create_user(self.supervisor_user_data)
         hiwi_creation = self.user_service.create_user(self.hiwi_user_data)
-        upload_response = self.client.post(f'/user/uploadFile?username={self.hiwi_user_data['username']}'
+        upload_response = self.client.post(f'/user/uploadFile?username={self.hiwi_user_data["username"]}'
                                            f'&fileType=Signature', data={"file": self.file},
                                            headers={"Authorization": f"Bearer {access_token}"})
         self.user_service.archive_user(self.hiwi_user_data['username'])
 
         archived_response = self.client.delete(
-            f'/user/deleteFile?username={self.hiwi_user_data['username']}&fileType'
+            f'/user/deleteFile?username={self.hiwi_user_data["username"]}&fileType'
             f'=Signature',
             headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(400, archived_response.status_code)

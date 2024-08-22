@@ -7,7 +7,6 @@ from controller.input_validator.validation_status import ValidationStatus
 from model.time_entry_type import TimeEntryType
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
-from utils.object_utils import ObjectUtils
 
 
 class TimeEntryDataValidator(InputValidator):

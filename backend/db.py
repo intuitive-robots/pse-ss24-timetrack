@@ -18,18 +18,3 @@ def initialize_db():
     #TODO: Return Db if not none
     return db
 
-
-"""
-Checks the database connection
-"""
-
-
-def check_db_connection():
-    # Check if the database connection is successful
-    if client is None:
-        return "Database connection not initialized"
-    try:
-        client.server_info()
-        return "Connection successful"
-    except Exception as e:
-        return str(e)

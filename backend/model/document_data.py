@@ -32,8 +32,6 @@ class DocumentData:
         self.overtime = overtime
         self.last_signature_changed = last_signature_changed
 
-
-
     def get_monthly_working_hours(self):
         """
         Calculates the total number of working hours in a month.
@@ -45,7 +43,6 @@ class DocumentData:
         hours, minutes = divmod(duration_minutes, 60)
         duration_str = f"{int(hours):02d}:{int(minutes):02d}"
         return duration_str
-
 
     def get_contract_hours_per_month(self):
         """
