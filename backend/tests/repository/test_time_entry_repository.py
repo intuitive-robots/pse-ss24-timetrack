@@ -27,45 +27,25 @@ class TestTimeEntryRepository(unittest.TestCase):
                                           'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
                                           'vacationMinutes': 0.0}
 
-        self.test_may_timesheet_data = {'username': 'testHiwiTimeEntryRepo',
-                                        'month': 5,
-                                        'year': 2024,
-                                        'status': 'Waiting for Approval',
-                                        'totalTime': 0.0,
-                                        'overtime': 0.0,
-                                        'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
-                                        'vacationMinutes': 0.0}
-
-        self.test_june_timesheet_data = {'username': 'testHiwiTimeEntryRepo',
-                                         'month': 6,
-                                         'year': 2024,
-                                         'status': 'Not Submitted',
-                                         'totalTime': 0.0,
-                                         'overtime': 0.0,
-                                         'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
-                                         'vacationMinutes': 0.0}
-
         self.db.timesheets.insert_one(self.test_april_timesheet_data)
-        self.db.timesheets.insert_one(self.test_may_timesheet_data)
-        self.db.timesheets.insert_one(self.test_june_timesheet_data)
 
         self.test_april_1_time_entry_data = {'timesheetId': str(self.test_april_timesheet_data['_id']),
-                                        'startTime': datetime.datetime(2024, 4, 1, 8, 0, 0, 0),
-                                        'endTime': datetime.datetime(2024, 4, 1, 10, 0),
-                                     'entryType': 'Work Entry',
-                                        'breakTime': 10,
-                                     'activity': 'timeEntryRepoActivitiy',
+                                             'startTime': datetime.datetime(2024, 4, 1, 8, 0, 0, 0),
+                                             'endTime': datetime.datetime(2024, 4, 1, 10, 0),
+                                             'entryType': 'Work Entry',
+                                             'breakTime': 10,
+                                             'activity': 'timeEntryRepoActivitiy',
                                              'activityType': 'Projektbesprechung',
-                                        'projectName': 'timeEntryRepoTest'}
+                                             'projectName': 'timeEntryRepoTest'}
 
         self.test_april_8_time_entry_data = {'timesheetId': str(self.test_april_timesheet_data['_id']),
-                                     'startTime': datetime.datetime(2024, 4, 8, 8, 0, 0, 0),
-                                     'endTime': datetime.datetime(2024, 4, 8, 10, 0),
-                                     'entryType': 'Work Entry',
-                                     'breakTime': 10,
-                                     'activity': 'timeEntryRepoActivitiy',
-                                    'activityType': 'Projektbesprechung',
-                                     'projectName': 'timeEntryRepoTest'}
+                                             'startTime': datetime.datetime(2024, 4, 8, 8, 0, 0, 0),
+                                             'endTime': datetime.datetime(2024, 4, 8, 10, 0),
+                                             'entryType': 'Work Entry',
+                                             'breakTime': 10,
+                                             'activity': 'timeEntryRepoActivitiy',
+                                             'activityType': 'Projektbesprechung',
+                                             'projectName': 'timeEntryRepoTest'}
 
         self.db.timeEntries.insert_one(self.test_april_1_time_entry_data)
         self.db.timeEntries.insert_one(self.test_april_8_time_entry_data)

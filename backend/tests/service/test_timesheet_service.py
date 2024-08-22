@@ -4,6 +4,7 @@ import unittest
 from bson import ObjectId
 
 from app import app
+from db import initialize_db
 from model.repository.timesheet_repository import TimesheetRepository
 from model.timesheet import Timesheet
 from model.timesheet_status import TimesheetStatus
@@ -12,35 +13,116 @@ from service.timesheet_service import TimesheetService
 
 
 class TestTimesheetService(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.db = initialize_db()
+        cls.timesheet_service = TimesheetService()
+        cls.timesheet_repository = TimesheetRepository.get_instance()
+        cls.app = app
+        cls.auth_service = AuthenticationService()
+
+        cls.test_timesheet_supervisor = {'username': 'testSupervisorTimesheetService',
+                                         'passwordHash': 'testPasswordHash',
+                                         'personalInfo': {
+                                             'firstName': 'Test',
+                                             'lastName': 'Supervisor',
+                                             'email': 'test@gmail.com',
+                                             'personalNumber': '1234567890',
+                                             'instituteName': 'Test Institute'
+                                         },
+                                         'role': 'Supervisor',
+                                         'accountCreation': datetime.datetime(2023, 6, 1, 8, 0, 0, 0),
+                                         'lastLogin': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
+                                         'slackId': 'testSlackId',
+                                         'isArchived': False,
+                                         'supervisor': 'testSupervisorTimesheetService',
+                                         'hiwis': ['testHiwiTimesheetService']
+                                         }
+        cls.test_timesheet_hiwi = {'username': 'testHiwiTimesheetService',
+                                   'passwordHash': 'testPasswordHash',
+                                   'personalInfo': {
+                                       'firstName': 'Test',
+                                       'lastName': 'Hiwi',
+                                       'email': 'test@gmail.com',
+                                       'personalNumber': '1234567890',
+                                       'instituteName': 'Test Institute'
+                                   },
+                                   'role': 'Hiwi',
+                                   'accountCreation': datetime.datetime(2023, 6, 1, 8, 0, 0, 0),
+                                   'lastLogin': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
+                                   'slackId': 'testSlackId',
+                                   'isArchived': False,
+                                   'supervisor': 'testSupervisorTimesheetService',
+                                   'contractInfo': {'hourlyWage': 15,
+                                                    'workingHours': 80,
+                                                    'vacationMinutes': 0,
+                                                    'overtimeMinutes': 0}
+                                   }
+        cls.db.users.insert_one(cls.test_timesheet_supervisor)
+        cls.db.users.insert_one(cls.test_timesheet_hiwi)
+
     def setUp(self):
-        self.timesheet_service = TimesheetService()
-        self.timesheet_repository = TimesheetRepository.get_instance()
-        self.app = app
-        self.client = self.app.test_client()
-        self.auth_service = AuthenticationService()
+        self.test_april_timesheet_data = {'username': 'testHiwiTimesheetService',
+                                          'month': 4,
+                                          'year': 2024,
+                                          'status': 'Complete',
+                                          'totalTime': 0.0,
+                                          'overtime': 0.0,
+                                          'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
+                                          'vacationMinutes': 0.0}
+
+        self.test_may_timesheet_data = {'username': 'testHiwiTimesheetService',
+                                        'month': 5,
+                                        'year': 2024,
+                                        'status': 'Waiting for Approval',
+                                        'totalTime': 0.0,
+                                        'overtime': 0.0,
+                                        'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
+                                        'vacationMinutes': 0.0}
+
+        self.test_june_timesheet_data = {'username': 'testHiwiTimesheetService',
+                                         'month': 6,
+                                         'year': 2024,
+                                         'status': 'Not Submitted',
+                                         'totalTime': 0.0,
+                                         'overtime': 0.0,
+                                         'lastSignatureChange': datetime.datetime(2024, 6, 24, 21, 22, 35, 855000),
+                                         'vacationMinutes': 0.0}
+
+        self.db.timesheets.insert_one(self.test_april_timesheet_data)
+        self.db.timesheets.insert_one(self.test_may_timesheet_data)
+        self.db.timesheets.insert_one(self.test_june_timesheet_data)
+
+    def tearDown(self):
+        self.db.timesheets.delete_many({'username': 'testHiwiTimesheetService'})
+        self.db.users.delete_many({'username': 'testHiwiTimesheetService'})
+        self.db.users.delete_many({'username': 'testSupervisorTimesheetService'})
+
 
     def test_ensure_timesheet_exists(self):
         """
         Test the ensure_timesheet_exists method of the TimesheetService class.
         """
-
-        # Test ensuring a timesheet exists for a user
-        test_username = "testHiwi1"
-
-        # Test ensuring a timesheet exists for a user that already has one
-        result = self.timesheet_service.ensure_timesheet_exists(test_username, 5, 2024)
-        self.assertTrue(result.is_successful)
-        self.assertEqual(result.status_code, 200)
-        self.assertIsNotNone(self.timesheet_repository.get_timesheet(test_username, 5, 2024))
-
-        # Test ensuring a timesheet exists for a user that has no timesheet
-        result = self.timesheet_service.ensure_timesheet_exists(test_username, 8, 2024)
+        result = self.timesheet_service.ensure_timesheet_exists(self.test_april_timesheet_data['username'],
+                                                                7, 2024)
+        print(result.message)
         self.assertTrue(result.is_successful)
         self.assertEqual(result.status_code, 201)
-        self.assertIsNotNone(self.timesheet_repository.get_timesheet(test_username, 8, 2024))
-        timesheet_id = self.timesheet_repository.get_timesheet_id(test_username, 8, 2024)
-        delete_result = self.timesheet_service.delete_timesheet_by_id(timesheet_id)
-        self.assertTrue(delete_result.is_successful)
+        self.assertIsNotNone(self.timesheet_repository.get_timesheet(self.test_april_timesheet_data['username'], 7, 2024))
+
+    def test_ensure_timesheet_exists_already_exists(self):
+        """
+        Test the ensure_timesheet_exists method of the TimesheetService class with a timesheet that already exists.
+        """
+        result = self.timesheet_service.ensure_timesheet_exists(self.test_april_timesheet_data['username'],
+                                                                self.test_april_timesheet_data['month'],
+                                                                self.test_april_timesheet_data['year'])
+        self.assertTrue(result.is_successful)
+        self.assertEqual(result.status_code, 200)
+        self.assertIsNotNone(self.timesheet_repository.get_timesheet(self.test_april_timesheet_data['username'],
+                                                                     self.test_april_timesheet_data['month'],
+                                                                     self.test_april_timesheet_data['year']))
 
     def test_set_total_time(self):
         # Test invalid timesheet id
