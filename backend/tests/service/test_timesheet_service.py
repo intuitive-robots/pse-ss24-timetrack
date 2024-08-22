@@ -20,21 +20,6 @@ class TestTimesheetService(unittest.TestCase):
         cls.auth_service = AuthenticationService()
 
     def setUp(self):
-        self.test_timesheet_admin = {'username': 'testAdminTimesheetService',
-                                    'passwordHash': 'testPasswordHash',
-                                    'personalInfo': {
-                                        'firstName': 'Test',
-                                        'lastName': 'Admin',
-                                        'email': 'test@gmail.com',
-                                        'personalNumber': '1234567890',
-                                        'instituteName': 'Test Institute'
-                                    },
-                                    'role': 'Admin',
-                                    'accountCreation': datetime.datetime(2023, 6, 1, 8, 0, 0, 0),
-                                    'lastLogin': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
-                                    'slackId': 'testSlackId',
-                                    'isArchived': False
-                                    }
         self.test_timesheet_supervisor = {'username': 'testSupervisorTimesheetService',
                                          'passwordHash': 'testPasswordHash',
                                          'personalInfo': {
@@ -92,7 +77,6 @@ class TestTimesheetService(unittest.TestCase):
                                                      'overtimeMinutes': 0}
                                     }
 
-        self.db.users.insert_one(self.test_timesheet_admin)
         self.db.users.insert_one(self.test_timesheet_supervisor)
         self.db.users.insert_one(self.test_timesheet_hiwi)
         self.db.users.insert_one(self.test_timesheet_hiwi2)
@@ -127,7 +111,7 @@ class TestTimesheetService(unittest.TestCase):
         self.db.timesheets.insert_one(self.test_may_timesheet_data)
         self.db.timesheets.insert_one(self.test_june_timesheet_data)
 
-        self.test_april_1_time_entry_data = {'timesheetId': str(self.test_june_timesheet_data['_id']),
+        self.test_june_1_time_entry_data = {'timesheetId': str(self.test_june_timesheet_data['_id']),
                                              'startTime': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
                                              'endTime': datetime.datetime(2024, 6, 1, 18, 0),
                                              'entryType': 'Work Entry',
@@ -135,7 +119,7 @@ class TestTimesheetService(unittest.TestCase):
                                              'activity': 'timesheetServiceActivitiy',
                                              'activityType': 'Projektbesprechung',
                                              'projectName': 'timesheetServiceTest'}
-        self.test_april_2_time_entry_data = {'timesheetId': str(self.test_june_timesheet_data['_id']),
+        self.test_june_2_time_entry_data = {'timesheetId': str(self.test_june_timesheet_data['_id']),
                                              'startTime': datetime.datetime(2024, 6, 2, 8, 0, 0, 0),
                                              'endTime': datetime.datetime(2024, 6, 2, 18, 0),
                                              'entryType': 'Work Entry',
@@ -143,8 +127,8 @@ class TestTimesheetService(unittest.TestCase):
                                              'activity': 'timesheetServiceActivitiy',
                                              'activityType': 'Projektbesprechung',
                                              'projectName': 'timesheetServiceTest'}
-        self.db.timeEntries.insert_one(self.test_april_1_time_entry_data)
-        self.db.timeEntries.insert_one(self.test_april_2_time_entry_data)
+        self.db.timeEntries.insert_one(self.test_june_1_time_entry_data)
+        self.db.timeEntries.insert_one(self.test_june_2_time_entry_data)
 
     def tearDown(self):
         self.db.timesheets.delete_many({'username': 'testHiwiTimesheetService'})
@@ -152,7 +136,8 @@ class TestTimesheetService(unittest.TestCase):
         self.db.users.delete_many({'username': 'testHiwiTimesheetService'})
         self.db.users.delete_many({'username': 'testHiwi2TimesheetService'})
         self.db.users.delete_many({'username': 'testSupervisorTimesheetService'})
-        self.db.users.delete_many({'username': 'testAdminTimesheetService'})
+        self.db.notifications.delete_many({'receiver': 'testHiwiTimesheetService'})
+        self.db.notifications.delete_many({'receiver': 'testSupervisorTimesheetService'})
 
 
     def test_ensure_timesheet_exists(self):
