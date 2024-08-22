@@ -9,6 +9,7 @@ import StatusFilter from "../../components/status/StatusFilter";
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
 import {TimeLineIcon} from "../../assets/iconComponents/TimeLineIcon";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 
 const DocumentPage: React.FC = () => {
@@ -16,6 +17,8 @@ const DocumentPage: React.FC = () => {
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
     const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
     const { user } = useAuth();
+
+    useDisableSearch();
 
      useEffect(() => {
         if (user && user.username) {
@@ -48,10 +51,8 @@ const DocumentPage: React.FC = () => {
     useEffect(() => {
         if (!filter) {
             setFilteredTimesheets(timesheets);
-            console.log(timesheets.map(timesheet => timesheet.status));
             return;
         }
-        console.log(timesheets.map(timesheet => timesheet.status));
         const filteredSheets = timesheets.filter(timesheet => timesheet.status === filter);
         setFilteredTimesheets(filteredSheets);
     }, [filter, timesheets]);

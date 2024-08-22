@@ -3,10 +3,13 @@ import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import SignatureUpload from "../../components/contract/SignatureUpload";
 import {getHiwis} from "../../services/UserService";
 import {User} from "../../interfaces/User";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 const SupervisorEmployeesPage: React.FC = () => {
     const [hiwis, setHiwis] = useState<User[] | null>(null);
-    const [isLoading, setIsLoading] = useState(true);  // Manage loading state
+    const [isLoading, setIsLoading] = useState(true);
+
+    useDisableSearch();
 
     useEffect(() => {
         getHiwis().then(hiwis => {
