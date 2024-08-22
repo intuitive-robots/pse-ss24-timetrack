@@ -20,6 +20,8 @@ class WorkingTimeStrategy(TimeEntryStrategy):
     MAX_WORKING_HOURS = 8
     FAILURE_WORKING_HOURS = 10
 
+    OUT_OF_BUSINESS_HOURS_THRESHOLD = 120
+
     def validate(self, entry: TimeEntry) -> ValidationResult:
         """
         Validates a single TimeEntry against defined business hours and maximum working hours constraints.
@@ -45,10 +47,30 @@ class WorkingTimeStrategy(TimeEntryStrategy):
             - Time entries that exceed 10 hours of work will receive a FAILURE status, as this is beyond
               the acceptable working time limit.
         """
-        # TODO Type Check within implementatino
 
-        # Validate business hours
-        if not (self.BUSINESS_START <= entry.start_time.time() < self.BUSINESS_END):
+        # Check if the entry is outside business hours
+        total_outside_business_hours = 0
+
+        # Convert business hours to datetime for comparison with entry times
+        business_start_datetime = datetime.datetime.combine(entry.start_time.date(), self.BUSINESS_START)
+        business_end_datetime = datetime.datetime.combine(entry.end_time.date(), self.BUSINESS_END)
+
+        if entry.start_time < business_start_datetime:
+            total_outside_business_hours += (business_start_datetime - entry.start_time).seconds // 60
+        elif entry.start_time >= business_end_datetime:
+            total_outside_business_hours += (entry.start_time - business_end_datetime).seconds // 60
+
+        if entry.end_time > business_end_datetime:
+            total_outside_business_hours += (entry.end_time - business_end_datetime).seconds // 60
+        elif entry.end_time <= business_start_datetime:
+            total_outside_business_hours += (business_start_datetime - entry.end_time).seconds // 60
+
+        # Validate based on the total time outside business hours
+        if total_outside_business_hours > self.OUT_OF_BUSINESS_HOURS_THRESHOLD:
+            return ValidationResult(ValidationStatus.FAILURE,
+                                    "Entry exceeds the allowed threshold for working outside business hours.")
+
+        if total_outside_business_hours > 0:
             return ValidationResult(ValidationStatus.WARNING,
                                     "Entry is outside of standard business hours (8 AM to 6 PM).")
 
