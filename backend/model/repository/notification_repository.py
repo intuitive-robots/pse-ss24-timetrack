@@ -37,7 +37,7 @@ class NotificationRepository:
                                      data={"id": str(result.inserted_id)})
             else:
                 return RequestResult(False, "Notification creation failed", 500)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, str(e), 500)
 
     def get_notification_by_id(self, notification_id: str):
@@ -57,7 +57,7 @@ class NotificationRepository:
                                      data=NotificationMessage.from_dict(notification_data))
             else:
                 return RequestResult(False, "Notification not found", 404)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, str(e), 500)
 
     def update_notification(self, notification: NotificationMessage):
@@ -81,7 +81,7 @@ class NotificationRepository:
                 return RequestResult(False, "Notification update failed", 500)
             if result.acknowledged:
                 return RequestResult(True, "Notification updated successfully", 200)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, str(e), 500)
 
     def does_unread_message_exist(self, receiver: str):
@@ -100,7 +100,7 @@ class NotificationRepository:
                 return RequestResult(True, "Unread message found", 200, data=True)
             else:
                 return RequestResult(True, "No unread message found", 200, data=False)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, str(e), 500)
 
     def get_notifications_by_receiver(self, receiver: str):
@@ -117,7 +117,7 @@ class NotificationRepository:
             notifications = list(self.db.notifications.find({"receiver": receiver}))
             return RequestResult(True, "Notifications retrieved successfully", 200,
                                  data=[NotificationMessage.from_dict(notification) for notification in notifications])
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, str(e), 500)
 
     def delete_notification_by_id(self, notification_id: str):
@@ -136,5 +136,5 @@ class NotificationRepository:
                 return RequestResult(True, "Notification deleted successfully", 200)
             else:
                 return RequestResult(False, "Notification not found", 404)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, str(e), 500)

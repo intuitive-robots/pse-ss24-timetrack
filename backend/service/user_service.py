@@ -410,7 +410,6 @@ class UserService:
             return None
         if user_data.get('timesheets'):
             user_data['timesheets'] = [str(timesheet_id) for timesheet_id in user_data['timesheets']]
-
         if user_data['isArchived']:
             return None
         return UserFactory.create_user_if_factory_exists(user_data)

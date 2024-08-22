@@ -107,6 +107,22 @@ class TestNotificationService(unittest.TestCase):
         response = self.client.post('/user/login', json=user)
         return response.json['accessToken']
 
+
+    def test_send_notification_system(self):
+        """
+        Test sending a notification with the sender as System.
+        """
+        with self.app.app_context():
+            access_token = self._authenticate('HiwiUserService', 'test_password')
+            with self.app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+                notification_data = self.notification_data
+                notification_data["sender"] = "system"
+                result = self.notification_service.send_notification(notification_data)
+                self.assertTrue(result.is_successful)
+                self.assertEqual(result.status_code, 200)
+                self.notification_repository.delete_notification_by_id(result.data.message_id)
+
+
     def test_send_notification(self):
         """
         Test sending a notification.

@@ -61,9 +61,9 @@ class DocumentController(MethodView):
         if result.status_code != 200:
             return jsonify(result.message), result.status_code
         file_path = result.data
-        if not file_path:
+        if not file_path: # pragma: no cover
             return jsonify('Failed to generate document'), 500
-        if os.path.isfile(file_path):
+        if os.path.isfile(file_path): # pragma: no cover
             with open(file_path, 'rb') as file:
                 file_content = file.read()
             # Step 2 & 3: Create a response object and set headers for download

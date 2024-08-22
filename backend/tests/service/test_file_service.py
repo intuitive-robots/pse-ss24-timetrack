@@ -81,3 +81,15 @@ class TestFileService(unittest.TestCase):
 
         result = self.file_service.does_file_exist(self.username, self.file_type)
         self.assertFalse(result)
+
+    def test_delete_files_by_username(self):
+        """
+        Test the delete_files_by_username method of the FileService class.
+        """
+        self.file_repository.upload_image(self.file, self.username, self.file_type)
+        result = self.file_service.delete_files_by_username(self.username)
+        self.assertTrue(result.is_successful)
+        self.assertEqual(result.status_code, 200)
+        for filetype in FileType:
+            result = self.file_service.does_file_exist(self.username, filetype)
+            self.assertFalse(result)

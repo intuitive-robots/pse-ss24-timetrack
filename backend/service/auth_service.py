@@ -119,7 +119,6 @@ class AuthenticationService:
         user = UserFactory.create_user_if_factory_exists(user_data)
         if not user:
             return RequestResult(False, "Failed to create user object", status_code=500)
-
         user.password_hash = SecurityUtils.hash_password(new_password)
 
         result = self.user_repository.update_user(user)

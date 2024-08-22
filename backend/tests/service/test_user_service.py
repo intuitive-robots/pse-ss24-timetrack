@@ -968,6 +968,23 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(200, result.status_code)
         self.assertTrue(self.user_repository.find_by_username("testHiwiUserService")['isArchived'])
 
+    def test_get_contract_info_invalid_username(self):
+        """
+        Test the get_contract_info method of the UserService class with invalid username.
+        """
+        result_invalid_username = self.user_service.get_contract_info("")
+        self.assertEqual(False, result_invalid_username.is_successful)
+        self.assertEqual(404, result_invalid_username.status_code)
+        self.assertEqual("User not found", result_invalid_username.message)
+
+    def test_get_contract_info_not_hiwi(self):
+        """
+        Test the get_contract_info method of the UserService class for a user that is not a Hiwi.
+        """
+        result_not_hiwi = self.user_service.get_contract_info("AdminUserService")
+        self.assertEqual(False, result_not_hiwi.is_successful)
+        self.assertEqual(400, result_not_hiwi.status_code)
+        self.assertEqual("User is not a Hiwi", result_not_hiwi.message)
     def test_get_contract_info(self):
         """
         Test the get_contract_info method of the UserService class.

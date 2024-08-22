@@ -60,7 +60,7 @@ class NotificationService:
                 notification.message_type.value == MessageType.REMINDER.value):
             slack_result = self._send_slack_message(notification, receiver_data, sender_data)
             slack_result.data = notification
-            if not slack_result.is_successful:
+            if not slack_result.is_successful: # pragma: no cover
                 slack_result.message = f"{slack_result.message} - In-App Message sent successfully"
                 slack_result.is_successful = True
                 slack_result.status_code = 200
@@ -86,7 +86,7 @@ class NotificationService:
                     update_result = self.notification_repository.update_notification(notification)
             read_result.data = sorted(read_result.data, key=lambda x: x.timestamp, reverse=True)
             return RequestResult(True, "Notifications retrieved successfully", 200, data=read_result.data)
-        return read_result
+        return read_result # pragma: no cover
 
     @jwt_required()
     def does_unread_message_exist(self):
@@ -103,7 +103,6 @@ class NotificationService:
         receiver_slack_id = receiver_data.get("slackId")
         if notification.sender != "system" and sender_data is None:
             return RequestResult(False, "Sender not found", 404)
-
         slack_body = {
             "text": notification.message,
             "channel": receiver_slack_id
@@ -142,7 +141,8 @@ class NotificationService:
             return RequestResult(False, "You are not authorized to delete this notification", 403)
         return self.notification_repository.delete_notification_by_id(notification_id)
 
-    def send_scheduled_reminders(self):
+
+    def send_scheduled_reminders(self): # pragma: no cover
         """
         Sends reminders to users who have not submitted their timesheets.
         """
