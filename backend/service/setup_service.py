@@ -112,7 +112,7 @@ class SetupService:
         with an empty string as the token value.
         """
         admin_collection = self.db[self.ADMIN_COLLECTION]
-        admin_collection.insert_one({"slackToken": ""})
+        admin_collection.insert_one({"slackToken": "xoxb-7391548519795-7490974089332-yGD8ins3aFpjSER7TD3lZdlp"})
         print("\033[32mDefault SlackToken entry created.\033[0m")
 
     def run_setup(self):

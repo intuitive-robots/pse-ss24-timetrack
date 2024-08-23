@@ -21,42 +21,22 @@ class TestTimesheetService(unittest.TestCase):
 
     def setUp(self):
         self.test_timesheet_supervisor = {'username': 'testSupervisorTimesheetService',
-                                         'passwordHash': 'testPasswordHash',
-                                         'personalInfo': {
-                                             'firstName': 'Test',
-                                             'lastName': 'Supervisor',
-                                             'email': 'test@gmail.com',
-                                             'personalNumber': '1234567890',
-                                             'instituteName': 'Test Institute'
-                                         },
-                                         'role': 'Supervisor',
-                                         'accountCreation': datetime.datetime(2023, 6, 1, 8, 0, 0, 0),
-                                         'lastLogin': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
-                                         'slackId': 'testSlackId',
-                                         'isArchived': False,
-                                         'hiwis': ['testHiwiTimesheetService']
-                                         }
+                                          'passwordHash': 'testPasswordHash',
+                                          'personalInfo': {
+                                              'firstName': 'Test',
+                                              'lastName': 'Supervisor',
+                                              'email': 'test@gmail.com',
+                                              'personalNumber': '1234567890',
+                                              'instituteName': 'Test Institute'
+                                          },
+                                          'role': 'Supervisor',
+                                          'accountCreation': datetime.datetime(2023, 6, 1, 8, 0, 0, 0),
+                                          'lastLogin': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
+                                          'slackId': 'testSlackId',
+                                          'isArchived': False,
+                                          'hiwis': ['testHiwiTimesheetService']
+                                          }
         self.test_timesheet_hiwi = {'username': 'testHiwiTimesheetService',
-                                   'passwordHash': 'testPasswordHash',
-                                   'personalInfo': {
-                                       'firstName': 'Test',
-                                       'lastName': 'Hiwi',
-                                       'email': 'test@gmail.com',
-                                       'personalNumber': '1234567890',
-                                       'instituteName': 'Test Institute'
-                                   },
-                                   'role': 'Hiwi',
-                                   'accountCreation': datetime.datetime(2023, 6, 1, 8, 0, 0, 0),
-                                   'lastLogin': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
-                                   'slackId': 'testSlackId',
-                                   'isArchived': False,
-                                   'supervisor': 'testSupervisorTimesheetService',
-                                   'contractInfo': {'hourlyWage': 15,
-                                                    'workingHours': 80,
-                                                    'vacationMinutes': 0,
-                                                    'overtimeMinutes': 0}
-                                   }
-        self.test_timesheet_hiwi2 = {'username': 'testHiwi2TimesheetService',
                                     'passwordHash': 'testPasswordHash',
                                     'personalInfo': {
                                         'firstName': 'Test',
@@ -76,6 +56,26 @@ class TestTimesheetService(unittest.TestCase):
                                                      'vacationMinutes': 0,
                                                      'overtimeMinutes': 0}
                                     }
+        self.test_timesheet_hiwi2 = {'username': 'testHiwi2TimesheetService',
+                                     'passwordHash': 'testPasswordHash',
+                                     'personalInfo': {
+                                         'firstName': 'Test',
+                                         'lastName': 'Hiwi',
+                                         'email': 'test@gmail.com',
+                                         'personalNumber': '1234567890',
+                                         'instituteName': 'Test Institute'
+                                     },
+                                     'role': 'Hiwi',
+                                     'accountCreation': datetime.datetime(2023, 6, 1, 8, 0, 0, 0),
+                                     'lastLogin': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
+                                     'slackId': 'testSlackId',
+                                     'isArchived': False,
+                                     'supervisor': 'testSupervisorTimesheetService',
+                                     'contractInfo': {'hourlyWage': 15,
+                                                      'workingHours': 80,
+                                                      'vacationMinutes': 0,
+                                                      'overtimeMinutes': 0}
+                                     }
 
         self.db.users.insert_one(self.test_timesheet_supervisor)
         self.db.users.insert_one(self.test_timesheet_hiwi)
@@ -112,21 +112,21 @@ class TestTimesheetService(unittest.TestCase):
         self.db.timesheets.insert_one(self.test_june_timesheet_data)
 
         self.test_june_1_time_entry_data = {'timesheetId': str(self.test_june_timesheet_data['_id']),
-                                             'startTime': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
-                                             'endTime': datetime.datetime(2024, 6, 1, 18, 0),
-                                             'entryType': 'Work Entry',
-                                             'breakTime': 60,
-                                             'activity': 'timesheetServiceActivitiy',
-                                             'activityType': 'Projektbesprechung',
-                                             'projectName': 'timesheetServiceTest'}
+                                            'startTime': datetime.datetime(2024, 6, 1, 8, 0, 0, 0),
+                                            'endTime': datetime.datetime(2024, 6, 1, 18, 0),
+                                            'entryType': 'Work Entry',
+                                            'breakTime': 60,
+                                            'activity': 'timesheetServiceActivitiy',
+                                            'activityType': 'Projektbesprechung',
+                                            'projectName': 'timesheetServiceTest'}
         self.test_june_2_time_entry_data = {'timesheetId': str(self.test_june_timesheet_data['_id']),
-                                             'startTime': datetime.datetime(2024, 6, 2, 8, 0, 0, 0),
-                                             'endTime': datetime.datetime(2024, 6, 2, 18, 0),
-                                             'entryType': 'Work Entry',
-                                             'breakTime': 60,
-                                             'activity': 'timesheetServiceActivitiy',
-                                             'activityType': 'Projektbesprechung',
-                                             'projectName': 'timesheetServiceTest'}
+                                            'startTime': datetime.datetime(2024, 6, 2, 8, 0, 0, 0),
+                                            'endTime': datetime.datetime(2024, 6, 2, 18, 0),
+                                            'entryType': 'Work Entry',
+                                            'breakTime': 60,
+                                            'activity': 'timesheetServiceActivitiy',
+                                            'activityType': 'Projektbesprechung',
+                                            'projectName': 'timesheetServiceTest'}
         self.db.timeEntries.insert_one(self.test_june_1_time_entry_data)
         self.db.timeEntries.insert_one(self.test_june_2_time_entry_data)
 
@@ -139,6 +139,23 @@ class TestTimesheetService(unittest.TestCase):
         self.db.notifications.delete_many({'receiver': 'testHiwiTimesheetService'})
         self.db.notifications.delete_many({'receiver': 'testSupervisorTimesheetService'})
 
+    def test_ensure_timesheet_exists_invalid_username(self):
+        """
+        Test the ensure_timesheet_exists method of the TimesheetService class with no username.
+        """
+        result = self.timesheet_service.ensure_timesheet_exists("invalid_name", 7, 2024)
+        self.assertFalse(result.is_successful)
+        self.assertEqual(404, result.status_code)
+        self.assertEqual("User not found", result.message)
+
+    def test_ensure_timesheet_exists_before_user_creation(self):
+        """
+        Test the ensure_timesheet_exists method of the TimesheetService class with an invalid month.
+        """
+        result = self.timesheet_service.ensure_timesheet_exists(self.test_april_timesheet_data['username'], 1, 2023)
+        self.assertFalse(result.is_successful)
+        self.assertEqual(400, result.status_code)
+        self.assertEqual("User account was created after the timesheet month", result.message)
 
     def test_ensure_timesheet_exists(self):
         """
@@ -149,7 +166,8 @@ class TestTimesheetService(unittest.TestCase):
         print(result.message)
         self.assertTrue(result.is_successful)
         self.assertEqual(result.status_code, 201)
-        self.assertIsNotNone(self.timesheet_repository.get_timesheet(self.test_april_timesheet_data['username'], 7, 2024))
+        self.assertIsNotNone(
+            self.timesheet_repository.get_timesheet(self.test_april_timesheet_data['username'], 7, 2024))
 
     def test_ensure_timesheet_exists_already_exists(self):
         """
@@ -182,6 +200,18 @@ class TestTimesheetService(unittest.TestCase):
         self.assertFalse(result_invalid_timesheet_id.is_successful)
         self.assertEqual(404, result_invalid_timesheet_id.status_code)
 
+    def test_sign_timesheet_invalid_id(self):
+        """
+        Test the sign_timesheet method of the TimesheetService class with an invalid timesheet ID.
+        """
+        with self.app.app_context():
+            token = self.auth_service.create_token('testHiwiTimesheetService', 'Hiwi')
+            with self.app.test_request_context(headers={'Authorization': f'Bearer {token}'}):
+                result_invalid_timesheet_id = self.timesheet_service.sign_timesheet("666666666666666666666666")
+                self.assertEqual("Timesheet not found", result_invalid_timesheet_id.message)
+                self.assertFalse(result_invalid_timesheet_id.is_successful)
+                self.assertEqual(404, result_invalid_timesheet_id.status_code)
+
     def test_sign_timesheet(self):
         """
         Test the sign_timesheet method of the TimesheetService class.
@@ -189,7 +219,8 @@ class TestTimesheetService(unittest.TestCase):
         with self.app.app_context():
             token = self.auth_service.create_token('testHiwiTimesheetService', 'Hiwi')
             with self.app.test_request_context(headers={'Authorization': f'Bearer {token}'}):
-                self.db.timesheets.update_one({'_id': self.test_june_timesheet_data['_id']}, {'$set': {'totalTime': 4200}})
+                self.db.timesheets.update_one({'_id': self.test_june_timesheet_data['_id']},
+                                              {'$set': {'totalTime': 4200}})
                 self.timesheet_service.sign_timesheet(str(self.test_june_timesheet_data['_id']))
                 timesheet = self.timesheet_repository.get_timesheet_by_id(str(self.test_june_timesheet_data['_id']))
                 self.assertEqual('Waiting for Approval', timesheet['status'])
@@ -211,11 +242,12 @@ class TestTimesheetService(unittest.TestCase):
         with self.app.app_context():
             token = self.auth_service.create_token('testSupervisorTimesheetService', 'Supervisor')
             with self.app.test_request_context(headers={'Authorization': f'Bearer {token}'}):
-                self.db.timesheets.update_one({'_id': self.test_june_timesheet_data['_id']}, {'$set': {'status': 'Waiting for Approval'}})
+                self.db.timesheets.update_one({'_id': self.test_june_timesheet_data['_id']},
+                                              {'$set': {'status': 'Waiting for Approval'}})
                 self.timesheet_service.approve_timesheet(str(self.test_june_timesheet_data['_id']))
                 timesheet = self.db.timesheets.find_one({'_id': self.test_june_timesheet_data['_id']})
                 self.assertEqual('Complete', timesheet['status'])
-                
+
     def test_approve_timesheet_not_submitted(self):
         """
         Test the approve_timesheet method of the TimesheetService class with a timesheet that hasn't been submitted.
@@ -234,7 +266,8 @@ class TestTimesheetService(unittest.TestCase):
         with self.app.app_context():
             token = self.auth_service.create_token('testSupervisorTimesheetService', 'Supervisor')
             with self.app.test_request_context(headers={'Authorization': f'Bearer {token}'}):
-                self.db.timesheets.update_one({'_id': self.test_june_timesheet_data['_id']}, {'$set': {'status': 'Waiting for Approval'}})
+                self.db.timesheets.update_one({'_id': self.test_june_timesheet_data['_id']},
+                                              {'$set': {'status': 'Waiting for Approval'}})
                 self.timesheet_service.request_change(self.test_june_timesheet_data['_id'], "Test reason")
                 timesheet = self.timesheet_repository.get_timesheet_by_id(str(self.test_june_timesheet_data['_id']))
                 self.assertEqual('Revision', timesheet['status'])
@@ -303,13 +336,15 @@ class TestTimesheetService(unittest.TestCase):
         self.assertTrue(result.is_successful)
         result_timesheets = [timesheet.to_dict() for timesheet in result.data]
         for timesheet in result_timesheets:
-            self.assertIn(timesheet, [self.test_april_timesheet_data, self.test_may_timesheet_data, self.test_june_timesheet_data])
+            self.assertIn(timesheet,
+                          [self.test_april_timesheet_data, self.test_may_timesheet_data, self.test_june_timesheet_data])
 
     def test_get_timesheets_by_username_status(self):
         """
         Test the get_timesheets_by_username_status method of the TimesheetService class.
         """
-        result = self.timesheet_service.get_timesheets_by_username_status("testHiwiTimesheetService", TimesheetStatus.COMPLETE)
+        result = self.timesheet_service.get_timesheets_by_username_status("testHiwiTimesheetService",
+                                                                          TimesheetStatus.COMPLETE)
         self.assertTrue(result.is_successful)
         for timesheet in result.data:
             self.assertIn(timesheet.to_dict(), [self.test_april_timesheet_data, self.test_may_timesheet_data])
@@ -417,7 +452,8 @@ class TestTimesheetService(unittest.TestCase):
         Test the get_timesheet method of the TimesheetService class with no username.
         """
         result_no_username = self.timesheet_service.get_timesheet(None, 5, 2024)
-        self.assertEqual("Please provide a username, month, and year to retrieve the timesheet", result_no_username.message)
+        self.assertEqual("Please provide a username, month, and year to retrieve the timesheet",
+                         result_no_username.message)
         self.assertFalse(result_no_username.is_successful)
         self.assertEqual(400, result_no_username.status_code)
 
