@@ -18,17 +18,19 @@ interface SearchInputProps {
 const SearchInput: React.FC<SearchInputProps> = ({ placeholder, onChange }: SearchInputProps): React.ReactElement => {
     const [inputValue, setInputValue] = useState('');
 
-    const {setSearchString} = useSearch();
+    const {setSearchString, searchEnabled} = useSearch();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!searchEnabled) {
+            clearInput();
+            return;
+        }
         setInputValue(event.target.value);
         setSearchString(event.target.value);
-        // onChange(event.target.value);
     };
     const clearInput = () => {
         setInputValue('');
         setSearchString('');
-        // onChange('');
     };
 
   return (
@@ -39,10 +41,8 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder, onChange }: Sear
             placeholder={placeholder}
             className="input border border-gray-300 py-2 pl-4 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             onChange={handleInputChange}
+            disabled={!searchEnabled}
         />
-        {/*<div className="absolute right-5">*/}
-        {/*    <SearchIcon/>*/}
-        {/*</div>*/}
           <div className="absolute right-5">
               {inputValue ? (
                 <button onClick={clearInput} className="py-2">

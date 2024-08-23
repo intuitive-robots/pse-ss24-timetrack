@@ -7,7 +7,6 @@ from controller.input_validator.validation_status import ValidationStatus
 from model.time_entry_type import TimeEntryType
 from model.vacation_entry import VacationEntry
 from model.work_entry import WorkEntry
-from utils.object_utils import ObjectUtils
 
 
 class TimeEntryDataValidator(InputValidator):
@@ -51,7 +50,6 @@ class TimeEntryDataValidator(InputValidator):
         missing_keys = [key for key in required_keys if key not in time_entry_data]
         if missing_keys:
             return ValidationResult(ValidationStatus.FAILURE, f"Missing required fields: {', '.join(missing_keys)}")
-        # Check each field with a regex pattern if specified
         for field, pattern in self.field_patterns.items():
             if not isinstance(pattern, str):
                 continue

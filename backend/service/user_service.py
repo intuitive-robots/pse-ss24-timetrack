@@ -28,13 +28,13 @@ class UserService:
 
         This service is responsible for managing user data operations, interfacing
         with both the user repository for data storage and retrieval and possibly
-        a user factory for creating user instances, as well as a validator for
+        a user factory_and_validation for creating user instances, as well as a validator for
         user data validation
         """
         self.user_repository = UserRepository.get_instance()
         self.user_validator = UserDataValidator()
 
-    def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict: #pragma: no cover
+    def _recursive_update(self, original: dict, updates: dict, exclude_keys=None) -> dict:  #pragma: no cover
         """
         Recursively update a dictionary with another dictionary, excluding specified keys.
 
@@ -43,7 +43,6 @@ class UserService:
         :param exclude_keys: A set or list of keys to exclude from the updates.
         :return: The updated dictionary.
         """
-        #TODO: In Util Klasse auslagern
 
         if exclude_keys is None:
             exclude_keys = set()
@@ -78,8 +77,6 @@ class UserService:
         if result.status == ValidationStatus.FAILURE:
             return RequestResult(False, result.message, status_code=400)
         user_factory = UserFactory.get_factory(user_data['role'])
-        if not user_factory:
-            return RequestResult(False, "Invalid user role specified", status_code=400)
         user = user_factory.create_user(user_data)
 
         if not user:
@@ -101,6 +98,7 @@ class UserService:
                 return result_supervisor_update
             return RequestResult(True, "Hiwi created successfully", status_code=201)
         return self.user_repository.create_user(user)
+
     def _calculate_vacation_minutes(self, monthly_working_hours: int):
         """
         Calculates the number of vacation hours based on the monthly working hours.
@@ -110,6 +108,7 @@ class UserService:
         """
 
         return round(((monthly_working_hours * 20 * 3.95) / (85 * 12) * 2), 0) / 2
+
     def add_overtime_minutes(self, username: str, minutes: int):
         """
         Adds overtime hours to a user identified by their username.
@@ -211,13 +210,14 @@ class UserService:
         if existing_user_data['isArchived']:
             return RequestResult(False, "User is archived", status_code=400)
         existing_supervisor = existing_user_data.get('supervisor', None)
-        updated_user_data = self._recursive_update(existing_user_data, user_data, ['username', 'role', "passwordHash", "isArchived"])
+        updated_user_data = self._recursive_update(existing_user_data, user_data,
+                                                   ['username', 'role', "passwordHash", "isArchived"])
 
         # Validate the updated user data
         validation_result = self.user_validator.is_valid(updated_user_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
-        # Create a user object using the factory
+        # Create a user object using the factory_and_validation
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)
@@ -228,7 +228,8 @@ class UserService:
                 return update_supervisor_result
         return self.user_repository.update_user(updated_user)
 
-    def _update_supervisor(self, hiwi_username: str, supervisor_username: str, new_supervisor_username: str): # pragma: no cover
+    def _update_supervisor(self, hiwi_username: str, supervisor_username: str,
+                           new_supervisor_username: str):  # pragma: no cover
         """
         Updates the supervisor of a Hiwi.
 
@@ -278,15 +279,14 @@ class UserService:
 
         if username == get_jwt_identity():
             return RequestResult(False, "You cannot delete yourself", status_code=400)
-
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
-          
+
         if user_data['role'] == 'Supervisor':
             if user_data['hiwis']:
                 return RequestResult(False, "Supervisor has Hiwis assigned", status_code=400)
-              
+
         if user_data['role'] == 'Hiwi' and not user_data['isArchived']:
             supervisor_data = self.user_repository.find_by_username(user_data["supervisor"])
             supervisor_data['hiwis'].remove(user_data['username'])
@@ -297,7 +297,8 @@ class UserService:
             if timesheets_result.is_successful:
                 timesheets = timesheets_result.data
                 for timesheet in timesheets:
-                    delete_time_entries_result = time_entry_service.delete_time_entries_by_timesheet_id(timesheet.timesheet_id)
+                    delete_time_entries_result = time_entry_service.delete_time_entries_by_timesheet_id(
+                        timesheet.timesheet_id)
                     if not delete_time_entries_result.is_successful:
                         supervisor_data['hiwis'].append(user_data['username'])
                         self.user_repository.update_user(Supervisor.from_dict(supervisor_data))
@@ -322,6 +323,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == UserRole.ADMIN.value:
+            return RequestResult(False, "Cannot archive admin user", status_code=403)
         if user_data['isArchived']:
             return RequestResult(False, "User is already archived", status_code=400)
         if user_data['role'] == 'Supervisor' and len(user_data['hiwis']) > 0:
@@ -347,6 +350,8 @@ class UserService:
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
+        if user_data['role'] == UserRole.ADMIN.value:
+            return RequestResult(False, "Cannot activate admin user", status_code=403)
         if not user_data['isArchived']:
             return RequestResult(False, "User is not archived", status_code=400)
         if user_data['role'] == 'Hiwi':
@@ -370,7 +375,6 @@ class UserService:
         users_data = self.user_repository.get_users()
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
         users = [user for user in users if not user.is_archived]
-
         return users
 
     def get_archived_users(self) -> list[User]:
@@ -414,7 +418,6 @@ class UserService:
             return None
         if user_data.get('timesheets'):
             user_data['timesheets'] = [str(timesheet_id) for timesheet_id in user_data['timesheets']]
-
         if user_data['isArchived']:
             return None
         return UserFactory.create_user_if_factory_exists(user_data)
@@ -449,7 +452,6 @@ class UserService:
             return RequestResult(False, "Supervisor is archived", status_code=400)
         if supervisor_data['role'] != 'Supervisor':
             return RequestResult(False, "User is not a Supervisor", status_code=400)
-
 
         hiwis_data = list(self.get_profile(hiwi_username) for hiwi_username in supervisor_data['hiwis'])
         if not hiwis_data:

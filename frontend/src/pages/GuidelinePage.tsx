@@ -1,6 +1,9 @@
 import React from 'react';
+import useDisableSearch from "../components/hooks/useDisableSearch";
 
 const GuidelinePage: React.FC = () => {
+    useDisableSearch();
+
     return (
         <div className="px-6 py-6">
             <h1 className="text-3xl font-bold text-gray-800 mt-5">Work Time Guidelines</h1>

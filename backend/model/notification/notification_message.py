@@ -1,5 +1,6 @@
-import datetime
+
 import uuid
+from datetime import datetime, timezone
 
 from bson import ObjectId
 
@@ -8,7 +9,7 @@ from model.notification.message_type import MessageType
 
 class NotificationMessage:
     def __init__(self, receiver: str, sender: str, message: str, message_type: MessageType,
-                 timestamp=datetime.datetime.utcnow(),
+                 timestamp=datetime.now(timezone.utc),
                  read=False,
                  sent=False,
                  message_id=None,
@@ -61,7 +62,7 @@ class NotificationMessage:
         message = data.get("message")
         message_type = data.get("message_type", data.get("messageType", ""))
         message_id = data.get("_id")
-        timestamp = data.get("timestamp", datetime.datetime.utcnow())
+        timestamp = data.get("timestamp", datetime.now(timezone.utc))
         read = data.get("read", False)
         sent = data.get("sent", False)
         message_data = data.get("message_data", data.get("messageData", ""))

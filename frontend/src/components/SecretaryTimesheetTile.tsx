@@ -65,7 +65,7 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
               gap={"lg:gap-12 gap-8 transition-all"}
           />
 
-          <div className="flex flex-row gap-5">
+          <div className="flex flex-row gap-5 items-center">
               <StatusLabel status={status}/>
               <IconButton
                   icon={DownloadIcon}

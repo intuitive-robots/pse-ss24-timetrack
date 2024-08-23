@@ -6,19 +6,19 @@ from model.user.user import User
 
 class UserFactory(ABC):
     """
-    Abstract base class for creating User objects based on user roles, including the factory method pattern.
+    Abstract base class for creating User objects based on user roles, including the factory_and_validation method pattern.
     """
 
     @staticmethod
     def _role_factory_mapping():
         """
-        Returns a mapping of user roles to their corresponding factory classes.
+        Returns a mapping of user roles to their corresponding factory_and_validation classes.
 
-        This method imports the necessary factory classes and creates a dictionary
-        that maps user role values to their respective factory classes. This mapping
+        This method imports the necessary factory_and_validation classes and creates a dictionary
+        that maps user role values to their respective factory_and_validation classes. This mapping
         allows for dynamic creation of user instances based on their roles.
 
-        :return: A dictionary where the keys are user role values and the values are the corresponding factory classes.
+        :return: A dictionary where the keys are user role values and the values are the corresponding factory_and_validation classes.
         :rtype: dict
         """
         from controller.factory.supervisor_factory import SupervisorFactory
@@ -35,10 +35,10 @@ class UserFactory(ABC):
     @staticmethod
     def get_factory(user_role: str):
         """
-        Returns the factory instance associated with the given user role.
+        Returns the factory_and_validation instance associated with the given user role.
 
-        :param user_role: The role of the user for which the factory is requested.
-        :return: An instance of the appropriate factory if found, otherwise None.
+        :param user_role: The role of the user for which the factory_and_validation is requested.
+        :return: An instance of the appropriate factory_and_validation if found, otherwise None.
         """
         factory_class = UserFactory._role_factory_mapping().get(user_role)
         if factory_class:
@@ -56,7 +56,7 @@ class UserFactory(ABC):
     @staticmethod
     def create_user_if_factory_exists(user_data) -> User or None:
         """
-        Create a user if the corresponding factory exists based on the user role specified in user_data.
+        Create a user if the corresponding factory_and_validation exists based on the user role specified in user_data.
 
         :param user_data: A dictionary containing data needed to create a user instance.
         :return: An instance of a subclass of UserFactory or None.

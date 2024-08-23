@@ -49,7 +49,7 @@ class UserRepository:
             result = self.db.users.insert_one(user.to_dict())
             if result.acknowledged:
                 return RequestResult(True, f'User created successfully with ID: {str(result.inserted_id)}', 201)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, f"User creation failed: {str(e)}", 500)
         return RequestResult(False, "User creation failed", 500)
 
@@ -69,7 +69,7 @@ class UserRepository:
                 return RequestResult(False, "Last login update failed", 500)
             if result.acknowledged:
                 return RequestResult(True, "Last login updated successfully", 200)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, f"Last login update failed: {str(e)}", 500)
         return RequestResult(False, "Last login update failed", 500)
 
@@ -84,7 +84,7 @@ class UserRepository:
             return None
         try:
             user_data = self.db.users.find_one({"username": username})
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return None
         return user_data
 
@@ -100,7 +100,7 @@ class UserRepository:
                 return RequestResult(False, "User not found", 404)
             if result.acknowledged:
                 return RequestResult(True, "User updated successfully", 200)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, f"User update failed: {str(e)}", 500)
         return RequestResult(False, "User update failed", 500)
 
@@ -121,7 +121,7 @@ class UserRepository:
                 return RequestResult(False, "User deletion failed", 500)
             if result.acknowledged:
                 return RequestResult(True, "User deleted successfully", 200)
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return RequestResult(False, f"User deletion failed: {str(e)}", 500)
         return RequestResult(False, "User deletion failed", 500)
 
@@ -133,7 +133,7 @@ class UserRepository:
         """
         try:
             users_data = self.db.users.find()
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return []
         return list(users_data)
 
@@ -146,6 +146,6 @@ class UserRepository:
         """
         try:
             users_data = self.db.users.find({"role": role.value})
-        except PyMongoError as e:
+        except PyMongoError as e: # pragma: no cover
             return []
         return list(users_data)

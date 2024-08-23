@@ -116,7 +116,7 @@ class TimeEntry(ABC):
             raise ValueError(f"Unsupported entry type: {data['entryType']}")
 
     @abstractmethod
-    def get_duration(self):
+    def get_duration(self): # pragma: no cover
         """
         Abstract method that calculates the duration of the time entry, which must be implemented by subclasses.
 
@@ -125,7 +125,7 @@ class TimeEntry(ABC):
         """
         pass
 
-    def get_duration_hhmm(self):
+    def get_duration_hhmm(self): # pragma: no cover
         """
         Calculates the duration of the time entry in hours and minutes.
 

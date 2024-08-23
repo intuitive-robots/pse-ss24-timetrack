@@ -5,7 +5,7 @@ from model.user.supervisor import Supervisor
 
 class SupervisorFactory(UserFactory):
     """
-    A factory class for creating Supervisor user objects.
+    A factory_and_validation class for creating Supervisor user objects.
     Extends the UserFactory class.
     """
 

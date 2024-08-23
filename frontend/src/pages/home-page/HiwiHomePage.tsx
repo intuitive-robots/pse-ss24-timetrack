@@ -125,7 +125,7 @@ const HiwiHomePage = (): React.ReactElement => {
                 closePopup();
             } catch (error) {
                 console.error('Error signing timesheet:', error);
-                alert('Failed to sign the timesheet');
+                alert('Failed to sign the timesheet: ' + error);
             }
         }
     };

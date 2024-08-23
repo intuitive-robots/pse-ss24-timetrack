@@ -32,8 +32,6 @@ class DocumentData:
         self.overtime = overtime
         self.last_signature_changed = last_signature_changed
 
-
-
     def get_monthly_working_hours(self):
         """
         Calculates the total number of working hours in a month.
@@ -46,7 +44,6 @@ class DocumentData:
         duration_str = f"{int(hours):02d}:{int(minutes):02d}"
         return duration_str
 
-
     def get_contract_hours_per_month(self):
         """
         Returns the total number of working hours in a month.
@@ -55,7 +52,6 @@ class DocumentData:
         contracted_hours = self.contract_info.working_hours
         return f"{contracted_hours}:00"
 
-    #TODO: Useless because month and year are seperated in the timesheet pdf
     def get_formatted_time_string(self):
         """
         Returns a formatted string representing the time period of the document.

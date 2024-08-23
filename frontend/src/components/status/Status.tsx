@@ -19,7 +19,7 @@ const StatusLabel: React.FC<StatusProps> = ({ status }) => {
   const { bgColor, textColor, fontWeight } = statusStyles[status] || { bgColor: "bg-white", textColor: "text-black" };
 
   return (
-    <div className={`flex items-center justify-center w-28 px-6 py-0.5 rounded-lg ${bgColor}`}>
+    <div className={`flex h-fit items-center justify-center w-28 px-6 py-1.5 rounded-lg ${bgColor}`}>
       <p className={`text-md text-center ${fontWeight} ${textColor}`}>{status}</p>
     </div>
   );
