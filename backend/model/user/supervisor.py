@@ -42,7 +42,6 @@ class Supervisor(User):
         Creates a Supervisor object from a dictionary.
         """
 
-        #TODO: Missing: CurrentTimesheetIds
         supervisor = cls(
             username=supervisor_data["username"],
             password_hash=supervisor_data["passwordHash"],

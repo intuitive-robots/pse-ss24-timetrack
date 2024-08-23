@@ -23,7 +23,9 @@ class User:
         self.password_hash = password_hash
         self.personal_info = personal_info
         self.role = role
-        self.account_creation = account_creation or datetime.now(timezone.utc)
+
+        self.account_creation = account_creation or datetime.datetime.now(datetime.timezone.utc)
+
         self.last_login = None
         self.slack_id = slack_id
 

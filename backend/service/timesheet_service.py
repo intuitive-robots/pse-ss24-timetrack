@@ -18,7 +18,6 @@ from service.notification_service import NotificationService
 from service.user_service import UserService
 
 
-#TODO: Calculate proper overtime - take a look at the documentData class
 class TimesheetService:
     """
     Provides service-layer functionality to handle timesheet-related operations, such as creating,
@@ -61,7 +60,6 @@ class TimesheetService:
         user = self.user_service.get_profile(username)
         if user is None:
             return RequestResult(False, "User not found", 404)
-
         account_creation_month_year = datetime(year=user.account_creation.year, month=user.account_creation.month, day=1)
         if account_creation_month_year > datetime(year, month, 1):
             return RequestResult(False, "User account was created after the timesheet month", 422)
@@ -298,7 +296,6 @@ class TimesheetService:
         result = self.timesheet_repository.delete_timesheet(timesheet_id)
         if result.is_successful:
             hiwi = self.user_service.get_profile(timesheet_data["username"])
-            hiwi.remove_timesheet(ObjectId(timesheet_id))
             monthly_working_hours = hiwi.contract_info.working_hours
             self.user_service.add_overtime_minutes(timesheet_data["username"], monthly_working_hours * 60)
             update_result = self.user_service.update_user(hiwi.to_dict())

@@ -28,7 +28,7 @@ class UserService:
 
         This service is responsible for managing user data operations, interfacing
         with both the user repository for data storage and retrieval and possibly
-        a user factory for creating user instances, as well as a validator for
+        a user factory_and_validation for creating user instances, as well as a validator for
         user data validation
         """
         self.user_repository = UserRepository.get_instance()
@@ -43,7 +43,6 @@ class UserService:
         :param exclude_keys: A set or list of keys to exclude from the updates.
         :return: The updated dictionary.
         """
-        #TODO: In Util Klasse auslagern
 
         if exclude_keys is None:
             exclude_keys = set()
@@ -78,8 +77,6 @@ class UserService:
         if result.status == ValidationStatus.FAILURE:
             return RequestResult(False, result.message, status_code=400)
         user_factory = UserFactory.get_factory(user_data['role'])
-        if not user_factory:
-            return RequestResult(False, "Invalid user role specified", status_code=400)
         user = user_factory.create_user(user_data)
 
         if not user:
@@ -220,7 +217,7 @@ class UserService:
         validation_result = self.user_validator.is_valid(updated_user_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
-        # Create a user object using the factory
+        # Create a user object using the factory_and_validation
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)
@@ -282,7 +279,6 @@ class UserService:
 
         if username == get_jwt_identity():
             return RequestResult(False, "You cannot delete yourself", status_code=400)
-
         user_data = self.user_repository.find_by_username(username)
         if not user_data:
             return RequestResult(False, "User not found", status_code=404)
@@ -379,7 +375,6 @@ class UserService:
         users_data = self.user_repository.get_users()
         users = list(filter(None, map(UserFactory.create_user_if_factory_exists, users_data)))
         users = [user for user in users if not user.is_archived]
-
         return users
 
     def get_archived_users(self) -> list[User]:
@@ -423,7 +418,6 @@ class UserService:
             return None
         if user_data.get('timesheets'):
             user_data['timesheets'] = [str(timesheet_id) for timesheet_id in user_data['timesheets']]
-
         if user_data['isArchived']:
             return None
         return UserFactory.create_user_if_factory_exists(user_data)

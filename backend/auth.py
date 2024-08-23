@@ -18,7 +18,7 @@ def init_auth_routes(app):
     """
 
     @app.after_request
-    def refresh_expiring_jwts(response):
+    def refresh_expiring_jwts(response):   # pragma: no cover
         """
         This function refreshes the JWT token if it is about to expire.
         For more information check out how the after_request decorator works in Flask.

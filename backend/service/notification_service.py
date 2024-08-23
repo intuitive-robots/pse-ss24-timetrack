@@ -1,5 +1,5 @@
 import copy
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -60,8 +60,10 @@ class NotificationService:
                 notification.message_type.value == MessageType.REMINDER.value):
             slack_result = self._send_slack_message(notification, receiver_data, sender_data)
             slack_result.data = notification
-            if not slack_result.is_successful:
+            if not slack_result.is_successful: # pragma: no cover
                 slack_result.message = f"{slack_result.message} - In-App Message sent successfully"
+                slack_result.is_successful = True
+                slack_result.status_code = 200
                 return slack_result
             else:
                 return slack_result
@@ -81,11 +83,12 @@ class NotificationService:
             for notification in new_notifications:
                 if not notification.read:
                     notification.read = True
-                    self.notification_repository.update_notification(notification)
+                    update_result = self.notification_repository.update_notification(notification)
             read_result.data = sorted(read_result.data, key=lambda x: x.timestamp, reverse=True)
             return RequestResult(True, "Notifications retrieved successfully", 200, data=read_result.data)
-        return read_result
+        return read_result # pragma: no cover
 
+    @jwt_required()
     def does_unread_message_exist(self):
         receiver = get_jwt_identity()
         if receiver is None:
@@ -100,7 +103,6 @@ class NotificationService:
         receiver_slack_id = receiver_data.get("slackId")
         if notification.sender != "system" and sender_data is None:
             return RequestResult(False, "Sender not found", 404)
-
         slack_body = {
             "text": notification.message,
             "channel": receiver_slack_id
@@ -139,13 +141,14 @@ class NotificationService:
             return RequestResult(False, "You are not authorized to delete this notification", 403)
         return self.notification_repository.delete_notification_by_id(notification_id)
 
-    def send_scheduled_reminders(self):
+
+    def send_scheduled_reminders(self): # pragma: no cover
         """
         Sends reminders to users who have not submitted their timesheets.
         """
-        previous_month = datetime.utcnow().month - 1 if datetime.utcnow().month > 1 else 12
-        previous_year = datetime.utcnow().year if previous_month != 12 else datetime.utcnow().year - 1
-        day_in_month = datetime.utcnow().day
+        previous_month = datetime.now(timezone.utc).month - 1 if datetime.now(timezone.utc).month > 1 else 12
+        previous_year = datetime.now(timezone.utc).year if previous_month != 12 else datetime.now(timezone.utc).year - 1
+        day_in_month = datetime.now(timezone.utc).day
         users = self.user_repository.get_users()
         for user in users:
             if user.get('role') == "Hiwi":

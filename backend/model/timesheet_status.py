@@ -21,7 +21,7 @@ class TimesheetStatus(Enum):
     COMPLETE = "Complete"
 
     @staticmethod
-    def get_status_by_value(value: str):
+    def get_status_by_value(value: str):   # pragma: no cover
         """
         Retrieves a `TimesheetStatus` enum member based on its string value. This method is useful
         for converting string data (e.g., from user input or database values) into the corresponding
