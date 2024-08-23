@@ -6,7 +6,7 @@ from model.user.user import User
 
 class AdminFactory(UserFactory):
     """
-    A factory class for creating Admin user objects.
+    A factory_and_validation class for creating Admin user objects.
     Extends the UserFactory class.
     """
 

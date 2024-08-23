@@ -28,7 +28,7 @@ class UserService:
 
         This service is responsible for managing user data operations, interfacing
         with both the user repository for data storage and retrieval and possibly
-        a user factory for creating user instances, as well as a validator for
+        a user factory_and_validation for creating user instances, as well as a validator for
         user data validation
         """
         self.user_repository = UserRepository.get_instance()
@@ -216,7 +216,7 @@ class UserService:
         validation_result = self.user_validator.is_valid(updated_user_data)
         if validation_result.status == ValidationStatus.FAILURE:
             return RequestResult(False, validation_result.message, status_code=400)
-        # Create a user object using the factory
+        # Create a user object using the factory_and_validation
         updated_user = UserFactory.get_factory(updated_user_data['role']).create_user(updated_user_data)
         if not updated_user:
             return RequestResult(False, "Failed to create user object with updated data", status_code=400)

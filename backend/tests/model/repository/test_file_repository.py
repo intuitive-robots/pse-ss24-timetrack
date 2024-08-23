@@ -13,12 +13,12 @@ class TestFileRepository(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.file_repository = FileRepository.get_instance()
-        file_path = "../resources/testProfilePic.jpg"
+        file_path = "../../resources/testProfilePic.jpg"
         if not os.path.exists(file_path):
             file_path = "tests/resources/testProfilePic.jpg"
         cls.test_file = open(file_path, "rb")
         cls.test_file_type = FileType.PROFILE_PICTURE
-        updated_file_path = "../resources/testProfilePic.jpg"
+        updated_file_path = "../../resources/testProfilePic.jpg"
         if not os.path.exists(updated_file_path):
             updated_file_path = "tests/resources/testProfilePic.jpg"
         cls.updated_file = open(updated_file_path, "rb")

@@ -115,6 +115,25 @@ class TestTimeEntryController(unittest.TestCase):
         response = self.client.post('/user/login', json=user)
         return response.json['accessToken']
 
+    def test_create_work_entry_user_archived(self):
+        """
+        Test the create_work_entry method of the TimeEntryController class when the user is archived.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        self.user_service.archive_user('testHiwiTimeEntryController')
+        response = self.client.post('/timeEntry/createWorkEntry', json=self.test_june_3_time_entry_data, headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'User is archived')
+
+    def test_create_work_entry_invalid_json(self):
+        """
+        Test the create_work_entry method of the TimeEntryController class when the JSON data is invalid.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        response = self.client.post('/timeEntry/createWorkEntry', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'Request data must be in JSON format')
+
     def test_create_work_entry(self):
         """
         Test the create_work_entry method of the TimeEntryController class.
@@ -131,6 +150,25 @@ class TestTimeEntryController(unittest.TestCase):
         work_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 6,20), 'testHiwiTimeEntryController')[0]
         self.assertIsNotNone(work_entry)
 
+    def test_create_vacation_entry_user_archived(self):
+        """
+        Test the create_vacation_entry method of the TimeEntryController class when the user is archived.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        self.user_service.archive_user('testHiwiTimeEntryController')
+        response = self.client.post('/timeEntry/createVacationEntry', json=self.test_june_3_time_entry_data, headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'User is archived')
+
+    def test_create_vacation_entry_invalid_json(self):
+        """
+        Test the create_vacation_entry method of the TimeEntryController class when the JSON data is invalid.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        response = self.client.post('/timeEntry/createVacationEntry', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'Request data must be in JSON format')
+
     def test_create_vacation_entry(self):
         """
         Test the create_vacation_entry method of the TimeEntryController class.
@@ -145,6 +183,25 @@ class TestTimeEntryController(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         vacation_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 6, 20), 'testHiwiTimeEntryController')[0]
         self.assertIsNotNone(vacation_entry)
+
+    def test_update_time_entry_user_archived(self):
+        """
+        Test the update_time_entry method of the TimeEntryController class when the user is archived.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        self.user_service.archive_user('testHiwiTimeEntryController')
+        response = self.client.post('/timeEntry/updateTimeEntry', json=self.test_june_3_time_entry_data, headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'User is archived')
+
+    def test_update_time_entry_invalid_json(self):
+        """
+        Test the update_time_entry method of the TimeEntryController class when the JSON data is invalid.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        response = self.client.post('/timeEntry/updateTimeEntry', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'Request data must be in JSON format')
 
     def test_update_time_entry(self):
         """
@@ -164,6 +221,27 @@ class TestTimeEntryController(unittest.TestCase):
         self.assertEqual(test_time_entry_modified_data['activity'], time_entry['activity'])
         self.assertEqual(test_time_entry_modified_data['projectName'], time_entry['projectName'])
 
+    def test_delete_time_entry_user_archived(self):
+        """
+        Test the delete_time_entry method of the TimeEntryController class when the user is archived.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        self.user_service.archive_user('testHiwiTimeEntryController')
+        time_entry = self.time_entry_repository.get_time_entries_by_date(datetime.date(2024, 6, 3), 'testHiwiTimeEntryController')[0]
+        response = self.client.post('/timeEntry/deleteTimeEntry', json={"timeEntryId": str(time_entry["_id"])},
+                                    headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'User is archived')
+
+    def test_delete_time_entry_invalid_json(self):
+        """
+        Test the delete_time_entry method of the TimeEntryController class when the JSON data is invalid.
+        """
+        access_token = self.authenticate('testHiwiTimeEntryController', 'testPassword')
+        response = self.client.post('/timeEntry/deleteTimeEntry', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'Request data must be in JSON format')
+
     def test_delete_time_entry(self):
         """
         `Test the delete_time_entry method of the TimeEntryController class.
@@ -176,6 +254,27 @@ class TestTimeEntryController(unittest.TestCase):
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(self.time_entry_repository.get_time_entry_by_id((time_entry["_id"])))
+
+    def test_get_entries_by_timesheet_id_no_timesheet_id(self):
+        """
+        Test the get_entries_by_timesheet_id method of the TimeEntryController class when no timesheet ID is provided.
+        """
+        access_token = self.authenticate("testHiwiTimeEntryController", "testPassword")
+        response = self.client.get('/timeEntry/getEntriesByTimesheetId', headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'No timesheet ID provided')
+
+    def test_get_entries_by_timesheet_id_user_archived(self):
+        """
+        Test the get_entries_by_timesheet_id method of the TimeEntryController class when the user is archived.
+        """
+        access_token = self.authenticate("testHiwiTimeEntryController", "testPassword")
+        self.user_service.archive_user("testHiwiTimeEntryController")
+        timesheet_id = self.timesheet_service.get_timesheet_id("testHiwiTimeEntryController", 6, 2024).data
+        response = self.client.get(f'/timeEntry/getEntriesByTimesheetId?timesheetId={timesheet_id}',
+                                   headers={"Authorization": f"Bearer {access_token}"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, 'User of timesheet is archived')
 
     def test_get_entries_by_timesheet_id(self):
         """

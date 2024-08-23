@@ -6,7 +6,7 @@ from model.user.personal_information import PersonalInfo
 
 class HiwiFactory(UserFactory):
     """
-    A factory class for creating HiWi user objects.
+    A factory_and_validation class for creating HiWi user objects.
     Extends the UserFactory class.
     """
 

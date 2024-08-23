@@ -50,7 +50,6 @@ class TimeEntryDataValidator(InputValidator):
         missing_keys = [key for key in required_keys if key not in time_entry_data]
         if missing_keys:
             return ValidationResult(ValidationStatus.FAILURE, f"Missing required fields: {', '.join(missing_keys)}")
-        # Check each field with a regex pattern if specified
         for field, pattern in self.field_patterns.items():
             if not isinstance(pattern, str):
                 continue
