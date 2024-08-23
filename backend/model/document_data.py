@@ -52,7 +52,6 @@ class DocumentData:
         contracted_hours = self.contract_info.working_hours
         return f"{contracted_hours}:00"
 
-    #TODO: Useless because month and year are seperated in the timesheet pdf
     def get_formatted_time_string(self):
         """
         Returns a formatted string representing the time period of the document.

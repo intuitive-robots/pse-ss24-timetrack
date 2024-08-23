@@ -43,7 +43,6 @@ class UserService:
         :param exclude_keys: A set or list of keys to exclude from the updates.
         :return: The updated dictionary.
         """
-        #TODO: In Util Klasse auslagern
 
         if exclude_keys is None:
             exclude_keys = set()

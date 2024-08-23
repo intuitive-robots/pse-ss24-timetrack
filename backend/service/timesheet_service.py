@@ -18,7 +18,6 @@ from service.notification_service import NotificationService
 from service.user_service import UserService
 
 
-#TODO: Calculate proper overtime - take a look at the documentData class
 class TimesheetService:
     """
     Provides service-layer functionality to handle timesheet-related operations, such as creating,
