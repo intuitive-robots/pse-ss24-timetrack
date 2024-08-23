@@ -40,7 +40,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   return icon ? (
       <button
-          className={`flex items-center gap-3 w-full py-3 px-5 ${buttonClass} ${bgColor} ${textColor} rounded-md shadow mt-4 ${hover} transition-colors ${border}`}
+          className={`flex items-center gap-3 w-full py-3 px-5 ${buttonClass} ${bgColor} ${textColor} rounded-md shadow ${hover} transition-colors ${border}`}
           onClick={onClick}
       >
         {iconElement}
@@ -49,7 +49,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   ) : (
       <button
-          className={`flex items-center gap-3 py-3 px-5 ${buttonClass} ${bgColor} ${textColor} rounded-md shadow mt-4 ${hover} transition-colors ${border}`}
+          className={`flex items-center gap-3 py-3 px-5 ${buttonClass} ${bgColor} ${textColor} rounded-md shadow ${hover} transition-colors ${border}`}
           onClick={onClick}
       >
         <p className={`${textColor} font-semibold text-nowrap`}>{label}</p>

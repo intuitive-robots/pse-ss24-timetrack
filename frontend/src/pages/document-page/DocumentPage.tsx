@@ -9,6 +9,7 @@ import StatusFilter from "../../components/status/StatusFilter";
 import {isValidTimesheetStatus, statusMapping} from "../../components/status/StatusMapping";
 import {Roles} from "../../components/auth/roles";
 import {TimeLineIcon} from "../../assets/iconComponents/TimeLineIcon";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 
 const DocumentPage: React.FC = () => {
@@ -16,6 +17,8 @@ const DocumentPage: React.FC = () => {
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
     const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
     const { user } = useAuth();
+
+    useDisableSearch();
 
      useEffect(() => {
         if (user && user.username) {
@@ -48,10 +51,8 @@ const DocumentPage: React.FC = () => {
     useEffect(() => {
         if (!filter) {
             setFilteredTimesheets(timesheets);
-            console.log(timesheets.map(timesheet => timesheet.status));
             return;
         }
-        console.log(timesheets.map(timesheet => timesheet.status));
         const filteredSheets = timesheets.filter(timesheet => timesheet.status === filter);
         setFilteredTimesheets(filteredSheets);
     }, [filter, timesheets]);
@@ -76,14 +77,14 @@ const DocumentPage: React.FC = () => {
                     <TimesheetListView sheets={filteredTimesheets}/>
                     <div className="flex mt-8 flex-col gap-2 items-center">
                         <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
-                        <div className="flex flex-row ml-12">
-                            <div className="w-24"/>
-                            <div className="flex mr-20 text-sm font-semibold text-[#B5B5B5]">
+                        <div className="flex flex-row ml-12 items-start">
+                            <div className="lg:w-[7rem] w-[9rem]"/>
+                            <div className="flex mr-20 text-sm items-start font-semibold text-[#B5B5B5]">
                                 <p>Work</p>
-                                <div className="w-20"/>
+                                <div className="lg:w-20 w-12"/>
                                 <p>Vacation time</p>
-                                <div className="w-16"/>
-                                <p>Overtime</p>
+                                <div className="lg:w-10 w-5"/>
+                                <p className="text-center">{"Overtime \n(Sum)"}</p>
                             </div>
                         </div>
                     </div>
