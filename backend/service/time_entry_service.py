@@ -72,7 +72,11 @@ class TimeEntryService:
         """
         entry_data['entryType'] = entry_type.value
 
-        start_date = datetime.datetime.fromisoformat(entry_data['startTime'].replace('Z', ""))
+        # if start time is string
+        if isinstance(entry_data['startTime'], str):
+            start_date = datetime.datetime.fromisoformat(entry_data['startTime'].replace('Z', ""))
+        else:
+            start_date = entry_data['startTime']
 
         # Check if a time entry already exists for the user on this date
         existing_entries = self.time_entry_repository.get_time_entries_by_date(start_date, username)

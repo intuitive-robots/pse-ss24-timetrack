@@ -156,7 +156,7 @@ class TestDocumentService(unittest.TestCase):
                 self.timesheet.status = TimesheetStatus.COMPLETE
                 self.timesheet_repository.update_timesheet(self.timesheet)
                 self.test_time_entry_data = {'timesheetId': self.timesheet.timesheet_id,
-                                             'startTime': datetime(self.current_year, self.current_month, 1, 8, 0, 0, 0),
+                                             'startTime': datetime(self.current_year, self.current_month, 1, 8, 0),
                                              'endTime': datetime(self.current_year, self.current_month, 1, 16, 0),
                                              'entryType': 'Work Entry',
                                              'breakTime': 60,

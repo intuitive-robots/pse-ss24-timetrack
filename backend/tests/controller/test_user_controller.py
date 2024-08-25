@@ -244,11 +244,11 @@ class TestUserController(unittest.TestCase):
         Test the archive_user method of the UserController class.
         """
         access_token = self._authenticate("AdminUserController", "test_password")
-        self.user_service.create_user(self.test_admin_user_data)
-        response = self.client.post('/user/archiveUser', json={"username": self.test_admin_user_data['username']},
+        creation = self.user_service.create_user(self.supervisor_user_data)
+        response = self.client.post('/user/archiveUser', json={"username": self.supervisor_user_data['username']},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
-        self.assertTrue(self.user_service.is_archived(self.test_admin_user_data['username']))
+        self.assertTrue(self.user_service.is_archived(self.supervisor_user_data['username']))
 
     def test_unarchive_user_no_json(self):
         """
@@ -275,15 +275,15 @@ class TestUserController(unittest.TestCase):
         Test the unarchive_user method of the UserController class.
         """
         access_token = self._authenticate("AdminUserController", "test_password")
-        self.test_admin_user_data['isArchived'] = True
-        self.test_admin_user_data['passwordHash'] = SecurityUtils.hash_password(self.test_admin_user_data['password'])
-        self.test_admin_user_data.pop('password', None)
-        self.user_repository.create_user(User.from_dict(self.test_admin_user_data))
+        self.supervisor_user_data['isArchived'] = True
+        self.supervisor_user_data['passwordHash'] = SecurityUtils.hash_password(self.test_admin_user_data['password'])
+        self.supervisor_user_data.pop('password', None)
+        self.user_repository.create_user(User.from_dict(self.supervisor_user_data))
 
-        response = self.client.post('/user/unarchiveUser', json={"username": self.test_admin_user_data['username']},
+        response = self.client.post('/user/unarchiveUser', json={"username": self.supervisor_user_data['username']},
                                     headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(200, response.status_code)
-        self.assertFalse(self.user_service.is_archived(self.test_admin_user_data['username']))
+        self.assertFalse(self.user_service.is_archived(self.supervisor_user_data['username']))
 
     def test_logout(self):
         """
@@ -381,13 +381,13 @@ class TestUserController(unittest.TestCase):
         Test the get_archived_users method of the UserController class.
         """
         access_token = self._authenticate("AdminUserController", "test_password")
-        self.user_service.create_user(self.test_admin_user_data)
-        self.user_service.archive_user("testAdminUserController")
+        self.user_service.create_user(self.supervisor_user_data)
+        self.user_service.archive_user(self.supervisor_user_data['username'])
 
         response = self.client.get('/user/getArchivedUsers', headers={"Authorization": f"Bearer {access_token}"})
         self.assertEqual(response.status_code, 200)
         archived_users = [user['username'] for user in response.json]
-        self.assertTrue("testAdminUserController" in archived_users)
+        self.assertTrue(self.supervisor_user_data["username"] in archived_users)
 
     def test_get_users_by_role_no_json(self):
         """
