@@ -57,13 +57,13 @@ class TestTimeEntryController(unittest.TestCase):
                                    }
 
         cls.test_june_3_time_entry_data = {'startTime': '2024-06-03T10:00:00Z',
-                                           'endTime': '2024-06-03T20:00:00Z',
+                                           'endTime': '2024-06-03T15:00:00Z',
                                            'breakTime': 60,
                                            'activity': 'TimeEntryControllerActivitiy',
                                            'activityType': 'Projektbesprechung',
                                            'projectName': 'timesheetServiceTest'}
         cls.test_june_4_time_entry_data = {'startTime': '2024-06-04T10:00:00Z',
-                                           'endTime': '2024-06-04T20:00:00Z',
+                                           'endTime': '2024-06-04T15:00:00Z',
                                            'breakTime': 60,
                                            'activity': 'timeEntryControllerActivitiy',
                                            'activityType': 'Projektbesprechung',
@@ -139,7 +139,7 @@ class TestTimeEntryController(unittest.TestCase):
         Test the create_work_entry method of the TimeEntryController class.
         """
         test_time_entry_data = {'startTime': '2024-06-20T10:00:00Z',
-                                'endTime': '2024-06-20T20:00:00Z',
+                                'endTime': '2024-06-20T15:00:00Z',
                                 'breakTime': 60,
                                 'activity': 'timeEntryControllerActivitiy',
                                 'activityType': 'Projektbesprechung',
