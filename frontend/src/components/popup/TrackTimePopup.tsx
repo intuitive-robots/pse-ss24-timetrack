@@ -26,7 +26,7 @@ const TrackTimePopup: React.FC = () => {
     const [workingTimeWarning, setWorkingTimeWarning] = useState(false);
 
 
-    const activityTypeOptions = ["Projektbesprechung", "Projektarbeit"].map(role => ({
+    const activityTypeOptions = ["Projektarbeit", "Projektbesprechung"].map(role => ({
         label: role,
         value: role
     }));
