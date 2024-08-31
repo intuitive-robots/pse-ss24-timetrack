@@ -24,7 +24,9 @@ This repository contains the code for a web application designed to simplify and
 ## Documentation
 
 - **Pflichtenheft (Requirements Document)**: For a detailed description of project requirements and specifications, please refer to our Pflichtenheft available at [Pflichtenheft PDF](documents/Pflichtenheft/Pflichtenheft_17_05_24.pdf).
-
+- **Entwurf (Design Document)**: For a detailed description of the project's design and architecture, please refer to our Design Document available at [Entwurf PDF](documents/Entwurfsphase/Entwurfsdokument.pdf).
+- **Implementierung (Implementation Report)**: For a detailed description of the project's implementation details, please refer to our Implementation Report available at [Implementation PDF](documents/Implementierungsphase/Implementierungsbericht.pdf).
+- **Quality Assurance (Quality Assurance Document)**: For a detailed description of the quality assurance process and testing procedures, please refer to our Quality Assurance Document available at [Quality Assurance PDF](documents/Quality Assurance/Quality_Assurance.pdf).
 
 ## Installation and Setup
 1. MongoDB <br>
