@@ -129,11 +129,9 @@ const EditUserPopup: React.FC<{ userData: User }> = ({ userData }) => {
                 }
             };
 
-            console.log('Updating user:', updatedUser);
             const result = await updateUser(updatedUser);
             console.log('User updated successfully:', result);
             closePopup();
-            // window.location.reload();
         } catch (error) {
             alert(`Failed to update user: ${error}`);
         }
