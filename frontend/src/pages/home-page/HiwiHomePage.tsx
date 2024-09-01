@@ -91,7 +91,7 @@ const HiwiHomePage = (): React.ReactElement => {
                 .then(fetchedEntries => {
                     setTimeEntries(fetchedEntries);
                     setSearchUtils(new SearchUtils(fetchedEntries, {
-                        keys: ["activity", "projectName", "entryType"]
+                        keys: ["activity", "projectName", "entryType", "activityType"]
                     }));
                 })
                 .catch(error => {
