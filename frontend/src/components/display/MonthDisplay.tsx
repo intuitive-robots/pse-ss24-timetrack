@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface MonthDisplayProps {
-    month: number;
-    year: number;
+    month: number | null;
+    year: number | null;
 }
 
 /**
@@ -12,36 +12,23 @@ interface MonthDisplayProps {
  * @returns A React Element displaying the formatted month and year
  */
 const MonthDisplay: React.FC<MonthDisplayProps> = ({ month, year }) => {
-    const date = new Date(year, month - 1);
+    let formattedMonth: string;
+    let displayYear: string;
 
-    /*
-    const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
-    const formattedDate = formatter.format(date);
-     */
-
-    const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
-    const formattedMonth = monthFormatter.format(date);
+    if (month === null || year === null || month === 0 || year === 0) {
+        formattedMonth = "Apr";
+        displayYear = "";
+    } else {
+        const date = new Date(year, month - 1);
+        const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
+        formattedMonth = monthFormatter.format(date);
+        displayYear = year.toString();
+    }
 
     return (
-        /*
-        <div className="text-lg font-semibold text-nav-gray leading-tight w-36 text-center">
-            {formattedDate}
+        <div className={`text-lg font-semibold text-nav-gray leading-tight w-24 text-center ${month === null || year === null || month === 0 || year === 0 ? 'blur-sm' : ''}`}>
+            {formattedMonth} {displayYear && `/ ${displayYear}`}
         </div>
-        */
-        <div className="text-lg font-semibold text-nav-gray leading-tight w-24 text-center">
-            {formattedMonth} / {year}
-        </div>
-        /*
-        <div className="text-lg font-semibold text-nav-gray leading-tight text-center">
-            {date.getMonth() + 1} / {date.getFullYear()}
-        </div>
-        */
-        /*
-        <div className="text-lg font-semibold text-nav-gray text-center">
-            <div>{formattedMonth}</div>
-            <div>{formattedYear}</div>
-        </div>
-        */
     );
 };
 

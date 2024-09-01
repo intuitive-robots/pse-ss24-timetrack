@@ -43,8 +43,8 @@ const HiwiHomePage = (): React.ReactElement => {
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
-    const [month, setMonth] = useState(new Date().getMonth() + 1);
-    const [year, setYear] = useState(new Date().getFullYear());
+    const [month, setMonth] = useState<number | null>(null);
+    const [year, setYear] = useState<number | null>(null);
 
     const interactableStatuses = ['Not Submitted', 'Revision'];
 
@@ -64,6 +64,8 @@ const HiwiHomePage = (): React.ReactElement => {
     }, [user]);
 
     const reloadTimesheet = useCallback(() => {
+        if (month === null || year === null) return;
+
         if (user && user.username) {
             getTimesheetByMonthYear(user.username, month, year)
                 .then(fetchedTimesheet => {
