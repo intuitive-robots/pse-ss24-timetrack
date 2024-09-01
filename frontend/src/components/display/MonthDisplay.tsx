@@ -26,7 +26,7 @@ const MonthDisplay: React.FC<MonthDisplayProps> = ({ month, year }) => {
     }
 
     return (
-        <div className={`text-lg font-semibold text-nav-gray leading-tight w-24 text-center ${month === null || year === null || month === 0 || year === 0 ? 'blur-sm' : ''}`}>
+        <div className={`text-lg font-semibold text-nav-gray leading-tight w-24 text-center transition-all duration-100 ease-in-out ${month === null || year === null || month === 0 || year === 0 ? 'blur-sm' : ''}`}>
             {formattedMonth} {displayYear && `/ ${displayYear}`}
         </div>
     );

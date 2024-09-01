@@ -49,19 +49,28 @@ const HiwiHomePage = (): React.ReactElement => {
     const interactableStatuses = ['Not Submitted', 'Revision'];
 
     useEffect(() => {
-        const initializeMonthAndYear = async () => {
+        const initializeTimesheet = async () => {
             if (user && user.username) {
-                const priorityTimesheet = await getHighestPriorityTimesheet(user.username);
-                if (priorityTimesheet) {
-                    setMonth(priorityTimesheet.month);
-                    setYear(priorityTimesheet.year);
-                    setTimesheet(priorityTimesheet);
+                try {
+                    const priorityTimesheet = await getHighestPriorityTimesheet(user.username);
+                    if (priorityTimesheet) {
+                        setMonth(priorityTimesheet.month);
+                        setYear(priorityTimesheet.year);
+                        setTimesheet(priorityTimesheet);
+                    } else {
+                        setMonth(currentMonth);
+                        setYear(currentYear);
+                    }
+                } catch (error) {
+                    setMonth(currentMonth);
+                    setYear(currentYear);
                 }
             }
         };
 
-        initializeMonthAndYear();
-    }, [user]);
+        initializeTimesheet();
+    }, [currentMonth, currentYear, user]);
+
 
     const reloadTimesheet = useCallback(() => {
         if (month === null || year === null) return;
