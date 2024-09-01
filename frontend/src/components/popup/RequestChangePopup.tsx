@@ -24,8 +24,6 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
             alert("Please fill out the description field.");
             return;
         }
-
-
         try {
             const result = await requestChange(timesheet._id, description);
             closePopup();
