@@ -32,7 +32,7 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
             window.location.reload();
         } catch (error) {
             console.error('Error requesting change for timesheet:', error);
-            alert('Failed to request change for the timesheet');
+            alert('Failed to request change for the timesheet' + error);
         }
     };
 
