@@ -17,7 +17,7 @@ const MonthDisplay: React.FC<MonthDisplayProps> = ({ month, year }) => {
 
     if (month === null || year === null || month === 0 || year === 0) {
         formattedMonth = "Apr";
-        displayYear = "";
+        displayYear = "2024";
     } else {
         const date = new Date(year, month - 1);
         const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
