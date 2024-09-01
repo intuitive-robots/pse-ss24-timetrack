@@ -74,7 +74,14 @@ const IntuitiveDatePicker: React.FC<{ onDateSelect: (date: Date) => void, extern
                         </button>
                     </div>
                     <div className="grid grid-cols-7 gap-1">
-                        {daysOfWeek.map(day => <div key={day} className="text-center text-sm font-semibold text-gray-800">{day}</div>)}
+                        {daysOfWeek.map((day, index) => (
+                            <div
+                                key={day}
+                                className={`text-center text-sm font-semibold ${index === 0 || index === 6 ? 'text-orange-500' : 'text-gray-800'}`}
+                            >
+                                {day}
+                            </div>
+                        ))}
                         {Array.from({ length: new Date(currentYear, currentMonth, 1).getDay() }).map((_, i) => <div key={i} />)}
                         {Array.from({ length: new Date(currentYear, currentMonth + 1, 0).getDate() }).map((_, i) => (
                             <div key={i} className={`w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-400 hover:text-white cursor-pointer ${i + 1 === selectedDate.getDate() && currentMonth === selectedDate.getMonth() ? 'bg-purple-500 text-white' : 'text-gray-700'}`} onClick={() => selectDate(i + 1)}>
