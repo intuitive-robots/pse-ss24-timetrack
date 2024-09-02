@@ -11,10 +11,10 @@ import UserInfoSecretaryView from "../UserInfoSecretaryView";
 interface SecretaryTimesheetListViewProps {
   sheets: Timesheet[];
   hiwis: User[];
-  supervisors: User[];
+  supervisorNameMap: Map<string, string>;
 }
 
-const SecretaryTimesheetListView: React.FC<SecretaryTimesheetListViewProps> = ({ sheets, hiwis, supervisors }) => {
+const SecretaryTimesheetListView: React.FC<SecretaryTimesheetListViewProps> = ({ sheets, hiwis, supervisorNameMap }) => {
   return (
     <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[36rem]">
       {sheets.map((timesheet, index) => {
@@ -25,7 +25,7 @@ const SecretaryTimesheetListView: React.FC<SecretaryTimesheetListViewProps> = ({
               <UserInfoSecretaryView
                   firstName={hiwi?.personalInfo.firstName ?? ""}
                   lastName={hiwi?.personalInfo.lastName ?? ""}
-                  supervisor={hiwi?.supervisor ?? ""}
+                  supervisor={supervisorNameMap.get(hiwi?.username ?? "") ?? ""}
               />
               <div className="flex">
                 <StatusLabel status={timesheet.status}/>

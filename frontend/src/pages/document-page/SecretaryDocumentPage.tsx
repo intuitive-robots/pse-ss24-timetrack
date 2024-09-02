@@ -23,8 +23,11 @@ const SecretaryDocumentPage: React.FC = () => {
 
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[]>([]);
-    const [supervisors, setSupervisors] = useState<any[]>([]);
+    const [hiwiMap, setHiwiMap] = useState<Map<string, User>>(new Map());
+    const [supervisorNameMap, setSupervisorNameMap] = useState<Map<string, string>>(new Map());
+
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
+
     const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -36,19 +39,12 @@ const SecretaryDocumentPage: React.FC = () => {
     useDisableSearch();
 
     useEffect(() => {
-      const storedMonth = localStorage.getItem('selectedMonth');
-      const storedYear = localStorage.getItem('selectedYear');
-      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
-      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
-
-      setMonth(newMonth);
-      setYear(newYear);
-    }, [month, year]);
-
-    useEffect(() => {
         getUsersByRole(Roles.Hiwi)
             .then(fetchedHiwis => {
                 setHiwis(fetchedHiwis);
+                const map = new Map<string, User>();
+                fetchedHiwis.forEach(hiwi => map.set(hiwi.username, hiwi));
+                setHiwiMap(map);
             })
             .catch(error => console.error('Failed to fetch hiwis for supervisor:', error));
     }, []);
@@ -58,7 +54,8 @@ const SecretaryDocumentPage: React.FC = () => {
              hiwis.forEach(hiwi => {
                  getSupervisor(hiwi.username)
                      .then(fetchedSupervisor => {
-                         setSupervisors(prevSupervisors => [...prevSupervisors, fetchedSupervisor]);
+                         const fullName = `${fetchedSupervisor.firstName} ${fetchedSupervisor.lastName}`;
+                         setSupervisorNameMap(prevMap => new Map(prevMap).set(hiwi.username, fullName));
                      })
                      .catch(error => console.error(`Failed to fetch supervisor for ${hiwi.username}: `, error));
              })
@@ -98,7 +95,6 @@ const SecretaryDocumentPage: React.FC = () => {
         }
     }, [hiwis, month, year]);
 
-
   useEffect(() => {
         const filterAndSortTimesheets = () => {
             let filteredSheets = filter
@@ -111,7 +107,6 @@ const SecretaryDocumentPage: React.FC = () => {
                 if (b.status === statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet]) return -1;
                 return 0;
             });
-
             setFilteredTimesheets(filteredSheets);
         };
 
@@ -127,7 +122,7 @@ const SecretaryDocumentPage: React.FC = () => {
                 await handleDownloadMultipleDocuments(month, year, timesheetIds);
             } catch (error) {
                 console.error('Error downloading all documents:', error);
-                alert('Failed to download all documents');
+                alert('Failed to download all documents' + error);
             }
         } else {
             alert('No completed timesheets available to download');
@@ -156,7 +151,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <h1 className="text-3xl font-bold text-headline mt-4">All monthly Documents</h1>
 
-            <h2 className="text-md font-medium text-subtitle mt-1">There are 3 documents ready to download</h2>
+            <h2 className="text-md font-medium text-subtitle mt-1">There are {timesheets.filter((sheet) => sheet.status === StatusType.Complete).length} documents ready to download</h2>
 
 
             <div className="h-4"/>
@@ -164,7 +159,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <div className="flex flex-col gap-2 w-full h-full justify-between ml-2">
                 <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Waiting]}/>
-                <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
+                <SecretaryDocumentListView sheets={filteredTimesheets} supervisorNameMap={supervisorNameMap} hiwiMap={hiwiMap}/>
                 <div className="flex mt-8 flex-col gap-2 items-center">
                     <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                     <div className="flex flex-row">

@@ -454,7 +454,7 @@ class TimesheetService:
         timesheet_data = self.timesheet_repository.get_timesheet(username,
                                                                  month, year)
         if timesheet_data is None:
-            return RequestResult(False, "Timesheet not found", 404)
+            return RequestResult(False, "Timesheet not found", 204)
         return RequestResult(True, "", 200,
                              Timesheet.from_dict(timesheet_data))
 
