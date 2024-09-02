@@ -36,26 +36,39 @@ This repository contains the code for a web application designed to simplify and
 
 ## Installation and Setup
 Important note:
-To deploy the Web-App on docker, you have to use the Docker-Deployment branch, due to the fact that all other branches are used for testing and not for production:
- https://github.com/intuitive-robots/pse-ss24-timetrack/tree/Docker-Deployment
+To deploy the web app using Docker, make sure to use the Docker-Deployment branch. All other branches are intended for testing and are not suitable for production use.
+https://github.com/intuitive-robots/pse-ss24-timetrack/tree/Docker-Deployment
  
 1. MongoDB <br>
 The following command creates a MongoDB with authentication inside a Docker Container:
 ```
 docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=TimeTracking123! -d mongodb/mongodb-community-server:latest
 ```
-2. React-Frontend <br>
+2. Flask-Backend <br>
 2.1 Generate the image
-   With the following code you can generate the docker image
+   Generate the backend image with the following command:
    ```
-   docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_frontend .
+   docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_backend .
    ```
 2.2 Run the image within a container
-   Use the following code to run a new Docker container with the image
+   Use the following command to run a Docker container with the image
    ```
-   docker run -e DB_HOST=<your-db-ip> -d -p 80:80 clockwise_frontend:latest
+   docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
    ```
-
+3. React-Frontend <br>
+3.1 Find out IP-Adress
+   Determine the IP address of the system that is running the Docker instance.
+3.2 Modify nginx.conf file within the /frontend directory -> Replace every proxy_pass IP with your own Backend-IP-Address | Don't change the port 5001!
+3.3 Generate the image
+   Generate the Docker image with the following command
+   ```
+   docker build --build-arg REACT_APP_BACKEND_URL=http://<<your-backend-ip>:5001 -t clockwise_frontend .
+   ```
+3.4 Run the image within a container
+   Use the following command to run the image inside a container
+   ```
+   docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
+   ```
 
 
 ___
