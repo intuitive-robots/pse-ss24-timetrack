@@ -35,11 +35,28 @@ This repository contains the code for a web application designed to simplify and
 - **Quality Assurance (Quality Assurance Document)**: For a detailed description of the quality assurance process and testing procedures, please refer to our Quality Assurance Document available at [Quality Assurance PDF](documents/Quality_Assurance/Quality_Assurance.pdf).
 
 ## Installation and Setup
+Important note:
+To deploy the Web-App on docker, you have to use the Docker-Deployment branch, due to the fact that all other branches are used for testing and not for production:
+ https://github.com/intuitive-robots/pse-ss24-timetrack/tree/Docker-Deployment
+ 
 1. MongoDB <br>
 The following command creates a MongoDB with authentication inside a Docker Container:
 ```
 docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=TimeTracking123! -d mongodb/mongodb-community-server:latest
 ```
+2. React-Frontend <br>
+2.1 Generate the image
+   With the following code you can generate the docker image
+   ```
+   docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_frontend .
+   ```
+
+2.2 Run the image within a container
+   ```
+   docker run -e DB_HOST=<your-db-ip> -d -p 80:80 clockwise_frontend:latest
+   ```
+
+
 
 ___
 
@@ -63,13 +80,4 @@ Example of a workflow with this strategy:
 6. Everything works fine - Merge develop into main
 
 
-### Installation and Setup in a Test Environment
-Run the frontend
-  1. Navigate to the "frontend" folder with the "cd" command in your terminal.
-  2. Install all required dependencies with "npm install". Please make sure that you have Node.js installed.
-  3. Start the Frontend with "npm start".
 
-Run the backend
-1. Navigate to the "backend" folder with the "cd" command in your terminal.
-2. Run "pip install -r requirements.txt" to install all necessary packages.
-3. Use "python -m flask run" or "flask run" to run the flask project. Please make sure that you have all required pip packages installed.
