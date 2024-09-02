@@ -23,7 +23,6 @@ const SecretaryDocumentPage: React.FC = () => {
 
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[]>([]);
-    const [supervisors, setSupervisors] = useState<any[]>([]);
     const [supervisorNameMap, setSupervisorNameMap] = useState<Map<string, string>>(new Map());
 
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
@@ -36,16 +35,6 @@ const SecretaryDocumentPage: React.FC = () => {
     const currentYear = new Date().getFullYear();
 
     useDisableSearch();
-
-    useEffect(() => {
-      const storedMonth = localStorage.getItem('selectedMonth');
-      const storedYear = localStorage.getItem('selectedYear');
-      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
-      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
-
-      setMonth(newMonth);
-      setYear(newYear);
-    }, [month, year]);
 
     useEffect(() => {
         getUsersByRole(Roles.Hiwi)
@@ -101,7 +90,6 @@ const SecretaryDocumentPage: React.FC = () => {
         }
     }, [hiwis, month, year]);
 
-
   useEffect(() => {
         const filterAndSortTimesheets = () => {
             let filteredSheets = filter
@@ -114,7 +102,6 @@ const SecretaryDocumentPage: React.FC = () => {
                 if (b.status === statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet]) return -1;
                 return 0;
             });
-
             setFilteredTimesheets(filteredSheets);
         };
 

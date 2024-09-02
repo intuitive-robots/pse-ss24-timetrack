@@ -36,16 +36,6 @@ const SecretaryHomePage: React.FC = () => {
     useDisableSearch();
 
     useEffect(() => {
-      const storedMonth = localStorage.getItem('selectedMonth');
-      const storedYear = localStorage.getItem('selectedYear');
-      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
-      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
-
-      setMonth(newMonth);
-      setYear(newYear);
-    }, [month, year]);
-
-    useEffect(() => {
         getUsersByRole(Roles.Hiwi)
             .then(fetchedHiwis => {
                 setHiwis(fetchedHiwis);
