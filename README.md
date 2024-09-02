@@ -50,8 +50,8 @@ docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e 
    ```
    docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_frontend .
    ```
-
 2.2 Run the image within a container
+   Use the following code to run a new Docker container with the image
    ```
    docker run -e DB_HOST=<your-db-ip> -d -p 80:80 clockwise_frontend:latest
    ```
