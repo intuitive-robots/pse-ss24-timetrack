@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "proxy": "http://192.168.188.89:5001",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -11,6 +12,7 @@
     "date-fns": "^3.6.0",
     "framer-motion": "^11.2.14",
     "fuse.js": "^7.0.0",
+    "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-circular-progressbar": "^2.1.0",

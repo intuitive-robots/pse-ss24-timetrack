@@ -1,3 +1,5 @@
+import os
+
 from pymongo import MongoClient
 
 db = None
@@ -11,7 +13,9 @@ def initialize_db():
     global db
     global client
 
-    client = MongoClient('158.180.40.137', 27017, username='admin', password='TimeTracking123!')
-    db = client.timetracking_db
+    db_host = os.getenv('DB_HOST', 'localhost') # Get the DB_HOST environment variable or use 'localhost' as default
+    client = MongoClient(db_host, 27017, username='admin', password='TimeTracking123!')
+    db = client.timetracking_db_production
+
     return db
 
