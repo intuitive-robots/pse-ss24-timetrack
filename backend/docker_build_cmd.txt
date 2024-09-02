@@ -1,1 +1,8 @@
 docker build -t clockwise_backend .
+
+docker save -o backend.tar clockwise_backend
+docker save -o c:/myfile.tar centos:16
+
+docker load -i <path to image tar file>
+docker save -o C:\path\to\file.tar repository/imagename
+ 
