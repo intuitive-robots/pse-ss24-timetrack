@@ -23,7 +23,7 @@ const SecretaryHomePage: React.FC = () => {
 
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[]>([]);
-    const [supervisors, setSupervisors] = useState<any[]>([]);
+    const [supervisorNameMap, setSupervisorNameMap] = useState<Map<string, string>>(new Map());
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
     const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
 
@@ -50,7 +50,6 @@ const SecretaryHomePage: React.FC = () => {
             .then(fetchedHiwis => {
                 setHiwis(fetchedHiwis);
             })
-            .catch(error => console.error('Failed to fetch hiwis for supervisor:', error));
     }, []);
 
     useEffect(() => {
@@ -58,7 +57,8 @@ const SecretaryHomePage: React.FC = () => {
              hiwis.forEach(hiwi => {
                  getSupervisor(hiwi.username)
                      .then(fetchedSupervisor => {
-                         setSupervisors(prevSupervisors => [...prevSupervisors, fetchedSupervisor]);
+                         const fullName = `${fetchedSupervisor.firstName} ${fetchedSupervisor.lastName}`;
+                         setSupervisorNameMap(prevMap => new Map(prevMap).set(hiwi.username, fullName));
                      })
                      .catch(error => console.error(`Failed to fetch supervisor for ${hiwi.username}: `, error));
              })
@@ -72,7 +72,6 @@ const SecretaryHomePage: React.FC = () => {
                     const timesheet = await getTimesheetByMonthYear(hiwi.username, month, year);
                     return timesheet || defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 } catch (error) {
-                    console.error(`Failed to fetch timesheet for ${hiwi.username}: `, error);
                     return defaultTimesheet(hiwi._id, hiwi.username, month, year);
                 }
             })).then(fetchedTimesheets => {
@@ -147,7 +146,7 @@ const SecretaryHomePage: React.FC = () => {
 
             <div className="flex flex-col gap-2 w-full h-full mb-6 justify-between mt-3">
                 <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Waiting]}/>
-                <SecretaryTimesheetListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
+                <SecretaryTimesheetListView sheets={filteredTimesheets} hiwis={hiwis} supervisorNameMap={supervisorNameMap}/>
             </div>
 
         </div>
