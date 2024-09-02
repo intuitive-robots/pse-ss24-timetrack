@@ -27,7 +27,7 @@ const EditTimeEntryPopup: React.FC<EditTimeEntryPopupProps> = ({ entryData }) =>
     const [endTime, setEndTime] = useState<string>(new Date(entryData.endTime).toLocaleTimeString());
     const [breakTime, setBreakTime] = useState<number>(entryData.breakTime);
 
-    const activityTypeOptions = ["Projektbesprechung", "Projektarbeit"].map(role => ({
+    const activityTypeOptions = ["Projektarbeit", "Projektbesprechung"].map(role => ({
         label: role,
         value: role
     }));

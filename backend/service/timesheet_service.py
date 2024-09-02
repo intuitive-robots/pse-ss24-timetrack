@@ -18,7 +18,6 @@ from service.notification_service import NotificationService
 from service.user_service import UserService
 
 
-#TODO: Calculate proper overtime - take a look at the documentData class
 class TimesheetService:
     """
     Provides service-layer functionality to handle timesheet-related operations, such as creating,
@@ -50,19 +49,25 @@ class TimesheetService:
         :return: A RequestResult object containing the result of the ensure operation.
         :rtype: RequestResult
         """
+        current_date = datetime.now()
+        if year > current_date.year or (year == current_date.year and month > current_date.month):
+            return RequestResult(False, "Timesheet month and year cannot be in the future", 422)
+
         timesheet = self.timesheet_repository.get_timesheet(username, month, year)
         if timesheet is not None:
             return RequestResult(True, "Timesheet already exists", 200)
+
         user = self.user_service.get_profile(username)
         if user is None:
             return RequestResult(False, "User not found", 404)
-
         account_creation_month_year = datetime(year=user.account_creation.year, month=user.account_creation.month, day=1)
         if account_creation_month_year > datetime(year, month, 1):
-            return RequestResult(False, "User account was created after the timesheet month", 400)
+            return RequestResult(False, "User account was created after the timesheet month", 422)
+
         creation_result = self._create_timesheet(username, month, year)
         if creation_result.status_code == 201:
             return RequestResult(True, "Timesheet created", 201)
+
         return RequestResult(False, "Failed to create timesheet", 500)
 
     def set_total_and_vacation_time(self, timesheet_id: str):
@@ -109,9 +114,19 @@ class TimesheetService:
         supervisor_username = hiwi_data.supervisor
         if supervisor_username is None:
             return RequestResult(False, "Supervisor not found", 404)
+        if timesheet_data['totalTime'] is None:
+            return RequestResult(False, "Total time not found", 404)
+        total_time = timesheet_data['totalTime']
+        contract_data = hiwi_data.contract_info
+        #print("percentage: " + str(total_time / (contract_data.working_hours*60)))
+        if contract_data is None:
+            return RequestResult(False, "Contract data for hiwi not found.", 404)
+        if total_time / (contract_data.working_hours*60) < 0.8:
+            return RequestResult(False, "Less than 80% of expected working hours entered in timesheet.", 404)
         timesheet = Timesheet.from_dict(timesheet_data)
         if timesheet is None:
             return RequestResult(False, "Failed to parse timesheet", 500)
+
         validation_result = self.timesheet_validator.validate_timesheet(timesheet)
         for result in validation_result:
             if result.status == ValidationStatus.FAILURE:
@@ -222,6 +237,17 @@ class TimesheetService:
             return RequestResult(True, "Timesheet created", 201, {"_id": result.data["_id"]})
         return RequestResult(False, "Failed to create timesheet", 500)
 
+    def _recalculate_overtime(self, username: str, month: int, year: int):
+        for _ in range(4):
+            next_month = month + 1 if month < 12 else 1
+            if next_month == 1:
+                year += 1
+            next_timesheet = self.timesheet_repository.get_timesheet(username, next_month, year)
+            if next_timesheet is not None:
+                self.calculate_overtime(next_timesheet["_id"])
+            month = next_month
+
+
     def calculate_overtime(self, timesheet_id):
         """
         Calculates the overtime for a timesheet.
@@ -247,6 +273,7 @@ class TimesheetService:
         timesheet_data["overtime"] = overtime_minutes
         if timesheet_data["status"] != TimesheetStatus.COMPLETE.value:
             self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
+            self._recalculate_overtime(timesheet_data["username"], timesheet_data["month"], timesheet_data["year"])
             return RequestResult(True, "", 200, overtime_minutes)
         return RequestResult(False, "Overtime can't be edited when Timesheet is complete", 409)
 
@@ -281,7 +308,6 @@ class TimesheetService:
         result = self.timesheet_repository.delete_timesheet(timesheet_id)
         if result.is_successful:
             hiwi = self.user_service.get_profile(timesheet_data["username"])
-            hiwi.remove_timesheet(ObjectId(timesheet_id))
             monthly_working_hours = hiwi.contract_info.working_hours
             self.user_service.add_overtime_minutes(timesheet_data["username"], monthly_working_hours * 60)
             update_result = self.user_service.update_user(hiwi.to_dict())
@@ -428,7 +454,7 @@ class TimesheetService:
         timesheet_data = self.timesheet_repository.get_timesheet(username,
                                                                  month, year)
         if timesheet_data is None:
-            return RequestResult(False, "Timesheet not found", 404)
+            return RequestResult(False, "Timesheet not found", 204)
         return RequestResult(True, "", 200,
                              Timesheet.from_dict(timesheet_data))
 

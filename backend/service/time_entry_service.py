@@ -59,7 +59,7 @@ class TimeEntryService:
             TimeEntryType.VACATION_ENTRY: VacationEntry
         }
 
-    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str): #pragma: no cover
+    def _add_time_entry(self, entry_data: dict, entry_type: TimeEntryType, username: str):  #pragma: no cover
         """
         General method to handle addition of work or vacation time entries.
 
@@ -71,15 +71,30 @@ class TimeEntryService:
         :rtype: RequestResult
         """
         entry_data['entryType'] = entry_type.value
-        if entry_data.get('timesheetId') is None:
+
+        # if start time is string
+        if isinstance(entry_data['startTime'], str):
             start_date = datetime.datetime.fromisoformat(entry_data['startTime'].replace('Z', ""))
+        else:
+            start_date = entry_data['startTime']
+
+        # Check if a time entry already exists for the user on this date
+        existing_entries = self.time_entry_repository.get_time_entries_by_date(start_date, username)
+        if existing_entries:
+            return RequestResult(False, "A time entry already exists for this day", status_code=409)
+
+        if entry_data.get('timesheetId') is None:
             result = self.timesheet_service.ensure_timesheet_exists(username, start_date.month, start_date.year)
-            timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month, start_date.year).data.timesheet_id
+            if not result.is_successful:
+                return RequestResult(False, result.message, result.status_code)
+
+            timesheet_id = self.timesheet_service.get_timesheet(username, start_date.month,
+                                                                start_date.year).data.timesheet_id
             entry_data['timesheetId'] = str(timesheet_id)
 
         timesheet_status = self.timesheet_service.get_timesheet_status(entry_data['timesheetId']).data
         if timesheet_status == TimesheetStatus.COMPLETE or timesheet_status == TimesheetStatus.WAITING_FOR_APPROVAL:
-            return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=400)
+            return RequestResult(False, "Cannot add time entry to a submitted timesheet", status_code=409)
 
         # Validate input data
         data_validation_result = self.entry_input_validator.is_valid(entry_data)
@@ -89,7 +104,7 @@ class TimeEntryService:
         # Select the appropriate class based on entry_type and create a time entry instance
         entry_class = self.entry_type_mapping.get(entry_type)
         if not entry_class:
-            return RequestResult(False, "Invalid entry type specified", status_code=400)
+            return RequestResult(False, "Invalid entry type specified", status_code=422)
 
         time_entry = entry_class.from_dict(entry_data)
 
@@ -117,7 +132,8 @@ class TimeEntryService:
 
         self.timesheet_service.calculate_overtime(entry_data['timesheetId'])
         if data_validation_result.status == ValidationStatus.WARNING:
-            return RequestResult(True, f"{entry_type.name} entry added with warnings ´{data_validation_result.message}´",
+            return RequestResult(True,
+                                 f"{entry_type.name} entry added with warnings ´{data_validation_result.message}´",
                                  status_code=200, data={"_id": entry_creation_result.data["_id"]})
         for result in strategy_validation_results:
             if result.status == ValidationStatus.WARNING:
@@ -146,7 +162,6 @@ class TimeEntryService:
             return strategy_validation_results
         return []
 
-
     def create_work_entry(self, entry_data: dict, username: str) -> RequestResult:
         """
         Creates a new work time entry in the system based on the provided entry data.
@@ -171,9 +186,9 @@ class TimeEntryService:
         :return: A RequestResult object containing the result of the add operation.
         :rtype: RequestResult
         """
-        # TODO Implement vacation logic
         return self._add_time_entry(entry_data, TimeEntryType.VACATION_ENTRY, username)
 
+    @jwt_required()
     def update_time_entry(self, entry_id: str, update_data: dict) -> RequestResult:
         """
         Updates an existing time entry in the system with the provided update data after validating the data.
@@ -211,30 +226,45 @@ class TimeEntryService:
         if existing_start_date.month != updated_start_date.month or existing_start_date.year != updated_start_date.year:
             return RequestResult(False, "Cannot update time entry to a different month or year", status_code=400)
 
-        # Validate the updated entry through strategy pattern
+        # Check if the update causes a duplicate entry on the same date
+        existing_entries = self.time_entry_repository.get_time_entries_by_date(updated_start_date,
+                                                                               get_jwt_identity())
+        if existing_entries:
+            # Filter out the current entry itself
+            duplicate_entries = [entry for entry in existing_entries if str(entry["_id"]) != entry_id]
+            if duplicate_entries:
+                return RequestResult(False, "A time entry already exists for this date", status_code=409)
 
+        # Validate the updated entry through strategy pattern
         strategy_validation_results = self._strategy_validate(updated_time_entry)
         for result in strategy_validation_results:
             if result.status == ValidationStatus.FAILURE:
                 return RequestResult(False, result.message, status_code=400)
-        repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
-        if not repo_result.is_successful: #pragma: no cover
-            self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
 
-            if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
-                existing_entry = VacationEntry.from_dict(existing_entry_data)
-                update_entry = VacationEntry.from_dict(update_data)
-                if update_entry.get_duration() < existing_entry.get_duration():
-                    self.user_service.add_vacation_minutes(get_jwt_identity(), existing_entry.get_duration() - update_entry.get_duration())
-                elif update_entry.get_duration() > existing_entry.get_duration():
-                    self.user_service.remove_vacation_minutes(get_jwt_identity(), update_entry.get_duration() - existing_entry.get_duration())
-            existing_entry = TimeEntry.from_dict(existing_entry_data)
-            update_entry = TimeEntry.from_dict(update_data)
-            if update_entry.get_duration() < existing_entry.get_duration():
-                self.user_service.add_overtime_minutes(get_jwt_identity(), existing_entry.get_duration() - update_entry.get_duration())
-            elif update_entry.get_duration() > existing_entry.get_duration():
-                self.user_service.remove_overtime_minutes(get_jwt_identity(), update_entry.get_duration() - existing_entry.get_duration())
+        repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
+
+        if not repo_result.is_successful:  #pragma: no cover
             return repo_result
+
+        self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
+
+        if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
+            existing_entry = VacationEntry.from_dict(existing_entry_data)
+            update_entry = VacationEntry.from_dict(update_data)
+            if update_entry.get_duration() > existing_entry.get_duration():
+                self.user_service.add_vacation_minutes(get_jwt_identity(),
+                                                        abs(existing_entry.get_duration() - update_entry.get_duration()))
+            elif update_entry.get_duration() < existing_entry.get_duration():
+                self.user_service.remove_vacation_minutes(get_jwt_identity(),
+                                                          abs(update_entry.get_duration() - existing_entry.get_duration()))
+        existing_entry = TimeEntry.from_dict(existing_entry_data)
+        update_entry = TimeEntry.from_dict(update_data)
+        if update_entry.get_duration() > existing_entry.get_duration():
+            self.user_service.add_overtime_minutes(get_jwt_identity(),
+                                                   abs(existing_entry.get_duration() - update_entry.get_duration()))
+        elif update_entry.get_duration() < existing_entry.get_duration():
+            self.user_service.remove_overtime_minutes(get_jwt_identity(),
+                                                      abs(update_entry.get_duration() - existing_entry.get_duration()))
         result = self.timesheet_service.set_total_and_vacation_time(updated_time_entry.timesheet_id)
         if not result.is_successful:
             return result
@@ -320,4 +350,3 @@ class TimeEntryService:
 
         sorted_time_entries = sorted(time_entries, key=lambda entry: entry.start_time, reverse=True)
         return RequestResult(is_successful=True, message="", status_code=200, data=sorted_time_entries)
-

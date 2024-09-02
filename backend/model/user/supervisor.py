@@ -42,12 +42,12 @@ class Supervisor(User):
         Creates a Supervisor object from a dictionary.
         """
 
-        #TODO: Missing: CurrentTimesheetIds
         supervisor = cls(
             username=supervisor_data["username"],
             password_hash=supervisor_data["passwordHash"],
             personal_info=PersonalInfo.from_dict(supervisor_data["personalInfo"]),
-            hiwis=supervisor_data["hiwis"]
+            hiwis=supervisor_data["hiwis"],
+            slack_id=supervisor_data.get("slackId"),
         )
         return supervisor
 

@@ -32,7 +32,7 @@ const TimesheetListView: React.FC<TimesheetListProps> = ({ sheets }) => {
                     overtime={minutesToHourMinuteFormatted(sheet.overtime)}
                     projectName={sheet.lastSignatureChange ? formatDate(sheet.lastSignatureChange) : 'No date'}
                     vacationMinutes={sheet.vacationMinutes ? minutesToHourMinuteFormatted(sheet.vacationMinutes) : "0h"}
-                    status={(role && isValidRole(role) && sheet.status && isValidTimesheetStatus(sheet.status)) ? statusMapping[role][sheet.status]: StatusType.Pending}
+                    status={sheet.status}
                     description={"Last Status Change"}
                     onDownload={() => handleDownload(user?.username ?? "", sheet.month, sheet.year)}
                 />

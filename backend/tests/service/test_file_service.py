@@ -2,119 +2,94 @@ import unittest
 from io import BytesIO
 
 from model.file.FileType import FileType
+from model.repository.file_repository import FileRepository
 from service.file_service import FileService
 
 
 class TestFileService(unittest.TestCase):
-    def setUp(self):
-        self.file_service = FileService()
+    """
+    Test suite for the FileService class.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.file_service = FileService()
+        cls.username = 'testUser'
+        cls.file_repository = FileRepository.get_instance()
+        cls.file_type = FileType.PROFILE_PICTURE
+        cls.file = BytesIO(b"test file content")
+        cls.file.filename = '../resources/testProfilePic.jpg'
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.file_service.delete_image(cls.username, cls.file_type)
+
+    def test_upload_image_no_file(self):
+        """
+        Test the upload_image method of the FileService class with no file.
+        """
+        result = self.file_service.upload_image(None, self.username, self.file_type)
+        self.assertFalse(result.is_successful)
+        self.assertEqual(result.status_code, 400)
+        self.assertEqual("Invalid file type or file does not exist.", result.message)
 
     def test_upload_image(self):
         """
         Test the upload_image method of the FileService class.
         """
-        username = 'testUser'
-        file_type = FileType.PROFILE_PICTURE
-
-        # Create a dummy file for testing
-        file = BytesIO(b"test file content")
-        file.filename = '../resources/testProfilePic.jpg'
-
-
-        # Test for no file
-        result_no_file = self.file_service.upload_image(None, username, file_type)
-        self.assertEqual("Invalid file type or file does not exist.", result_no_file.message)
-        self.assertEqual(400, result_no_file.status_code)
-        self.assertEqual(False, result_no_file.is_successful)
-
-        result = self.file_service.upload_image(file, username, file_type)
-
-        # Assert that the upload was successful
+        result = self.file_service.upload_image(self.file, self.username, self.file_type)
         self.assertTrue(result.is_successful)
-
-        # Assert that the status code is 201 (Created)
         self.assertEqual(result.status_code, 201)
 
-        # Clean up after test
-        self.file_service.delete_image(username, file_type)
+    def test_delete_image_invalid_username(self):
+        """
+        Test the delete_image method of the FileService class with an invalid username.
+        """
+        result = self.file_service.delete_image("", self.file_type)
+        self.assertFalse(result.is_successful)
+        self.assertEqual(result.status_code, 404)
+        self.assertEqual("Image not found", result.message)
 
     def test_delete_image(self):
         """
         Test the delete_image method of the FileService class.
         """
-        username = 'testUser'
-        file_type = FileType.PROFILE_PICTURE
-
-        # Create a dummy file for testing
-        file = BytesIO(b"test file content")
-        file.filename = '../resources/testProfilePic.jpg'
-
-        # Upload the file
-        self.file_service.upload_image(file, username, file_type)
-
-        # Delete the uploaded file
-
-        # Test for invalid username
-        result_invalid_username = self.file_service.delete_image("", file_type)
-        self.assertEqual("Image not found", result_invalid_username.message)
-        self.assertEqual(404, result_invalid_username.status_code)
-        self.assertEqual(False, result_invalid_username.is_successful)
-
-        result = self.file_service.delete_image(username, file_type)
-
-        # Assert that the delete operation was successful
+        self.file_repository.upload_image(self.file, self.username, self.file_type)
+        result = self.file_service.delete_image(self.username, self.file_type)
         self.assertTrue(result.is_successful)
-
-        # Assert that the status code is 200 (OK)
         self.assertEqual(result.status_code, 200)
-        result = self.file_service.get_image(username, file_type)
+        result = self.file_service.get_image(self.username, self.file_type)
         self.assertIsNone(result)
 
     def test_get_image(self):
         """
         Test the get_image method of the FileService class.
         """
-        username = 'testUser'
-        file_type = FileType.PROFILE_PICTURE
-
-        # Create a dummy file for testing
-        file = BytesIO(b"test file content")
-        file.filename = '../resources/testProfilePic.jpg'
-
-        # Upload the file
-        self.file_service.upload_image(file, username, file_type)
-
-        # Get the uploaded file
-        result = self.file_service.get_image(username, file_type)
-
-        # Assert that the file was retrieved successfully
+        self.file_repository.upload_image(self.file, self.username, self.file_type)
+        result = self.file_service.get_image(self.username, self.file_type)
         self.assertIsNotNone(result)
-
-        # Clean up after test
-        self.file_service.delete_image(username, file_type)
+        self.file_service.delete_image(self.username, self.file_type)
 
     def test_does_file_exist(self):
         """
         Test the does_file_exist method of the FileService class.
         """
-        username = 'testUser'
-        file_type = FileType.PROFILE_PICTURE
-
-        # Create a dummy file for testing
-        file = BytesIO(b"test file content")
-        file.filename = '../resources/testProfilePic.jpg'
-
-        # Upload the file
-        self.file_service.upload_image(file, username, file_type)
-
-        # Check if the file exists
-        result = self.file_service.does_file_exist(username, file_type)
-
-        # Assert that the file exists
+        self.file_repository.upload_image(self.file, self.username, self.file_type)
+        result = self.file_service.does_file_exist(self.username, self.file_type)
         self.assertTrue(result)
+        self.file_service.delete_image(self.username, self.file_type)
 
-        # Clean up after test
-        self.file_service.delete_image(username, file_type)
-
-        result = self.file_service.does_file_exist(username, file_type)
+        result = self.file_service.does_file_exist(self.username, self.file_type)
         self.assertFalse(result)
+
+    def test_delete_files_by_username(self):
+        """
+        Test the delete_files_by_username method of the FileService class.
+        """
+        self.file_repository.upload_image(self.file, self.username, self.file_type)
+        result = self.file_service.delete_files_by_username(self.username)
+        self.assertTrue(result.is_successful)
+        self.assertEqual(result.status_code, 200)
+        for filetype in FileType:
+            result = self.file_service.does_file_exist(self.username, filetype)
+            self.assertFalse(result)

@@ -24,15 +24,13 @@ const RequestChangePopup: React.FC<RequestChangePopupProps> = ({ username, times
             alert("Please fill out the description field.");
             return;
         }
-
-
         try {
             const result = await requestChange(timesheet._id, description);
             closePopup();
             window.location.reload();
         } catch (error) {
             console.error('Error requesting change for timesheet:', error);
-            alert('Failed to request change for the timesheet');
+            alert('Failed to request change for the timesheet' + error);
         }
     };
 

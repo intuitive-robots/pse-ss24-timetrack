@@ -37,7 +37,13 @@ const UserContactInfo: React.FC = () => {
     const handleCopySlack = async () => {
         if (supervisor && supervisor.email) {
             try {
-                setMessage(`Slack is coming soon to Clockwise.`);
+                if (!supervisor.slackId) {
+                    setMessage(`Slack ID not registered`);
+                    setTimeout(() => setMessage(''), 2000);
+                    return;
+                }
+                await navigator.clipboard.writeText(supervisor.slackId);
+                setMessage(`${supervisor.slackId} copied to clipboard `);
                 setTimeout(() => setMessage(''), 2000);
             } catch (err) {
                 setMessage('Failed to copy slack.');

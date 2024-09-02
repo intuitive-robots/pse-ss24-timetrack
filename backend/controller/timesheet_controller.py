@@ -70,7 +70,6 @@ class TimesheetController(MethodView):
         If the timesheet does not exist, it will be created.
         :return: The timesheet object
         """
-        #TODO: Get Methode falls Felder fehlen / Wiederholte Codezeilen -> Prüfung auslagern
         if not request.is_json:
             return jsonify('Request must be in JSON format'), 400
         request_data = request.get_json()
@@ -256,7 +255,6 @@ class TimesheetController(MethodView):
             return jsonify('User is archived'), 400
         if status is None:
             return jsonify('No status provided'), 400
-        #TODO: changes status in timesheet service to string and convert there
         timesheets = self.timesheet_service.get_timesheets_by_username_status(username, status).data
         if timesheets is None or len(timesheets) == 0:
             return jsonify('No timesheets found'), 404

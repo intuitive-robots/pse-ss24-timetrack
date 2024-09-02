@@ -196,8 +196,12 @@ class DocumentService:
 
         :return: The formatted time string.
         """
-        hours, minutes = divmod(minutes, 60)
-        return f"{int(hours):02d}:{int(minutes):02d}"
+
+        is_negative = minutes < 0
+        hours, minutes = divmod(abs(minutes), 60)
+        formatted_time = f"{'-' if is_negative else ''}{int(hours):02d}:{int(minutes):02d}"
+        return formatted_time
+
     def _check_if_authorized(self, requesting_username: str, username: str):
         """
         Checks if the requesting user is authorized to access the data of the specified user.

@@ -51,7 +51,7 @@ class TimeEntryRepository:
             if not time_entry_data:
                 return None
             return time_entry_data
-        except PyMongoError as e:
+        except PyMongoError as e:  # pragma: no cover
             return None
 
     def get_time_entries_by_date(self, date, username):
@@ -72,7 +72,7 @@ class TimeEntryRepository:
             time_entries = self.db.timeEntries.find({"startTime": {"$gte": start_date, "$lt": end_date},
                                                      "timesheetId": str(timesheet_id)})
             return list(time_entries)
-        except PyMongoError as e:
+        except PyMongoError as e:  # pragma: no cover
             return None
 
     def get_time_entries_by_timesheet_id(self, timesheet_id: str):
@@ -89,7 +89,7 @@ class TimeEntryRepository:
             cursor = self.db.timeEntries.find({"timesheetId": str(timesheet_id)})
             time_entries = [entry for entry in cursor]
             return list(time_entries)
-        except PyMongoError as e:
+        except PyMongoError as e:  # pragma: no cover
             return []
 
     def update_time_entry(self, time_entry: TimeEntry) -> RequestResult:
@@ -111,7 +111,7 @@ class TimeEntryRepository:
                 return RequestResult(False, "Entry update failed (Not Modified)", 500)
             if result.acknowledged:
                 return RequestResult(True, "Entry updated successfully", 200)
-        except PyMongoError as e:
+        except PyMongoError as e:  # pragma: no cover
             return RequestResult(False, f"Entry update failed: {str(e)}", 500)
         return RequestResult(False, "Entry update failed", 500)
 
@@ -139,7 +139,7 @@ class TimeEntryRepository:
             if result.acknowledged:
                 return RequestResult(True, f'Time entry created successfully with ID: {str(result.inserted_id)}', 201,
                                      data={"_id": ObjectId(result.inserted_id)})
-        except PyMongoError as e:
+        except PyMongoError as e:  # pragma: no cover
             return RequestResult(False, f"Time entry creation failed: {str(e)}", 500)
         return RequestResult(False, "Time entry creation failed", 500)
 
@@ -165,6 +165,6 @@ class TimeEntryRepository:
                 return RequestResult(False, "Entry not found", 404)
             if result.acknowledged:
                 return RequestResult(True, "Entry deleted successfully", 200, data={"timesheetId": timesheet_id})
-        except PyMongoError as e:
+        except PyMongoError as e:  # pragma: no cover
             return RequestResult(False, f"Entry deletion failed: {str(e)}", 500)
         return RequestResult(False, "Entry deletion failed", 500)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from model.timesheet_status import TimesheetStatus
 from bson import ObjectId
@@ -74,7 +74,7 @@ class Timesheet:
             status=TimesheetStatus(timesheet_dict.get("status", TimesheetStatus.NOT_SUBMITTED)),
             total_time=timesheet_dict.get("totalTime", 0.0),
             overtime=timesheet_dict.get("overtime", 0.0),
-            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.utcnow()),
+            last_signature_change=timesheet_dict.get("lastSignatureChange", datetime.now(timezone.utc)),
             vacation_minutes=timesheet_dict.get("vacationMinutes", 0.0)
         )
         return timesheet

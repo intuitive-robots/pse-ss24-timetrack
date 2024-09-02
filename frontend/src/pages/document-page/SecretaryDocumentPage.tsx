@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import StatusFilter from "../../components/status/StatusFilter";
 import {StatusType} from "../../interfaces/StatusType";
-import {Timesheet} from "../../interfaces/Timesheet";
+import {defaultTimesheet, Timesheet} from "../../interfaces/Timesheet";
 import {User} from "../../interfaces/User";
 import {getTimesheetByMonthYear} from "../../services/TimesheetService";
 import {getSupervisor, getUsersByRole} from "../../services/UserService";
@@ -16,14 +16,19 @@ import DownloadIcon from "../../assets/images/download_icon_white.svg";
 import MonthDisplay from "../../components/display/MonthDisplay";
 import {handleDownloadMultipleDocuments} from "../../services/DocumentService";
 import {handleMonthChange} from "../../utils/handleMonthChange";
+import useDisableSearch from "../../components/hooks/useDisableSearch";
 
 
 const SecretaryDocumentPage: React.FC = () => {
 
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[]>([]);
-    const [supervisors, setSupervisors] = useState<any[]>([]);
+    const [hiwiMap, setHiwiMap] = useState<Map<string, User>>(new Map());
+    const [supervisorNameMap, setSupervisorNameMap] = useState<Map<string, string>>(new Map());
+
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
+
+    const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
 
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
@@ -31,39 +36,15 @@ const SecretaryDocumentPage: React.FC = () => {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
 
-    const defaultTimesheet = (
-        id: string,
-        username: string,
-        month: number,
-        year: number
-    ): Timesheet => {
-        return {
-            _id: id,
-            username: username,
-            month: month,
-            year: year,
-            status: statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet],
-            totalTime: 0,
-            overtime: 0,
-            lastSignatureChange: new Date().toISOString(),
-            projectName: 'default project',
-      };
-    };
-
-    useEffect(() => {
-      const storedMonth = localStorage.getItem('selectedMonth');
-      const storedYear = localStorage.getItem('selectedYear');
-      const newMonth = storedMonth ? parseInt(storedMonth) : new Date().getMonth() + 1;
-      const newYear = storedYear ? parseInt(storedYear) : new Date().getFullYear();
-
-      setMonth(newMonth);
-      setYear(newYear);
-    }, [month, year]);
+    useDisableSearch();
 
     useEffect(() => {
         getUsersByRole(Roles.Hiwi)
             .then(fetchedHiwis => {
                 setHiwis(fetchedHiwis);
+                const map = new Map<string, User>();
+                fetchedHiwis.forEach(hiwi => map.set(hiwi.username, hiwi));
+                setHiwiMap(map);
             })
             .catch(error => console.error('Failed to fetch hiwis for supervisor:', error));
     }, []);
@@ -73,7 +54,8 @@ const SecretaryDocumentPage: React.FC = () => {
              hiwis.forEach(hiwi => {
                  getSupervisor(hiwi.username)
                      .then(fetchedSupervisor => {
-                         setSupervisors(prevSupervisors => [...prevSupervisors, fetchedSupervisor]);
+                         const fullName = `${fetchedSupervisor.firstName} ${fetchedSupervisor.lastName}`;
+                         setSupervisorNameMap(prevMap => new Map(prevMap).set(hiwi.username, fullName));
                      })
                      .catch(error => console.error(`Failed to fetch supervisor for ${hiwi.username}: `, error));
              })
@@ -113,10 +95,23 @@ const SecretaryDocumentPage: React.FC = () => {
         }
     }, [hiwis, month, year]);
 
+  useEffect(() => {
+        const filterAndSortTimesheets = () => {
+            let filteredSheets = filter
+                ? timesheets.filter(timesheet => timesheet && timesheet.status === filter)
+                : timesheets;
 
-  const filteredTimesheets = timesheets
-        ? (filter ? timesheets.filter(timesheet => timesheet && timesheet.status === filter) : timesheets)
-        : [];
+            // Sort: Non-"NoTimesheet" statuses first
+            filteredSheets = filteredSheets.sort((a, b) => {
+                if (a.status === statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet]) return 1;
+                if (b.status === statusMapping[Roles.Secretary][TimesheetStatus.NoTimesheet]) return -1;
+                return 0;
+            });
+            setFilteredTimesheets(filteredSheets);
+        };
+
+        filterAndSortTimesheets();
+    }, [filter, timesheets]);
 
     const handleDownloadAll = async () => {
         const completeTimesheets = timesheets.filter(sheet => sheet.status === StatusType.Complete);
@@ -127,7 +122,7 @@ const SecretaryDocumentPage: React.FC = () => {
                 await handleDownloadMultipleDocuments(month, year, timesheetIds);
             } catch (error) {
                 console.error('Error downloading all documents:', error);
-                alert('Failed to download all documents');
+                alert('Failed to download all documents' + error);
             }
         } else {
             alert('No completed timesheets available to download');
@@ -156,7 +151,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <h1 className="text-3xl font-bold text-headline mt-4">All monthly Documents</h1>
 
-            <h2 className="text-md font-medium text-subtitle mt-1">There are 3 documents ready to download</h2>
+            <h2 className="text-md font-medium text-subtitle mt-1">There are {timesheets.filter((sheet) => sheet.status === StatusType.Complete).length} documents ready to download</h2>
 
 
             <div className="h-4"/>
@@ -164,7 +159,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <div className="flex flex-col gap-2 w-full h-full justify-between ml-2">
                 <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Waiting]}/>
-                <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
+                <SecretaryDocumentListView sheets={filteredTimesheets} supervisorNameMap={supervisorNameMap} hiwiMap={hiwiMap}/>
                 <div className="flex mt-8 flex-col gap-2 items-center">
                     <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                     <div className="flex flex-row">
@@ -172,7 +167,7 @@ const SecretaryDocumentPage: React.FC = () => {
                         <div className="flex mr-28 text-sm font-semibold text-[#B5B5B5]">
                             <p>Work</p>
                             <div className="w-12"/>
-                            <p>Vacation days</p>
+                            <p>Vacation time</p>
                             <div className="w-8"/>
                             <p>Overtime</p>
                         </div>

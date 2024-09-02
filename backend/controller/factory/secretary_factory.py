@@ -6,7 +6,7 @@ from model.user.user import User
 
 class SecretaryFactory(UserFactory):
     """
-    A factory class for creating Secretary user objects.
+    A factory_and_validation class for creating Secretary user objects.
     Extends the UserFactory class.
     """
 
