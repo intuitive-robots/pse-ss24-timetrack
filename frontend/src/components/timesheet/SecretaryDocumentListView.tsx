@@ -10,11 +10,11 @@ import {minutesToHoursFormatted, minutesToHourMinuteFormatted} from "../../utils
 interface SecretaryDocumentListViewProps {
     sheets: Timesheet[];
     hiwis: User[];
-    supervisors: any[];
+    supervisorNameMap: Map<string, string>;
 }
 
 
-const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ sheets, hiwis, supervisors }) => {
+const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ sheets, hiwis, supervisorNameMap }) => {
     const { role } = useAuth();
 
     return (role === Roles.Secretary) ? (
@@ -36,6 +36,7 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                             username={sheet.username}
                             firstName={hiwi.personalInfo.firstName}
                             lastName={hiwi.personalInfo.lastName}
+                            supervisorName={supervisorNameMap.get(sheet.username) || ""}
                         />
                     ) : (
                         <SecretaryTimesheetTile
@@ -48,6 +49,7 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                             username={sheet.username}
                             firstName={"FirstName"}
                             lastName={"LastName"}
+                            supervisorName={""}
                         />
                     );
 

@@ -24,6 +24,8 @@ const SecretaryDocumentPage: React.FC = () => {
     const [filter, setFilter] = useState<StatusType | null>(null);
     const [hiwis, setHiwis] = useState<User[]>([]);
     const [supervisors, setSupervisors] = useState<any[]>([]);
+    const [supervisorNameMap, setSupervisorNameMap] = useState<Map<string, string>>(new Map());
+
     const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
     const [filteredTimesheets, setFilteredTimesheets] = useState<Timesheet[]>([]);
 
@@ -58,7 +60,8 @@ const SecretaryDocumentPage: React.FC = () => {
              hiwis.forEach(hiwi => {
                  getSupervisor(hiwi.username)
                      .then(fetchedSupervisor => {
-                         setSupervisors(prevSupervisors => [...prevSupervisors, fetchedSupervisor]);
+                         const fullName = `${fetchedSupervisor.firstName} ${fetchedSupervisor.lastName}`;
+                         setSupervisorNameMap(prevMap => new Map(prevMap).set(hiwi.username, fullName));
                      })
                      .catch(error => console.error(`Failed to fetch supervisor for ${hiwi.username}: `, error));
              })
@@ -164,7 +167,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <div className="flex flex-col gap-2 w-full h-full justify-between ml-2">
                 <StatusFilter setFilter={setFilter} filterStatuses={[StatusType.Complete, StatusType.Waiting]}/>
-                <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisors={supervisors}/>
+                <SecretaryDocumentListView sheets={filteredTimesheets} hiwis={hiwis} supervisorNameMap={supervisorNameMap}/>
                 <div className="flex mt-8 flex-col gap-2 items-center">
                     <div className="w-full h-[2.7px] rounded-md bg-[#EFEFEF]"/>
                     <div className="flex flex-row">

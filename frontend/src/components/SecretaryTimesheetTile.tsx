@@ -18,7 +18,7 @@ interface SecretaryTimesheetTileProps {
   username: string;
   firstName: string;
   lastName: string;
-  //supervisorName: string;
+  supervisorName: string;
 }
 
 const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTime,
@@ -27,27 +27,10 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
                                                          onDownload, username,
                                                          firstName,
                                                          lastName,
-                                                           //supervisorName,
+                                                           supervisorName,
                                                          vacationDays
 }) => {
     const vacationDaysString = vacationDays.toString() + " days";
-
-
-    const [supervisorName, setSupervisorName] = useState('');
-
-    useEffect(() => {
-    const fetchSupervisor = async () => {
-        try {
-            const data = await getSupervisor(username);
-            setSupervisorName(`${data.firstName} ${data.lastName}`);
-        } catch (error) {
-            console.error('Failed to fetch supervisor details:', error);
-            setSupervisorName('Unknown Supervisor');
-        }
-    };
-    fetchSupervisor();
-}, [username]);
-
 
     return (
       <div className="flex items-center px-4 gap-6 py-3 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">
