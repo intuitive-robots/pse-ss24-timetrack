@@ -127,7 +127,7 @@ const SecretaryDocumentPage: React.FC = () => {
                 await handleDownloadMultipleDocuments(month, year, timesheetIds);
             } catch (error) {
                 console.error('Error downloading all documents:', error);
-                alert('Failed to download all documents');
+                alert('Failed to download all documents' + error);
             }
         } else {
             alert('No completed timesheets available to download');
@@ -156,7 +156,7 @@ const SecretaryDocumentPage: React.FC = () => {
 
             <h1 className="text-3xl font-bold text-headline mt-4">All monthly Documents</h1>
 
-            <h2 className="text-md font-medium text-subtitle mt-1">There are 3 documents ready to download</h2>
+            <h2 className="text-md font-medium text-subtitle mt-1">There are {timesheets.filter((sheet) => sheet.status === StatusType.Complete).length} documents ready to download</h2>
 
 
             <div className="h-4"/>
