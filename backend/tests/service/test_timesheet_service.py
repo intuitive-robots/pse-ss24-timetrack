@@ -154,7 +154,7 @@ class TestTimesheetService(unittest.TestCase):
         """
         result = self.timesheet_service.ensure_timesheet_exists(self.test_april_timesheet_data['username'], 1, 2023)
         self.assertFalse(result.is_successful)
-        self.assertEqual(400, result.status_code)
+        self.assertEqual(422, result.status_code)
         self.assertEqual("User account was created after the timesheet month", result.message)
 
     def test_ensure_timesheet_exists(self):

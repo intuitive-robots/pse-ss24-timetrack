@@ -43,27 +43,38 @@ const HiwiHomePage = (): React.ReactElement => {
 
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
-    const [month, setMonth] = useState(new Date().getMonth() + 1);
-    const [year, setYear] = useState(new Date().getFullYear());
+    const [month, setMonth] = useState<number | null>(null);
+    const [year, setYear] = useState<number | null>(null);
 
     const interactableStatuses = ['Not Submitted', 'Revision'];
 
     useEffect(() => {
-        const initializeMonthAndYear = async () => {
+        const initializeTimesheet = async () => {
             if (user && user.username) {
-                const priorityTimesheet = await getHighestPriorityTimesheet(user.username);
-                if (priorityTimesheet) {
-                    setMonth(priorityTimesheet.month);
-                    setYear(priorityTimesheet.year);
-                    setTimesheet(priorityTimesheet);
+                try {
+                    const priorityTimesheet = await getHighestPriorityTimesheet(user.username);
+                    if (priorityTimesheet) {
+                        setMonth(priorityTimesheet.month);
+                        setYear(priorityTimesheet.year);
+                        setTimesheet(priorityTimesheet);
+                    } else {
+                        setMonth(currentMonth);
+                        setYear(currentYear);
+                    }
+                } catch (error) {
+                    setMonth(currentMonth);
+                    setYear(currentYear);
                 }
             }
         };
 
-        initializeMonthAndYear();
-    }, [user]);
+        initializeTimesheet();
+    }, [currentMonth, currentYear, user]);
+
 
     const reloadTimesheet = useCallback(() => {
+        if (month === null || year === null) return;
+
         if (user && user.username) {
             getTimesheetByMonthYear(user.username, month, year)
                 .then(fetchedTimesheet => {
@@ -91,7 +102,7 @@ const HiwiHomePage = (): React.ReactElement => {
                 .then(fetchedEntries => {
                     setTimeEntries(fetchedEntries);
                     setSearchUtils(new SearchUtils(fetchedEntries, {
-                        keys: ["activity", "projectName", "entryType"]
+                        keys: ["activity", "projectName", "entryType", "activityType"]
                     }));
                 })
                 .catch(error => {

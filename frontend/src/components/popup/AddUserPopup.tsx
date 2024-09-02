@@ -188,14 +188,11 @@ const AddUserPopup: React.FC = () => {
                     vacationMinutes: 0
                 },
                 supervisor: formData.supervisor,
-                accountCreation: new Date().toISOString(),
                 lastLogin: new Date().toISOString(),
                 slackId: formData.slackId
             };
 
-            console.log(newUser);
             const result = await createUser(newUser);
-            console.log('User created successfully:', result);
             closePopup();
             window.location.reload();
         } catch (error) {
