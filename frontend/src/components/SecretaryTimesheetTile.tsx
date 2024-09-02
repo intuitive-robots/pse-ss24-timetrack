@@ -1,17 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import DownloadIcon from "../assets/images/download_icon.svg";
 import IconButton from "./navbar/IconButton";
 import ListTileInfo from "./list/ListTileInfo";
-import CalendarMonth from "./calendar/CalendarMonth";
 import StatusLabel from "./status/Status";
 import {StatusType} from "../interfaces/StatusType";
 import UserInfoSecretaryView from "./UserInfoSecretaryView";
-import {Roles} from "./auth/roles";
-import {getSupervisor} from "../services/UserService";
+import {minutesToHourMinuteFormatted} from "../utils/TimeUtils";
 
 interface SecretaryTimesheetTileProps {
   totalTime: string;
-  vacationDays: number;
+  vacationMinutes: number;
   overtime: string;
   status: StatusType;
   onDownload: () => void;
@@ -28,9 +26,9 @@ const SecretaryTimesheetTile: React.FC<SecretaryTimesheetTileProps> = ({ totalTi
                                                          firstName,
                                                          lastName,
                                                            supervisorName,
-                                                         vacationDays
+                                                         vacationMinutes
 }) => {
-    const vacationDaysString = vacationDays.toString() + " days";
+    const vacationDaysString = vacationMinutes ? minutesToHourMinuteFormatted(vacationMinutes) : "0h"
 
     return (
       <div className="flex items-center px-4 gap-6 py-3 bg-white shadow-card-shadow border-1.7 border-card-gray rounded-lg justify-between text-nowrap">

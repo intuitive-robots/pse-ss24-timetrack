@@ -30,7 +30,7 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                             key={key}
                             totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
                             overtime={minutesToHourMinuteFormatted(sheet.overtime)}
-                            vacationDays={0}
+                            vacationMinutes={sheet.vacationMinutes ?? 0}
                             status={sheet.status}
                              onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
                             username={sheet.username}
@@ -43,7 +43,7 @@ const SecretaryDocumentListView: React.FC<SecretaryDocumentListViewProps> = ({ s
                             key={key}
                             totalTime={minutesToHourMinuteFormatted(sheet.totalTime)}
                             overtime={minutesToHourMinuteFormatted(sheet.overtime)}
-                            vacationDays={0}
+                            vacationMinutes={0}
                             status={sheet.status}
                             onDownload={() => handleDownload(sheet.username, sheet.month, sheet.year)}
                             username={sheet.username}
