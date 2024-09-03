@@ -12,12 +12,15 @@ This repository contains the code for a web application designed to simplify and
 - **User Profile Management**: Users can change their password, and manage their login credentials.
 - **Contract Overview**: Displays detailed contract information including assigned weekly work hours, team details, hourly rate, and supervisor contact information.
 - **Document View**: Hiwis have access to a document view where they can review all their timesheets and download them as PDFs once they are fully signed.
+- **Activity Type**: Each time entry includes a field to specify the type of activity, with two available options: "Project Work" or "Project Meeting."
 - **Digital Signature Upload**: Users can upload a digital image of their signature for use in official documents and timesheet verification.
 - **Comprehensive Time Entry Validation**: Time Entries undergo extensive validation using multiple strategies. This includes format input validation, checks for weekends or holidays, ensuring that regular working hours are not exceeded by more than 2 hours, and verifying that break times are adhered to.
 - **Notification Integration** In-app notifications inform users of important updates, such as status changes and deadlines.
 - **Slack Integration:** Integrates with the Slack API to provide additional notifications to users via Slack, reminding them of status changes or upcoming deadlines in addition to in-app notifications.
 - **Fuzzy Search Functionality:** Allows users to search for all relevant information on the site. The Fuzzy Search can handle minor typos or errors, ensuring accurate search results.
 - **Download All Functionality for Secretary**: Enables the secretary to easily download all timesheets of Hiwis in bulk, streamlining the process of timesheet management.
+- **User Archiving**: Administrators can archive users, effectively hiding all user-specific information. Archived users can be reactivated at any time, restoring their information when needed.
+- **Dynamic Profile Picture**: Profile pictures are automatically generated using a hash of the user's first and last name, providing a consistent background color for each user. This approach saves storage space by eliminating the need to store individual profile images.
 
 ## Technologies
 
@@ -36,41 +39,45 @@ This repository contains the code for a web application designed to simplify and
 
 ## Installation and Setup
 Important note:
-To deploy the web app using Docker, make sure to use the Docker-Deployment branch. All other branches are intended for testing and are not suitable for production use.
-https://github.com/intuitive-robots/pse-ss24-timetrack/tree/Docker-Deployment
+To deploy the web app using Docker, make sure to use the [Docker-Deployment branch](https://github.com/intuitive-robots/pse-ss24-timetrack/tree/Docker-Deployment). All other branches are intended for testing and are not suitable for production use.
+
  
-1. MongoDB <br>
+### 1. MongoDB <br>
 The following command creates a MongoDB with authentication inside a Docker Container:
 ```
 docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=TimeTracking123! -d mongodb/mongodb-community-server:latest
 ```
-2. Flask-Backend <br>
-2.1 Generate the image
-   Generate the backend image with the following command:
+### 2. Flask-Backend <br>
+#### 2.1 Generate the image
+   - Generate the backend image with the following command:
    ```
    docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_backend .
    ```
-2.2 Run the image within a container
-   Use the following command to run a Docker container with the image
+#### 2.2 Run the image within a container
+   - Use the following command to run a Docker container with the image
    ```
    docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
    ```
-3. React-Frontend <br>
-3.1 Find out IP-Adress
-   Determine the IP address of the system that is running the Docker instance.
-3.2 Modify nginx.conf file within the /frontend directory -> Replace every proxy_pass IP with your own Backend-IP-Address | Don't change the port 5001!
-3.3 Generate the image
-   Generate the Docker image with the following command
-   ```
-   docker build --build-arg REACT_APP_BACKEND_URL=http://<<your-backend-ip>:5001 -t clockwise_frontend .
-   ```
-3.4 Run the image within a container
-   Use the following command to run the image inside a container
-   ```
-   docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
-   ```
+### 3. React-Frontend
 
+#### 3.1 Find out IP-Address
+   - Determine the IP address of the system that is running the Docker instance.
 
+####   3.2 Modify `nginx.conf` file within the `/frontend` directory
+   - Replace every `proxy_pass` IP with your own Backend IP Address.
+   - Don't change the port `5001`.
+
+####   3.3 Generate the image
+   - Generate the Docker image with the following command:
+     ```
+     docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:5001 -t clockwise_frontend .
+     ```
+
+####   3.4 Run the image within a container
+   - Use the following command to run the image inside a container:
+     ```
+     docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
+     ```
 ___
 
 ## Information around developing this project
@@ -84,13 +91,10 @@ ___
 3. Features / Fixes branches:
    Branches to work on specific features and fixes. Once the feature/fix is ready, you merge it into the develop branch.
 
-Example of a workflow with this strategy:
+#### Example of a workflow with this strategy:
 1. You want to develop a new feature.
 2. Create a branch called "newFeatureXYZ" based on the develop branch.
 3. Work on the feature in this topic branch unitil it's ready.
 4. Merge "newFeatureXYZ" into the develop branch and run tests.
 5. Make sure there are no merge conflicts - Change the code if necessary to resolve the conflicts - merge these changes into the develop branch
 6. Everything works fine - Merge develop into main
-
-
-

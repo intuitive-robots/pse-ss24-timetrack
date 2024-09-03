@@ -13,14 +13,15 @@ const getHiwis = async () => {
     handleAxiosError(error);
   }
 };
-const getUsersByRole = async (role: string) => {
+const getUsersByRole = async (role: string): Promise<User[]> => {
   try {
     const response = await axiosInstance.get('/user/getUsersByRole', {
       params: { role } });
     return response.data;
   } catch (error) {
-    console.error('Fetching users by role failed');
+    console.error('Fetching users by role failed', error);
     handleAxiosError(error);
+    return [];
   }
 };
 

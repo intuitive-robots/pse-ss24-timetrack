@@ -242,27 +242,29 @@ class TimeEntryService:
                 return RequestResult(False, result.message, status_code=400)
 
         repo_result = self.time_entry_repository.update_time_entry(updated_time_entry)
-        if not repo_result.is_successful:  #pragma: no cover
-            self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
 
-            if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
-                existing_entry = VacationEntry.from_dict(existing_entry_data)
-                update_entry = VacationEntry.from_dict(update_data)
-                if update_entry.get_duration() < existing_entry.get_duration():
-                    self.user_service.add_vacation_minutes(get_jwt_identity(),
-                                                           existing_entry.get_duration() - update_entry.get_duration())
-                elif update_entry.get_duration() > existing_entry.get_duration():
-                    self.user_service.remove_vacation_minutes(get_jwt_identity(),
-                                                              update_entry.get_duration() - existing_entry.get_duration())
-            existing_entry = TimeEntry.from_dict(existing_entry_data)
-            update_entry = TimeEntry.from_dict(update_data)
-            if update_entry.get_duration() < existing_entry.get_duration():
-                self.user_service.add_overtime_minutes(get_jwt_identity(),
-                                                       existing_entry.get_duration() - update_entry.get_duration())
-            elif update_entry.get_duration() > existing_entry.get_duration():
-                self.user_service.remove_overtime_minutes(get_jwt_identity(),
-                                                          update_entry.get_duration() - existing_entry.get_duration())
+        if not repo_result.is_successful:  #pragma: no cover
             return repo_result
+
+        self.timesheet_service.calculate_overtime(existing_entry_data['timesheetId'])
+
+        if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
+            existing_entry = VacationEntry.from_dict(existing_entry_data)
+            update_entry = VacationEntry.from_dict(update_data)
+            if update_entry.get_duration() > existing_entry.get_duration():
+                self.user_service.add_vacation_minutes(get_jwt_identity(),
+                                                        abs(existing_entry.get_duration() - update_entry.get_duration()))
+            elif update_entry.get_duration() < existing_entry.get_duration():
+                self.user_service.remove_vacation_minutes(get_jwt_identity(),
+                                                          abs(update_entry.get_duration() - existing_entry.get_duration()))
+        existing_entry = TimeEntry.from_dict(existing_entry_data)
+        update_entry = TimeEntry.from_dict(update_data)
+        if update_entry.get_duration() > existing_entry.get_duration():
+            self.user_service.add_overtime_minutes(get_jwt_identity(),
+                                                   abs(existing_entry.get_duration() - update_entry.get_duration()))
+        elif update_entry.get_duration() < existing_entry.get_duration():
+            self.user_service.remove_overtime_minutes(get_jwt_identity(),
+                                                      abs(update_entry.get_duration() - existing_entry.get_duration()))
         result = self.timesheet_service.set_total_and_vacation_time(updated_time_entry.timesheet_id)
         if not result.is_successful:
             return result

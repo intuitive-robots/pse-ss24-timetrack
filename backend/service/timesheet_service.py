@@ -237,6 +237,17 @@ class TimesheetService:
             return RequestResult(True, "Timesheet created", 201, {"_id": result.data["_id"]})
         return RequestResult(False, "Failed to create timesheet", 500)
 
+    def _recalculate_overtime(self, username: str, month: int, year: int):
+        for _ in range(4):
+            next_month = month + 1 if month < 12 else 1
+            if next_month == 1:
+                year += 1
+            next_timesheet = self.timesheet_repository.get_timesheet(username, next_month, year)
+            if next_timesheet is not None:
+                self.calculate_overtime(next_timesheet["_id"])
+            month = next_month
+
+
     def calculate_overtime(self, timesheet_id):
         """
         Calculates the overtime for a timesheet.
@@ -262,6 +273,7 @@ class TimesheetService:
         timesheet_data["overtime"] = overtime_minutes
         if timesheet_data["status"] != TimesheetStatus.COMPLETE.value:
             self.timesheet_repository.update_timesheet_by_dict(timesheet_data)
+            self._recalculate_overtime(timesheet_data["username"], timesheet_data["month"], timesheet_data["year"])
             return RequestResult(True, "", 200, overtime_minutes)
         return RequestResult(False, "Overtime can't be edited when Timesheet is complete", 409)
 
@@ -442,7 +454,7 @@ class TimesheetService:
         timesheet_data = self.timesheet_repository.get_timesheet(username,
                                                                  month, year)
         if timesheet_data is None:
-            return RequestResult(False, "Timesheet not found", 404)
+            return RequestResult(False, "Timesheet not found", 204)
         return RequestResult(True, "", 200,
                              Timesheet.from_dict(timesheet_data))
 
