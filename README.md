@@ -42,13 +42,13 @@ Important note:
 To deploy the web app using Docker, make sure to use the [Docker-Deployment branch](https://github.com/intuitive-robots/pse-ss24-timetrack/tree/Docker-Deployment). All other branches are intended for testing and are not suitable for production use.
 
  
-1. MongoDB <br>
+### 1. MongoDB <br>
 The following command creates a MongoDB with authentication inside a Docker Container:
    ```
    docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=TimeTracking123! -d mongodb/mongodb-community-server:latest
    ```
-2. Flask-Backend <br>
-2.1 Generate the image
+### 2. Flask-Backend <br>
+#### 2.1 Generate the image
    Generate the backend image with the following command:
    ```
    docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_backend .
@@ -58,22 +58,22 @@ The following command creates a MongoDB with authentication inside a Docker Cont
    ```
    docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
    ```
-3. React-Frontend
+### 3. React-Frontend
 
-   3.1 Find out IP Address
+#### 3.1 Find out IP Address
    - Determine the IP address of the system that is running the Docker instance.
 
-   3.2 Modify `nginx.conf` file within the `/frontend` directory
+####   3.2 Modify `nginx.conf` file within the `/frontend` directory
    - Replace every `proxy_pass` IP with your own Backend IP Address.
    - Don't change the port `5001`.
 
-   3.3 Generate the image
+####   3.3 Generate the image
    - Generate the Docker image with the following command:
      ```
      docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:5001 -t clockwise_frontend .
      ```
 
-   3.4 Run the image within a container
+####   3.4 Run the image within a container
    - Use the following command to run the image inside a container:
      ```
      docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
@@ -101,12 +101,12 @@ Example of a workflow with this strategy:
 
 
 ### Installation and Setup in a Test Environment
-Run the frontend
+#### Run the frontend
 1. Navigate to the "frontend" folder with the "cd" command in your terminal.
 2. Install all required dependencies with "npm install". Please make sure that you have Node.js installed.
 3. Start the Frontend with "npm start".
 
-Run the backend
+#### Run the backend
 1. Navigate to the "backend" folder with the "cd" command in your terminal.
 2. Run "pip install -r requirements.txt" to install all necessary packages.
 3. Use "python -m flask run" or "flask run" to run the flask project. Please make sure that you have all required pip packages installed.

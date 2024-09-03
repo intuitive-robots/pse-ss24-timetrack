@@ -12,6 +12,6 @@ def initialize_db():
     global client
 
     client = MongoClient('158.180.40.137', 27017, username='admin', password='TimeTracking123!')
-    db = client.timetracking_db
+    db = client.timetracking_db_presentation
     return db
 
