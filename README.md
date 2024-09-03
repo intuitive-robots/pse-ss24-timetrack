@@ -53,7 +53,7 @@ The following command creates a MongoDB with authentication inside a Docker Cont
    ```
    docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_backend .
    ```
-   2.2 Run the image within a container
+#### 2.2 Run the image within a container
    Use the following command to run a Docker container with the image:
    ```
    docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
@@ -91,7 +91,7 @@ ___
 3. Features / Fixes branches:
    Branches to work on specific features and fixes. Once the feature/fix is ready, you merge it into the develop branch.
 
-Example of a workflow with this strategy:
+#### Example of a workflow with this strategy:
 1. You want to develop a new feature.
 2. Create a branch called "newFeatureXYZ" based on the develop branch.
 3. Work on the feature in this topic branch unitil it's ready.
