@@ -251,10 +251,10 @@ class TimeEntryService:
         if existing_entry_data['entryType'] == TimeEntryType.VACATION_ENTRY.value:
             existing_entry = VacationEntry.from_dict(existing_entry_data)
             update_entry = VacationEntry.from_dict(update_data)
-            if update_entry.get_duration() > existing_entry.get_duration():
+            if update_entry.get_duration() < existing_entry.get_duration():
                 self.user_service.add_vacation_minutes(get_jwt_identity(),
                                                         abs(existing_entry.get_duration() - update_entry.get_duration()))
-            elif update_entry.get_duration() < existing_entry.get_duration():
+            elif update_entry.get_duration() > existing_entry.get_duration():
                 self.user_service.remove_vacation_minutes(get_jwt_identity(),
                                                           abs(update_entry.get_duration() - existing_entry.get_duration()))
         existing_entry = TimeEntry.from_dict(existing_entry_data)
