@@ -58,20 +58,26 @@ The following command creates a MongoDB with authentication inside a Docker Cont
    ```
    docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
    ```
-3. React-Frontend <br>
-3.1 Find out IP-Adress
-   Determine the IP address of the system that is running the Docker instance.
-3.2 Modify nginx.conf file within the /frontend directory -> Replace every proxy_pass IP with your own Backend-IP-Address | Don't change the port 5001!
-3.3 Generate the image
-   Generate the Docker image with the following command
-   ```
-   docker build --build-arg REACT_APP_BACKEND_URL=http://<<your-backend-ip>:5001 -t clockwise_frontend .
-   ```
-3.4 Run the image within a container
-   Use the following command to run the image inside a container
-   ```
-   docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
-   ```
+3. React-Frontend
+
+   3.1 Find out IP Address
+   - Determine the IP address of the system that is running the Docker instance.
+
+   3.2 Modify `nginx.conf` file within the `/frontend` directory
+   - Replace every `proxy_pass` IP with your own Backend IP Address.
+   - Don't change the port `5001`.
+
+   3.3 Generate the image
+   - Generate the Docker image with the following command:
+     ```
+     docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:5001 -t clockwise_frontend .
+     ```
+
+   3.4 Run the image within a container
+   - Use the following command to run the image inside a container:
+     ```
+     docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
+     ```
 ___
 
 ## Information around developing this project
