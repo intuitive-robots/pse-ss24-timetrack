@@ -38,12 +38,40 @@ This repository contains the code for a web application designed to simplify and
 - **Quality Assurance (Quality Assurance Document)**: For a detailed description of the quality assurance process and testing procedures, please refer to our Quality Assurance Document available at [Quality Assurance PDF](documents/Quality_Assurance/Quality_Assurance.pdf).
 
 ## Installation and Setup
-- MongoDB <br>
+Important note:
+To deploy the web app using Docker, make sure to use the [Docker-Deployment branch](https://github.com/intuitive-robots/pse-ss24-timetrack/tree/Docker-Deployment). All other branches are intended for testing and are not suitable for production use.
+
+ 
+1. MongoDB <br>
 The following command creates a MongoDB with authentication inside a Docker Container:
    ```
    docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=TimeTracking123! -d mongodb/mongodb-community-server:latest
    ```
-
+2. Flask-Backend <br>
+2.1 Generate the image
+   Generate the backend image with the following command:
+   ```
+   docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:<your-backend-port> -t clockwise_backend .
+   ```
+   2.2 Run the image within a container
+   Use the following command to run a Docker container with the image:
+   ```
+   docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
+   ```
+3. React-Frontend <br>
+3.1 Find out IP-Adress
+   Determine the IP address of the system that is running the Docker instance.
+3.2 Modify nginx.conf file within the /frontend directory -> Replace every proxy_pass IP with your own Backend-IP-Address | Don't change the port 5001!
+3.3 Generate the image
+   Generate the Docker image with the following command
+   ```
+   docker build --build-arg REACT_APP_BACKEND_URL=http://<<your-backend-ip>:5001 -t clockwise_frontend .
+   ```
+3.4 Run the image within a container
+   Use the following command to run the image inside a container
+   ```
+   docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
+   ```
 ___
 
 ## Information around developing this project
