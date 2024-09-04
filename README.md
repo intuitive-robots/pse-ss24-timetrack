@@ -56,7 +56,7 @@ docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e 
 #### 2.2 Run the image within a container
    - Use the following command to run a Docker container with the image
    ```
-   docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
+   docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -e DB_USERNAME=<your-db-username> -e DB_PASSWORD=<your-db-password> -d -p 5001:5001 clockwise_backend:latest
    ```
 ### 3. React-Frontend
 
@@ -78,17 +78,32 @@ docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e 
      ```
      docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
      ```
+### 4. Slack Integration
+The Slack integration is used to send notifications, such as when the status of a timesheet changes or when a user needs to be reminded to sign a timesheet.
+
+#### 4.1 Retrieve Slack API Token
+   - Follow the `Create an App` Section within the quickstart guide [Slack-App Quickstart Guide](https://api.slack.com/quickstart)
+   - Inside the `Display Information` enter Clockwise as the App name
+   - Inside the `OAuth & Permissions` section, add the chat:write scope to allow the integration to send messages.
+   - To retrieve the OAuth token you have to install the app to your workspace
+   - After that you should be able to see a `Bot User OAuth Token` within the OAuth Tokens section.
+
+#### 4.2 Write the token into the DB
+   - Log in to your MongoDB database and open the `administration` collection. By default, there is already an entry with an empty value in the `slackToken` field. You need to insert the OAuth token here.
+   - Finished! The application will detect the token automatically.
 ___
 
 ## Information around developing this project
 
 ### Git Branch strategy for this repo & dev team
 1. Main branch:
-   most stable version, this branch is used to deploy to production
-2. Develop branch:
+   most stable version
+2. Docker-Deployment branch:
+   used to create docker images and to deploy the Web-App
+3. Develop branch:
    contains changes that are in progress and may not be ready for production
    after all tests and the peer review have been successful, it is merged into Production
-3. Features / Fixes branches:
+4. Features / Fixes branches:
    Branches to work on specific features and fixes. Once the feature/fix is ready, you merge it into the develop branch.
 
 #### Example of a workflow with this strategy:
@@ -98,3 +113,17 @@ ___
 4. Merge "newFeatureXYZ" into the develop branch and run tests.
 5. Make sure there are no merge conflicts - Change the code if necessary to resolve the conflicts - merge these changes into the develop branch
 6. Everything works fine - Merge develop into main
+7. Want to create a docker image? Merge into Docker-Deployment and follow the documentation above.
+
+
+### Installation and Setup in a Test Environment
+#### Run the frontend
+1. Navigate to the "frontend" folder with the "cd" command in your terminal.
+2. Install all required dependencies with "npm install". Please make sure that you have Node.js installed.
+3. Start the Frontend with "npm start".
+
+#### Run the backend
+1. Navigate to the "backend" folder with the "cd" command in your terminal.
+2. Run "pip install -r requirements.txt" to install all necessary packages.
+3. Use "python -m flask run" or "flask run" to run the flask project. Please make sure that you have all required pip packages installed.
+
