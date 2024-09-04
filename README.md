@@ -56,7 +56,7 @@ The following command creates a MongoDB with authentication inside a Docker Cont
 #### 2.2 Run the image within a container
    Use the following command to run a Docker container with the image:
    ```
-   docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -d -p 5001:5001 clockwise_backend:latest
+   docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -e DB_USERNAME=<your-db-username> -e DB_PASSWORD=<your-db-password> -d -p 5001:5001 clockwise_backend:latest
    ```
 ### 3. React-Frontend
 
