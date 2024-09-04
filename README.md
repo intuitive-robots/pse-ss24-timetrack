@@ -78,17 +78,32 @@ The following command creates a MongoDB with authentication inside a Docker Cont
      ```
      docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
      ```
+### 4. Slack Integration
+The Slack integration is used to send notifications, such as when the status of a timesheet changes or when a user needs to be reminded to sign a timesheet.
+
+#### 4.1 Retrieve Slack API Token
+   - Follow the `Create an App` Section within the quickstart guide [Slack-App Quickstart Guide](https://api.slack.com/quickstart)
+   - Inside the `Display Information` enter Clockwise as the App name
+   - Inside the `OAuth & Permissions` section, add the chat:write scope to allow the integration to send messages.
+   - To retrieve the OAuth token you have to install the app to your workspace
+   - After that you should be able to see a `Bot User OAuth Token` within the OAuth Tokens section.
+
+#### 4.2 Write the token into the DB
+   - Log in to your MongoDB database and open the `administration` collection. By default, there is already an entry with an empty value in the `slackToken` field. You need to insert the OAuth token here.
+   - Finished! The application will detect the token automatically.
 ___
 
 ## Information around developing this project
 
 ### Git Branch strategy for this repo & dev team
 1. Main branch:
-   most stable version, this branch is used to deploy to production
-2. Develop branch:
+   most stable version
+2. Docker-Deployment branch:
+   used to create docker images and to deploy the Web-App
+3. Develop branch:
    contains changes that are in progress and may not be ready for production
    after all tests and the peer review have been successful, it is merged into Production
-3. Features / Fixes branches:
+4. Features / Fixes branches:
    Branches to work on specific features and fixes. Once the feature/fix is ready, you merge it into the develop branch.
 
 #### Example of a workflow with this strategy:
@@ -98,6 +113,7 @@ ___
 4. Merge "newFeatureXYZ" into the develop branch and run tests.
 5. Make sure there are no merge conflicts - Change the code if necessary to resolve the conflicts - merge these changes into the develop branch
 6. Everything works fine - Merge develop into main
+7. Want to create a docker image? Merge into Docker-Deployment and follow the documentation above.
 
 
 ### Installation and Setup in a Test Environment
