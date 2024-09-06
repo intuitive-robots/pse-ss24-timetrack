@@ -4,10 +4,12 @@ Date: 2024-09-06
 Description: Clockwise - Intuitive Time Tracking Web-App for Research Assistants
 """
 import secrets
-from datetime import timedelta, datetime
-from flask import Flask, jsonify
+from datetime import timedelta
+from logging.handlers import RotatingFileHandler
+
+from flask import Flask, request
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, jwt_required
+from flask_jwt_extended import JWTManager
 from auth import init_auth_routes
 
 from controller.document_controller import DocumentController, document_blueprint
@@ -17,14 +19,15 @@ from controller.timesheet_controller import TimesheetController, timesheet_bluep
 from controller.user_controller import UserController, user_blueprint
 from db import initialize_db
 from service.notification_service import NotificationService
-from utils.security_utils import SecurityUtils
-from service.timesheet_service import TimesheetService
 from apscheduler.schedulers.background import BackgroundScheduler
+import logging
 from service.setup_service import SetupService
+
 
 app = Flask(__name__)
 CORS(app)  # enable CORS for all routes and origins
 db = initialize_db()
+
 
 setup_service = SetupService()
 setup_service.run_setup()
@@ -116,4 +119,4 @@ def home():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=5001)
