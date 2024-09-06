@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import React, {useEffect, useState} from 'react';
 import HiwiTimesheetCard from "../../components/HiwiTimesheetCard";
 import StatusFilter from "../../components/status/StatusFilter";

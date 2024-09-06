@@ -1,11 +1,7 @@
 import React from 'react';
 import { Timesheet } from '../../interfaces/Timesheet';
 import {User} from "../../interfaces/User";
-import ProfilePlaceholder from "../../assets/images/profile_placeholder.svg";
 import StatusLabel from "../status/Status";
-import IconButton from "../navbar/IconButton";
-import DownloadIcon from "images/download_icon.svg";
-import {StatusType} from "../../interfaces/StatusType";
 import UserInfoSecretaryView from "../UserInfoSecretaryView";
 
 interface SecretaryTimesheetListViewProps {

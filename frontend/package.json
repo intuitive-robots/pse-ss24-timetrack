@@ -1,8 +1,17 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "clockwise_intuitive_time_tracking_webapp",
+  "version": "1.0",
   "proxy": "http://192.168.188.89:5001",
   "private": true,
+  "description": "A web app for intuitive time tracking for research assistants (HiWis) at Intuitive Robots Lab.",
+  "authors": [
+    { "name": "Phil Gengenbach" },
+    { "name": "Dominik Pollok" },
+    { "name": "Alina Petri" },
+    { "name": "Johann Kohl" },
+    { "name": "José Ayala" }
+  ],
+  "license": "GPL-3.0",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

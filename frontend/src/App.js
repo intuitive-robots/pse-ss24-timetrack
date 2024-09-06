@@ -1,9 +1,9 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import React from 'react';
 import {Routes, Route, Navigate} from 'react-router-dom';
 import LoginForm from "./pages/LoginPage";
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LayoutWrapper from "./components/layout/LayoutWrapper";
-import {SearchProvider} from "./context/SearchContext";
 
 function App() {
   return (

@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import axiosInstance from "./AxiosInstance";
 import {TimeEntry} from "../interfaces/TimeEntry";
 import axios from "axios";
