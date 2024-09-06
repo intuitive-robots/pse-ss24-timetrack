@@ -68,13 +68,16 @@ docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=<choose-d
    - Replace every `proxy_pass` IP with your own Backend IP Address.
    - Don't change the port `5001`.
 
-####   3.3 Generate the image
+#### 3.3 Modify `package.json` file within the `/frontend`directory
+   - Replace the `proxy`IP with your own Backend IP Address (incl. the port 5001).
+
+####   3.4 Generate the image
    - Generate the Docker image with the following command:
      ```
      docker build --build-arg REACT_APP_BACKEND_URL=http://<your-backend-ip>:5001 -t clockwise_frontend .
      ```
 
-####   3.4 Run the image within a container
+####   3.5 Run the image within a container
    - Use the following command to run the image inside a container:
      ```
      docker run --name clockwise_frontend -d -p 80:80 clockwise_frontend:latest
