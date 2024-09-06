@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import axios from "axios";
 
 const API_URL = "http://127.0.0.1:5000";

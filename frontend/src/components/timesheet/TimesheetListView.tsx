@@ -1,10 +1,7 @@
 import React from 'react';
 import {Timesheet} from "../../interfaces/Timesheet";
 import TimesheetTile from "../TimesheetTile";
-import {StatusType} from "../../interfaces/StatusType";
 import {useAuth} from "../../context/AuthContext";
-import {isValidTimesheetStatus, statusMapping} from "../status/StatusMapping";
-import {isValidRole} from "../auth/roles";
 import {handleDownload} from "../../services/DocumentService";
 import {minutesToHourMinuteFormatted} from "../../utils/TimeUtils";
 

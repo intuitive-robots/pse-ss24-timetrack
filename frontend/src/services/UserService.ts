@@ -1,8 +1,8 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import axiosInstance from "./AxiosInstance";
 import { User } from "../interfaces/User";
 import {handleAxiosError} from "../utils/AxiosUtils";
 import {ContractInfo} from "../interfaces/ContractInfo";
-import {data} from "browserslist";
 
 const getHiwis = async () => {
   try {

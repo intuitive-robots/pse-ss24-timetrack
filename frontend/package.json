@@ -7,8 +7,8 @@
     { "name": "Phil Gengenbach" },
     { "name": "Dominik Pollok" },
     { "name": "Alina Petri" },
-    { "name": "José Ayala" },
-    { "name": "Johann Kohl" }
+    { "name": "Johann Kohl" },
+    { "name": "José Ayala" }
   ],
   "license": "GPL-3.0",
   "dependencies": {
