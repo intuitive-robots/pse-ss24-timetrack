@@ -1,3 +1,9 @@
+"""
+Author: Dominik Pollok, Phil Gengenbach, Alina Petri, José Ayala, Johann Kohl
+Date: 2024-09-06
+Description: Clockwise - Intuitive Time Tracking Web-App for Research Assistants
+"""
+
 import json
 from datetime import datetime, timezone, timedelta
 

@@ -1,0 +1,11 @@
+[project]
+name = "Clockwise"
+version = "0.1.0"
+description = "Intuitive Time Tracking Web-App for Research Assistants"
+authors = [
+    {name = "Dominik Pollok"},
+    {name = "Phil Gengenbach"},
+    {name = "Alina Petri"},
+    {name = "José Ayala"},
+    {name = "Johann Kohl"}
+]
