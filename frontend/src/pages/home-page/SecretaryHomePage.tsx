@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import React, {useEffect, useState} from 'react';
 import StatusFilter from "../../components/status/StatusFilter";
 import {StatusType} from "../../interfaces/StatusType";

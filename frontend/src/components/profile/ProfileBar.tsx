@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import React, { useState } from "react";
 import RightArrow from "../../assets/images/arrow_right.svg";
 import UserIcon from "../../assets/images/dropdown/user_icon.svg";
@@ -6,8 +7,6 @@ import LogoutIcon from "../../assets/images/dropdown/logout.svg";
 import HelpIcon from "../../assets/images/dropdown/help.svg";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import UserInfoSupervisorView from "../UserInfo";
-import ProfilePicture from "../../assets/images/profile_placeholder.svg";
 import SearchInput from "./SearchInput";
 import DropdownMenuButton from "../dropdown/DropdownMenuButton";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
@@ -16,7 +15,6 @@ import PasswordResetPopup from "../popup/PasswordResetPopup";
 import { ClockwiseIcon } from "../../assets/iconComponents/ClockwiseIcon";
 import UserInfo from "../UserInfo";
 import { NotificationShowcase } from "../notification/NotificationShowcase";
-import { useSearch } from "../../context/SearchContext";
 
 /**
  * The ProfileBar component renders a user interface at the top of a page, including a logo, search input,

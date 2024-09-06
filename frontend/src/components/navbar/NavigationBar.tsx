@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import React, {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -5,7 +6,6 @@ import navigationIcons from "./NavigationIcons";
 import {isValidRole} from "../auth/roles";
 import {buttonConfigurations} from "./ActionButtonsConfig";
 import PopupActionButton from "../input/PopupActionButton";
-import RightArrow from "../../assets/images/arrow_right.svg";
 
 
 interface MenuItems {

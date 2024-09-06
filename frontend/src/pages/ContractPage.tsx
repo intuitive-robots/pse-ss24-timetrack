@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import React from "react";
 import HorizontalSeparator from "../shared/HorizontalSeparator";
 import ContractDetails from "../components/contract/ContractDetails";

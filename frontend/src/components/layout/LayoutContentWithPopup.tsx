@@ -1,3 +1,4 @@
+// Authors: Phil Gengenbach, Dominik Pollok, Alina Petri, José Ayala, Johann Kohl
 import React, {FC} from 'react';
 import { Routes, Route } from 'react-router-dom';
 import {usePopup} from "../popup/PopupContext";
