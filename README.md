@@ -45,7 +45,7 @@ To deploy the web app using Docker, make sure to use the [Docker-Deployment bran
 ### 1. MongoDB <br>
 The following command creates a MongoDB with authentication inside a Docker Container:
 ```
-docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=TimeTracking123! -d mongodb/mongodb-community-server:latest
+docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=<choose-db-username> -e MONGO_INITDB_ROOT_PASSWORD=<choose-db-password> -d mongodb/mongodb-community-server:latest
 ```
 ### 2. Flask-Backend <br>
 #### 2.1 Generate the image
@@ -58,6 +58,7 @@ docker run --name mongoDB -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e 
    ```
    docker run --name clockwise_backend -e DB_HOST=<your-db-ip> -e DB_USERNAME=<your-db-username> -e DB_PASSWORD=<your-db-password> -d -p 5001:5001 clockwise_backend:latest
    ```
+   - When the backend is started for the first time, the system generates a default admin account (username: irladmin, password: irl123). This admin can then create additional users, such as assistants (Hiwis), supervisors, and others. We strongly recommend changing the password as soon as possible.
 ### 3. React-Frontend
 
 #### 3.1 Find out IP-Address
