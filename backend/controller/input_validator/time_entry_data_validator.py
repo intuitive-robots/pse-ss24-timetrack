@@ -24,7 +24,7 @@ class TimeEntryDataValidator(InputValidator):
         self.field_patterns = {
             'timesheetId': r'^[0-9a-fA-F]{24}$',  # Alphanumeric exactly 10 characters long
             'activity': r'^[\w\s\-,.:;!?\']+$',  # Alphanumeric, whitespace, and selected punctuation
-            'projectName': r'^[\w\s\-]+$',  # Alphanumeric, whitespace, hyphens, and underscores
+            # 'projectName': r'^[\w\s\-]+$',  # Alphanumeric, whitespace, hyphens, and underscores
             # 'breakTime': r'^\d+$'  # Non-negative integers (zero or more)
             # 'startTime': r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$',
             # 'endTime': r'^^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$'
