@@ -44,7 +44,7 @@ class WorkEntry(TimeEntry):
 
         self.break_time = break_time
         self.activity = activity
-        self.project_name = project_name
+        self.project_name = " "
         self.activity_type = activity_type
 
         # self.time_entry_validator.add_validation_rule(WorkingTimeStrategy())

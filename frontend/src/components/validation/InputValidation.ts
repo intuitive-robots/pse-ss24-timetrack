@@ -1,4 +1,4 @@
-import {ValidationResult, ValidationError} from "json-schema";
+import { ValidationResult, ValidationError } from "json-schema";
 
 
 
@@ -27,7 +27,7 @@ export function createTimeEntryValidation(activity: string, project: string, sel
         let missingFields = [];
 
         if (!activity) missingFields.push("activity");
-        if (!project) missingFields.push("project");
+        // if (!project) missingFields.push("project");
         if (!selectedDate) missingFields.push("selectedDate");
         if (!startTime) missingFields.push("startTime");
         if (!endTime) missingFields.push("endTime");
@@ -44,7 +44,7 @@ export function createTimeEntryValidation(activity: string, project: string, sel
     }
     if (workTimeSpan > maxWorkingMinutes) {
         alert("The maximum permissible working time is 10 hours per day. Please choose a valid time span.");
-            return result;
+        return result;
     }
 
     // warning for time span

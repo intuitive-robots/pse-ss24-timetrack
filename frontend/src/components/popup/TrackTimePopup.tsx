@@ -1,18 +1,18 @@
-import React, {useState} from 'react';
-import {usePopup} from "./PopupContext";
+import React, { useState } from 'react';
+import { usePopup } from "./PopupContext";
 import ShortInputField from "../input/ShortInputField";
 import DialogButton from "../input/DialogButton";
-import {createWorkEntry} from "../../services/TimeEntryService";
+import { createWorkEntry } from "../../services/TimeEntryService";
 import RoundedIconBox from "../../shared/RoundedIconBox";
 import HorizontalSeparator from "../../shared/HorizontalSeparator";
 import IntuitiveDatePicker from "../input/IntuitiveDatePicker";
 import IntuitiveTimePicker from "../input/IntuitiveTimePicker";
 import Dropdown from "../input/Dropdown";
-import {createTimeEntryValidation} from "../validation/InputValidation";
-import {wait} from "@testing-library/user-event/dist/utils";
-import {BreakIcon} from "../../assets/iconComponents/BreakIcon";
-import {TrackTimeIcon} from "../../assets/iconComponents/TrackTimeIcon";
-import {ActivityIcon} from "../../assets/iconComponents/ActivityIcon";
+import { createTimeEntryValidation } from "../validation/InputValidation";
+import { wait } from "@testing-library/user-event/dist/utils";
+import { BreakIcon } from "../../assets/iconComponents/BreakIcon";
+import { TrackTimeIcon } from "../../assets/iconComponents/TrackTimeIcon";
+import { ActivityIcon } from "../../assets/iconComponents/ActivityIcon";
 
 const TrackTimePopup: React.FC = () => {
     const { closePopup } = usePopup();
@@ -89,7 +89,7 @@ const TrackTimePopup: React.FC = () => {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-4">
-                <RoundedIconBox icon={<TrackTimeIcon/>} width={"w-[60px]"} height={"h-[60px] p-3.5"}/>
+                <RoundedIconBox icon={<TrackTimeIcon />} width={"w-[60px]"} height={"h-[60px] p-3.5"} />
                 <div className="flex flex-col gap-[1px]">
                     <h2 className="text-2xl font-bold">Create Time Entry</h2>
                     <p className="text-lg font-medium text-[#707070]">Fill in the fields below to add a Working
@@ -97,40 +97,40 @@ const TrackTimePopup: React.FC = () => {
                 </div>
             </div>
 
-            <HorizontalSeparator/>
+            <HorizontalSeparator />
 
 
             <form className="space-y-6">
                 <div className="flex flex-row gap-4">
                     <ShortInputField
-                        icon={<ActivityIcon/>}
+                        icon={<ActivityIcon />}
                         title="Activity"
                         type="text"
                         placeholder="Activity"
                         value={activity}
                         onChange={setActivity}
                     />
-                    <ShortInputField
-                        icon={<ActivityIcon/>}
+                    {/* <ShortInputField
+                        icon={<ActivityIcon />}
                         type="text"
                         title="Project"
                         placeholder="Project"
                         value={project}
                         onChange={setProject}
-                    />
+                    /> */}
                 </div>
                 <div className="w-7/12">
-                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType} icon={<ActivityIcon/>}
-                              options={activityTypeOptions}/>
+                    <Dropdown title="Activity Type" value={activityType} onChange={setActivityType} icon={<ActivityIcon />}
+                        options={activityTypeOptions} />
                 </div>
                 <div className="flex flex-col gap-1.5">
                     <h2 className="text-md font-semibold">{"Working Time"}</h2>
-                    <IntuitiveDatePicker onDateSelect={setSelectedDate}/>
+                    <IntuitiveDatePicker onDateSelect={setSelectedDate} />
                     <div className="flex flex-row items-center mt-2 w-full">
                         <div className="flex flex-row justify-between items-center w-7/12">
-                            <IntuitiveTimePicker value={startTime} onChange={setStartTime}/>
+                            <IntuitiveTimePicker value={startTime} onChange={setStartTime} />
                             <p className="text-center items-center justify-center text-gray-700 font-extrabold">—</p>
-                            <IntuitiveTimePicker value={endTime} onChange={setEndTime}/>
+                            <IntuitiveTimePicker value={endTime} onChange={setEndTime} />
                         </div>
                         {workingTimeWarning && (
                             <p className="text-red-600 font-bold ml-4 whitespace-nowrap">Warning: Working time {'>'} 8h.</p>
@@ -139,7 +139,7 @@ const TrackTimePopup: React.FC = () => {
                 </div>
 
                 <ShortInputField
-                    icon={<BreakIcon/>}
+                    icon={<BreakIcon />}
                     type="number"
                     title={"Break Time"}
                     placeholder="15"
