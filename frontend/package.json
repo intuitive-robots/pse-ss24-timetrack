@@ -1,7 +1,7 @@
 {
   "name": "clockwise_intuitive_time_tracking_webapp",
   "version": "1.0",
-  "proxy": "http://192.168.188.89:5001",
+  "proxy": "http://141.3.53.132:5000",
   "private": true,
   "description": "A web app for intuitive time tracking for research assistants (HiWis) at Intuitive Robots Lab.",
   "authors": [
