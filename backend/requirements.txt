@@ -25,3 +25,4 @@ gunicorn==23.0.0
 Flask-APScheduler==1.13.1
 regex==2024.7.24
 requests==2.32.3
+pytz==2024.2
