@@ -116,7 +116,7 @@ class WorkEntry(TimeEntry):
         timesheet_id = data['timesheetId']
         break_time = data.get('breakTime', 0)
         activity = data.get('activity', '')
-        project_name = data.get('projectName', '')
+        project_name = " " #data.get('projectName', '')
         if 'activityType' in data:
             activity_type = ActivityType.get_type_by_value(data['activityType'])
         else:

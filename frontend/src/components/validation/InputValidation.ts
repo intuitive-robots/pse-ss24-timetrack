@@ -23,7 +23,7 @@ export function createTimeEntryValidation(activity: string, project: string, sel
 
 
     // missing fields
-    if (!activity || !project || !selectedDate || !startTime || !endTime || breakTime === null) {
+    if (!activity || !selectedDate || !startTime || !endTime || breakTime === null) {
         let missingFields = [];
 
         if (!activity) missingFields.push("activity");
