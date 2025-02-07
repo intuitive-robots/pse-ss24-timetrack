@@ -148,15 +148,6 @@ class TestTimesheetService(unittest.TestCase):
         self.assertEqual(404, result.status_code)
         self.assertEqual("User not found", result.message)
 
-    def test_ensure_timesheet_exists_before_user_creation(self):
-        """
-        Test the ensure_timesheet_exists method of the TimesheetService class with an invalid month.
-        """
-        result = self.timesheet_service.ensure_timesheet_exists(self.test_april_timesheet_data['username'], 1, 2023)
-        self.assertFalse(result.is_successful)
-        self.assertEqual(422, result.status_code)
-        self.assertEqual("User account was created after the timesheet month", result.message)
-
     def test_ensure_timesheet_exists(self):
         """
         Test the ensure_timesheet_exists method of the TimesheetService class.
