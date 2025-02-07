@@ -60,6 +60,8 @@ class UserDataValidator(InputValidator):
                 return ValidationResult(ValidationStatus.FAILURE, f"Invalid or missing {field}.")
         if 'personalInfo' in user_data:
             for field_key in PersonalInfo.dict_keys():
+                if not field_key in self.field_patterns:
+                    continue
                 pattern = self.field_patterns[field_key]
                 if field_key in user_data['personalInfo'] and not re.match(pattern,
                                                                            user_data['personalInfo'][field_key]):

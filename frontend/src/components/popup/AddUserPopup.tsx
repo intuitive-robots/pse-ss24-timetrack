@@ -148,7 +148,7 @@ const AddUserPopup: React.FC = () => {
     const isValidKey = (key: any): key is keyof FormData => key in formData;
 
     const handleSubmit = async () => {
-        const requiredFields: (keyof FormData)[] = ['username', 'password', 'firstName', 'lastName', 'email', 'personalNumber'];
+        const requiredFields: (keyof FormData)[] = ['username', 'password', 'firstName', 'lastName', 'personalNumber'];
 
         if (formData.role === Roles.Hiwi && step === 3) {
             requiredFields.push('hourlyWage', 'workingTime', 'supervisor');
